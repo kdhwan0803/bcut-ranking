@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B컷 랭킹</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+:root{--red:#E60012;--up:#12b76a;--down:#f04438;--new:#7a5af8;--ink:#16161a;--mut:#8a8a92;--line:#ececed;--bg:#f4f5f7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1080px;margin:0 auto;padding:0 18px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:900;font-size:19px;letter-spacing:-.3px}.brand b{color:var(--red)}
+.brand span{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:2px;margin-left:6px}
+.menu{display:flex;gap:6px}
+.menu a{font-size:13.5px;font-weight:700;color:#555;text-decoration:none;padding:8px 12px;border-radius:8px}
+.menu a:hover{background:#f0f0f3;color:var(--ink)}
+.nav-cta{background:var(--red);color:#fff;font-size:13px;font-weight:800;text-decoration:none;padding:9px 16px;border-radius:8px}
+@media(max-width:640px){.menu{display:none}}
+.section{padding:34px 0 6px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.sec-title{font-size:21px;font-weight:900;letter-spacing:-.4px}
+.sec-title small{font-size:12px;color:var(--mut);font-weight:700;margin-left:8px;letter-spacing:1px}
+.wk-select{display:inline-flex;gap:8px;align-items:center;background:#fff;border:1px solid #e6e6ea;border-radius:999px;padding:6px 8px 6px 14px;font-size:13px;font-weight:700}
+.wk-select .dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+.wk-select select{border:0;font-weight:700;font-size:13px;font-family:inherit;background:transparent;cursor:pointer}
+.hero{background:#fff;border-radius:22px;padding:30px 34px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 30px rgba(20,20,30,.06);position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;right:-70px;top:-70px;width:320px;height:320px;background:radial-gradient(circle,rgba(230,0,18,.08),transparent 70%)}
+.hero-eye{color:var(--red);font-weight:800;font-size:13px;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.rank1-badge{background:var(--red);color:#fff;font-family:'Arial Black',sans-serif;font-size:12px;font-weight:900;padding:3px 10px;border-radius:6px;letter-spacing:.5px}
+.hero-title{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1.1}
+.hero-model{color:var(--red);font-weight:800;font-size:15px;margin-top:8px}
+.hero-stats{display:flex;gap:22px;margin:22px 0 24px;flex-wrap:wrap}
+.st b{display:block;font-size:20px;font-weight:900;letter-spacing:-.5px;line-height:1.2}
+.st span{font-size:11.5px;color:var(--mut);font-weight:600}
+.st .up{color:var(--up)}.st .down{color:var(--down)}.st .new{color:var(--new)}
+.hero-cta{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;font-weight:800;font-size:14px;padding:13px 28px;border-radius:9px}
+.hero-r{position:relative;flex-shrink:0;margin-left:22px}
+.hero-r img{width:180px;height:224px;object-fit:cover;border-radius:16px;display:block;background:#eee}
+.hero-medal{position:absolute;top:-12px;left:-12px;background:var(--red);color:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Arial Black',sans-serif;font-weight:900;font-size:18px;box-shadow:0 4px 12px rgba(230,0,18,.4);z-index:2}
+@media(max-width:560px){.hero{flex-direction:column-reverse;text-align:center;padding:26px 22px}.hero-eye{justify-content:center}.hero-stats{justify-content:center}.hero-r{margin:0 0 18px}}
+.controls{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:6px 0 14px;flex-wrap:wrap}
+.tabs{display:inline-flex;background:#ececed;border-radius:11px;padding:4px}
+.tabs button{border:0;background:transparent;font-family:inherit;font-weight:800;font-size:14px;color:#8a8a92;padding:9px 18px;border-radius:8px;cursor:pointer}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.toggle{display:inline-flex;background:#fff;border:1px solid #e6e6ea;border-radius:11px;padding:4px}
+.toggle button{border:0;background:transparent;font-family:inherit;font-weight:700;font-size:13px;color:#8a8a92;padding:8px 15px;border-radius:8px;cursor:pointer}
+.toggle button.on{background:var(--red);color:#fff}
+.board{background:#fff;border-radius:18px;padding:8px 8px 12px;box-shadow:0 2px 20px rgba(20,20,30,.05)}
+.board-head,.trow{display:grid;grid-template-columns:52px 1fr 140px 92px 62px 22px;gap:10px;align-items:center}
+.board-head{padding:14px 14px 10px;font-size:11px;font-weight:800;color:#a0a0a8;letter-spacing:.5px;border-bottom:1px solid #f0f0f3}
+.trow{padding:12px 14px;border-radius:12px;text-decoration:none;color:inherit;border-bottom:1px solid #f5f5f7;transition:background .15s;cursor:pointer}
+.trow:last-child{border-bottom:none}.trow:hover{background:#faf7f7}
+.c-rank{font-size:20px;font-weight:900;color:#c7c7cf;text-align:center}.c-rank.top{color:var(--red)}
+.c-work{display:flex;align-items:center;gap:12px;min-width:0}
+.c-work img{width:52px;height:52px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#eee}
+.c-work img.round{border-radius:50%}
+.c-title{font-weight:800;font-size:15px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-sub{font-size:12.5px;color:var(--mut);margin-top:3px}
+.tm{color:var(--red);font-weight:700}.tm.muted{color:#c0c0c8}
+.buy{display:inline-block;background:#f1f1f4;color:#888;font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px}
+.buy.sub{background:#efeaff;color:#7a5af8}
+.c-form{display:flex;gap:5px}
+.fc{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+.fc.t1{background:var(--red)}.fc.t2{background:#f6b8bd;color:#a01521}.fc.t3{background:#e9e9ee;color:#9a9aa2}
+.fc.empty{background:#f2f2f5}.fc.cur{box-shadow:0 0 0 2px var(--ink)}
+.c-pts{font-weight:900;font-size:16px}.c-pts small{font-size:11px;color:#b0b0b8;font-weight:700;margin-left:2px}
+.mv{font-size:12px;font-weight:800;padding:3px 8px;border-radius:6px;white-space:nowrap;display:inline-block}
+.mv.up{color:var(--up);background:#e7f8ef}.mv.down{color:var(--down);background:#feecec}
+.mv.new{color:#fff;background:var(--new)}.mv.same{color:#b0b0b8;background:#f2f2f5}
+.c-go{text-align:right;color:#c7c7cf;font-size:17px;font-weight:700}
+.bg{display:inline-block;font-size:9px;font-weight:900;padding:2px 4px;border-radius:3px;vertical-align:middle;margin-left:3px}
+.bg.b19{border:1px solid var(--red);color:var(--red)}.bg.vid{border:1px solid #ccc;color:#999}
+@media(max-width:640px){.board-head{display:none}.trow{grid-template-columns:38px 1fr auto;grid-template-areas:"rank work move";padding:14px 12px}.c-rank{grid-area:rank;font-size:17px}.c-work{grid-area:work}.c-move{grid-area:move}.c-form,.c-pts,.c-go{display:none}}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:440px){.cards{grid-template-columns:1fr}}
+.ncard{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 16px rgba(20,20,30,.05);text-decoration:none;color:inherit;display:block}
+.ncard img{width:100%;height:184px;object-fit:contain;display:block;background:#f3f3f6}
+.mtag{display:inline-block;background:#f6e8c6;color:#8a6a1a;border:1px solid #e8d4a4;font-size:10px;font-weight:800;padding:1px 8px;border-radius:20px;margin-right:6px;vertical-align:middle}
+.ncard .nb{padding:12px 14px 14px}.ncard .nd{font-size:11px;font-weight:800;color:var(--red);letter-spacing:.5px}
+.ncard .nt{font-size:15px;font-weight:800;margin-top:5px}.ncard .nm{font-size:12.5px;color:var(--mut);margin-top:3px}
+.ystar{background:var(--red);color:#fff;font-size:9px;font-weight:900;padding:1px 5px;border-radius:3px;vertical-align:middle;margin-left:4px}
+.mcards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media(max-width:760px){.mcards{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:440px){.mcards{grid-template-columns:repeat(2,1fr)}}
+.mcard{background:#fff;border-radius:14px;padding:18px 12px;text-align:center;box-shadow:0 2px 16px rgba(20,20,30,.05);position:relative}
+.mcard .mrank{position:absolute;top:10px;left:12px;font-family:'Arial Black',sans-serif;font-weight:900;font-size:14px;color:#d0d0d6}
+.mcard.top1 .mrank{color:var(--red)}
+.mcard img{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#eee;margin:4px auto 10px}
+.mcard .mn{font-weight:800;font-size:14px}.mcard .mp{font-size:13px;font-weight:900;color:var(--red);margin-top:4px}.mcard .mp small{color:#b0b0b8;font-size:10px;font-weight:700}
+.rule-card{background:#fff;border-radius:14px;padding:20px 22px;box-shadow:0 2px 16px rgba(20,20,30,.05);font-size:13.5px;color:#555;line-height:1.8}
+.rule-card b{color:var(--ink)}
+footer{text-align:center;padding:36px 0 50px;color:#9a9aa2;font-size:12px;line-height:1.8}
+footer .fb{font-family:'Arial Black',sans-serif;font-weight:900;font-size:15px;color:var(--ink);letter-spacing:1px;margin-bottom:8px}
+footer .fb b{color:var(--red)}
+.loading{padding:60px 0;text-align:center;color:var(--mut);font-weight:700}
+.bannerWrap{margin-top:18px;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 2px 20px rgba(20,20,30,.06);background:#e9e9ee}
+.bannerTrack{display:flex;transition:transform .4s ease}
+.bannerSlide{min-width:100%;aspect-ratio:1080/420}
+.bannerSlide a,.bannerSlide .noimg{display:block;width:100%;height:100%}
+.bannerSlide img{width:100%;height:100%;object-fit:cover;display:block}
+.bnav{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.32);color:#fff;border:0;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;line-height:1}
+.bnav:hover{background:rgba(0,0,0,.55)}
+.bprev{left:12px}.bnext{right:12px}
+.bdots{position:absolute;bottom:12px;left:0;right:0;display:flex;gap:7px;justify-content:center;z-index:3}
+.bdots button{width:8px;height:8px;border-radius:50%;border:0;background:rgba(255,255,255,.55);cursor:pointer;padding:0;transition:width .2s}
+.bdots button.on{background:#fff;width:20px;border-radius:5px}
+@media(max-width:640px){.bnav{width:32px;height:32px;font-size:15px}}
+.modal{display:none;position:fixed;inset:0;background:rgba(12,12,16,.62);z-index:200;padding:20px;overflow-y:auto}
+.modal.on{display:flex;align-items:flex-start;justify-content:center}
+.mbox{background:#fff;border-radius:20px;max-width:520px;width:100%;margin:auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);position:relative;animation:mpop .18s ease}
+@keyframes mpop{from{transform:translateY(14px);opacity:.5}to{transform:none;opacity:1}}
+.mx{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;border:0;font-size:15px;cursor:pointer;z-index:3}
+.mcover{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:#e9e9ee;max-height:440px}
+.mcoverWrap{position:relative;width:100%;aspect-ratio:3/4;max-height:480px;overflow:hidden;background:#15151a}
+.mcoverBlur{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(30px) brightness(.82);transform:scale(1.25);opacity:.9}
+.mcoverImg{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;z-index:1}
+.mavatar{width:100px;height:100px;border-radius:50%;object-fit:cover;background:#e9e9ee;margin:22px auto 0;display:block;border:3px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.mbody{padding:18px 22px 24px}
+.mtitle{font-size:21px;font-weight:900;letter-spacing:-.4px;line-height:1.25;text-align:center}
+.mmodel{color:var(--red);font-weight:800;font-size:14px;margin-top:7px;text-align:center}
+.mmeta{color:var(--mut);font-size:12.5px;margin-top:8px;text-align:center}
+.mdesc{background:#f6f6f8;border-radius:12px;padding:13px 15px;font-size:14px;line-height:1.7;color:#444;margin-top:16px}
+.mstats{display:flex;justify-content:center;gap:20px;margin-top:18px;flex-wrap:wrap}
+.mstats .s b{display:block;font-size:19px;font-weight:900;text-align:center}
+.mstats .s span{font-size:11px;color:var(--mut);font-weight:600}
+.mcta{display:block;text-align:center;background:var(--red);color:#fff;text-decoration:none;font-weight:800;font-size:14px;padding:14px;border-radius:11px;margin-top:20px}
+.msub{font-size:12px;font-weight:800;color:#9a9aa2;letter-spacing:.5px;margin:20px 0 10px}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mgrid .gw{cursor:pointer;border-radius:9px;overflow:hidden;background:#eee;aspect-ratio:3/4}
+.mgrid .gw img{width:100%;height:100%;object-fit:cover;display:block}
+</style></head>
+<body>
+<nav class="nav"><div class="nav-in">
+  <div class="brand">MAXIM <b>B컷</b><span>RANKING</span></div>
+  <div class="menu"><a href="#ranking">이번 주 랭킹</a><a href="#next">신작</a><a href="#models">모델</a><a href="worldcup.html">이상형 월드컵</a></div>
+  <a class="nav-cta" href="https://bcut.maximkorea.net" target="_blank">B컷 바로가기</a>
+</div></nav>
+<div class="wrap">
+  <section id="bannerSec"></section>
+  <section class="section" id="top"><div class="hero" id="hero"><div class="loading">랭킹 불러오는 중…</div></div></section>
+  <section class="section" id="ranking">
+    <div class="sec-head"><div class="sec-title">이번 주 랭킹 <small>WEEKLY RANKING</small></div>
+      <div class="wk-select"><span class="dot"></span><select id="weekSel"></select></div></div>
+    <div class="controls">
+      <div class="tabs"><button id="tabWorks" class="on" onclick="setTab('works')">화보 랭킹</button><button id="tabModels" onclick="setTab('models')">모델 랭킹</button></div>
+      <div class="toggle"><button id="modeWeek" class="on" onclick="setMode('week')">주간</button><button id="modeMonth" onclick="setMode('month')">월간</button></div>
+    </div>
+    <div class="board"><div class="board-head" id="boardHead"></div><div id="boardBody"></div></div>
+  </section>
+  <section class="section" id="next"><div class="sec-head"><div class="sec-title">다음 주 신작 <small>NEXT WEEK</small></div></div><div class="cards" id="nextCards"></div></section>
+  <section class="section" id="models"><div class="sec-head"><div class="sec-title">모델 명예의 전당 <small>THIS MONTH</small></div></div><div class="mcards" id="modelCards"></div></section>
+  <section class="section"><div class="sec-head"><div class="sec-title">랭킹은 이렇게 <small>HOW IT WORKS</small></div></div>
+    <div class="rule-card">순위는 <b>판매 · 조회수 · 평점</b>을 종합한 점수와 <b>신작 가점</b>으로 매겨집니다. 순위에 따라 <b>포인트</b>가 적립되고, 화보 포인트는 참여 <b>모델에게도 합산</b>돼요. 한 주 단위 <b>주간 랭킹</b>과 그 달 포인트를 모은 <b>월간 랭킹</b>을 함께 볼 수 있습니다.</div></section>
+</div>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="mbox" id="mbox"></div></div>
+<footer><div class="fb">MAXIM <b>B컷</b></div>(주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br><a href="https://bcut.maximkorea.net" target="_blank" style="color:var(--mut);text-decoration:underline">B컷 바로가기</a></footer>
+
+<script>
+let DATA=null;
+let state={tab:'works', mode:'week', weekIdx:0};
+
+/* ===== 공개용 계산: 순위 배열 → 포인트 (원본 데이터 없음) ===== */
+function ptsForRank(r){return DATA.points[r-1]||0;}
+function weekWorks(wi){const wk=DATA.weeks[wi];if(!wk)return [];return (wk.ranking||[]).map((id,i)=>({id,rank:i+1,pts:ptsForRank(i+1)}));}
+function workRankAt(id,wi){const f=weekWorks(wi).find(x=>x.id===id);return f?f.rank:0;}
+function weekModelPts(wi){const m={};weekWorks(wi).forEach(w=>{(DATA.works[w.id]?.models||[]).forEach(md=>{m[md]=(m[md]||0)+w.pts;});});return m;}
+function weekModels(wi){const m=weekModelPts(wi);return Object.keys(m).map(md=>({id:md,pts:m[md]})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({...x,rank:i+1}));}
+function modelRankAt(md,wi){const f=weekModels(wi).find(x=>x.id===md);return f?f.rank:0;}
+function wkMonth(i){const m=(DATA.weeks[i]?.label||'').match(/(\d+)\s*월/);return m?m[1]:'-';}
+function weeksInMonthUpto(wi){const mo=wkMonth(wi);const a=[];for(let i=0;i<=wi;i++){if(wkMonth(i)===mo)a.push(i);}return a;}
+function prevWeekSameMonth(wi){const mo=wkMonth(wi);for(let i=wi-1;i>=0;i--){if(wkMonth(i)===mo)return i;}return -1;}
+function monthWorks(wi){if(wi<0)return [];const m={};weeksInMonthUpto(wi).forEach(i=>weekWorks(i).forEach(w=>{m[w.id]=(m[w.id]||{pts:0,weeks:0});m[w.id].pts+=w.pts;m[w.id].weeks++;}));return Object.keys(m).map(id=>({id,pts:m[id].pts,weeks:m[id].weeks})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({...x,rank:i+1}));}
+function monthModels(wi){if(wi<0)return [];const m={};weeksInMonthUpto(wi).forEach(i=>{const mp=weekModelPts(i);Object.keys(mp).forEach(md=>{m[md]=(m[md]||{pts:0,weeks:0});m[md].pts+=mp[md];m[md].weeks++;});});return Object.keys(m).map(id=>({id,pts:m[id].pts,weeks:m[id].weeks})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({...x,rank:i+1}));}
+function monthWorkRankAt(id,wi){if(wi<0)return 0;const f=monthWorks(wi).find(x=>x.id===id);return f?f.rank:0;}
+function monthModelRankAt(id,wi){if(wi<0)return 0;const f=monthModels(wi).find(x=>x.id===id);return f?f.rank:0;}
+function bestWorkRank(id){let b=99;DATA.weeks.forEach((_,i)=>{const r=workRankAt(id,i);if(r&&r<b)b=r;});return b<99?b:null;}
+function bestModelRank(md){let b=99;DATA.weeks.forEach((_,i)=>{const r=modelRankAt(md,i);if(r&&r<b)b=r;});return b<99?b:null;}
+function streakTop(id,wi,thr,isModel){let n=0;for(let i=wi;i>=0;i--){const r=isModel?modelRankAt(id,i):workRankAt(id,i);if(r&&r<=thr)n++;else break;}return n;}
+function movement(cur,prev){if(!prev)return{k:'new',n:0};if(cur<prev)return{k:'up',n:prev-cur};if(cur>prev)return{k:'down',n:cur-prev};return{k:'same',n:0};}
+function mvHtml(m){if(m.k==='up')return `<span class="mv up">▲ ${m.n}</span>`;if(m.k==='down')return `<span class="mv down">▼ ${m.n}</span>`;if(m.k==='new')return `<span class="mv new">NEW</span>`;return `<span class="mv same">–</span>`;}
+function formTiles(a){return a.map((rk,i)=>{const cur=i===a.length-1?'cur':'';if(!rk)return `<span class="fc empty ${cur}"></span>`;const t=rk<=3?'t1':(rk<=10?'t2':'t3');return `<span class="fc ${t} ${cur}">${rk}</span>`;}).join('');}
+function modelImg(md){if(DATA.models[md]?.img)return DATA.models[md].img;const id=Object.keys(DATA.works).find(k=>(DATA.works[k].models||[]).includes(md));return id?DATA.works[id].img:'';}
+function modelLink(md){const c=DATA.models[md]&&DATA.models[md].creatorId;return c?('https://bcut.maximkorea.net/creator/'+c):'https://bcut.maximkorea.net';}
+function modelTag(md){const t=DATA.models[md]&&DATA.models[md].tag;return t?`<span class="mtag">${t}</span>`:'';}
+function modelStreakLabel(md,wi){const cur=modelRankAt(md,wi);if(!cur)return '';let thr,lab;if(cur===1){thr=1;lab='TOP1';}else if(cur<=5){thr=5;lab='TOP5';}else if(cur<=10){thr=10;lab='TOP10';}else return '';const n=streakTop(md,wi,thr,true);return n>=2?`${n}주 연속 ${lab}`:(lab==='TOP1'?'이번 주 1위':'이번 주 '+lab);}
+/* ===== 상세 카드 (모달) ===== */
+function _mWorksOf(name){return Object.keys(DATA.works).filter(id=>(DATA.works[id].models||[]).includes(name));}
+function openModal(){document.getElementById('modal').classList.add('on');document.body.style.overflow='hidden';}
+function closeModal(){document.getElementById('modal').classList.remove('on');document.body.style.overflow='';}
+function rowOpen(el){const id=el.dataset.id;el.dataset.kind==='model'?openModelModal(id):openWorkModal(id);}
+function openWorkModal(id){
+  const w=DATA.works[id];if(!w)return;const wi=state.weekIdx;
+  const wr=workRankAt(id,wi),best=bestWorkRank(id),strk=streakTop(id,wi,3,false);
+  const mp=(monthWorks(wi).find(x=>x.id===id)||{}).pts||0;
+  const meta=[w.pub?fmtDate(w.pub)+' 공개':'',w.buy].filter(Boolean).join(' · ');
+  document.getElementById('mbox').innerHTML=`<button class="mx" onclick="closeModal()">✕</button>
+    <div class="mcoverWrap"><div class="mcoverBlur" style="background-image:url(${w.img||''})"></div><img class="mcoverImg" src="${w.img||''}" onerror="this.style.opacity=.15"></div>
+    <div class="mbody"><div class="mtitle">${w.title||id} ${badges(w)}</div>
+    <div class="mmodel">${(w.models||[]).join(' & ')||'—'}</div>
+    <div class="mmeta">${meta}</div>
+    ${w.desc?`<div class="mdesc">${w.desc}</div>`:''}
+    <div class="mstats"><div class="s"><b>${wr?'#'+wr:'-'}</b><span>이번 주</span></div><div class="s"><b>${best?'#'+best:'-'}</b><span>역대 최고</span></div><div class="s"><b>${strk}주</b><span>연속 TOP3</span></div><div class="s"><b>${mp}</b><span>이번 달 pt</span></div></div>
+    <a class="mcta" href="https://bcut.maximkorea.net/work/${id}" target="_blank">B컷에서 화보 보기 ›</a></div>`;
+  openModal();
+}
+function openModelModal(name){
+  const md=DATA.models[name]||{};const wi=state.weekIdx;
+  const mr=(monthModels(wi).find(x=>x.id===name)||{});const best=bestModelRank(name);
+  let thr,lab;const cr=modelRankAt(name,wi)||99;if(cr===1){thr=1;lab='TOP1';}else if(cr<=5){thr=5;lab='TOP5';}else{thr=10;lab='TOP10';}const strk=streakTop(name,wi,thr,true);
+  const works=_mWorksOf(name);
+  document.getElementById('mbox').innerHTML=`<button class="mx" onclick="closeModal()">✕</button>
+    <img class="mavatar" src="${modelImg(name)}" onerror="this.style.opacity=.15">
+    <div class="mbody"><div class="mtitle">${modelTag(name)}${name}</div>
+    <div class="mmeta">${md.creatorId?'크리에이터 #'+md.creatorId+' · ':''}화보 ${works.length}편</div>
+    <div class="mstats"><div class="s"><b>${mr.rank?'#'+mr.rank:'-'}</b><span>이번 달</span></div><div class="s"><b>${mr.pts||0}</b><span>이번 달 pt</span></div><div class="s"><b>${best?'#'+best:'-'}</b><span>역대 최고</span></div><div class="s"><b>${strk}주</b><span>연속 ${lab}</span></div></div>
+    <div class="msub">이 모델의 화보</div>
+    <div class="mgrid">${works.slice(0,8).map(id=>`<div class="gw" onclick="openWorkModal('${id}')"><img src="${DATA.works[id].img||''}" onerror="this.style.opacity=.15"></div>`).join('')||'<div class="mmeta">등록된 화보 없음</div>'}</div>
+    <a class="mcta" href="${modelLink(name)}" target="_blank">B컷 모델 페이지 ›</a></div>`;
+  openModal();
+}
+
+function badges(w){let o='';if(w.b19)o+='<span class="bg b19">19</span>';if(w.vid)o+='<span class="bg vid">▶</span>';return o;}
+function fmtDate(iso){if(!iso)return '-';const p=iso.split('-');return p.length===3?(+p[1])+'.'+(+p[2]):iso;}
+
+function render(){
+  const wi=state.weekIdx, isModel=state.tab==='models', isMonth=state.mode==='month';
+  let list=isModel?(isMonth?monthModels(wi):weekModels(wi)):(isMonth?monthWorks(wi):weekWorks(wi));
+  renderHero(list[0],isModel,isMonth,wi);renderHead(isModel,isMonth);renderBody(list.slice(0,10),isModel,isMonth,wi);
+  renderNext();renderModelCards(wi);syncControls();
+}
+function statHTML(v,l){return `<div class="st"><b>${v}</b><span>${l}</span></div>`;}
+function movementStat(cur,prev){const m=movement(cur,prev);if(m.k==='up')return statHTML(`<span class="up">▲ ${m.n}</span>`,'지난주 대비');if(m.k==='down')return statHTML(`<span class="down">▼ ${m.n}</span>`,'지난주 대비');if(m.k==='new')return statHTML(`<span class="new">NEW</span>`,'이번 주 신규');return statHTML('1위 유지','지난주 대비');}
+function renderHero(top,isModel,isMonth,wi){
+  const el=document.getElementById('hero');if(!top){el.innerHTML='<div class="loading">데이터가 없습니다</div>';return;}
+  let img,title,model,link,stats='';const eye=(isMonth?'이번 달':'이번 주')+' 랭킹 1위 · '+(isModel?'MODEL':'화보');
+  if(isModel){img=modelImg(top.id);title=modelTag(top.id)+top.id;model=(isMonth?'월간':'주간')+' 모델 랭킹';link=modelLink(top.id);
+    const prev=isMonth?monthModelRankAt(top.id,prevWeekSameMonth(wi)):modelRankAt(top.id,wi-1);const best=bestModelRank(top.id);
+    let thr,lab;const cr=top.rank;if(cr===1){thr=1;lab='TOP1';}else if(cr<=5){thr=5;lab='TOP5';}else{thr=10;lab='TOP10';}const strk=streakTop(top.id,wi,thr,true);
+    stats+=statHTML(top.pts.toLocaleString()+'<small style="font-size:11px;color:#b0b0b8"> pt</small>',isMonth?'이번 달 포인트':'이번 주 포인트');
+    stats+=movementStat(top.rank,prev);stats+=statHTML(strk+'주','연속 '+lab);stats+=statHTML('#'+(best||1),'역대 최고');
+  }else{const w=DATA.works[top.id]||{};img=w.img;title=w.title||top.id;model=(w.models||[]).join(' & ')||'—';link='https://bcut.maximkorea.net/work/'+top.id;
+    const prev=isMonth?monthWorkRankAt(top.id,prevWeekSameMonth(wi)):workRankAt(top.id,wi-1);const best=bestWorkRank(top.id),strk=streakTop(top.id,wi,3,false);
+    stats+=statHTML(top.pts.toLocaleString()+'<small style="font-size:11px;color:#b0b0b8"> pt</small>',isMonth?'이번 달 포인트':'이번 주 포인트');
+    stats+=movementStat(top.rank,prev);stats+=statHTML(strk+'주','연속 TOP3');stats+=statHTML('#'+(best||1),'역대 최고');stats+=statHTML(fmtDate(w.pub),'공개일');
+  }
+  el.innerHTML=`<div class="hero-l"><div class="hero-eye"><span class="rank1-badge">RANK 1</span> ${eye}</div>
+    <h1 class="hero-title">${title} ${isModel?'':badges(DATA.works[top.id]||{})}</h1><div class="hero-model">${model}</div>
+    <div class="hero-stats">${stats}</div><a class="hero-cta" href="${link}" target="_blank">${isModel?'모델 화보 보기':'화보 보러가기'} ›</a></div>
+    <div class="hero-r"><div class="hero-medal">1</div><img src="${img}" alt="" style="cursor:pointer" onclick="${isModel?`openModelModal('${top.id}')`:`openWorkModal('${top.id}')`}"></div>`;
+}
+function renderHead(isModel,isMonth){const c3=isMonth?'이번 달 포인트':'최근 4주 폼',c4=isMonth?'획득 주차':'포인트';document.getElementById('boardHead').innerHTML=`<div>순위</div><div>${isModel?'모델':'화보 & 모델'}</div><div>${c3}</div><div>${c4}</div><div>등락</div><div></div>`;}
+function renderBody(list,isModel,isMonth,wi){
+  document.getElementById('boardBody').innerHTML=list.map(row=>{
+    const rankCls=row.rank<=3?'top':'';let cell,link;
+    if(isModel){link=modelLink(row.id);cell=`<div class="c-work"><img class="round" src="${modelImg(row.id)}" alt=""><div class="c-meta"><div class="c-title">${modelTag(row.id)}${row.id}</div><div class="c-sub">${modelStreakLabel(row.id,wi)||'월간 랭커'}</div></div></div>`;}
+    else{const w=DATA.works[row.id]||{};link='https://bcut.maximkorea.net/work/'+row.id;const md=(w.models||[]).join(' & ');
+      cell=`<div class="c-work"><img src="${w.img||''}" alt=""><div class="c-meta"><div class="c-title">${w.title||row.id} ${badges(w)}</div><div class="c-sub">${md?`<span class="tm">${md}</span>`:'<span class="tm muted">—</span>'} · <span class="buy ${w.buy==='구독'?'sub':''}">${w.buy||'-'}</span></div></div></div>`;}
+    let col3;if(isMonth){col3=`<div class="c-pts">${row.pts.toLocaleString()}<small>pt</small></div>`;}
+    else{const ranks=[];for(let k=3;k>=0;k--){const t=wi-k;if(t<0){ranks.push(0);continue;}ranks.push(isModel?modelRankAt(row.id,t):workRankAt(row.id,t));}col3=`<div class="c-form">${formTiles(ranks)}</div>`;}
+    let col4=isMonth?`<div class="c-pts" style="font-size:14px">${row.weeks||1}<small>주</small></div>`:`<div class="c-pts">${row.pts}<small>pt</small></div>`;
+    let cur=row.rank,prev;if(isMonth){const pw=prevWeekSameMonth(wi);prev=isModel?monthModelRankAt(row.id,pw):monthWorkRankAt(row.id,pw);}else{prev=isModel?modelRankAt(row.id,wi-1):workRankAt(row.id,wi-1);}
+    return `<div class="trow" data-kind="${isModel?'model':'work'}" data-id="${(''+row.id).replace(/"/g,'&quot;')}" onclick="rowOpen(this)"><div class="c-rank ${rankCls}">#${row.rank}</div>${cell}${col3}${col4}<div class="c-move">${mvHtml(movement(cur,prev))}</div><div class="c-go">›</div></div>`;
+  }).join('');
+}
+function renderNext(){document.getElementById('nextCards').innerHTML=(DATA.next||[]).map(n=>`<a class="ncard" href="https://bcut.maximkorea.net" target="_blank"><img src="${n.img}" alt=""><div class="nb"><div class="nd">${n.date} 공개</div><div class="nt">${n.title}${n.star?'<span class="ystar">'+n.model+'</span>':''}</div><div class="nm">${n.model}</div></div></a>`).join('');}
+function renderModelCards(wi){document.getElementById('modelCards').innerHTML=monthModels(wi).slice(0,5).map(m=>`<div class="mcard ${m.rank===1?'top1':''}" data-id="${m.id}" onclick="openModelModal(this.dataset.id)" style="cursor:pointer"><div class="mrank">${m.rank}</div><img src="${modelImg(m.id)}" alt=""><div class="mn">${modelTag(m.id)}${m.id}</div><div class="mp">${m.pts.toLocaleString()}<small> pt</small></div></div>`).join('');}
+function setTab(t){state.tab=t;render();}
+function setMode(m){state.mode=m;render();}
+function syncControls(){document.getElementById('tabWorks').classList.toggle('on',state.tab==='works');document.getElementById('tabModels').classList.toggle('on',state.tab==='models');document.getElementById('modeWeek').classList.toggle('on',state.mode==='week');document.getElementById('modeMonth').classList.toggle('on',state.mode==='month');}
+function fillWeekSelector(){const ws=document.getElementById('weekSel');ws.innerHTML=DATA.weeks.map((w,i)=>`<option value="${i}">${w.label}</option>`).join('');ws.value=state.weekIdx;ws.onchange=e=>{state.weekIdx=+e.target.value;render();};}
+
+/* ===== 롤링 배너 ===== */
+let bIdx=0,bTimer=null,bCount=0;
+function renderBanner(){
+  const bs=DATA.banners||[];const sec=document.getElementById('bannerSec');
+  if(!bs.length){sec.style.display='none';return;}
+  sec.style.display='block';bCount=bs.length;
+  sec.innerHTML=`<div class="bannerWrap"><div class="bannerTrack" id="bTrack">${bs.map(b=>{const im=`<img src="${b.img}" alt="" onerror="this.style.opacity=.15">`;return `<div class="bannerSlide">${b.link?`<a href="${b.link}" target="_blank">${im}</a>`:`<div class="noimg">${im}</div>`}</div>`;}).join('')}</div>`+
+    (bCount>1?`<button class="bnav bprev" onclick="bGo(-1)">‹</button><button class="bnav bnext" onclick="bGo(1)">›</button><div class="bdots" id="bDots">${bs.map((_,i)=>`<button onclick="bSet(${i})"></button>`).join('')}</div>`:'')+`</div>`;
+  bIdx=0;bUpdate();bAuto();
+  const wrap=sec.querySelector('.bannerWrap');let sx=0;
+  wrap.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+  wrap.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)bGo(dx<0?1:-1);});
+}
+function bUpdate(){const t=document.getElementById('bTrack');if(t)t.style.transform=`translateX(-${bIdx*100}%)`;document.querySelectorAll('#bDots button').forEach((d,i)=>d.classList.toggle('on',i===bIdx));}
+function bGo(d){bIdx=(bIdx+d+bCount)%bCount;bUpdate();bAuto();}
+function bSet(i){bIdx=i;bUpdate();bAuto();}
+function bAuto(){if(bTimer)clearInterval(bTimer);if(bCount>1)bTimer=setInterval(()=>{bIdx=(bIdx+1)%bCount;bUpdate();},5000);}
+
+/* ===== 로드 ===== */
+fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
+  DATA=d;renderBanner();state.weekIdx=DATA.weeks.length-1;fillWeekSelector();render();
+}).catch(e=>{
+  document.getElementById('hero').innerHTML='<div class="loading">data.json을 불러오지 못했습니다.<br><span style="font-size:12px">깃헙/넷리파이 등 웹 서버에서 열어야 합니다 (file://로 직접 열면 브라우저가 차단).</span></div>';
+});
+</script>
+</body></html>

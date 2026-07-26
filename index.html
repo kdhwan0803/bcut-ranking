@@ -107,6 +107,13 @@ a{color:inherit}
 .ruleNotes .rn{font-size:13.5px;color:#555;display:flex;align-items:center;gap:9px}
 .ruleNotes .rn span{font-size:16px}.ruleNotes .rn b{color:var(--ink)}
 @media(max-width:520px){.ruleItem{min-width:62px;padding:10px 8px}.ruleItem .ic{font-size:19px}}
+.katalk-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;box-shadow:0 2px 16px rgba(20,20,30,.05)}
+.katalk-t{font-size:18px;font-weight:900;color:var(--ink)}
+.katalk-d{font-size:13.5px;color:#666;margin-top:5px;line-height:1.5}
+.katalk-note{font-size:12px;color:#c99700;margin-top:7px;font-weight:700}
+.katalk-btn{background:#fee500;color:#191600;font-weight:800;font-size:14.5px;padding:14px 26px;border-radius:12px;white-space:nowrap;cursor:pointer;text-decoration:none;display:inline-block}
+.katalk-btn:hover{filter:brightness(.96)}
+@media(max-width:560px){.katalk-card{flex-direction:column;align-items:stretch;text-align:center}}
 footer{text-align:center;padding:36px 0 50px;color:#9a9aa2;font-size:12px;line-height:1.8}
 footer .fb{font-family:'Arial Black',sans-serif;font-weight:900;font-size:15px;color:var(--ink);letter-spacing:1px;margin-bottom:8px}
 footer .fb b{color:var(--red)}
@@ -259,6 +266,16 @@ footer .fb b{color:var(--red)}
     <div class="rule-card ruleGrid"><div class="ruleFlow"><div class="ruleItem"><div class="ic">🛒</div><div class="lb">판매</div></div><div class="plus">+</div><div class="ruleItem"><div class="ic">👁️</div><div class="lb">조회수</div></div><div class="plus">+</div><div class="ruleItem"><div class="ic">⭐</div><div class="lb">평점</div></div><div class="plus">+</div><div class="ruleItem"><div class="ic">🆕</div><div class="lb">신작 가점</div></div><div class="arrow">→</div><div class="ruleItem hl"><div class="ic">🏆</div><div class="lb">종합 점수·순위</div></div></div></div></section>
 </div>
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="mbox" id="mbox"></div></div>
+<section class="section" id="katalk">
+    <div class="katalk-card">
+      <div class="katalk-txt">
+        <div class="katalk-t">🔔 새 화보, 가장 먼저 만나기</div>
+        <div class="katalk-d">B컷 신간 소식을 카카오톡으로 가장 빠르게 받아보세요.</div>
+        <div class="katalk-note" id="katalkNote" style="display:none">※ 관리자에서 카카오톡 채널 링크를 넣으면 활성화돼요.</div>
+      </div>
+      <a class="katalk-btn" id="katalkBtn" href="#" target="_blank" rel="noopener">💬 카톡 채널 추가</a>
+    </div>
+  </section>
 <footer><div class="fb">MAXIM <b>B컷</b></div>(주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br><a href="https://bcut.maximkorea.net" target="_blank" style="color:var(--mut);text-decoration:underline">B컷 바로가기</a></footer>
 
 <script>
@@ -272,11 +289,15 @@ function workRankAt(id,wi){const f=weekWorks(wi).find(x=>x.id===id);return f?f.r
 function weekModelPts(wi){const m={};weekWorks(wi).forEach(w=>{(DATA.works[w.id]?.models||[]).forEach(md=>{m[md]=(m[md]||0)+w.pts;});});return m;}
 function weekModels(wi){const m=weekModelPts(wi);return Object.keys(m).map(md=>({id:md,pts:m[md]})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({...x,rank:i+1}));}
 function modelRankAt(md,wi){const f=weekModels(wi).find(x=>x.id===md);return f?f.rank:0;}
-function wkMonth(i){const m=(DATA.weeks[i]?.label||'').match(/(\d+)\s*월/);return m?m[1]:'-';}
+function wkMonth(i){const w=DATA.weeks[i]||{};const dm=(w.date||'').match(/(\d{4})-(\d{2})/);if(dm)return dm[1]+'-'+dm[2];const lm=(w.label||'').match(/(\d+)\s*월/);return lm?'2026-'+String(lm[1]).padStart(2,'0'):'-';}
+function monthLabel(key){const m=(key||'').match(/(\d{4})-(\d{2})/);if(!m)return key;const yrs=new Set(DATA.weeks.map(w=>(w.date||'').slice(0,4)).filter(Boolean));return (yrs.size>1?m[1].slice(2)+'년 ':'')+(+m[2])+'월';}
 function weeksInMonthUpto(wi){const mo=wkMonth(wi);const a=[];for(let i=0;i<=wi;i++){if(wkMonth(i)===mo)a.push(i);}return a;}
 function prevWeekSameMonth(wi){const mo=wkMonth(wi);for(let i=wi-1;i>=0;i--){if(wkMonth(i)===mo)return i;}return -1;}
-function monthWorks(wi){if(wi<0)return [];const m={};weeksInMonthUpto(wi).forEach(i=>weekWorks(i).forEach(w=>{m[w.id]=(m[w.id]||{pts:0,weeks:0});m[w.id].pts+=w.pts;m[w.id].weeks++;}));return Object.keys(m).map(id=>({id,pts:m[id].pts,weeks:m[id].weeks})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({...x,rank:i+1}));}
-function monthModels(wi){if(wi<0)return [];const m={};weeksInMonthUpto(wi).forEach(i=>{const mp=weekModelPts(i);Object.keys(mp).forEach(md=>{m[md]=(m[md]||{pts:0,weeks:0});m[md].pts+=mp[md];m[md].weeks++;});});return Object.keys(m).map(id=>({id,pts:m[id].pts,weeks:m[id].weeks})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({...x,rank:i+1}));}
+function weeksInMonth(wi){const mo=wkMonth(wi);const a=[];for(let i=0;i<DATA.weeks.length;i++){if(wkMonth(i)===mo)a.push(i);}return a;}
+function lastWeekOfMonth(mo){let last=-1;for(let i=0;i<DATA.weeks.length;i++){if(wkMonth(i)===mo)last=i;}return last;}
+function prevMonthRef(wi){const mo=wkMonth(wi);for(let i=wi-1;i>=0;i--){if(wkMonth(i)!==mo)return i;}return -1;}
+function monthWorks(wi){if(wi<0)return [];const m={};weeksInMonth(wi).forEach(i=>weekWorks(i).forEach(w=>{m[w.id]=(m[w.id]||{pts:0,weeks:0});m[w.id].pts+=w.pts;m[w.id].weeks++;}));return Object.keys(m).map(id=>({id,pts:m[id].pts,weeks:m[id].weeks})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({...x,rank:i+1}));}
+function monthModels(wi){if(wi<0)return [];const m={};weeksInMonth(wi).forEach(i=>{const mp=weekModelPts(i);Object.keys(mp).forEach(md=>{m[md]=(m[md]||{pts:0,weeks:0});m[md].pts+=mp[md];m[md].weeks++;});});return Object.keys(m).map(id=>({id,pts:m[id].pts,weeks:m[id].weeks})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({...x,rank:i+1}));}
 function monthWorkRankAt(id,wi){if(wi<0)return 0;const f=monthWorks(wi).find(x=>x.id===id);return f?f.rank:0;}
 function monthModelRankAt(id,wi){if(wi<0)return 0;const f=monthModels(wi).find(x=>x.id===id);return f?f.rank:0;}
 function bestWorkRank(id){let b=99;DATA.weeks.forEach((_,i)=>{const r=workRankAt(id,i);if(r&&r<b)b=r;});return b<99?b:null;}
@@ -334,7 +355,7 @@ function render(){
   const wi=state.weekIdx, isModel=state.tab==='models', isMonth=state.mode==='month';
   let list=isModel?(isMonth?monthModels(wi):weekModels(wi)):(isMonth?monthWorks(wi):weekWorks(wi));
   renderHero(list[0],isModel,isMonth,wi);renderBody(list.slice(0,10),isModel,isMonth,wi);
-  renderMidBanners();renderSubscription();renderNext();renderFeatured();renderSearchFilters();renderSearch();syncControls();
+  renderMidBanners();renderSubscription();renderNext();renderFeatured();renderSearchFilters();renderSearch();renderKatalk();syncControls();
 }
 function statHTML(v,l){return `<div class="st"><b>${v}</b><span>${l}</span></div>`;}
 function movementStat(cur,prev){const m=movement(cur,prev);if(m.k==='up')return statHTML(`<span class="up">▲ ${m.n}</span>`,'지난주 대비');if(m.k==='down')return statHTML(`<span class="down">▼ ${m.n}</span>`,'지난주 대비');if(m.k==='new')return statHTML(`<span class="new">NEW</span>`,'이번 주 신규');return statHTML('1위 유지','지난주 대비');}
@@ -364,7 +385,7 @@ function renderBody(list,isModel,isMonth,wi){
     let nameOv='';
     if(isModel){img=modelImg(row.id);onclick="openModelModal('"+row.id+"')";nameOv=`<div class="rname">${modelTag(row.id)}${row.id}</div>`;}
     else{const w=DATA.works[row.id]||{};img=w.img||'';onclick="openWorkModal('"+row.id+"')";}
-    let cur=row.rank,prev;if(isMonth){const pw=prevWeekSameMonth(wi);prev=isModel?monthModelRankAt(row.id,pw):monthWorkRankAt(row.id,pw);}else{prev=isModel?modelRankAt(row.id,wi-1):workRankAt(row.id,wi-1);}
+    let cur=row.rank,prev;if(isMonth){const pw=prevMonthRef(wi);prev=isModel?monthModelRankAt(row.id,pw):monthWorkRankAt(row.id,pw);}else{prev=isModel?modelRankAt(row.id,wi-1):workRankAt(row.id,wi-1);}
     return `<div class="rankitem ${isTop}" onclick="${onclick}"><div class="rnum ${row.rank>=10?'rnum2':''}">${row.rank}</div><div class="rcol"><div class="rimg"><img src="${img}" onerror="this.style.opacity=.15"><div class="rmv">${mvHtml(movement(cur,prev))}</div>${nameOv}</div></div></div>`;
   }).join('')+'</div>';
 }
@@ -409,6 +430,16 @@ function renderMidBanners(){
   el.innerHTML=bs.map(b=>{const im=`<img src="${b.img}" onerror="this.style.opacity=.15">`;return `<div class="midbanner">${b.link?`<a href="${b.link}" target="_blank" onclick="track('click_banner',{pos:'mid'})">${im}</a>`:im}</div>`;}).join('');
 }
 let featOrder=null, featOrderModel=null;
+function renderKatalk(){
+  const sec=document.getElementById('katalk');if(!sec)return;
+  const url=(DATA.kakaoUrl||'').trim();
+  if(!url && !window.IS_ADMIN){sec.style.display='none';return;}
+  sec.style.display='';
+  const btn=document.getElementById('katalkBtn');
+  btn.setAttribute('href',url||'#');
+  btn.onclick=function(){try{if(window.track)track('click_kakao');}catch(e){}if(!url){return false;}};
+  document.getElementById('katalkNote').style.display=url?'none':'block';
+}
 function renderFeatured(){
   const sec=document.getElementById('featured');if(!sec)return;const name=DATA.featuredModel;
   let works=name?Object.keys(DATA.works).filter(id=>(DATA.works[id].models||[]).includes(name)):[];
@@ -444,9 +475,12 @@ function renderSearch(){
 }
 function renderModelCards(wi){document.getElementById('modelCards').innerHTML=monthModels(wi).slice(0,5).map(m=>`<div class="mcard ${m.rank===1?'top1':''}" data-id="${m.id}" onclick="openModelModal(this.dataset.id)" style="cursor:pointer"><div class="mrank">${m.rank}</div><img src="${modelImg(m.id)}" alt=""><div class="mn">${modelTag(m.id)}${m.id}</div><div class="mp">${m.pts.toLocaleString()}<small> pt</small></div></div>`).join('');}
 function setTab(t){state.tab=t;render();}
-function setMode(m){state.mode=m;render();}
+function setMode(m){state.mode=m;if(m==='month'){state.weekIdx=lastWeekOfMonth(wkMonth(state.weekIdx));}fillWeekSelector();render();}
 function syncControls(){document.getElementById('tabWorks').classList.toggle('on',state.tab==='works');document.getElementById('tabModels').classList.toggle('on',state.tab==='models');document.getElementById('modeWeek').classList.toggle('on',state.mode==='week');document.getElementById('modeMonth').classList.toggle('on',state.mode==='month');}
-function fillWeekSelector(){const ws=document.getElementById('weekSel');ws.innerHTML=DATA.weeks.map((w,i)=>[i,w.label]).reverse().map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');ws.value=state.weekIdx;ws.onchange=e=>{state.weekIdx=+e.target.value;render();};}
+function fillWeekSelector(){const ws=document.getElementById('weekSel');
+  if(state.mode==='month'){const seen=[],opts=[];for(let i=DATA.weeks.length-1;i>=0;i--){const mo=wkMonth(i);if(seen.includes(mo))continue;seen.push(mo);opts.push([lastWeekOfMonth(mo),monthLabel(mo)]);}ws.innerHTML=opts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');ws.value=lastWeekOfMonth(wkMonth(state.weekIdx));}
+  else{ws.innerHTML=DATA.weeks.map((w,i)=>[i,w.label]).slice(-12).reverse().map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');ws.value=state.weekIdx;}
+  ws.onchange=e=>{state.weekIdx=+e.target.value;render();};}
 function renderBanner(){
   const bs=DATA.banners||[];const sec=document.getElementById('bannerSec');
   if(!bs.length){sec.style.display='none';return;}
@@ -465,7 +499,7 @@ function bAuto(){if(bTimer)clearInterval(bTimer);if(bCount>1)bTimer=setInterval(
 
 /* ===== 로드 ===== */
 fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
-  DATA=d;renderBanner();state.weekIdx=DATA.weeks.length-1;fillWeekSelector();render();
+  DATA=d;if(Array.isArray(DATA.weeks))DATA.weeks.sort((a,b)=>{const ka=(a.date&&/\d{4}-\d{2}-\d{2}/.test(a.date))?a.date:(a.label||'');const kb=(b.date&&/\d{4}-\d{2}-\d{2}/.test(b.date))?b.date:(b.label||'');return ka.localeCompare(kb);});renderBanner();state.weekIdx=DATA.weeks.length-1;fillWeekSelector();render();
 }).catch(e=>{
   document.getElementById('hero').innerHTML='<div class="loading">data.json을 불러오지 못했습니다.<br><span style="font-size:12px">깃헙/넷리파이 등 웹 서버에서 열어야 합니다 (file://로 직접 열면 브라우저가 차단).</span></div>';
 });

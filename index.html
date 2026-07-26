@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-OM1DPCT33G"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-OM1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
+
 <title>B컷 랭킹</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
@@ -10,13 +14,13 @@ a{color:inherit}
 .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
 .nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .nav-in{max-width:1080px;margin:0 auto;padding:0 18px;height:60px;display:flex;align-items:center;justify-content:space-between}
-.brand{font-weight:900;font-size:19px;letter-spacing:-.3px}.brand b{color:var(--red)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:19px;letter-spacing:-.3px;text-decoration:none}.brand img{height:36px;width:auto;display:block;mix-blend-mode:multiply}.brand b{color:var(--red)}
 .brand span{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:2px;margin-left:6px}
 .menu{display:flex;gap:6px}
 .menu a{font-size:13.5px;font-weight:700;color:#555;text-decoration:none;padding:8px 12px;border-radius:8px}
 .menu a:hover{background:#f0f0f3;color:var(--ink)}
 .nav-cta{background:var(--red);color:#fff;font-size:13px;font-weight:800;text-decoration:none;padding:9px 16px;border-radius:8px}
-@media(max-width:640px){.menu{display:none}}
+@media(max-width:640px){.nav-in{flex-wrap:wrap;height:auto;padding:8px 18px;gap:8px}.menu{order:3;width:100%;overflow-x:auto;gap:4px}.menu::-webkit-scrollbar{display:none}.menu a{white-space:nowrap;padding:6px 11px;font-size:12.5px}.nav-cta{padding:8px 13px;font-size:12px}}
 .section{padding:34px 0 6px}
 .sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
 .sec-title{font-size:21px;font-weight:900;letter-spacing:-.4px}
@@ -91,6 +95,18 @@ a{color:inherit}
 .mcard .mn{font-weight:800;font-size:14px}.mcard .mp{font-size:13px;font-weight:900;color:var(--red);margin-top:4px}.mcard .mp small{color:#b0b0b8;font-size:10px;font-weight:700}
 .rule-card{background:#fff;border-radius:14px;padding:20px 22px;box-shadow:0 2px 16px rgba(20,20,30,.05);font-size:13.5px;color:#555;line-height:1.8}
 .rule-card b{color:var(--ink)}
+.ruleGrid{padding:22px}
+.ruleFlow{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
+.ruleItem{text-align:center;background:#f6f6f8;border-radius:12px;padding:12px;min-width:74px}
+.ruleItem.hl{background:var(--red);color:#fff}
+.ruleItem .ic{font-size:22px;line-height:1}
+.ruleItem .lb{font-size:12px;font-weight:800;margin-top:5px}
+.ruleFlow .plus,.ruleFlow .arrow{font-weight:900;color:#c0c0c8;font-size:15px}
+.ruleFlow .arrow{color:var(--red);font-size:19px}
+.ruleNotes{margin-top:18px;display:flex;flex-direction:column;gap:9px}
+.ruleNotes .rn{font-size:13.5px;color:#555;display:flex;align-items:center;gap:9px}
+.ruleNotes .rn span{font-size:16px}.ruleNotes .rn b{color:var(--ink)}
+@media(max-width:520px){.ruleItem{min-width:62px;padding:10px 8px}.ruleItem .ic{font-size:19px}}
 footer{text-align:center;padding:36px 0 50px;color:#9a9aa2;font-size:12px;line-height:1.8}
 footer .fb{font-family:'Arial Black',sans-serif;font-weight:900;font-size:15px;color:var(--ink);letter-spacing:1px;margin-bottom:8px}
 footer .fb b{color:var(--red)}
@@ -130,11 +146,91 @@ footer .fb b{color:var(--red)}
 .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .mgrid .gw{cursor:pointer;border-radius:9px;overflow:hidden;background:#eee;aspect-ratio:3/4}
 .mgrid .gw img{width:100%;height:100%;object-fit:cover;display:block}
+/* 가로 스트립 (넷플릭스/웨이브식) */
+.strip{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.strip::-webkit-scrollbar{height:7px}.strip::-webkit-scrollbar-thumb{background:#d0d0d6;border-radius:4px}.strip::-webkit-scrollbar-track{background:transparent}
+.poster{flex:0 0 auto;width:132px;scroll-snap-align:start;cursor:pointer}
+.poster .pimg{width:100%;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:#e9e9ee;position:relative;box-shadow:0 3px 12px rgba(20,20,30,.08)}
+.poster .pimg img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.poster:hover .pimg img{transform:scale(1.05)}
+.poster .pbadge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.72);color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px}
+.subgrad{position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(transparent,rgba(0,0,0,.72));pointer-events:none}
+.subtag{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:#ffd400;color:#16161a;font-size:11px;font-weight:900;padding:3px 12px;border-radius:6px;letter-spacing:.3px}
+@media(max-width:560px){.poster{width:116px}}
+/* 랭킹 스트립: 큰 순위 숫자 + 썸네일 */
+.rankstrip{display:flex;gap:4px;overflow-x:auto;padding:10px 2px 16px;-webkit-overflow-scrolling:touch}
+.rankstrip::-webkit-scrollbar{height:7px}.rankstrip::-webkit-scrollbar-thumb{background:#d0d0d6;border-radius:4px}
+.rankitem{flex:0 0 auto;display:flex;align-items:flex-end;cursor:pointer;padding-right:8px}
+.rankitem .rnum{font-family:'Arial Black',sans-serif;font-size:108px;font-weight:900;line-height:.8;color:#2b2b31;margin-right:-16px;position:relative;z-index:2;letter-spacing:-4px;text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff,0 3px 10px rgba(0,0,0,.16)}
+.rankitem.top .rnum{color:var(--red)}
+.rankitem .rnum2{letter-spacing:-9px;margin-right:-22px}
+.rcol{position:relative;z-index:1}
+.rimg{width:188px;aspect-ratio:3/4;border-radius:14px;overflow:hidden;position:relative;background:#e9e9ee;box-shadow:0 4px 16px rgba(20,20,30,.14)}
+.rname{position:absolute;left:0;right:0;bottom:0;padding:26px 8px 9px;background:linear-gradient(transparent,rgba(0,0,0,.82));color:#fff;font-size:14px;font-weight:800;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rname .mtag{font-size:9px;padding:1px 5px}
+.rimg img{width:100%;height:100%;object-fit:cover;display:block}
+.rmv{position:absolute;top:7px;right:7px}
+.rmv .mv{font-size:11px;padding:2px 6px}
+.rtitle{font-size:12.5px;font-weight:800;margin-top:7px;width:124px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+@media(max-width:560px){.rankitem .rnum{font-size:82px;margin-right:-12px}.rimg,.rtitle{width:150px}}
+#subCards .poster{width:206px}
+#subCards .pimg{aspect-ratio:2/3;border-radius:14px}
+#nextCards .poster{width:182px}
+.pcap{font-size:12.5px;font-weight:700;color:#666;margin-top:8px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcap b{color:var(--red)}
+/* 중간 배너 */
+#promoZone{display:flex;flex-direction:column;gap:14px}
+.midbanner{border-radius:16px;overflow:hidden;box-shadow:0 2px 18px rgba(20,20,30,.06);cursor:pointer}
+.midbanner a{display:block}
+.midbanner img{width:100%;aspect-ratio:1080/300;object-fit:cover;display:block;background:#e9e9ee}
+/* 추천 모델 배너 */
+.featWrap{background:linear-gradient(120deg,#17171c 0%,#3a1d22 100%);border-radius:20px;padding:20px;display:flex;gap:18px;align-items:center;overflow:hidden}
+.featL{flex:0 0 150px;text-align:center;color:#fff}
+.featL img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.18);background:#333}
+.featEy{color:#ff8a90;font-size:11px;font-weight:800;letter-spacing:1px;margin-top:10px}
+.featNm{font-size:19px;font-weight:900;margin-top:4px}
+.featCta{display:inline-block;margin-top:10px;background:var(--red);color:#fff;font-size:12px;font-weight:800;padding:8px 16px;border-radius:8px;cursor:pointer}
+.featR{flex:1;min-width:0}
+.featR .strip{padding-bottom:4px}
+.featR .poster{width:140px}
+.featR .pbadge{display:none}
+@media(max-width:600px){.featWrap{flex-direction:column;align-items:stretch}.featL{flex:none}.featR .strip{margin-top:4px}}
+.cdimg{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#E60012,#7a0009);color:#fff;text-align:center;padding:8px}
+.cdlabel{font-size:12px;font-weight:700;opacity:.92}
+.cdnum{font-size:42px;font-weight:900;letter-spacing:-1px;margin:5px 0;line-height:1}
+.cddate{font-size:12px;opacity:.85}
+.subcap{position:absolute;left:0;right:0;bottom:0;padding:22px 8px 9px;background:linear-gradient(transparent,rgba(0,0,0,.8));color:#fff;font-size:12.5px;font-weight:700;text-align:center}
+.subcap .odot{color:#4ade80;font-size:8px;vertical-align:middle;margin-right:2px}
+.searchbar input{width:100%;padding:13px 16px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;outline:none}
+.searchbar input:focus{border-color:var(--red)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.fchip{border:1.5px solid var(--line);background:#fff;color:#555;font-family:inherit;font-weight:700;font-size:13px;padding:8px 16px;border-radius:20px;cursor:pointer}
+.fchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px}
+.scard{cursor:pointer}
+.scard .pimg{width:100%;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:#e9e9ee}
+.scard .pimg img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.scard:hover .pimg img{transform:scale(1.05)}
+.scap{font-size:12.5px;font-weight:700;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sempty{color:var(--mut);text-align:center;padding:24px;font-size:14px}
+.sgrid.hasmore{-webkit-mask-image:linear-gradient(180deg,#000 78%,rgba(0,0,0,.15));mask-image:linear-gradient(180deg,#000 78%,rgba(0,0,0,.15))}
+.moreWrap{text-align:center;margin-top:16px}
+.morebtn{background:var(--ink);color:#fff;border:0;font-family:inherit;font-weight:800;font-size:14px;padding:13px 30px;border-radius:11px;cursor:pointer}
+.morebtn span{font-weight:600;opacity:.65;font-size:12.5px}
+@media(max-width:560px){
+  .wrap{padding:0 14px}
+  .sec-title{font-size:17px}
+  .modal{padding:10px}
+  .featWrap{padding:16px}
+  .sgrid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+  .mstats{gap:14px}
+  .fchip{padding:7px 13px;font-size:12.5px}
+}
 </style></head>
 <body>
 <nav class="nav"><div class="nav-in">
-  <div class="brand">MAXIM <b>B컷</b><span>RANKING</span></div>
-  <div class="menu"><a href="#ranking">이번 주 랭킹</a><a href="#next">신작</a><a href="#models">모델</a><a href="worldcup.html">이상형 월드컵</a></div>
+  <a class="brand" href="index.html"><img src="https://i.ibb.co/WpB1gcLw/opt.webp" alt="MAXIM B컷"><span>RANKING</span></a>
+  <div class="menu"><a href="#ranking">랭킹</a><a href="#sub">구독</a><a href="#next">신작</a><a href="#search">찾아보기</a><a href="worldcup.html" onclick="track('click_worldcup')">이상형 월드컵</a></div>
   <a class="nav-cta" href="https://bcut.maximkorea.net" target="_blank">B컷 바로가기</a>
 </div></nav>
 <div class="wrap">
@@ -147,12 +243,20 @@ footer .fb b{color:var(--red)}
       <div class="tabs"><button id="tabWorks" class="on" onclick="setTab('works')">화보 랭킹</button><button id="tabModels" onclick="setTab('models')">모델 랭킹</button></div>
       <div class="toggle"><button id="modeWeek" class="on" onclick="setMode('week')">주간</button><button id="modeMonth" onclick="setMode('month')">월간</button></div>
     </div>
-    <div class="board"><div class="board-head" id="boardHead"></div><div id="boardBody"></div></div>
+    <div id="boardBody"></div>
   </section>
-  <section class="section" id="next"><div class="sec-head"><div class="sec-title">다음 주 신작 <small>NEXT WEEK</small></div></div><div class="cards" id="nextCards"></div></section>
-  <section class="section" id="models"><div class="sec-head"><div class="sec-title">모델 명예의 전당 <small>THIS MONTH</small></div></div><div class="mcards" id="modelCards"></div></section>
-  <section class="section"><div class="sec-head"><div class="sec-title">랭킹은 이렇게 <small>HOW IT WORKS</small></div></div>
-    <div class="rule-card">순위는 <b>판매 · 조회수 · 평점</b>을 종합한 점수와 <b>신작 가점</b>으로 매겨집니다. 순위에 따라 <b>포인트</b>가 적립되고, 화보 포인트는 참여 <b>모델에게도 합산</b>돼요. 한 주 단위 <b>주간 랭킹</b>과 그 달 포인트를 모은 <b>월간 랭킹</b>을 함께 볼 수 있습니다.</div></section>
+  <section class="section" id="promo"><div id="promoZone"></div></section>
+  <section class="section" id="sub"><div class="sec-head"><div class="sec-title">지금 구독하면 볼 수 있어요 <small>SUBSCRIPTION</small></div></div><div id="subCards"></div></section>
+  <section class="section" id="next"><div class="sec-head"><div class="sec-title">앞으로 공개될 신작 <small>COMING SOON</small></div></div><div id="nextCards"></div></section>
+  <section class="section" id="featured"><div class="sec-head"><div class="sec-title">이번 주 추천 모델 <small>PICK</small></div></div><div class="featWrap" id="featBox"></div></section>
+    <section class="section" id="search">
+    <div class="sec-head"><div class="sec-title">화보 찾아보기 <small>SEARCH</small></div></div>
+    <div class="searchbar"><input id="searchInput" placeholder="모델명 · 화보 제목 검색" oninput="searchShow=12;renderSearch()"></div>
+    <div class="filters" id="searchFilters"></div>
+    <div id="searchResults"></div>
+  </section>
+<section class="section"><div class="sec-head"><div class="sec-title">랭킹은 이렇게 <small>HOW IT WORKS</small></div></div>
+    <div class="rule-card ruleGrid"><div class="ruleFlow"><div class="ruleItem"><div class="ic">🛒</div><div class="lb">판매</div></div><div class="plus">+</div><div class="ruleItem"><div class="ic">👁️</div><div class="lb">조회수</div></div><div class="plus">+</div><div class="ruleItem"><div class="ic">⭐</div><div class="lb">평점</div></div><div class="plus">+</div><div class="ruleItem"><div class="ic">🆕</div><div class="lb">신작 가점</div></div><div class="arrow">→</div><div class="ruleItem hl"><div class="ic">🏆</div><div class="lb">종합 점수·순위</div></div></div></div></section>
 </div>
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="mbox" id="mbox"></div></div>
 <footer><div class="fb">MAXIM <b>B컷</b></div>(주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br><a href="https://bcut.maximkorea.net" target="_blank" style="color:var(--mut);text-decoration:underline">B컷 바로가기</a></footer>
@@ -191,10 +295,12 @@ function openModal(){document.getElementById('modal').classList.add('on');docume
 function closeModal(){document.getElementById('modal').classList.remove('on');document.body.style.overflow='';}
 function rowOpen(el){const id=el.dataset.id;el.dataset.kind==='model'?openModelModal(id):openWorkModal(id);}
 function openWorkModal(id){
-  const w=DATA.works[id];if(!w)return;const wi=state.weekIdx;
+  const w=DATA.works[id];if(!w)return;track('view_work',{work_id:id,work_title:w.title||id});const wi=state.weekIdx;
   const wr=workRankAt(id,wi),best=bestWorkRank(id),strk=streakTop(id,wi,3,false);
   const mp=(monthWorks(wi).find(x=>x.id===id)||{}).pts||0;
   const meta=[w.pub?fmtDate(w.pub)+' 공개':'',w.buy].filter(Boolean).join(' · ');
+  const others=Object.keys(DATA.works).filter(x=>x!==id&&(DATA.works[x].models||[]).some(m=>(w.models||[]).includes(m))).slice(0,8);
+  const otherHtml=others.length?`<div class="msub">이 모델의 다른 화보</div><div class="mgrid">${others.map(x=>`<div class="gw" onclick="openWorkModal('${x}')"><img src="${DATA.works[x].img||''}" onerror="this.style.opacity=.15"></div>`).join('')}</div>`:'';
   document.getElementById('mbox').innerHTML=`<button class="mx" onclick="closeModal()">✕</button>
     <div class="mcoverWrap"><div class="mcoverBlur" style="background-image:url(${w.img||''})"></div><img class="mcoverImg" src="${w.img||''}" onerror="this.style.opacity=.15"></div>
     <div class="mbody"><div class="mtitle">${w.title||id} ${badges(w)}</div>
@@ -202,10 +308,10 @@ function openWorkModal(id){
     <div class="mmeta">${meta}</div>
     ${w.desc?`<div class="mdesc">${w.desc}</div>`:''}
     <div class="mstats"><div class="s"><b>${wr?'#'+wr:'-'}</b><span>이번 주</span></div><div class="s"><b>${best?'#'+best:'-'}</b><span>역대 최고</span></div><div class="s"><b>${strk}주</b><span>연속 TOP3</span></div><div class="s"><b>${mp}</b><span>이번 달 pt</span></div></div>
-    <a class="mcta" href="https://bcut.maximkorea.net/work/${id}" target="_blank">B컷에서 화보 보기 ›</a></div>`;
+    ${otherHtml}<a class="mcta" href="https://bcut.maximkorea.net/work/${id}" target="_blank" onclick="track('go_bcut',{type:'work',work_id:'${id}'})">B컷에서 화보 보기 ›</a></div>`;
   openModal();
 }
-function openModelModal(name){
+function openModelModal(name){track('view_model',{model:name});
   const md=DATA.models[name]||{};const wi=state.weekIdx;
   const mr=(monthModels(wi).find(x=>x.id===name)||{});const best=bestModelRank(name);
   let thr,lab;const cr=modelRankAt(name,wi)||99;if(cr===1){thr=1;lab='TOP1';}else if(cr<=5){thr=5;lab='TOP5';}else{thr=10;lab='TOP10';}const strk=streakTop(name,wi,thr,true);
@@ -217,7 +323,7 @@ function openModelModal(name){
     <div class="mstats"><div class="s"><b>${mr.rank?'#'+mr.rank:'-'}</b><span>이번 달</span></div><div class="s"><b>${mr.pts||0}</b><span>이번 달 pt</span></div><div class="s"><b>${best?'#'+best:'-'}</b><span>역대 최고</span></div><div class="s"><b>${strk}주</b><span>연속 ${lab}</span></div></div>
     <div class="msub">이 모델의 화보</div>
     <div class="mgrid">${works.slice(0,8).map(id=>`<div class="gw" onclick="openWorkModal('${id}')"><img src="${DATA.works[id].img||''}" onerror="this.style.opacity=.15"></div>`).join('')||'<div class="mmeta">등록된 화보 없음</div>'}</div>
-    <a class="mcta" href="${modelLink(name)}" target="_blank">B컷 모델 페이지 ›</a></div>`;
+    <a class="mcta" href="${modelLink(name)}" target="_blank" onclick="track('go_bcut',{type:'model',model:name})">B컷 모델 페이지 ›</a></div>`;
   openModal();
 }
 
@@ -227,8 +333,8 @@ function fmtDate(iso){if(!iso)return '-';const p=iso.split('-');return p.length=
 function render(){
   const wi=state.weekIdx, isModel=state.tab==='models', isMonth=state.mode==='month';
   let list=isModel?(isMonth?monthModels(wi):weekModels(wi)):(isMonth?monthWorks(wi):weekWorks(wi));
-  renderHero(list[0],isModel,isMonth,wi);renderHead(isModel,isMonth);renderBody(list.slice(0,10),isModel,isMonth,wi);
-  renderNext();renderModelCards(wi);syncControls();
+  renderHero(list[0],isModel,isMonth,wi);renderBody(list.slice(0,10),isModel,isMonth,wi);
+  renderMidBanners();renderSubscription();renderNext();renderFeatured();renderSearchFilters();renderSearch();syncControls();
 }
 function statHTML(v,l){return `<div class="st"><b>${v}</b><span>${l}</span></div>`;}
 function movementStat(cur,prev){const m=movement(cur,prev);if(m.k==='up')return statHTML(`<span class="up">▲ ${m.n}</span>`,'지난주 대비');if(m.k==='down')return statHTML(`<span class="down">▼ ${m.n}</span>`,'지난주 대비');if(m.k==='new')return statHTML(`<span class="new">NEW</span>`,'이번 주 신규');return statHTML('1위 유지','지난주 대비');}
@@ -252,32 +358,100 @@ function renderHero(top,isModel,isMonth,wi){
 }
 function renderHead(isModel,isMonth){const c3=isMonth?'이번 달 포인트':'최근 4주 폼',c4=isMonth?'획득 주차':'포인트';document.getElementById('boardHead').innerHTML=`<div>순위</div><div>${isModel?'모델':'화보 & 모델'}</div><div>${c3}</div><div>${c4}</div><div>등락</div><div></div>`;}
 function renderBody(list,isModel,isMonth,wi){
-  document.getElementById('boardBody').innerHTML=list.map(row=>{
-    const rankCls=row.rank<=3?'top':'';let cell,link;
-    if(isModel){link=modelLink(row.id);cell=`<div class="c-work"><img class="round" src="${modelImg(row.id)}" alt=""><div class="c-meta"><div class="c-title">${modelTag(row.id)}${row.id}</div><div class="c-sub">${modelStreakLabel(row.id,wi)||'월간 랭커'}</div></div></div>`;}
-    else{const w=DATA.works[row.id]||{};link='https://bcut.maximkorea.net/work/'+row.id;const md=(w.models||[]).join(' & ');
-      cell=`<div class="c-work"><img src="${w.img||''}" alt=""><div class="c-meta"><div class="c-title">${w.title||row.id} ${badges(w)}</div><div class="c-sub">${md?`<span class="tm">${md}</span>`:'<span class="tm muted">—</span>'} · <span class="buy ${w.buy==='구독'?'sub':''}">${w.buy||'-'}</span></div></div></div>`;}
-    let col3;if(isMonth){col3=`<div class="c-pts">${row.pts.toLocaleString()}<small>pt</small></div>`;}
-    else{const ranks=[];for(let k=3;k>=0;k--){const t=wi-k;if(t<0){ranks.push(0);continue;}ranks.push(isModel?modelRankAt(row.id,t):workRankAt(row.id,t));}col3=`<div class="c-form">${formTiles(ranks)}</div>`;}
-    let col4=isMonth?`<div class="c-pts" style="font-size:14px">${row.weeks||1}<small>주</small></div>`:`<div class="c-pts">${row.pts}<small>pt</small></div>`;
+  document.getElementById('boardBody').innerHTML='<div class="rankstrip">'+list.slice(0,10).map(row=>{
+    const isTop=row.rank<=3?'top':'';
+    let img,title,onclick;
+    let nameOv='';
+    if(isModel){img=modelImg(row.id);onclick="openModelModal('"+row.id+"')";nameOv=`<div class="rname">${modelTag(row.id)}${row.id}</div>`;}
+    else{const w=DATA.works[row.id]||{};img=w.img||'';onclick="openWorkModal('"+row.id+"')";}
     let cur=row.rank,prev;if(isMonth){const pw=prevWeekSameMonth(wi);prev=isModel?monthModelRankAt(row.id,pw):monthWorkRankAt(row.id,pw);}else{prev=isModel?modelRankAt(row.id,wi-1):workRankAt(row.id,wi-1);}
-    return `<div class="trow" data-kind="${isModel?'model':'work'}" data-id="${(''+row.id).replace(/"/g,'&quot;')}" onclick="rowOpen(this)"><div class="c-rank ${rankCls}">#${row.rank}</div>${cell}${col3}${col4}<div class="c-move">${mvHtml(movement(cur,prev))}</div><div class="c-go">›</div></div>`;
-  }).join('');
+    return `<div class="rankitem ${isTop}" onclick="${onclick}"><div class="rnum ${row.rank>=10?'rnum2':''}">${row.rank}</div><div class="rcol"><div class="rimg"><img src="${img}" onerror="this.style.opacity=.15"><div class="rmv">${mvHtml(movement(cur,prev))}</div>${nameOv}</div></div></div>`;
+  }).join('')+'</div>';
 }
-function renderNext(){document.getElementById('nextCards').innerHTML=(DATA.next||[]).map(n=>`<a class="ncard" href="https://bcut.maximkorea.net" target="_blank"><img src="${n.img}" alt=""><div class="nb"><div class="nd">${n.date} 공개</div><div class="nt">${n.title}${n.star?'<span class="ystar">'+n.model+'</span>':''}</div><div class="nm">${n.model}</div></div></a>`).join('');}
+function renderSubscription(){
+  const el=document.getElementById('subCards');if(!el)return;const sec=document.getElementById('sub');
+  const now=new Date();const today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const dday=np=>Math.round((new Date(np+'T00:00:00')-new Date(today+'T00:00:00'))/86400000);
+  const subs=Object.keys(DATA.works).filter(id=>DATA.works[id].buy==='구독'&&DATA.works[id].pub&&DATA.works[id].pub<=today).sort((a,b)=>(DATA.works[b].pub||'').localeCompare(DATA.works[a].pub||'')).slice(0,4);
+  const future=Object.keys(DATA.works).filter(id=>DATA.works[id].buy==='구독'&&DATA.works[id].pub&&DATA.works[id].pub>today).sort((a,b)=>DATA.works[a].pub.localeCompare(DATA.works[b].pub));
+  let cd='';
+  if(future.length){const np=DATA.works[future[0]].pub;const d=Math.max(0,dday(np));cd=`<div class="poster"><div class="pimg cdimg"><div class="cdlabel">다음 공개</div><div class="cdnum">D-${d}</div><div class="cddate">${fmtDate(np)}</div></div></div>`;}
+  if(!subs.length&&!cd){if(sec)sec.style.display='none';return;}if(sec)sec.style.display='';
+  el.innerHTML='<div class="strip">'+cd+subs.map(id=>{const w=DATA.works[id];return `<div class="poster" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15"><div class="subcap"><span class="odot">●</span> 공개 · ${fmtDate(w.pub)}</div></div></div>`;}).join('')+'</div>';
+}
+function renderHallOfFame(){
+  const el=document.getElementById('hallCards');if(!el)return;const sec=document.getElementById('hall');
+  const arr=Object.keys(DATA.works).map(id=>({id,best:bestWorkRank(id)})).filter(x=>x.best).sort((a,b)=>a.best-b.best).slice(0,10);
+  if(!arr.length){if(sec)sec.style.display='none';return;}if(sec)sec.style.display='';
+  el.innerHTML='<div class="strip">'+arr.map(x=>{const w=DATA.works[x.id];return `<div class="poster" onclick="openWorkModal('${x.id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15"><div class="pbadge">역대 #${x.best}</div></div></div>`;}).join('')+'</div>';
+}
+function openNextModal(i){
+  const n=(DATA.next||[])[i];if(!n)return;
+  document.getElementById('mbox').innerHTML=`<button class="mx" onclick="closeModal()">✕</button>
+    <div class="mcoverWrap"><div class="mcoverBlur" style="background-image:url(${n.img||''})"></div><img class="mcoverImg" src="${n.img||''}" onerror="this.style.opacity=.15"></div>
+    <div class="mbody"><div class="mtitle">${n.title||''}</div><div class="mmodel">${n.model||''}</div>
+    <div class="mmeta">${n.date?n.date+' 공개 예정':''}</div>
+    <div class="mdesc" style="text-align:center">다음 주 공개 예정 신작이에요.<br>B컷에서 공개되면 만나보세요.</div>
+    <a class="mcta" href="${n.link||'https://bcut.maximkorea.net'}" target="_blank">B컷에서 보러가기 ›</a></div>`;
+  openModal();
+}
+function renderNext(){
+  const el=document.getElementById('nextCards');if(!el)return;const sec=document.getElementById('next');
+  const now=new Date();const today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const arr=Object.keys(DATA.works).filter(id=>DATA.works[id].pub&&DATA.works[id].pub>=today).sort((a,b)=>DATA.works[a].pub.localeCompare(DATA.works[b].pub)).slice(0,12);
+  if(!arr.length){if(sec)sec.style.display='none';return;}if(sec)sec.style.display='';
+  el.innerHTML='<div class="strip">'+arr.map(id=>{const w=DATA.works[id];const cap=w.pub===today?'오늘 공개':fmtDate(w.pub)+' 공개 예정';const sub=w.buy==='구독'?'<div class="subgrad"></div><div class="subtag">구독</div>':'';return `<div class="poster" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15">${sub}</div><div class="pcap"><b>${cap}</b></div></div>`;}).join('')+'</div>';
+}
+let bIdx=0,bTimer=null,bCount=0;
+function renderMidBanners(){
+  const el=document.getElementById('promoZone');if(!el)return;const bs=DATA.midBanners||[];
+  if(!bs.length){el.style.display='none';return;}el.style.display='';
+  el.innerHTML=bs.map(b=>{const im=`<img src="${b.img}" onerror="this.style.opacity=.15">`;return `<div class="midbanner">${b.link?`<a href="${b.link}" target="_blank" onclick="track('click_banner',{pos:'mid'})">${im}</a>`:im}</div>`;}).join('');
+}
+let featOrder=null, featOrderModel=null;
+function renderFeatured(){
+  const sec=document.getElementById('featured');if(!sec)return;const name=DATA.featuredModel;
+  let works=name?Object.keys(DATA.works).filter(id=>(DATA.works[id].models||[]).includes(name)):[];
+  if(!name||!works.length){sec.style.display='none';return;}sec.style.display='';
+  if(featOrderModel!==name||!featOrder){featOrder=shuffleArr(works);featOrderModel=name;}
+  works=featOrder.filter(id=>DATA.works[id]&&(DATA.works[id].models||[]).includes(name));
+  const box=document.getElementById('featBox');
+  box.style.background=DATA.featuredBg||'linear-gradient(120deg,#16161a,#5a0a12)';
+  box.innerHTML=`<div class="featL"><div class="featEy">이번 주 추천 모델</div><div class="featNm">${modelTag(name)}${name}</div><a class="featCta" onclick="openModelModal('${name}')">모델 보기 ›</a></div><div class="featR"><div class="strip">${works.map(id=>`<div class="poster" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${DATA.works[id].img||''}" onerror="this.style.opacity=.15"></div></div>`).join('')}</div></div>`;
+}
+function shuffleArr(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let searchFilter='all', searchShow=10, searchBase=[];
+function reshuffleSearch(){searchBase=shuffleArr(Object.keys(DATA.works));}
+function renderSearchFilters(){
+  const el=document.getElementById('searchFilters');if(!el)return;
+  const chips=[['all','전체'],['19','19'],['영상','영상'],['오리지널','맥심 오리지널'],['프리미엄','프리미엄']];
+  el.innerHTML=chips.map(c=>`<button class="fchip ${searchFilter===c[0]?'on':''}" onclick="setFilter('${c[0]}')">${c[1]}</button>`).join('');
+}
+function setFilter(f){searchFilter=f;searchShow=10;reshuffleSearch();renderSearchFilters();renderSearch();}
+function renderSearch(){
+  const el=document.getElementById('searchResults');if(!el)return;
+  if(!searchBase.length)reshuffleSearch();
+  const q=((document.getElementById('searchInput')||{}).value||'').trim().toLowerCase();
+  let ids=searchBase.filter(id=>DATA.works[id]);
+  if(searchFilter==='19')ids=ids.filter(id=>DATA.works[id].b19);
+  else if(searchFilter==='영상')ids=ids.filter(id=>DATA.works[id].vid);
+  else if(searchFilter==='오리지널')ids=ids.filter(id=>DATA.works[id].buy==='구독');
+  else if(searchFilter==='프리미엄')ids=ids.filter(id=>DATA.works[id].buy==='코인');
+  if(q)ids=ids.filter(id=>{const w=DATA.works[id];return (w.title||'').toLowerCase().includes(q)||(w.models||[]).join(' ').toLowerCase().includes(q)||String(id).includes(q);});
+  const total=ids.length;const shown=ids.slice(0,searchShow);
+  if(!total){el.innerHTML='<div class="sempty">검색 결과가 없어요</div>';return;}
+  const more=total>searchShow;el.innerHTML=`<div class="sgrid${more?' hasmore':''}">${shown.map(id=>{const w=DATA.works[id];return `<div class="scard" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15"></div><div class="scap">${w.title||id}</div></div>`;}).join('')}</div>`+(more?`<div class="moreWrap"><button class="morebtn" onclick="searchShow+=10;renderSearch()">화보 ${Math.min(10,total-searchShow)}개 더 보기 <span>· 남은 ${total-searchShow}개</span></button></div>`:'');
+}
 function renderModelCards(wi){document.getElementById('modelCards').innerHTML=monthModels(wi).slice(0,5).map(m=>`<div class="mcard ${m.rank===1?'top1':''}" data-id="${m.id}" onclick="openModelModal(this.dataset.id)" style="cursor:pointer"><div class="mrank">${m.rank}</div><img src="${modelImg(m.id)}" alt=""><div class="mn">${modelTag(m.id)}${m.id}</div><div class="mp">${m.pts.toLocaleString()}<small> pt</small></div></div>`).join('');}
 function setTab(t){state.tab=t;render();}
 function setMode(m){state.mode=m;render();}
 function syncControls(){document.getElementById('tabWorks').classList.toggle('on',state.tab==='works');document.getElementById('tabModels').classList.toggle('on',state.tab==='models');document.getElementById('modeWeek').classList.toggle('on',state.mode==='week');document.getElementById('modeMonth').classList.toggle('on',state.mode==='month');}
-function fillWeekSelector(){const ws=document.getElementById('weekSel');ws.innerHTML=DATA.weeks.map((w,i)=>`<option value="${i}">${w.label}</option>`).join('');ws.value=state.weekIdx;ws.onchange=e=>{state.weekIdx=+e.target.value;render();};}
-
-/* ===== 롤링 배너 ===== */
-let bIdx=0,bTimer=null,bCount=0;
+function fillWeekSelector(){const ws=document.getElementById('weekSel');ws.innerHTML=DATA.weeks.map((w,i)=>[i,w.label]).reverse().map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');ws.value=state.weekIdx;ws.onchange=e=>{state.weekIdx=+e.target.value;render();};}
 function renderBanner(){
   const bs=DATA.banners||[];const sec=document.getElementById('bannerSec');
   if(!bs.length){sec.style.display='none';return;}
   sec.style.display='block';bCount=bs.length;
-  sec.innerHTML=`<div class="bannerWrap"><div class="bannerTrack" id="bTrack">${bs.map(b=>{const im=`<img src="${b.img}" alt="" onerror="this.style.opacity=.15">`;return `<div class="bannerSlide">${b.link?`<a href="${b.link}" target="_blank">${im}</a>`:`<div class="noimg">${im}</div>`}</div>`;}).join('')}</div>`+
+  sec.innerHTML=`<div class="bannerWrap"><div class="bannerTrack" id="bTrack">${bs.map(b=>{const im=`<img src="${b.img}" alt="" onerror="this.style.opacity=.15">`;return `<div class="bannerSlide">${b.link?`<a href="${b.link}" target="_blank" onclick="track('click_banner',{pos:'top'})">${im}</a>`:`<div class="noimg">${im}</div>`}</div>`;}).join('')}</div>`+
     (bCount>1?`<button class="bnav bprev" onclick="bGo(-1)">‹</button><button class="bnav bnext" onclick="bGo(1)">›</button><div class="bdots" id="bDots">${bs.map((_,i)=>`<button onclick="bSet(${i})"></button>`).join('')}</div>`:'')+`</div>`;
   bIdx=0;bUpdate();bAuto();
   const wrap=sec.querySelector('.bannerWrap');let sx=0;

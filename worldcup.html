@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-OM1DPCT33G"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-OM1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
+
 <title>B컷 이상형 월드컵</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
@@ -9,7 +13,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Pretendard','Apple SD Go
 a{color:inherit}
 .nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .nav-in{max-width:1080px;margin:0 auto;padding:0 18px;height:60px;display:flex;align-items:center;justify-content:space-between}
-.brand{font-weight:900;font-size:19px;letter-spacing:-.3px}.brand b{color:var(--red)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:19px;letter-spacing:-.3px;text-decoration:none}.brand img{height:36px;width:auto;display:block;mix-blend-mode:multiply}.brand b{color:var(--red)}
 .brand span{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:2px;margin-left:6px}
 .menu{display:flex;gap:6px}
 .menu a{font-size:13.5px;font-weight:700;color:#555;text-decoration:none;padding:8px 12px;border-radius:8px}
@@ -87,7 +91,7 @@ footer .fb b{color:var(--red)}
 </style></head>
 <body>
 <nav class="nav"><div class="nav-in">
-  <div class="brand">MAXIM <b>B컷</b><span>PLAY</span></div>
+  <a class="brand" href="index.html"><img src="https://i.ibb.co/WpB1gcLw/opt.webp" alt="MAXIM B컷"><span>PLAY</span></a>
   <div class="menu"><a href="index.html">랭킹</a><a class="on" href="worldcup.html">이상형 월드컵</a></div>
   <a class="nav-cta" href="https://bcut.maximkorea.net" target="_blank">B컷 바로가기</a>
 </div></nav>
@@ -191,7 +195,7 @@ function choose(side){
   renderMatch();
 }
 function endGame(id){
-  champion=id; recordWinner(id);
+  champion=id; recordWinner(id); track('worldcup_finish',{winner:id});
   const w=workById(id);
   document.getElementById('stage').style.display='none';
   const el=document.getElementById('champ'); el.style.display='block';

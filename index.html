@@ -427,7 +427,7 @@ function renderNext(){
 }
 let bIdx=0,bTimer=null,bCount=0;
 function renderMidBanners(){
-  const el=document.getElementById('promoZone');if(!el)return;const bs=DATA.midBanners||[];
+  const el=document.getElementById('promoZone');if(!el)return;const bs=orderBanners(DATA.midBanners||[]);
   if(!bs.length){el.style.display='none';return;}el.style.display='';
   el.innerHTML=bs.map(b=>{const im=`<img src="${b.img}" onerror="this.style.opacity=.15">`;return `<div class="midbanner">${b.link?`<a href="${b.link}" target="_blank" onclick="track('click_banner',{pos:'mid'})">${im}</a>`:im}</div>`;}).join('');
 }
@@ -483,8 +483,16 @@ function fillWeekSelector(){const ws=document.getElementById('weekSel');
   if(state.mode==='month'){const seen=[],opts=[];for(let i=DATA.weeks.length-1;i>=0;i--){const mo=wkMonth(i);if(seen.includes(mo))continue;seen.push(mo);opts.push([lastWeekOfMonth(mo),monthLabel(mo)]);}ws.innerHTML=opts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');ws.value=lastWeekOfMonth(wkMonth(state.weekIdx));}
   else{ws.innerHTML=DATA.weeks.map((w,i)=>[i,w.label]).slice(-12).reverse().map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');ws.value=state.weekIdx;}
   ws.onchange=e=>{state.weekIdx=+e.target.value;render();};}
+function orderBanners(bs){
+  bs=bs||[];
+  if(window.IS_ADMIN)return bs.slice();
+  const arr=bs.slice(),pos=[],items=[];
+  arr.forEach((b,i)=>{if(b&&b.rand){pos.push(i);items.push(b);}});
+  for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=items[i];items[i]=items[j];items[j]=t;}
+  const out=arr.slice();pos.forEach((p,k)=>out[p]=items[k]);return out;
+}
 function renderBanner(){
-  const bs=DATA.banners||[];const sec=document.getElementById('bannerSec');
+  const bs=orderBanners(DATA.banners||[]);const sec=document.getElementById('bannerSec');
   if(!bs.length){sec.style.display='none';return;}
   sec.style.display='block';bCount=bs.length;
   sec.innerHTML=`<div class="bannerWrap"><div class="bannerTrack" id="bTrack">${bs.map(b=>{const im=`<img src="${b.img}" alt="" onerror="this.style.opacity=.15">`;return `<div class="bannerSlide">${b.link?`<a href="${b.link}" target="_blank" onclick="track('click_banner',{pos:'top'})">${im}</a>`:`<div class="noimg">${im}</div>`}</div>`;}).join('')}</div>`+

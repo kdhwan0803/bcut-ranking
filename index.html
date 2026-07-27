@@ -238,7 +238,7 @@ footer .fb b{color:var(--red)}
 <nav class="nav"><div class="nav-in">
   <a class="brand" href="index.html"><img src="https://i.ibb.co/WpB1gcLw/opt.webp" alt="MAXIM B컷"><span>RANKING</span></a>
   <div class="menu"><a href="#ranking">랭킹</a><a href="#sub">구독</a><a href="#next">신작</a><a href="#search">찾아보기</a><a href="worldcup.html" onclick="track('click_worldcup')">이상형 월드컵</a></div>
-  <a class="nav-cta" href="https://bcut.maximkorea.net" target="_blank">B컷 바로가기</a>
+  <a class="nav-cta" href="https://bcut.maximkorea.net?utm_source=bcut_ranking&utm_medium=internal&utm_campaign=ranking_site&utm_content=nav_cta" target="_blank" onclick="track('go_bcut',{type:'home',from:'nav'})">B컷 바로가기</a>
 </div></nav>
 <div class="wrap">
   <section id="bannerSec"></section>
@@ -276,7 +276,7 @@ footer .fb b{color:var(--red)}
       <a class="katalk-btn" id="katalkBtn" href="#" target="_blank" rel="noopener">💬 카톡 채널 추가</a>
     </div>
   </section>
-<footer><div class="fb">MAXIM <b>B컷</b></div>(주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br><a href="https://bcut.maximkorea.net" target="_blank" style="color:var(--mut);text-decoration:underline">B컷 바로가기</a></footer>
+<footer><div class="fb">MAXIM <b>B컷</b></div>(주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br><a href="https://bcut.maximkorea.net?utm_source=bcut_ranking&utm_medium=internal&utm_campaign=ranking_site&utm_content=footer" target="_blank" onclick="track('go_bcut',{type:'home',from:'footer'})" style="color:var(--mut);text-decoration:underline">B컷 바로가기</a></footer>
 
 <script>
 let DATA=null;
@@ -308,6 +308,8 @@ function mvHtml(m){if(m.k==='up')return `<span class="mv up">▲ ${m.n}</span>`;
 function formTiles(a){return a.map((rk,i)=>{const cur=i===a.length-1?'cur':'';if(!rk)return `<span class="fc empty ${cur}"></span>`;const t=rk<=3?'t1':(rk<=10?'t2':'t3');return `<span class="fc ${t} ${cur}">${rk}</span>`;}).join('');}
 function modelImg(md){if(DATA.models[md]?.img)return DATA.models[md].img;const id=Object.keys(DATA.works).find(k=>(DATA.works[k].models||[]).includes(md));return id?DATA.works[id].img:'';}
 function modelLink(md){const c=DATA.models[md]&&DATA.models[md].creatorId;return c?('https://bcut.maximkorea.net/creator/'+c):'https://bcut.maximkorea.net';}
+/* 랭킹 사이트에서 B컷으로 나가는 링크 성과 측정용 UTM (상세페이지 GA4 G-Z4PQMLKL7B에 잡힘) */
+function bcutTag(url,content){if(!url)return url;var q='utm_source=bcut_ranking&utm_medium=internal&utm_campaign=ranking_site';if(content)q+='&utm_content='+encodeURIComponent(content);return url+(url.indexOf('?')>=0?'&':'?')+q;}
 function modelTag(md){const t=DATA.models[md]&&DATA.models[md].tag;return t?`<span class="mtag">${t}</span>`:'';}
 function modelStreakLabel(md,wi){const cur=modelRankAt(md,wi);if(!cur)return '';let thr,lab;if(cur===1){thr=1;lab='TOP1';}else if(cur<=5){thr=5;lab='TOP5';}else if(cur<=10){thr=10;lab='TOP10';}else return '';const n=streakTop(md,wi,thr,true);return n>=2?`${n}주 연속 ${lab}`:(lab==='TOP1'?'이번 주 1위':'이번 주 '+lab);}
 /* ===== 상세 카드 (모달) ===== */
@@ -329,7 +331,7 @@ function openWorkModal(id){
     <div class="mmeta">${meta}</div>
     ${w.desc?`<div class="mdesc">${w.desc}</div>`:''}
     <div class="mstats"><div class="s"><b>${wr?'#'+wr:'-'}</b><span>이번 주</span></div><div class="s"><b>${best?'#'+best:'-'}</b><span>역대 최고</span></div><div class="s"><b>${strk}주</b><span>연속 TOP3</span></div><div class="s"><b>${mp}</b><span>이번 달 pt</span></div></div>
-    ${otherHtml}<a class="mcta" href="https://bcut.maximkorea.net/work/${id}" target="_blank" onclick="track('go_bcut',{type:'work',work_id:'${id}'})">B컷에서 화보 보기 ›</a></div>`;
+    ${otherHtml}<a class="mcta" href="${bcutTag('https://bcut.maximkorea.net/work/'+id,'w'+id)}" target="_blank" onclick="track('go_bcut',{type:'work',work_id:'${id}',from:'modal'})">B컷에서 화보 보기 ›</a></div>`;
   openModal();
 }
 function openModelModal(name){track('view_model',{model:name});
@@ -344,7 +346,7 @@ function openModelModal(name){track('view_model',{model:name});
     <div class="mstats"><div class="s"><b>${mr.rank?'#'+mr.rank:'-'}</b><span>이번 달</span></div><div class="s"><b>${mr.pts||0}</b><span>이번 달 pt</span></div><div class="s"><b>${best?'#'+best:'-'}</b><span>역대 최고</span></div><div class="s"><b>${strk}주</b><span>연속 ${lab}</span></div></div>
     <div class="msub">이 모델의 화보</div>
     <div class="mgrid">${works.slice(0,8).map(id=>`<div class="gw" onclick="openWorkModal('${id}')"><img src="${DATA.works[id].img||''}" onerror="this.style.opacity=.15"></div>`).join('')||'<div class="mmeta">등록된 화보 없음</div>'}</div>
-    <a class="mcta" href="${modelLink(name)}" target="_blank" onclick="track('go_bcut',{type:'model',model:name})">B컷 모델 페이지 ›</a></div>`;
+    <a class="mcta" href="${bcutTag(modelLink(name),'m_'+name)}" target="_blank" onclick="track('go_bcut',{type:'model',model:'${name}',from:'modal'})">B컷 모델 페이지 ›</a></div>`;
   openModal();
 }
 
@@ -362,19 +364,20 @@ function movementStat(cur,prev){const m=movement(cur,prev);if(m.k==='up')return 
 function renderHero(top,isModel,isMonth,wi){
   const el=document.getElementById('hero');if(!top){el.innerHTML='<div class="loading">데이터가 없습니다</div>';return;}
   let img,title,model,link,stats='';const eye=(isMonth?'이번 달':'이번 주')+' 랭킹 1위 · '+(isModel?'MODEL':'화보');
-  if(isModel){img=modelImg(top.id);title=modelTag(top.id)+top.id;model=(isMonth?'월간':'주간')+' 모델 랭킹';link=modelLink(top.id);
+  if(isModel){img=modelImg(top.id);title=modelTag(top.id)+top.id;model=(isMonth?'월간':'주간')+' 모델 랭킹';link=bcutTag(modelLink(top.id),'m_'+top.id);
     const prev=isMonth?monthModelRankAt(top.id,prevWeekSameMonth(wi)):modelRankAt(top.id,wi-1);const best=bestModelRank(top.id);
     let thr,lab;const cr=top.rank;if(cr===1){thr=1;lab='TOP1';}else if(cr<=5){thr=5;lab='TOP5';}else{thr=10;lab='TOP10';}const strk=streakTop(top.id,wi,thr,true);
     stats+=statHTML(top.pts.toLocaleString()+'<small style="font-size:11px;color:#b0b0b8"> pt</small>',isMonth?'이번 달 포인트':'이번 주 포인트');
     stats+=movementStat(top.rank,prev);stats+=statHTML(strk+'주','연속 '+lab);stats+=statHTML('#'+(best||1),'역대 최고');
-  }else{const w=DATA.works[top.id]||{};img=w.img;title=w.title||top.id;model=(w.models||[]).join(' & ')||'—';link='https://bcut.maximkorea.net/work/'+top.id;
+  }else{const w=DATA.works[top.id]||{};img=w.img;title=w.title||top.id;model=(w.models||[]).join(' & ')||'—';link=bcutTag('https://bcut.maximkorea.net/work/'+top.id,'w'+top.id);
     const prev=isMonth?monthWorkRankAt(top.id,prevWeekSameMonth(wi)):workRankAt(top.id,wi-1);const best=bestWorkRank(top.id),strk=streakTop(top.id,wi,3,false);
     stats+=statHTML(top.pts.toLocaleString()+'<small style="font-size:11px;color:#b0b0b8"> pt</small>',isMonth?'이번 달 포인트':'이번 주 포인트');
     stats+=movementStat(top.rank,prev);stats+=statHTML(strk+'주','연속 TOP3');stats+=statHTML('#'+(best||1),'역대 최고');stats+=statHTML(fmtDate(w.pub),'공개일');
   }
+  const goPayload=isModel?`{type:'model',model:'${top.id}',from:'hero'}`:`{type:'work',work_id:'${top.id}',from:'hero'}`;
   el.innerHTML=`<div class="hero-l"><div class="hero-eye"><span class="rank1-badge">RANK 1</span> ${eye}</div>
     <h1 class="hero-title">${title} ${isModel?'':badges(DATA.works[top.id]||{})}</h1><div class="hero-model">${model}</div>
-    <div class="hero-stats">${stats}</div><a class="hero-cta" href="${link}" target="_blank">${isModel?'모델 화보 보기':'화보 보러가기'} ›</a></div>
+    <div class="hero-stats">${stats}</div><a class="hero-cta" href="${link}" target="_blank" onclick="track('go_bcut',${goPayload})">${isModel?'모델 화보 보기':'화보 보러가기'} ›</a></div>
     <div class="hero-r"><div class="hero-medal">1</div><img src="${img}" alt="" style="cursor:pointer" onclick="${isModel?`openModelModal('${top.id}')`:`openWorkModal('${top.id}')`}"></div>`;
 }
 function renderHead(isModel,isMonth){const c3=isMonth?'이번 달 포인트':'최근 4주 폼',c4=isMonth?'획득 주차':'포인트';document.getElementById('boardHead').innerHTML=`<div>순위</div><div>${isModel?'모델':'화보 & 모델'}</div><div>${c3}</div><div>${c4}</div><div>등락</div><div></div>`;}
@@ -413,7 +416,7 @@ function openNextModal(i){
     <div class="mbody"><div class="mtitle">${n.title||''}</div><div class="mmodel">${n.model||''}</div>
     <div class="mmeta">${n.date?n.date+' 공개 예정':''}</div>
     <div class="mdesc" style="text-align:center">다음 주 공개 예정 신작이에요.<br>B컷에서 공개되면 만나보세요.</div>
-    <a class="mcta" href="${n.link||'https://bcut.maximkorea.net'}" target="_blank">B컷에서 보러가기 ›</a></div>`;
+    <a class="mcta" href="${bcutTag(n.link||'https://bcut.maximkorea.net','next')}" target="_blank" onclick="track('go_bcut',{type:'next',from:'next_modal'})">B컷에서 보러가기 ›</a></div>`;
   openModal();
 }
 function renderNext(){
@@ -427,7 +430,7 @@ let bIdx=0,bTimer=null,bCount=0;
 function renderMidBanners(){
   const el=document.getElementById('promoZone');if(!el)return;const bs=DATA.midBanners||[];
   if(!bs.length){el.style.display='none';return;}el.style.display='';
-  el.innerHTML=bs.map(b=>{const im=`<img src="${b.img}" onerror="this.style.opacity=.15">`;return `<div class="midbanner">${b.link?`<a href="${b.link}" target="_blank" onclick="track('click_banner',{pos:'mid'})">${im}</a>`:im}</div>`;}).join('');
+  el.innerHTML=bs.map(b=>{const im=`<img src="${b.img}" onerror="this.style.opacity=.15">`;const bl=b.link&&/bcut\.maximkorea\.net/.test(b.link)?bcutTag(b.link,'banner_mid'):b.link;return `<div class="midbanner">${b.link?`<a href="${bl}" target="_blank" onclick="track('click_banner',{pos:'mid'})">${im}</a>`:im}</div>`;}).join('');
 }
 let featOrder=null, featOrderModel=null;
 function renderKatalk(){
@@ -485,7 +488,7 @@ function renderBanner(){
   const bs=DATA.banners||[];const sec=document.getElementById('bannerSec');
   if(!bs.length){sec.style.display='none';return;}
   sec.style.display='block';bCount=bs.length;
-  sec.innerHTML=`<div class="bannerWrap"><div class="bannerTrack" id="bTrack">${bs.map(b=>{const im=`<img src="${b.img}" alt="" onerror="this.style.opacity=.15">`;return `<div class="bannerSlide">${b.link?`<a href="${b.link}" target="_blank" onclick="track('click_banner',{pos:'top'})">${im}</a>`:`<div class="noimg">${im}</div>`}</div>`;}).join('')}</div>`+
+  sec.innerHTML=`<div class="bannerWrap"><div class="bannerTrack" id="bTrack">${bs.map(b=>{const im=`<img src="${b.img}" alt="" onerror="this.style.opacity=.15">`;const bl=b.link&&/bcut\.maximkorea\.net/.test(b.link)?bcutTag(b.link,'banner_top'):b.link;return `<div class="bannerSlide">${b.link?`<a href="${bl}" target="_blank" onclick="track('click_banner',{pos:'top'})">${im}</a>`:`<div class="noimg">${im}</div>`}</div>`;}).join('')}</div>`+
     (bCount>1?`<button class="bnav bprev" onclick="bGo(-1)">‹</button><button class="bnav bnext" onclick="bGo(1)">›</button><div class="bdots" id="bDots">${bs.map((_,i)=>`<button onclick="bSet(${i})"></button>`).join('')}</div>`:'')+`</div>`;
   bIdx=0;bUpdate();bAuto();
   const wrap=sec.querySelector('.bannerWrap');let sx=0;

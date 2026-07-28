@@ -3841,9 +3841,7 @@
   "bottomBanners": [],
   "packages": [],
   "featuredModel": "예하",
-  "featuredModels": [
-    "예하"
-  ],
+  "featuredModels": [],
   "featuredBg": "linear-gradient(120deg,#16161a,#5a0a12)",
   "kakaoUrl": ""
 }

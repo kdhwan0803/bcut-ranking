@@ -328,8 +328,43 @@ footer .fb b{color:var(--red)}
   .mstats{gap:14px}
   .fchip{padding:7px 13px;font-size:12.5px}
 }
+.ageGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(18,18,24,.5);backdrop-filter:blur(24px) saturate(.85);-webkit-backdrop-filter:blur(24px) saturate(.85)}
+.ageBox{max-width:360px;width:100%;background:#fff;border-radius:22px;padding:30px 26px 24px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:ageUp .3s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes ageUp{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.ageBadge{width:60px;height:60px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(135deg,#f0554a,#e5352b);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:900;color:#fff;box-shadow:0 8px 24px rgba(229,53,43,.35)}
+.ageTitle{font-size:19px;font-weight:900;color:#1a1a1f;letter-spacing:-.3px}
+.ageDesc{font-size:13.5px;line-height:1.65;color:#666;margin-top:10px}
+.ageDesc b{color:#1a1a1f}
+.ageBtns{display:flex;flex-direction:column;gap:9px;margin-top:22px}
+.ageBtns button{border:0;font-family:inherit;font-size:14.5px;font-weight:800;padding:14px;border-radius:12px;cursor:pointer;transition:transform .12s}
+.ageBtns button:hover{transform:translateY(-1px)}
+.ageIn{background:linear-gradient(120deg,#f0554a,#e5352b);color:#fff}
+.ageMinor{background:#f2f2f5;color:#555}
+.ageNote{font-size:11px;color:#9a9aa2;margin-top:14px;line-height:1.6}
+.b19blur{filter:blur(10px)!important;transform:scale(1.04)}
+.b19w{position:relative}
+.b19w::after{content:"19+";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;background:rgba(229,53,43,.92);color:#fff;font-size:12px;font-weight:900;padding:4px 10px;border-radius:999px;box-shadow:0 3px 10px rgba(0,0,0,.4);pointer-events:none;letter-spacing:.5px}
 </style></head>
 <body>
+<div id="ageGate" class="ageGate">
+  <div class="ageBox">
+    <div class="ageBadge">19+</div>
+    <div class="ageTitle">잠깐, 나이를 확인할게요</div>
+    <div class="ageDesc">이 사이트에는 <b>만 19세 이상</b> 성인 화보가 포함돼 있어요.<br>선택에 따라 19금 이미지가 흐리게 표시됩니다.</div>
+    <div class="ageBtns">
+      <button class="ageIn" onclick="setAge('adult')">만 19세 이상 · 모두 보기</button>
+      <button class="ageMinor" onclick="setAge('minor')">만 19세 미만 · 19금은 가리기</button>
+    </div>
+    <div class="ageNote">선택은 이 기기에 저장돼요.</div>
+  </div>
+</div>
+<script>
+function getAge(){try{return localStorage.getItem('bcut_age')||'';}catch(e){return '';}}
+function openAgeGate(){var g=document.getElementById('ageGate');if(g)g.style.display='flex';}
+function ageBlurScan(){try{if(typeof DATA==='undefined'||!DATA||!DATA.works)return;var minor=getAge()==='minor';if(!minor){document.querySelectorAll('img.b19blur').forEach(function(i){i.classList.remove('b19blur');});document.querySelectorAll('.b19w').forEach(function(e){e.classList.remove('b19w');});return;}var els=document.querySelectorAll('[onclick*="openWorkModal("],a[href*="/work/"],[data-wid]');els.forEach(function(el){var id=null,oc=el.getAttribute('onclick')||'',m=oc.match(/openWorkModal\('([^']+)'\)/);if(m)id=m[1];if(!id){var h=el.getAttribute('href')||'',hm=h.match(/\/work\/([^\/?#]+)/);if(hm)id=decodeURIComponent(hm[1]);}if(!id)id=el.getAttribute('data-wid');if(id&&DATA.works[id]&&DATA.works[id].b19){var _bl=function(im){im.classList.add('b19blur');if(im.parentElement)im.parentElement.classList.add('b19w');};el.querySelectorAll('img').forEach(_bl);if(el.tagName==='IMG')_bl(el);}});}catch(e){}}
+function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=document.getElementById('ageGate');if(g)g.style.display='none';document.body.classList.toggle('age-minor',m==='minor');ageBlurScan();}
+(function(){try{var a=getAge();if(a){var g=document.getElementById('ageGate');if(g)g.style.display='none';document.body.classList.toggle('age-minor',a==='minor');}var _p=false;function _s(){if(_p)return;_p=true;(window.requestAnimationFrame||window.setTimeout)(function(){_p=false;if(getAge()==='minor')ageBlurScan();});}if(window.MutationObserver&&document.body){new MutationObserver(_s).observe(document.body,{childList:true,subtree:true});}}catch(e){}})();
+</script>
 <nav class="nav"><div class="nav-in">
   <a class="brand" href="index.html"><img src="https://i.ibb.co/WpB1gcLw/opt.webp" alt="MAXIM B컷"><span>RANKING</span></a>
   <div class="menu"><a href="#ranking">랭킹</a><a href="#sub">구독</a><a href="#next">신작</a><a href="#search">찾아보기</a><a href="worldcup.html" onclick="track('click_worldcup')">이상형 월드컵</a></div>
@@ -372,7 +407,7 @@ footer .fb b{color:var(--red)}
     </div>
   </section>
 <section class="section" id="bottomPromo" style="display:none"><div id="bottomZone"></div></section>
-<footer><div class="fb">MAXIM <b>B컷</b></div>(주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br><a href="https://bcut.maximkorea.net" target="_blank" style="color:var(--mut);text-decoration:underline">B컷 바로가기</a></footer>
+<footer><div class="fb">MAXIM <b>B컷</b></div>(주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br><a href="https://bcut.maximkorea.net" target="_blank" style="color:var(--mut);text-decoration:underline">B컷 바로가기</a> · <a onclick="openAgeGate()" style="color:var(--mut);text-decoration:underline;cursor:pointer">연령 설정 변경</a></footer>
 
 <script>
 let DATA=null;
@@ -421,7 +456,7 @@ function openWorkModal(id){
   const others=Object.keys(DATA.works).filter(x=>x!==id&&(DATA.works[x].models||[]).some(m=>(w.models||[]).includes(m))).slice(0,8);
   const otherHtml=others.length?`<div class="msub">이 모델의 다른 화보</div><div class="mgrid">${others.map(x=>`<div class="gw" onclick="openWorkModal('${x}')"><img src="${DATA.works[x].img||''}" onerror="this.style.opacity=.15"></div>`).join('')}</div>`:'';
   document.getElementById('mbox').innerHTML=`<button class="mx" onclick="closeModal()">✕</button>
-    <div class="mcoverWrap"><div class="mcoverBlur" style="background-image:url(${w.img||''})"></div><img class="mcoverImg" src="${w.img||''}" onerror="this.style.opacity=.15"></div>
+    <div class="mcoverWrap" data-wid="${id}"><div class="mcoverBlur" style="background-image:url(${w.img||''})"></div><img class="mcoverImg" src="${w.img||''}" onerror="this.style.opacity=.15"></div>
     <div class="mbody"><div class="mtitle">${w.title||id} ${badges(w)}</div>
     <div class="mmodel">${(w.models||[]).length?(w.models||[]).map(m=>{const c=DATA.models[m]&&DATA.models[m].creatorId;const nm=m.replace(/</g,'&lt;');return c?`<a href="https://bcut.maximkorea.net/creator/${c}" target="_blank" onclick="track('go_bcut',{type:'model',model:'${m}'})">${nm}</a>`:nm;}).join(' & '):'—'}</div>
     ${w.photo?`<div class="mcreator">📷 작가 · ${w.photoId?`<a href="https://bcut.maximkorea.net/creator/${w.photoId}" target="_blank" onclick="track('go_bcut',{type:'creator'})">${(w.photo||'').replace(/</g,'&lt;')}</a>`:(w.photo||'').replace(/</g,'&lt;')}</div>`:''}
@@ -454,7 +489,7 @@ function render(){
   const wi=state.weekIdx, isModel=state.tab==='models', isMonth=state.mode==='month';
   let list=isModel?(isMonth?monthModels(wi):weekModels(wi)):(isMonth?monthWorks(wi):weekWorks(wi));
   renderHero(list[0],isModel,isMonth,wi);renderBody(list.slice(0,10),isModel,isMonth,wi);
-  renderTimesale();renderPackages();renderMidBanners();renderSubscription();renderNext();renderFeatured();renderSearchFilters();renderSearch();renderCreators();renderKatalk();renderBottomBanners();syncControls();
+  renderTimesale();renderPackages();renderMidBanners();renderSubscription();renderNext();renderFeatured();renderSearchFilters();renderSearch();renderCreators();renderKatalk();renderBottomBanners();syncControls();if(window.ageBlurScan)ageBlurScan();
 }
 function statHTML(v,l){return `<div class="st"><b>${v}</b><span>${l}</span></div>`;}
 function movementStat(cur,prev){const m=movement(cur,prev);if(m.k==='up')return statHTML(`<span class="up">▲ ${m.n}</span>`,'지난주 대비');if(m.k==='down')return statHTML(`<span class="down">▼ ${m.n}</span>`,'지난주 대비');if(m.k==='new')return statHTML(`<span class="new">NEW</span>`,'이번 주 신규');return statHTML('1위 유지','지난주 대비');}
@@ -558,7 +593,7 @@ function renderCreators(){
   const cids=byC[creatorSel];
   if(creatorWorkFor!==creatorSel||creatorWorkOrder.length!==cids.length||creatorWorkOrder.some(id=>!DATA.works[id])){creatorWorkOrder=cids.slice();for(let i=creatorWorkOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=creatorWorkOrder[i];creatorWorkOrder[i]=creatorWorkOrder[j];creatorWorkOrder[j]=t;}creatorWorkFor=creatorSel;creatorWorksShow=10;}
   const total=creatorWorkOrder.length,shown=creatorWorkOrder.slice(0,creatorWorksShow);
-  let g=`<div class="sgrid">${shown.map(id=>{const w=DATA.works[id]||{};return `<div class="scard" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15">${origBadge(id)}</div><div class="scap">${(w.title||id).replace(/</g,'&lt;')}</div></div>`;}).join('')}</div>`;
+  let g=`<div class="sgrid${total>creatorWorksShow?' hasmore':''}">${shown.map(id=>{const w=DATA.works[id]||{};return `<div class="scard" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15">${origBadge(id)}</div><div class="scap">${(w.title||id).replace(/</g,'&lt;')}</div></div>`;}).join('')}</div>`;
   if(total>creatorWorksShow)g+=`<div class="moreWrap"><button class="morebtn" onclick="creatorWorksShow+=10;renderCreators()">화보 ${Math.min(10,total-creatorWorksShow)}개 더 보기 <span>· 남은 ${total-creatorWorksShow}개</span></button></div>`;
   gridEl.innerHTML=g;
 }

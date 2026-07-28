@@ -4,7 +4,13 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0M1DPCT33G"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0M1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
 
-<title>B컷 랭킹</title>
+<title>MAXIM B컷 주간 랭킹</title>
+<meta name="description" content="맥심 B컷 화보 주간·월간 랭킹 · 이번 주 인기 화보와 신작을 한눈에.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MAXIM B컷 주간 랭킹">
+<meta property="og:description" content="이번 주 인기 화보 랭킹 · 신작 · 구독 화보를 한눈에. MAXIM B컷.">
+<meta property="og:image" content="https://i.ibb.co/WpB1gcLw/opt.webp">
+<meta name="twitter:card" content="summary_large_image">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
 :root{--red:#E60012;--up:#12b76a;--down:#f04438;--new:#7a5af8;--ink:#16161a;--mut:#8a8a92;--line:#ececed;--bg:#f4f5f7}
@@ -12,7 +18,7 @@
 body{background:var(--bg);color:var(--ink);font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
-.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{position:relative;z-index:50;background:rgba(255,255,255,.95);border-bottom:1px solid var(--line)}
 .nav-in{max-width:1080px;margin:0 auto;padding:0 18px;height:60px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:19px;letter-spacing:-.3px;text-decoration:none}.brand img{height:36px;width:auto;display:block;mix-blend-mode:multiply}.brand b{color:var(--red)}
 .brand span{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:2px;margin-left:6px}
@@ -258,6 +264,7 @@ footer .fb b{color:var(--red)}
 .subgrad{position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(transparent,rgba(0,0,0,.72));pointer-events:none}
 .subtag{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:#ffd400;color:#16161a;font-size:11px;font-weight:900;padding:3px 12px;border-radius:6px;letter-spacing:.3px}
 .origbadge{position:absolute;top:7px;left:7px;z-index:3;background:rgba(20,20,26,.82);color:#ffd400;font-size:9px;font-weight:900;letter-spacing:.5px;padding:3px 7px;border-radius:5px}
+.topbadge{position:absolute;top:7px;right:7px;z-index:3;background:linear-gradient(135deg,#e5352b,#b71c1c);color:#fff;font-size:8.5px;font-weight:900;padding:3px 6px;border-radius:4px;letter-spacing:.5px;box-shadow:0 2px 6px rgba(0,0,0,.3);line-height:1}
 @media(max-width:560px){.poster{width:116px}}
 /* 랭킹 스트립: 큰 순위 숫자 + 썸네일 */
 .rankstrip{display:flex;gap:4px;overflow-x:auto;padding:10px 2px 16px;-webkit-overflow-scrolling:touch}
@@ -306,6 +313,13 @@ footer .fb b{color:var(--red)}
 .searchbar input{width:100%;padding:13px 16px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;outline:none}
 .searchbar input:focus{border-color:var(--red)}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.quicknav{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:0;z-index:45;background:var(--bg)}
+.quicknav::-webkit-scrollbar{display:none}
+.qbtn{flex:0 0 auto;background:#fff;border:1.5px solid var(--line);color:#2b2b31;font-family:inherit;font-weight:800;font-size:13.5px;padding:10px 17px;border-radius:999px;text-decoration:none;white-space:nowrap;box-shadow:0 1px 4px rgba(20,20,30,.05);transition:transform .12s}
+.qbtn:active,.qbtn:hover{transform:translateY(-1px)}
+.qbtn-cta{background:var(--red);color:#fff;border-color:var(--red)}
+#topBtn{position:fixed;right:16px;bottom:16px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:20px;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s,transform .25s}
+#topBtn.show{opacity:1;pointer-events:auto;transform:none}
 .fchip{border:1.5px solid var(--line);background:#fff;color:#555;font-family:inherit;font-weight:700;font-size:13px;padding:8px 16px;border-radius:20px;cursor:pointer}
 .fchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px}
@@ -367,11 +381,20 @@ function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=docum
 </script>
 <nav class="nav"><div class="nav-in">
   <a class="brand" href="index.html"><img src="https://i.ibb.co/WpB1gcLw/opt.webp" alt="MAXIM B컷"><span>RANKING</span></a>
-  <div class="menu"><a href="#ranking">랭킹</a><a href="#sub">구독</a><a href="#next">신작</a><a href="#search">찾아보기</a><a href="worldcup.html" onclick="track('click_worldcup')">이상형 월드컵</a></div>
+  
   <a class="nav-cta" href="https://bcut.maximkorea.net" target="_blank">B컷 바로가기</a>
 </div></nav>
 <div class="wrap">
   <section id="bannerSec"></section>
+  <div class="quicknav">
+    <a href="#ranking" class="qbtn">🔥 이번 주 랭킹</a>
+    <a href="#next" class="qbtn">🆕 신작</a>
+    <a href="#sub" class="qbtn">💜 구독 화보</a>
+    <a href="#creators" class="qbtn">📷 작가별</a>
+    <a href="worldcup.html" class="qbtn">🏆 이상형 월드컵</a>
+    <a href="https://bcut.maximkorea.net" target="_blank" class="qbtn qbtn-cta">B컷 바로가기 ›</a>
+  </div>
+  <section class="section" id="recent" style="display:none"><div class="sec-head"><div class="sec-title">최근 본 화보 <small>RECENTLY VIEWED</small></div></div><div id="recentCards"></div></section>
   <section class="section" id="top"><div class="hero" id="hero"><div class="loading">랭킹 불러오는 중…</div></div></section>
   <section class="section" id="ranking">
     <div class="sec-head"><div class="sec-title">이번 주 랭킹 <small>WEEKLY RANKING</small></div>
@@ -407,6 +430,7 @@ function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=docum
     </div>
   </section>
 <section class="section" id="bottomPromo" style="display:none"><div id="bottomZone"></div></section>
+<button id="topBtn" onclick="scrollTop()" aria-label="맨 위로">↑</button>
 <footer><div class="fb">MAXIM <b>B컷</b></div>(주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br><a href="https://bcut.maximkorea.net" target="_blank" style="color:var(--mut);text-decoration:underline">B컷 바로가기</a> · <a onclick="openAgeGate()" style="color:var(--mut);text-decoration:underline;cursor:pointer">연령 설정 변경</a></footer>
 
 <script>
@@ -448,7 +472,7 @@ function _mWorksOf(name){return Object.keys(DATA.works).filter(id=>(DATA.works[i
 function openModal(){document.getElementById('modal').classList.add('on');document.body.style.overflow='hidden';}
 function closeModal(){document.getElementById('modal').classList.remove('on');document.body.style.overflow='';}
 function rowOpen(el){const id=el.dataset.id;el.dataset.kind==='model'?openModelModal(id):openWorkModal(id);}
-function openWorkModal(id){
+function openWorkModal(id){if(DATA.works&&DATA.works[id]){pushRecent(id);if(window.renderRecent)renderRecent();}
   const w=DATA.works[id];if(!w)return;track('view_work',{work_id:id,work_title:w.title||id});const wi=state.weekIdx;
   const wr=workRankAt(id,wi),best=bestWorkRank(id),strk=streakTop(id,wi,3,false);
   const mp=(monthWorks(wi).find(x=>x.id===id)||{}).pts||0;
@@ -489,7 +513,7 @@ function render(){
   const wi=state.weekIdx, isModel=state.tab==='models', isMonth=state.mode==='month';
   let list=isModel?(isMonth?monthModels(wi):weekModels(wi)):(isMonth?monthWorks(wi):weekWorks(wi));
   renderHero(list[0],isModel,isMonth,wi);renderBody(list.slice(0,10),isModel,isMonth,wi);
-  renderTimesale();renderPackages();renderMidBanners();renderSubscription();renderNext();renderFeatured();renderSearchFilters();renderSearch();renderCreators();renderKatalk();renderBottomBanners();syncControls();if(window.ageBlurScan)ageBlurScan();
+  renderTimesale();renderPackages();renderMidBanners();renderSubscription();renderNext();renderFeatured();renderSearchFilters();renderSearch();renderRecent();renderCreators();renderKatalk();renderBottomBanners();syncControls();if(window.ageBlurScan)ageBlurScan();
 }
 function statHTML(v,l){return `<div class="st"><b>${v}</b><span>${l}</span></div>`;}
 function movementStat(cur,prev){const m=movement(cur,prev);if(m.k==='up')return statHTML(`<span class="up">▲ ${m.n}</span>`,'지난주 대비');if(m.k==='down')return statHTML(`<span class="down">▼ ${m.n}</span>`,'지난주 대비');if(m.k==='new')return statHTML(`<span class="new">NEW</span>`,'이번 주 신규');return statHTML('1위 유지','지난주 대비');}
@@ -513,6 +537,7 @@ function renderHero(top,isModel,isMonth,wi){
 }
 function renderHead(isModel,isMonth){const c3=isMonth?'이번 달 포인트':'최근 4주 폼',c4=isMonth?'획득 주차':'포인트';document.getElementById('boardHead').innerHTML=`<div>순위</div><div>${isModel?'모델':'화보 & 모델'}</div><div>${c3}</div><div>${c4}</div><div>등락</div><div></div>`;}
 function origBadge(id){const w=DATA.works[id]||{};return w.buy==='구독'?'<div class="origbadge">ORIGINAL</div>':'';}
+function topBadge(id){try{var r=workRankAt(id,state.weekIdx);return (r&&r<=10)?'<div class="topbadge">TOP 10</div>':'';}catch(e){return '';}}
 function renderBody(list,isModel,isMonth,wi){
   document.getElementById('boardBody').innerHTML='<div class="rankstrip">'+list.slice(0,10).map(row=>{
     const isTop=row.rank<=3?'top':'';
@@ -533,7 +558,7 @@ function renderSubscription(){
   let cd='';
   if(future.length){const np=DATA.works[future[0]].pub;const d=Math.max(0,dday(np));cd=`<div class="poster"><div class="pimg cdimg"><div class="cdlabel">다음 공개</div><div class="cdnum">D-${d}</div><div class="cddate">${fmtDate(np)}</div></div></div>`;}
   if(!subs.length&&!cd){if(sec)sec.style.display='none';return;}if(sec)sec.style.display='';
-  el.innerHTML='<div class="strip">'+cd+subs.map(id=>{const w=DATA.works[id];return `<div class="poster" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15"><div class="subcap"><span class="odot">●</span> 공개 · ${fmtDate(w.pub)}</div></div></div>`;}).join('')+'</div>';
+  el.innerHTML='<div class="strip">'+cd+subs.map(id=>{const w=DATA.works[id];return `<div class="poster" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15">${topBadge(id)}<div class="subcap"><span class="odot">●</span> 공개 · ${fmtDate(w.pub)}</div></div></div>`;}).join('')+'</div>';
 }
 function renderHallOfFame(){
   const el=document.getElementById('hallCards');if(!el)return;const sec=document.getElementById('hall');
@@ -576,6 +601,11 @@ function tsTick(){const cs=document.querySelectorAll('#timesaleZone .tsClock');i
 function popupList(){return (DATA.popups||[]).filter(p=>p&&p.enabled!==false&&p.img);}
 function popupActive(p){const now=Date.now();if(p.start&&new Date(p.start).getTime()>now)return false;if(p.end&&new Date(p.end).getTime()<=now)return false;return true;}
 function popupDismissed(p){try{const v=localStorage.getItem('bcut_popup_hide_'+(p.id||''));return !!v&&Date.now()<+v;}catch(e){return false;}}
+function getRecent(){try{return JSON.parse(localStorage.getItem('bcut_recent')||'[]');}catch(e){return [];}}
+function pushRecent(id){try{var a=getRecent().filter(function(x){return x!==id;});a.unshift(id);a=a.slice(0,12);localStorage.setItem('bcut_recent',JSON.stringify(a));}catch(e){}}
+function renderRecent(){var sec=document.getElementById('recent'),el=document.getElementById('recentCards');if(!sec||!el)return;var ids=getRecent().filter(function(id){return DATA&&DATA.works&&DATA.works[id];});if(!ids.length){sec.style.display='none';return;}sec.style.display='';el.innerHTML='<div class="strip">'+ids.map(function(id){var w=DATA.works[id];return '<div class="poster" onclick="openWorkModal(\''+id+'\')"><div class="pimg"><img src="'+(w.img||'')+'" onerror="this.style.opacity=.15">'+topBadge(id)+'</div></div>';}).join('')+'</div>';}
+function scrollTop(){window.scrollTo({top:0,behavior:'smooth'});}
+window.addEventListener('scroll',function(){var b=document.getElementById('topBtn');if(b)b.classList.toggle('show',window.scrollY>400);});
 function showPopup(){if(window.IS_ADMIN)return;const cand=popupList().filter(popupActive);for(const p of cand){if(!popupDismissed(p)){renderPopupEl(p,false);return;}}}
 function renderPopupEl(p,preview){closePopupEl();const esc=x=>String(x||'').replace(/</g,'&lt;');const ov=document.createElement('div');ov.className='popupOverlay';ov.id='popupOverlay';const clickImg=p.link?` onclick="window.open('${p.link}','_blank')" style="cursor:pointer"`:'';ov.innerHTML=`<div class="popupCard"><button class="popupX" onclick="closePopupEl()">✕</button><div class="popupImgWrap"${clickImg}><img src="${p.img}" alt="" onerror="this.style.opacity=.2"></div>${p.title?`<div class="popupBody"><div class="popupTitle">${esc(p.title)}</div>${p.sub?`<div class="popupSub">${esc(p.sub)}</div>`:''}</div>`:''}<div class="popupFoot"><button class="popupToday" onclick="dismissPopupToday('${String(p.id||'').replace(/'/g,'')}',${preview?'true':'false'})">오늘 하루 보지 않기</button><button class="popupClose" onclick="closePopupEl()">닫기</button></div></div>`;ov.addEventListener('click',e=>{if(e.target===ov)closePopupEl();});document.body.appendChild(ov);}
 function dismissPopupToday(id,preview){if(!preview&&!window.IS_ADMIN){try{const exp=new Date();exp.setHours(23,59,59,999);localStorage.setItem('bcut_popup_hide_'+id,String(exp.getTime()));}catch(e){}}closePopupEl();}
@@ -593,7 +623,7 @@ function renderCreators(){
   const cids=byC[creatorSel];
   if(creatorWorkFor!==creatorSel||creatorWorkOrder.length!==cids.length||creatorWorkOrder.some(id=>!DATA.works[id])){creatorWorkOrder=cids.slice();for(let i=creatorWorkOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=creatorWorkOrder[i];creatorWorkOrder[i]=creatorWorkOrder[j];creatorWorkOrder[j]=t;}creatorWorkFor=creatorSel;creatorWorksShow=10;}
   const total=creatorWorkOrder.length,shown=creatorWorkOrder.slice(0,creatorWorksShow);
-  let g=`<div class="sgrid${total>creatorWorksShow?' hasmore':''}">${shown.map(id=>{const w=DATA.works[id]||{};return `<div class="scard" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15">${origBadge(id)}</div><div class="scap">${(w.title||id).replace(/</g,'&lt;')}</div></div>`;}).join('')}</div>`;
+  let g=`<div class="sgrid${total>creatorWorksShow?' hasmore':''}">${shown.map(id=>{const w=DATA.works[id]||{};return `<div class="scard" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15">${origBadge(id)}${topBadge(id)}</div><div class="scap">${(w.title||id).replace(/</g,'&lt;')}</div></div>`;}).join('')}</div>`;
   if(total>creatorWorksShow)g+=`<div class="moreWrap"><button class="morebtn" onclick="creatorWorksShow+=10;renderCreators()">화보 ${Math.min(10,total-creatorWorksShow)}개 더 보기 <span>· 남은 ${total-creatorWorksShow}개</span></button></div>`;
   gridEl.innerHTML=g;
 }
@@ -673,7 +703,7 @@ function renderSearch(){
   if(q)ids=ids.filter(id=>{const w=DATA.works[id];return (w.title||'').toLowerCase().includes(q)||(w.models||[]).join(' ').toLowerCase().includes(q)||String(id).includes(q);});
   const total=ids.length;const shown=ids.slice(0,searchShow);
   if(!total){el.innerHTML='<div class="sempty">검색 결과가 없어요</div>';return;}
-  const more=total>searchShow;el.innerHTML=`<div class="sgrid${more?' hasmore':''}">${shown.map(id=>{const w=DATA.works[id];return `<div class="scard" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15">${origBadge(id)}</div><div class="scap">${w.title||id}</div></div>`;}).join('')}</div>`+(more?`<div class="moreWrap"><button class="morebtn" onclick="searchShow+=10;renderSearch()">화보 ${Math.min(10,total-searchShow)}개 더 보기 <span>· 남은 ${total-searchShow}개</span></button></div>`:'');
+  const more=total>searchShow;el.innerHTML=`<div class="sgrid${more?' hasmore':''}">${shown.map(id=>{const w=DATA.works[id];return `<div class="scard" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${w.img||''}" onerror="this.style.opacity=.15">${origBadge(id)}${topBadge(id)}</div><div class="scap">${w.title||id}</div></div>`;}).join('')}</div>`+(more?`<div class="moreWrap"><button class="morebtn" onclick="searchShow+=10;renderSearch()">화보 ${Math.min(10,total-searchShow)}개 더 보기 <span>· 남은 ${total-searchShow}개</span></button></div>`:'');
 }
 function renderModelCards(wi){document.getElementById('modelCards').innerHTML=monthModels(wi).slice(0,5).map(m=>`<div class="mcard ${m.rank===1?'top1':''}" data-id="${m.id}" onclick="openModelModal(this.dataset.id)" style="cursor:pointer"><div class="mrank">${m.rank}</div><img src="${modelImg(m.id)}" alt=""><div class="mn">${modelTag(m.id)}${m.id}</div><div class="mp">${m.pts.toLocaleString()}<small> pt</small></div></div>`).join('');}
 function setTab(t){state.tab=t;render();}

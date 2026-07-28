@@ -351,7 +351,7 @@ footer .fb b{color:var(--red)}
   <section class="section" id="promo"><div id="promoZone"></div></section>
   <section class="section" id="sub"><div class="sec-head"><div class="sec-title">지금 구독하면 볼 수 있어요 <small>SUBSCRIPTION</small></div></div><div id="subCards"></div></section>
   <section class="section" id="next"><div class="sec-head"><div class="sec-title">앞으로 공개될 신작 <small>COMING SOON</small></div></div><div id="nextCards"></div></section>
-  <section class="section" id="featured"><div class="sec-head"><div class="sec-title">이번 주 추천 모델 <small>PICK</small></div></div><div class="featWrap" id="featBox"></div></section>
+  <section class="section" id="featured"><div class="sec-head"><div class="sec-title">맥심의 추천 모델 <small>MAXIM'S PICK</small></div></div><div class="featWrap" id="featBox"></div></section>
     <section class="section" id="search">
     <div class="sec-head"><div class="sec-title">화보 찾아보기 <small>SEARCH</small></div></div>
     <div class="searchbar"><input id="searchInput" placeholder="모델명 · 화보 제목 검색" oninput="searchShow=12;renderSearch()"></div>
@@ -604,15 +604,18 @@ function renderKatalk(){
   btn.onclick=function(){try{if(window.track)track('click_kakao');}catch(e){}if(!url){return false;}};
   document.getElementById('katalkNote').style.display=url?'none':'block';
 }
+let featPicked=null,featPickedSig=null;
+function _featPool(){const hasW=m=>Object.keys(DATA.works).some(id=>(DATA.works[id].models||[]).includes(m));let pool=(DATA.featuredModels||[]).filter(hasW);if(!pool.length){const all=new Set();Object.keys(DATA.works).forEach(id=>(DATA.works[id].models||[]).forEach(m=>all.add(m)));pool=[...all].filter(hasW);}return pool;}
+function pickFeatured(){const pool=_featPool();if(!pool.length)return null;const sig=(DATA.featuredModels||[]).join('|')||'__ALL__';if(featPicked&&featPickedSig===sig&&pool.includes(featPicked))return featPicked;featPicked=pool[Math.floor(Math.random()*pool.length)];featPickedSig=sig;return featPicked;}
 function renderFeatured(){
-  const sec=document.getElementById('featured');if(!sec)return;const name=DATA.featuredModel;
+  const sec=document.getElementById('featured');if(!sec)return;const name=pickFeatured();
   let works=name?Object.keys(DATA.works).filter(id=>(DATA.works[id].models||[]).includes(name)):[];
   if(!name||!works.length){sec.style.display='none';return;}sec.style.display='';
   if(featOrderModel!==name||!featOrder){featOrder=shuffleArr(works);featOrderModel=name;}
   works=featOrder.filter(id=>DATA.works[id]&&(DATA.works[id].models||[]).includes(name));
   const box=document.getElementById('featBox');
   box.style.background=DATA.featuredBg||'linear-gradient(120deg,#16161a,#5a0a12)';
-  box.innerHTML=`<div class="featL"><div class="featEy">이번 주 추천 모델</div><div class="featNm">${modelTag(name)}${name}</div><a class="featCta" onclick="openModelModal('${name}')">모델 보기 ›</a></div><div class="featR"><div class="strip">${works.map(id=>`<div class="poster" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${DATA.works[id].img||''}" onerror="this.style.opacity=.15"></div></div>`).join('')}</div></div>`;
+  box.innerHTML=`<div class="featL"><div class="featEy">맥심의 추천 모델</div><div class="featNm">${modelTag(name)}${name}</div><a class="featCta" onclick="openModelModal('${name}')">모델 보기 ›</a></div><div class="featR"><div class="strip">${works.map(id=>`<div class="poster" onclick="openWorkModal('${id}')"><div class="pimg"><img src="${DATA.works[id].img||''}" onerror="this.style.opacity=.15"></div></div>`).join('')}</div></div>`;
 }
 function shuffleArr(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 let searchFilter='all', searchShow=10, searchBase=[];

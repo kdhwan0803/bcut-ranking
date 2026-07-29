@@ -5,6 +5,12 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0M1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
 
 <title>B컷 이상형 월드컵</title>
+<meta name="description" content="화보 이상형 월드컵 · 두 화보 중 더 끌리는 쪽을 골라 나만의 최애 화보를 찾아보세요.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="B컷 이상형 월드컵">
+<meta property="og:description" content="두 화보 중 더 끌리는 쪽을 골라 나만의 최애 화보를 찾아보세요. MAXIM B컷.">
+<meta property="og:image" content="https://i.ibb.co/WpB1gcLw/opt.webp">
+<meta name="twitter:card" content="summary_large_image">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
 :root{--red:#E60012;--ink:#16161a;--mut:#8a8a92;--line:#ececed;--bg:#f4f5f7}
@@ -88,8 +94,43 @@ a{color:inherit}
 footer{text-align:center;padding:30px 0 50px;color:#9a9aa2;font-size:12px;line-height:1.8}
 footer .fb{font-family:'Arial Black',sans-serif;font-weight:900;font-size:15px;color:var(--ink);letter-spacing:1px;margin-bottom:8px}
 footer .fb b{color:var(--red)}
+.ageGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(18,18,24,.5);backdrop-filter:blur(24px) saturate(.85);-webkit-backdrop-filter:blur(24px) saturate(.85)}
+.ageBox{max-width:360px;width:100%;background:#fff;border-radius:22px;padding:30px 26px 24px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:ageUp .3s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes ageUp{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.ageBadge{width:60px;height:60px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(135deg,#f0554a,#e5352b);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:900;color:#fff;box-shadow:0 8px 24px rgba(229,53,43,.35)}
+.ageTitle{font-size:19px;font-weight:900;color:#1a1a1f;letter-spacing:-.3px}
+.ageDesc{font-size:13.5px;line-height:1.65;color:#666;margin-top:10px}
+.ageDesc b{color:#1a1a1f}
+.ageBtns{display:flex;flex-direction:column;gap:9px;margin-top:22px}
+.ageBtns button{border:0;font-family:inherit;font-size:14.5px;font-weight:800;padding:14px;border-radius:12px;cursor:pointer;transition:transform .12s}
+.ageBtns button:hover{transform:translateY(-1px)}
+.ageIn{background:linear-gradient(120deg,#f0554a,#e5352b);color:#fff}
+.ageMinor{background:#f2f2f5;color:#555}
+.ageNote{font-size:11px;color:#9a9aa2;margin-top:14px;line-height:1.6}
+.b19blur{filter:blur(10px)!important;transform:scale(1.04)}
+.b19w{position:relative}
+.b19w::after{content:"19+";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;background:rgba(229,53,43,.92);color:#fff;font-size:12px;font-weight:900;padding:4px 10px;border-radius:999px;box-shadow:0 3px 10px rgba(0,0,0,.4);pointer-events:none;letter-spacing:.5px}
 </style></head>
 <body>
+<div id="ageGate" class="ageGate">
+  <div class="ageBox">
+    <div class="ageBadge">19+</div>
+    <div class="ageTitle">잠깐, 나이를 확인할게요</div>
+    <div class="ageDesc">이 사이트에는 <b>만 19세 이상</b> 성인 화보가 포함돼 있어요.<br>선택에 따라 19금 이미지가 흐리게 표시됩니다.</div>
+    <div class="ageBtns">
+      <button class="ageIn" onclick="setAge('adult')">만 19세 이상 · 모두 보기</button>
+      <button class="ageMinor" onclick="setAge('minor')">만 19세 미만 · 19금은 가리기</button>
+    </div>
+    <div class="ageNote">선택은 이 기기에 저장돼요.</div>
+  </div>
+</div>
+<script>
+function getAge(){try{return localStorage.getItem('bcut_age')||'';}catch(e){return '';}}
+function openAgeGate(){var g=document.getElementById('ageGate');if(g)g.style.display='flex';}
+function ageBlurScan(){try{if(typeof DATA==='undefined'||!DATA||!DATA.works)return;var minor=getAge()==='minor';if(!minor){document.querySelectorAll('img.b19blur').forEach(function(i){i.classList.remove('b19blur');});document.querySelectorAll('.b19w').forEach(function(e){e.classList.remove('b19w');});return;}var els=document.querySelectorAll('[onclick*="openWorkModal("],a[href*="/work/"],[data-wid]');els.forEach(function(el){var id=null,oc=el.getAttribute('onclick')||'',m=oc.match(/openWorkModal\('([^']+)'\)/);if(m)id=m[1];if(!id){var h=el.getAttribute('href')||'',hm=h.match(/\/work\/([^\/?#]+)/);if(hm)id=decodeURIComponent(hm[1]);}if(!id)id=el.getAttribute('data-wid');if(id&&DATA.works[id]&&DATA.works[id].b19){var _bl=function(im){im.classList.add('b19blur');if(im.parentElement)im.parentElement.classList.add('b19w');};el.querySelectorAll('img').forEach(_bl);if(el.tagName==='IMG')_bl(el);}});}catch(e){}}
+function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=document.getElementById('ageGate');if(g)g.style.display='none';document.body.classList.toggle('age-minor',m==='minor');ageBlurScan();}
+(function(){try{var a=getAge();if(a){var g=document.getElementById('ageGate');if(g)g.style.display='none';document.body.classList.toggle('age-minor',a==='minor');}var _p=false;function _s(){if(_p)return;_p=true;(window.requestAnimationFrame||window.setTimeout)(function(){_p=false;if(getAge()==='minor')ageBlurScan();});}if(window.MutationObserver&&document.body){new MutationObserver(_s).observe(document.body,{childList:true,subtree:true});}}catch(e){}})();
+</script>
 <nav class="nav"><div class="nav-in">
   <a class="brand" href="index.html"><img src="https://i.ibb.co/WpB1gcLw/opt.webp" alt="MAXIM B컷"><span>PLAY</span></a>
   <div class="menu"><a href="index.html">랭킹</a><a class="on" href="worldcup.html">이상형 월드컵</a></div>
@@ -128,7 +169,7 @@ footer .fb b{color:var(--red)}
   <section class="champ" id="champ"></section>
 </div>
 
-<footer><div class="fb">MAXIM <b>B컷</b></div>이상형 월드컵 · 화보 데이터 기준<br><a href="index.html" style="color:var(--mut);text-decoration:underline">랭킹 보러가기</a></footer>
+<footer><div class="fb">MAXIM <b>B컷</b></div>이상형 월드컵 · 화보 데이터 기준<br><a href="index.html" style="color:var(--mut);text-decoration:underline">랭킹 보러가기</a> · <a onclick="openAgeGate()" style="color:var(--mut);text-decoration:underline;cursor:pointer">연령 설정 변경</a></footer>
 
 <script>
 const WKEY='bcut_wc_v1';
@@ -162,7 +203,7 @@ function renderHOF(){
   const s=loadStats();const el=document.getElementById('hof');
   const arr=Object.keys(s.wins).map(id=>({id,c:s.wins[id]})).sort((a,b)=>b.c-a.c).slice(0,5);
   el.innerHTML=`<h3>내 픽 명예의 전당 <small>${s.plays||0}회 플레이</small></h3>`+
-    (arr.length?arr.map((x,i)=>{const w=workById(x.id);return `<div class="hofrow ${i===0?'top1':''}"><div class="r">${i+1}</div><img src="${w.img||''}" onerror="this.style.opacity=.15"><div class="t">${w.title||x.id}</div><div class="c">${x.c}<small>회 우승</small></div></div>`;}).join('')
+    (arr.length?arr.map((x,i)=>{const w=workById(x.id);return `<div class="hofrow ${i===0?'top1':''}" data-wid="${x.id}"><div class="r">${i+1}</div><img src="${w.img||''}" onerror="this.style.opacity=.15"><div class="t">${w.title||x.id}</div><div class="c">${x.c}<small>회 우승</small></div></div>`;}).join('')
       :'<div class="empty">아직 플레이 기록이 없어요. 첫 우승 화보를 뽑아보세요!</div>');
 }
 
@@ -181,12 +222,12 @@ function renderMatch(){
   document.getElementById('roundLabel').innerHTML=(bracket.length===2?'<b>결승</b>':roundName(bracket.length));
   document.getElementById('prog').textContent=bracket.length===2?'마지막 한 판':`${cur} / ${total} 경기`;
   document.getElementById('pbarFill').style.width=(cur/total*100)+'%';
-  document.getElementById('pickA').innerHTML=card(a);
-  document.getElementById('pickB').innerHTML=card(b);
+  document.getElementById('pickA').innerHTML=card(a,bracket[mi]);
+  document.getElementById('pickB').innerHTML=card(b,bracket[mi+1]);
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function card(w){
-  return `<div class="ph"><img src="${w.img||''}" onerror="this.style.opacity=.15" alt=""></div>
+function card(w,id){
+  return `<div class="ph" data-wid="${id||''}"><img src="${w.img||''}" onerror="this.style.opacity=.15" alt=""></div>
   <div class="pb"><div class="pt">${w.title||'-'}</div><div class="pm">${(w.models||[]).join(' & ')||'—'}</div><div class="badges">${badges(w)}</div></div>`;
 }
 function choose(side){
@@ -200,7 +241,7 @@ function endGame(id){
   document.getElementById('stage').style.display='none';
   const el=document.getElementById('champ'); el.style.display='block';
   el.innerHTML=`<div class="crown">👑</div><div class="eyt">MY No.1 화보</div>
-    <div class="cwrap"><div class="ph"><img src="${w.img||''}" onerror="this.style.opacity=.15" alt=""></div>
+    <div class="cwrap"><div class="ph" data-wid="${id}"><img src="${w.img||''}" onerror="this.style.opacity=.15" alt=""></div>
       <div class="cb"><div class="ct">${w.title||id} ${badges(w)}</div><div class="cm">${(w.models||[]).join(' & ')||'—'}</div></div></div>
     <div class="acts">
       <a class="red" href="https://bcut.maximkorea.net/work/${id}" target="_blank">B컷에서 보기 ›</a>

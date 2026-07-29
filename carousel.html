@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B컷 랭킹 카드뉴스 생성기</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--red:#E60012;--pnl:#17171d;--line:#2a2a33;--mut:#9a9aa6;--soft:#1e1e26}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0b0b0e;color:#eee;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased;padding:18px 14px 60px}
+.wrap{max-width:1140px;margin:0 auto}
+h1{font-size:20px;font-weight:900;letter-spacing:-.4px}h1 b{color:var(--red)}
+.tip{color:var(--mut);font-size:13px;margin-top:6px;line-height:1.6}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;align-items:center}
+.btn{border:0;font-family:inherit;font-weight:800;font-size:13.5px;padding:11px 16px;border-radius:10px;cursor:pointer}
+.btn.p{background:var(--red);color:#fff}.btn.g{background:#23232c;color:#ddd}.btn.dl{background:#12b76a;color:#fff}.btn.b{background:#2b6cff;color:#fff}
+.grid{display:grid;grid-template-columns:350px 1fr;gap:18px}
+@media(max-width:840px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--pnl);border:1px solid var(--line);border-radius:14px;padding:16px}
+.panel h2{font-size:14px;font-weight:800;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+label{display:block;font-size:12px;color:var(--mut);font-weight:700;margin:10px 0 5px}
+input{width:100%;background:var(--soft);border:1px solid var(--line);border-radius:9px;color:#fff;font-family:inherit;font-size:14px;padding:10px 12px}
+input::placeholder{color:#6a6a76}
+.chkline{display:flex;gap:16px;margin-top:9px;align-items:center}
+.chkline label{display:inline-flex;align-items:center;gap:5px;margin:0;color:#ccc;font-size:13px}
+.chkline input{width:auto}
+.filebtn{display:inline-block;background:#23232c;border:1px solid var(--line);border-radius:9px;padding:9px 14px;font-size:12.5px;font-weight:700;cursor:pointer;color:#ddd}
+.cardrow{background:var(--soft);border:1px solid var(--line);border-radius:11px;padding:12px;margin-top:10px}
+.cardrow .top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:800;color:#ccc}
+.cardrow .rm{background:none;border:0;color:#ff6b6b;font-weight:800;cursor:pointer;font-size:12px}
+.mv{background:none;border:1px solid var(--line);color:#aaa;border-radius:6px;cursor:pointer;font-weight:800;padding:2px 8px;font-size:12px}
+.thumb{width:44px;height:55px;object-fit:cover;border-radius:6px;background:#000;border:1px solid var(--line)}
+.ratio{display:inline-flex;background:#23232c;border-radius:8px;padding:3px;gap:2px}
+.ratio button{background:none;border:0;color:#999;font-weight:800;font-size:12px;padding:6px 12px;border-radius:6px;cursor:pointer}
+.ratio button.on{background:var(--red);color:#fff}
+.preview{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.slot{background:var(--pnl);border:1px solid var(--line);border-radius:12px;padding:10px}
+.slot .lab{font-size:11.5px;color:var(--mut);font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.stage{overflow:hidden;border-radius:8px}
+.card{position:relative;overflow:hidden;background:#151519;color:#fff;font-family:'Pretendard',sans-serif;transform-origin:top left}
+.c-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.c-img.ph{display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#1c1c22,#1c1c22 26px,#191920 26px,#191920 52px);color:#5a5a66;font-weight:800;text-align:center;line-height:1.5}
+.sh-top{position:absolute;left:0;right:0;top:0;height:34%;background:linear-gradient(rgba(8,4,6,.72),transparent)}
+.sh-bot{position:absolute;left:0;right:0;bottom:0;height:56%;background:linear-gradient(transparent,rgba(8,4,6,.5) 40%,rgba(8,4,6,.95))}
+.logo{position:absolute;left:64px;font-weight:900;letter-spacing:.5px}.logo b{color:#ff3b40}
+.badges{position:absolute;top:56px;left:60px;display:flex;gap:12px;align-items:center}
+.bdg{font-weight:900;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.bdg.top{background:var(--red);color:#fff}
+.bdg.n19{background:var(--red);color:#fff}
+.bdg.vid{background:#111;color:#fff;border:2px solid #333;gap:6px}
+.num{position:absolute;right:56px;font-family:'Arial Black','Pretendard',sans-serif;font-weight:900;color:#fff;line-height:.8;letter-spacing:-6px;text-shadow:0 4px 30px rgba(0,0,0,.4)}
+.title{position:absolute;left:64px;right:64px;font-weight:900;letter-spacing:-2px;line-height:1.02}
+.model{position:absolute;left:66px;font-weight:800;color:#ff3b40}
+.blogo{position:absolute;left:64px;font-weight:900;letter-spacing:.5px}.blogo b{color:#ff3b40}
+.swipe{position:absolute;left:0;right:0;text-align:center;font-weight:800;color:#fff;opacity:.9}
+.cov-t{position:absolute;left:64px;right:64px;font-weight:900;letter-spacing:-3px;line-height:1.06}
+.cov-t .r{color:#ff3b40}
+.cov-week{position:absolute;left:66px;font-weight:700;color:#e7cfd1}
+.hint{color:var(--mut);font-size:12px;margin-top:8px;line-height:1.6}
+.warn{background:#2a1a0a;border:1px solid #6b4a12;border-radius:10px;padding:11px 13px;font-size:12.3px;color:#e8c98a;line-height:1.6;margin-top:12px}
+.ok{background:#0e2a1c;border:1px solid #1f6b47;color:#7fe0ad}
+.card.nf .sh-top{height:42%;background:linear-gradient(rgba(0,0,0,.62),transparent)}
+.card.nf .sh-bot{height:72%;background:linear-gradient(transparent,rgba(0,0,0,.5) 32%,#000)}
+.card.nf .num{color:transparent;-webkit-text-stroke:7px rgba(255,255,255,.95);text-shadow:0 6px 30px rgba(0,0,0,.5)}
+.nf-rib{background:var(--red);color:#fff;border-radius:10px;padding:12px 16px 10px;display:flex;flex-direction:column;align-items:center;line-height:1;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.nf-rib span{font-size:26px;font-weight:900;letter-spacing:4px}
+.nf-rib b{font-size:64px;font-weight:900;margin-top:3px}
+.nf-hot{position:absolute;left:64px;background:var(--red);color:#fff;font-weight:900;border-radius:8px}
+.nf-new{background:linear-gradient(135deg,#10e0b0,#12b6d6);color:#062018;font-weight:900;font-size:40px;padding:12px 28px;border-radius:12px;box-shadow:0 8px 30px rgba(16,224,176,.45);letter-spacing:2px}
+.new-date{background:rgba(6,32,24,.72);border:2px solid #10e0b0;color:#8fffe0;font-weight:800;font-size:32px;padding:9px 20px;border-radius:12px;display:flex;align-items:center}
+.new-wm{position:absolute;font-family:'Arial Black','Pretendard',sans-serif;font-weight:900;color:transparent;-webkit-text-stroke:6px rgba(16,224,176,.5);letter-spacing:-4px;line-height:.8}
+.card.newmode .sh-top{height:40%;background:linear-gradient(rgba(4,22,18,.6),transparent)}
+</style></head>
+<body>
+<div class="wrap">
+  <h1>B컷 <b>랭킹 카드뉴스</b> 생성기</h1>
+  <div class="tip">스크린샷 없이 배너 스타일 카드를 <b>PNG로 바로 저장</b>. <b>data.json</b>을 넣으면 이번 주 랭킹으로 자동 생성돼요.</div>
+
+  <div class="bar">
+    <label class="btn b">📥 data.json 불러오기<input type="file" accept=".json,application/json" style="display:none" onchange="loadData(this)"></label>
+    <button class="btn p" onclick="addCard()">＋ 카드 추가</button>
+    <button class="btn dl" onclick="downloadAll()">⬇ 전체 PNG 저장</button>
+    <button class="btn g" onclick="sampleFill()">🎲 예시</button>
+    <span class="ratio" style="margin-left:6px"><button id="mBest" class="on" onclick="setMode('best')">🏆 BEST</button><button id="mNew" onclick="setMode('new')">🆕 신작</button></span>
+    <button class="btn g" id="nfBtn" onclick="toggleNf()">🎬 넷플릭스 OFF</button>
+    <span class="ratio" style="margin-left:auto">
+      <button id="r45" class="on" onclick="setRatio('45')">세로 4:5</button>
+      <button id="r11" onclick="setRatio('11')">정사각 1:1</button>
+    </span>
+  </div>
+  <div id="loadMsg"></div>
+
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <h2>표지 &amp; 공통</h2>
+        <label>표지 제목 (윗줄)</label><input id="g_t1" value="이번주 BEST 화보" oninput="render()">
+        <label>표지 강조 (빨강 · 아랫줄)</label><input id="g_t2" value="TOP 5" oninput="render()">
+        <label>주차 라벨</label><input id="g_week" value="7월 1주차 업데이트" oninput="render()">
+        <label>표지 배경 이미지</label>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+          <label class="filebtn">📁 업로드<input type="file" accept="image/*" style="display:none" onchange="pickCover(this)"></label>
+          <span class="hint" style="margin:0" id="covState">1위 이미지 자동 사용</span>
+        </div>
+        <div class="warn">⚠️ 배포 채널(인스타 등) 정책을 확인하세요. 19금/노출 이미지는 채널에 따라 제재될 수 있어요. 필요하면 얼굴 위주 컷으로 교체.</div>
+      </div>
+      <div class="panel" style="margin-top:14px">
+        <h2>랭킹 카드 <span id="cnt" style="color:var(--mut);font-weight:700"></span></h2>
+        <div id="list"></div>
+        <div class="hint">순위는 위에서부터 자동. ▲▼로 순서 변경. 제목·모델·19·영상 개별 수정 가능.</div>
+      </div>
+    </div>
+    <div><div class="preview" id="preview"></div></div>
+  </div>
+</div>
+
+<script>
+let cards=[]; let uid=1; let coverImg=''; let RATIO='45'; let NETFLIX=false; let MODE='best'; let _lastData=null;
+const $=id=>document.getElementById(id);
+const dims=()=>RATIO==='45'?{w:1080,h:1350}:{w:1080,h:1080};
+
+function addCard(d){d=d||{};cards.push({id:uid++,title:d.title||'',model:d.model||'',img:d.img||'',b19:!!d.b19,vid:!!d.vid,date:d.date||''});render();}
+function removeCard(id){cards=cards.filter(c=>c.id!==id);render();}
+function move(id,dir){const i=cards.findIndex(c=>c.id===id);const j=i+dir;if(j<0||j>=cards.length)return;const t=cards[i];cards[i]=cards[j];cards[j]=t;render();}
+function setF(id,k,v){const c=cards.find(x=>x.id===id);if(c){c[k]=v;render();}}
+function pickImg(id,inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>setF(id,'img',e.target.result);r.readAsDataURL(f);}
+function pickCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverImg=e.target.result;$('covState').textContent='업로드된 이미지 사용';render();};r.readAsDataURL(f);}
+function setRatio(r){RATIO=r;$('r45').className=r==='45'?'on':'';$('r11').className=r==='11'?'on':'';render();}
+function toggleNf(){NETFLIX=!NETFLIX;var b=$('nfBtn');b.textContent=NETFLIX?'🎬 넷플릭스 ON':'🎬 넷플릭스 OFF';b.style.background=NETFLIX?'var(--red)':'#23232c';b.style.color='#fff';render();}
+function setMode(m){MODE=m;$('mBest').className=m==='best'?'on':'';$('mNew').className=m==='new'?'on':'';$('nfBtn').style.display=m==='best'?'':'none';if(m==='new'){$('g_t1').value='이번 주 신작 화보';$('g_t2').value='NEW';}else{$('g_t1').value='이번주 BEST 화보';$('g_t2').value='TOP 5';}if(_lastData)applyData(_lastData);else render();}
+
+function applyData(d,srcLabel){
+  _lastData=d;
+  let ids=[];
+  if(MODE==='new'){
+    let arr=Object.keys(d.works||{}).map(id=>({id:id,w:(d.works||{})[id]})).filter(x=>x.w&&x.w.img);
+    arr.sort((a,b)=>String(b.w.pub||'').localeCompare(String(a.w.pub||'')));
+    ids=arr.slice(0,5).map(x=>x.id);
+  } else {
+    if(Array.isArray(d.weeks)&&d.weeks.length){
+      const wk=d.weeks.slice().reverse().find(w=>Array.isArray(w.ranking)&&w.ranking.length);
+      if(wk){ids=wk.ranking.slice();if(wk.label)$('g_week').value=wk.label+' 업데이트';}
+    }
+    if(!ids.length){ids=Object.keys(d.works||{}).slice(0,5);}
+  }
+  ids=ids.slice(0,5);
+  cards=[];uid=1;
+  ids.forEach(id=>{const w=(d.works||{})[id]||{};addCard({title:(w.title||id),model:(w.models||[]).join(', '),img:w.img||'',b19:!!w.b19,vid:!!w.vid,date:w.pub||''});});
+  if(ids.length){const w=(d.works||{})[ids[0]]||{};coverImg=w.img||'';$('covState').textContent='1위/최신 이미지 자동 사용';}
+  if(MODE==='best')$('g_t2').value='TOP '+Math.min(5,ids.length||5);else $('g_t2').value='NEW';
+  msg((srcLabel||'불러오기')+' 완료 ✓ '+(MODE==='new'?'최신 신작':'이번 주 랭킹')+' '+cards.length+'개 카드 생성',true);
+  render();
+}
+function loadData(inp){
+  const f=inp.files[0];if(!f)return;const r=new FileReader();
+  r.onload=e=>{try{applyData(JSON.parse(e.target.result));}catch(err){msg('data.json을 읽지 못했어요: '+err.message,false);}};
+  r.readAsText(f,'UTF-8');inp.value='';
+}
+function msg(t,ok){$('loadMsg').innerHTML='<div class="warn '+(ok?'ok':'')+'" style="margin:0 0 4px">'+t+'</div>';setTimeout(function(){$('loadMsg').innerHTML='';},6000);}
+
+function scaled(inner,id){
+  const {w,h}=dims();const disp=RATIO==='45'?270:240;const pw=Math.round(w*(disp/h));
+  return '<div class="stage" style="width:'+pw+'px;height:'+disp+'px"><div class="card'+(NETFLIX&&MODE==='best'?' nf':'')+(MODE==='new'?' newmode':'')+'" id="'+id+'" style="width:'+w+'px;height:'+h+'px;transform:scale('+(disp/h)+')">'+inner+'</div></div>';
+}
+function coverInner(){
+  const img=coverImg?'<img class="c-img" crossorigin="anonymous" src="'+proxied(coverImg)+'">':'<div class="c-img ph" style="font-size:34px">표지 이미지<br>(1위/최신 자동 or 업로드)</div>';
+  const h=dims().h;const isNew=MODE==='new';const acc=isNew?'#10e0b0':'#ff3b40';
+  const showHot=isNew||NETFLIX;const hotTxt=isNew?'🆕 방금 공개된 신작':'🔥 이번 주 가장 많이 본 화보';const hotBg=isNew?'#0e9e7a':'var(--red)';
+  return img+'<div class="sh-top"></div><div class="sh-bot"></div>'+
+   '<div class="logo" style="top:60px;font-size:40px">MAXIM <b>B컷</b></div>'+
+   (showHot?'<div class="nf-hot" style="top:130px;font-size:34px;padding:10px 22px;background:'+hotBg+'">'+hotTxt+'</div>':'')+
+   '<div class="cov-t" style="bottom:'+(h*.36)+'px;font-size:104px">'+esc($('g_t1').value)+'<br><span style="color:'+acc+'">'+esc($('g_t2').value)+'</span></div>'+
+   '<div class="cov-week" style="bottom:'+(h*.28)+'px;font-size:38px">'+esc($('g_week').value)+'</div>'+
+   '<div class="swipe" style="bottom:70px;font-size:38px">'+(isNew?'→ 신작 넘겨보기':(NETFLIX?'▶ 지금 보러가기':'→ 넘겨서 확인하기'))+'</div>';
+}
+function cardInner(c,i){
+  if(MODE==='new')return cardInnerNew(c,i);
+  const {w,h}=dims();
+  const img=c.img?'<img class="c-img" crossorigin="anonymous" src="'+proxied(c.img)+'">':'<div class="c-img ph" style="font-size:40px">이미지를 넣어주세요</div>';
+  let bd;
+  if(NETFLIX){bd='<div class="nf-rib"><span>TOP</span><b>'+(i+1)+'</b></div>';}
+  else{bd='<div class="bdg top" style="font-size:40px;padding:12px 26px">TOP '+(i+1)+'</div>';}
+  if(c.b19)bd+='<div class="bdg n19" style="font-size:38px;width:64px;height:64px;border-radius:14px">19</div>';
+  if(c.vid)bd+='<div class="bdg vid" style="font-size:34px;padding:10px 22px">▶ 영상</div>';
+  const tsize=(c.title||'').length>16?76:96;
+  return img+'<div class="sh-top"></div><div class="sh-bot"></div>'+
+   '<div class="badges">'+bd+'</div>'+
+   '<div class="num" style="top:'+(h*.09)+'px;font-size:'+(w*.30)+'px">'+(i+1)+'</div>'+
+   '<div class="title" style="bottom:'+(h*.155)+'px;font-size:'+tsize+'px">'+(esc(c.title)||'제목')+'</div>'+
+   '<div class="model" style="bottom:'+(h*.108)+'px;font-size:44px">'+(esc(c.model)||'모델')+'</div>'+
+   '<div class="blogo" style="bottom:'+(h*.05)+'px;font-size:36px">MAXIM <b>B컷</b></div>';
+}
+function cardInnerNew(c,i){
+  const {w,h}=dims();
+  const img=c.img?'<img class="c-img" crossorigin="anonymous" src="'+proxied(c.img)+'">':'<div class="c-img ph" style="font-size:40px">이미지를 넣어주세요</div>';
+  let bd='<div class="nf-new">NEW</div>';
+  if(c.date)bd+='<div class="new-date">'+esc(fdate(c.date))+' 공개</div>';
+  if(c.b19)bd+='<div class="bdg n19" style="font-size:38px;width:64px;height:64px;border-radius:14px">19</div>';
+  if(c.vid)bd+='<div class="bdg vid" style="font-size:34px;padding:10px 22px">▶ 영상</div>';
+  const tsize=(c.title||'').length>16?76:96;
+  return img+'<div class="sh-top"></div><div class="sh-bot"></div>'+
+   '<div class="new-wm" style="top:'+(h*.13)+'px;right:56px;font-size:'+(w*.17)+'px">NEW</div>'+
+   '<div class="badges" style="flex-wrap:wrap;max-width:940px;gap:14px">'+bd+'</div>'+
+   '<div class="title" style="bottom:'+(h*.155)+'px;font-size:'+tsize+'px">'+(esc(c.title)||'제목')+'</div>'+
+   '<div class="model" style="bottom:'+(h*.108)+'px;font-size:44px;color:#10e0b0">'+(esc(c.model)||'모델')+'</div>'+
+   '<div class="blogo" style="bottom:'+(h*.05)+'px;font-size:36px">MAXIM <b>B컷</b></div>';
+}
+function fdate(s){s=String(s||'');var m=s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);if(m)return parseInt(m[2],10)+'월 '+parseInt(m[3],10)+'일';return s;}
+function closingInner(){
+  const h=dims().h;
+  return '<div style="position:absolute;inset:0;background:linear-gradient(160deg,#151519,#2a0a10 78%,#3a0a12)"></div>'+
+   '<div class="logo" style="top:64px;font-size:40px">MAXIM <b>B컷</b></div>'+
+   '<div class="cov-t" style="top:'+(h*.34)+'px;text-align:center;left:64px;right:64px;font-size:92px">전체 랭킹은<br><span class="r">사이트에서</span></div>'+
+   '<div style="position:absolute;left:64px;right:64px;top:'+(h*.58)+'px;text-align:center;font-size:42px;color:#cfc2c4;font-weight:600;line-height:1.5">이번 주 화보·모델 전체 순위<br>프로필 링크에서 확인 →</div>'+
+   '<div style="position:absolute;left:50%;bottom:130px;transform:translateX(-50%);background:var(--red);color:#fff;font-size:40px;font-weight:900;padding:24px 56px;border-radius:999px;white-space:nowrap">bcut.maximkorea.net</div>';
+}
+
+function renderList(){
+  $('cnt').textContent='· '+cards.length+'개';
+  $('list').innerHTML=cards.map(function(c,i){return '<div class="cardrow">'+
+     '<div class="top"><span>TOP '+(i+1)+'</span>'+
+       '<span><button class="mv" onclick="move('+c.id+',-1)">▲</button> <button class="mv" onclick="move('+c.id+',1)">▼</button> <button class="rm" onclick="removeCard('+c.id+')">삭제</button></span></div>'+
+     '<div style="display:flex;gap:10px;margin-top:9px;align-items:center">'+
+       (c.img?'<img class="thumb" src="'+c.img+'">':'<div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:9px;color:#666">이미지</div>')+
+       '<label class="filebtn">📁 이미지<input type="file" accept="image/*" style="display:none" onchange="pickImg('+c.id+',this)"></label></div>'+
+     '<input style="margin-top:9px" placeholder="제목 (예: SUPER NUDE)" value="'+esc(c.title).replace(/"/g,'&quot;')+'" oninput="setF('+c.id+',\'title\',this.value)">'+
+     '<input style="margin-top:7px" placeholder="모델 / 수식어 (예: 미스맥심 박서이)" value="'+esc(c.model).replace(/"/g,'&quot;')+'" oninput="setF('+c.id+',\'model\',this.value)">'+(MODE==='new'?'<input style="margin-top:7px" placeholder="공개일 (예: 2026-07-26 · 오늘 공개)" value="'+esc(c.date||'').replace(/"/g,'&quot;')+'" oninput="setF('+c.id+',\'date\',this.value)">':'')+
+     '<div class="chkline">'+
+       '<label><input type="checkbox" '+(c.b19?'checked':'')+' onchange="setF('+c.id+',\'b19\',this.checked)"> 19</label>'+
+       '<label><input type="checkbox" '+(c.vid?'checked':'')+' onchange="setF('+c.id+',\'vid\',this.checked)"> ▶ 영상</label>'+
+     '</div></div>';}).join('')||'<div class="hint">카드가 없어요. data.json을 불러오거나 "＋ 카드 추가"로 시작하세요.</div>';
+}
+function slot(lab,inner,id,fname){
+  return '<div class="slot"><div class="lab"><span>'+lab+'</span><button class="btn dl" style="padding:6px 12px;font-size:11px" onclick="dl(\''+id+'\',\''+fname+'\')">저장</button></div>'+scaled(inner,id)+'</div>';
+}
+function render(){
+  renderList();
+  let html=slot('표지',coverInner(),'card_cover','01_표지');
+  cards.forEach(function(c,i){html+=slot('TOP '+(i+1)+' '+(c.title||''),cardInner(c,i),'card_'+c.id,String(i+2).padStart(2,'0')+'_TOP'+(i+1));});
+  html+=slot('마무리',closingInner(),'card_closing','99_마무리');
+  $('preview').innerHTML=html;
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function proxied(u){if(!u)return u;if(u.indexOf('data:')===0)return u;return 'https://images.weserv.nl/?url='+encodeURIComponent(u.replace(/^https?:\/\//,''))+'&output=png';}
+
+async function dl(id,fname){
+  const el=document.getElementById(id);if(!el)return;
+  if(typeof html2canvas==='undefined'){alert('이미지 라이브러리 로딩 실패 — 인터넷 연결 후 새로고침.');return;}
+  const {w,h}=dims();
+  const clone=el.cloneNode(true);clone.style.transform='none';clone.style.position='static';
+  const holder=document.createElement('div');holder.style.cssText='position:fixed;left:-99999px;top:0;width:'+w+'px;height:'+h+'px;';
+  holder.appendChild(clone);document.body.appendChild(holder);
+  try{
+    const canvas=await html2canvas(clone,{width:w,height:h,scale:1,useCORS:true,backgroundColor:'#151519'});
+    const a=document.createElement('a');a.download='bcut_'+fname+'.png';a.href=canvas.toDataURL('image/png');a.click();
+  }catch(e){alert('저장 실패: '+e.message+'\\nURL 이미지는 보안(CORS)으로 막힐 수 있어요. 📁 업로드로 이미지를 넣으면 확실합니다.');}
+  document.body.removeChild(holder);
+}
+async function downloadAll(){
+  const ids=['card_cover'].concat(cards.map(function(c){return 'card_'+c.id;})).concat(['card_closing']);
+  const names=['01_표지'].concat(cards.map(function(c,i){return String(i+2).padStart(2,'0')+'_TOP'+(i+1);})).concat(['99_마무리']);
+  for(let i=0;i<ids.length;i++){await dl(ids[i],names[i]);await new Promise(function(r){setTimeout(r,500);});}
+}
+function sampleFill(){
+  cards=[];uid=1;coverImg='';
+  addCard({title:'SUPER NUDE',model:'지린',b19:true,vid:true,date:'2026-07-26'});
+  addCard({title:'BIKINI ROUND',model:'미스맥심 박서이',b19:true,date:'2026-07-25'});
+  addCard({title:'OIL MASSAGE',model:'예하',b19:true,vid:true,date:'2026-07-24'});
+  $('covState').textContent='표지 이미지를 업로드해 주세요';
+  render();
+}
+render();
+(function(){try{var raw=localStorage.getItem('bcut_carousel_data');if(raw){var d=JSON.parse(raw);localStorage.removeItem('bcut_carousel_data');applyData(d,'admin 데이터');}}catch(e){}})();
+</script>
+</body></html>

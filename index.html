@@ -342,6 +342,18 @@ footer .fb b{color:var(--red)}
   .mstats{gap:14px}
   .fchip{padding:7px 13px;font-size:12.5px}
 }
+#subscribe .subCard{background:linear-gradient(135deg,#17171c,#3a0a12);border-radius:20px;padding:30px 26px;color:#fff;box-shadow:0 10px 40px rgba(20,20,30,.14)}
+.subHd{font-size:22px;font-weight:900;letter-spacing:-.4px}
+.subHd b{color:#ff5a5f}
+.subSub{color:#cfc2c4;font-size:14px;margin-top:6px}
+.subBenefits{list-style:none;margin:20px 0 4px;display:flex;flex-direction:column;gap:11px}
+.subBenefits li{font-size:14.5px;line-height:1.5;color:#eee;display:flex;gap:9px;align-items:flex-start}
+.subBenefits li b{color:#fff;font-weight:800}
+.subForm{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+.subForm input{flex:1;min-width:180px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.22);border-radius:11px;color:#fff;font-family:inherit;font-size:15px;padding:14px 16px}
+.subForm input::placeholder{color:#b0a5a7}
+.subForm button{background:linear-gradient(120deg,#f0554a,#e5352b);color:#fff;border:0;font-family:inherit;font-weight:800;font-size:15px;padding:14px 26px;border-radius:11px;cursor:pointer;white-space:nowrap}
+.subNote{color:#9a8a8c;font-size:12px;margin-top:12px;text-align:center}
 .ageGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(18,18,24,.5);backdrop-filter:blur(24px) saturate(.85);-webkit-backdrop-filter:blur(24px) saturate(.85)}
 .ageBox{max-width:360px;width:100%;background:#fff;border-radius:22px;padding:30px 26px 24px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:ageUp .3s cubic-bezier(.2,.9,.3,1.2)}
 @keyframes ageUp{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
@@ -382,7 +394,7 @@ function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=docum
 <nav class="nav"><div class="nav-in">
   <a class="brand" href="index.html"><img src="https://i.ibb.co/WpB1gcLw/opt.webp" alt="MAXIM B컷"><span>RANKING</span></a>
   
-  <a class="nav-cta" href="https://bcut.maximkorea.net" target="_blank">B컷 바로가기</a>
+  <button onclick="openAgeGate()" style="background:#f2f2f5;border:0;color:#555;font-size:12.5px;font-weight:800;padding:9px 14px;border-radius:8px;cursor:pointer;margin-right:8px">🔞 연령 설정</button><a class="nav-cta" href="https://bcut.maximkorea.net" target="_blank">B컷 바로가기</a>
 </div></nav>
 <div class="wrap">
   <section id="bannerSec"></section>
@@ -419,6 +431,27 @@ function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=docum
 <section class="section" id="creators" style="display:none"><div class="sec-head"><div class="sec-title">작가별로 보기 <small>BY CREATOR</small></div></div><div class="filters" id="creatorChips"></div><div id="creatorWorks"></div></section>
 </div>
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="mbox" id="mbox"></div></div>
+<section class="section" id="subscribe">
+  <div class="subCard">
+    <div class="subHd">📧 B컷 위클리 <b>무료 구독</b></div>
+    <div class="subSub">매주 이메일로, 사이트에 없는 것까지 먼저 받아보세요.</div>
+    <ul class="subBenefits">
+      <li>🔓 <span>이번 주 화보 <b>구독자 전용 추가컷</b></span></li>
+      <li>⚡ <span>타임세일·패키지세일을 <b>제일 먼저</b> — 메일 받고 바로 구매</span></li>
+      <li>📊 <span>사이트엔 없는 <b>TOP 30 풀랭킹</b></span></li>
+      <li>📬 <span>랭킹·신작 소식을 <b>메일로 한눈에</b> (사이트 안 들어와도)</span></li>
+    </ul>
+    <!-- ▼▼▼ 스티비 폼 자리: 사무실에서 스티비 임베드 코드를 아래 #stibeeForm 안에 붙여넣으세요 (임시 폼은 지우면 됨) ▼▼▼ -->
+    <div id="stibeeForm">
+      <form class="subForm" onsubmit="return subJoin(event)">
+        <input type="email" id="subEmail" placeholder="이메일 주소를 입력하세요" required>
+        <button type="submit">무료 구독하기</button>
+      </form>
+    </div>
+    <!-- ▲▲▲ 스티비 폼 자리 끝 ▲▲▲ -->
+    <div class="subNote">언제든 구독 해지 가능 · 스팸 없이 알찬 소식만</div>
+  </div>
+</section>
 <section class="section" id="katalk">
     <div class="katalk-card">
       <div class="katalk-txt">
@@ -659,6 +692,8 @@ function renderPackages(){
 function pkgTick(){const cs=document.querySelectorAll('#packageZone .tsClock');if(!cs.length){if(pkgTimer){clearInterval(pkgTimer);pkgTimer=null;}return;}let expired=false;cs.forEach(c=>{const ms=new Date(c.getAttribute('data-end'))-Date.now();if(ms<=0){expired=true;return;}const g=tsSeg(ms);c.querySelector('.hh').textContent=g.hh;c.querySelector('.mm').textContent=g.mm;c.querySelector('.ss').textContent=g.ss;});if(expired)renderPackages();}
 
 let featOrder=null, featOrderModel=null;
+function subJoin(e){e.preventDefault();try{if(window.track)track('subscribe_click',{});}catch(_){}
+  alert('구독 신청 곧 오픈해요! 조금만 기다려주세요 🙏');return false;}
 function renderKatalk(){
   const sec=document.getElementById('katalk');if(!sec)return;
   const url=(DATA.kakaoUrl||'').trim();

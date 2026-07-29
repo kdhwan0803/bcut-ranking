@@ -354,6 +354,17 @@ footer .fb b{color:var(--red)}
 .subForm input::placeholder{color:#b0a5a7}
 .subForm button{background:linear-gradient(120deg,#f0554a,#e5352b);color:#fff;border:0;font-family:inherit;font-weight:800;font-size:15px;padding:14px 26px;border-radius:11px;cursor:pointer;white-space:nowrap}
 .subNote{color:#9a8a8c;font-size:12px;margin-top:12px;text-align:center}
+#stibeeForm .stb_form{background:transparent!important;box-shadow:none!important;padding:0!important;max-width:none!important;margin:0!important}
+#stibeeForm .stb_form_title{display:none!important}
+#stibeeForm .stb_form_set{margin-top:18px}
+#stibeeForm .stb_form_set_label{color:#e7dcde!important;font-weight:700;font-size:12.5px}
+#stibeeForm .stb_asterisk{color:#ff6b6b}
+#stibeeForm .stb_form_set_input{background:rgba(255,255,255,.1)!important;border:1.5px solid rgba(255,255,255,.22)!important;color:#fff!important;border-radius:11px!important;padding:13px 14px!important;font-size:15px!important}
+#stibeeForm .stb_form_policy,#stibeeForm .stb_form_policy label,#stibeeForm .stb_form_policy span{color:#cfc2c4!important;font-size:12px}
+#stibeeForm .stb_form_modal_open_btn{color:#ff9ba0!important;text-decoration:underline}
+#stibeeForm .stb_form_modal_text{color:#333}
+#stibeeForm .stb_form_submit_button{background:linear-gradient(120deg,#f0554a,#e5352b)!important;border:0!important;border-radius:11px!important;padding:14px!important;font-weight:800!important;font-size:15px!important;margin-top:14px}
+#stibeeForm .stb_form_result{color:#ffd9db;font-size:13px}
 .ageGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(18,18,24,.5);backdrop-filter:blur(24px) saturate(.85);-webkit-backdrop-filter:blur(24px) saturate(.85)}
 .ageBox{max-width:360px;width:100%;background:#fff;border-radius:22px;padding:30px 26px 24px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:ageUp .3s cubic-bezier(.2,.9,.3,1.2)}
 @keyframes ageUp{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
@@ -443,10 +454,41 @@ function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=docum
     </ul>
     <!-- ▼▼▼ 스티비 폼 자리: 사무실에서 스티비 임베드 코드를 아래 #stibeeForm 안에 붙여넣으세요 (임시 폼은 지우면 됨) ▼▼▼ -->
     <div id="stibeeForm">
-      <form class="subForm" onsubmit="return subJoin(event)">
-        <input type="email" id="subEmail" placeholder="이메일 주소를 입력하세요" required>
-        <button type="submit">무료 구독하기</button>
-      </form>
+      <link rel="stylesheet" href="https://resource.stibee.com/subscribe/stb_subscribe_form_style.css">
+      <div id="stb_subscribe">
+        <form action="https://stibee.com/api/v1.0/lists/7byg_qF8Ww1c-oYatm65becmTi3olQ==/public/subscribers" method="POST" target="_blank" accept-charset="utf-8" class="stb_form" name="stb_subscribe_form" id="stb_subscribe_form" data-lang="" novalidate>
+          <h1 class="stb_form_title">B컷구독자 구독하기</h1>
+            <fieldset class="stb_form_set">
+              <label for="stb_email" class="stb_form_set_label">이메일 주소<span class="stb_asterisk">*</span></label>
+              <input type="text" class="stb_form_set_input" id="stb_email" name="email" required="required">
+              <div class="stb_form_msg_error" id="stb_email_error"></div>
+            </fieldset>
+            <div class="stb_form_policy">
+              <label>
+                <input type="checkbox" id="stb_policy" value="stb_policy_true">
+                <span>(필수)</span>
+                <button id="stb_form_modal_open" data-modal="stb_form_policy_modal" class="stb_form_modal_open_btn" type="button">개인정보 수집 및 이용</button>에 동의합니다.
+              </label>
+              <div class="stb_form_msg_error" id="stb_policy_error"></div>
+              <div class="stb_form_modal stb_form_policy_text blind" id="stb_form_policy_modal">
+                <div class="stb_form_modal_body">
+                  <h1 class="stb_form_modal_title">개인정보 수집 및 이용</h1>
+                  <div class="stb_form_modal_text">뉴스레터 발송을 위한 최소한의 개인정보를 수집하고 이용합니다.
+수집된 정보는 발송 외 다른 목적으로 이용되지 않으며, 서비스가 종료되거나 구독을 해지할 경우 즉시 파기됩니다.</div>
+                  <div class="stb_form_modal_btn">
+                    <button id="stb_form_modal_close" class="stb_form_modal_close_btn" data-modal="stb_form_policy_modal" type="button">닫기</button>
+                  </div>
+                </div>
+                <div class="stb_form_modal_bg" id="stb_form_modal_bg"></div>
+              </div>
+            </div>
+          <div class="stb_form_result" id="stb_form_result"></div>
+            <fieldset class="stb_form_set_submit">
+              <button type="submit" class="stb_form_submit_button" id="stb_form_submit_button" style="background-color: #FF6464; color: #ffffff;">구독하기</button>
+            </fieldset>
+        </form>
+      </div>
+      <script type="text/javascript" src="https://resource.stibee.com/subscribe/stb_subscribe_form.js"></script>
     </div>
     <!-- ▲▲▲ 스티비 폼 자리 끝 ▲▲▲ -->
     <div class="subNote">언제든 구독 해지 가능 · 스팸 없이 알찬 소식만</div>

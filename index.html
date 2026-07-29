@@ -342,12 +342,12 @@ footer .fb b{color:var(--red)}
   .mstats{gap:14px}
   .fchip{padding:7px 13px;font-size:12.5px}
 }
-#subscribe .subCard{background:linear-gradient(135deg,#17171c,#3a0a12);border-radius:20px;padding:30px 26px;color:#fff;box-shadow:0 10px 40px rgba(20,20,30,.14)}
+#subscribe .subCard{background:linear-gradient(135deg,#17171c,#3a0a12);border-radius:20px;padding:30px 26px;color:#fff;box-shadow:0 10px 40px rgba(20,20,30,.14);text-align:center}
 .subHd{font-size:22px;font-weight:900;letter-spacing:-.4px}
 .subHd b{color:#ff5a5f}
 .subSub{color:#cfc2c4;font-size:14px;margin-top:6px}
 .subBenefits{list-style:none;margin:20px 0 4px;display:flex;flex-direction:column;gap:11px}
-.subBenefits li{font-size:14.5px;line-height:1.5;color:#eee;display:flex;gap:9px;align-items:flex-start}
+.subBenefits li{font-size:14.5px;line-height:1.5;color:#eee;display:flex;gap:9px;align-items:center;justify-content:center;text-align:left}
 .subBenefits li b{color:#fff;font-weight:800}
 .subForm{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
 .subForm input{flex:1;min-width:180px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.22);border-radius:11px;color:#fff;font-family:inherit;font-size:15px;padding:14px 16px}
@@ -371,12 +371,13 @@ footer .fb b{color:var(--red)}
 #subscribe #stibeeForm .stb_form_policy,#subscribe #stibeeForm .stb_form_policy label,#subscribe #stibeeForm .stb_form_policy span{color:#cfc2c4!important;font-size:12px!important}
 #subscribe #stibeeForm .stb_form_policy{margin-top:12px!important}
 #subscribe #stibeeForm .stb_form_modal_open_btn{color:#ff9ba0!important;text-decoration:underline!important;background:none!important;border:0!important;padding:0!important}
-#subscribe #stibeeForm .stb_form_submit_button{background:linear-gradient(120deg,#f0554a,#e5352b)!important;color:#fff!important;border:0!important;border-radius:11px!important;padding:15px!important;font-weight:800!important;font-size:15px!important;width:100%!important;margin-top:16px!important;cursor:pointer!important}
+#subscribe #stibeeForm .stb_form_submit_button{background:linear-gradient(120deg,#f0554a,#e5352b)!important;color:#fff!important;border:0!important;border-radius:11px!important;padding:0!important;height:52px!important;line-height:1!important;font-weight:800!important;font-size:15px!important;width:100%!important;margin-top:16px!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important}
 #subscribe #stibeeForm .stb_form_set_submit{display:flex!important;justify-content:center!important;margin-top:2px!important}
 @media(min-width:700px){
   #subscribe #stibeeForm{max-width:460px!important;margin-left:auto!important;margin-right:auto!important}
-  #subscribe #stibeeForm .stb_form_submit_button{width:auto!important;min-width:250px!important;padding:14px 46px!important}
-  #subscribe .subBenefits{max-width:520px}
+  #subscribe #stibeeForm .stb_form_submit_button{width:auto!important;min-width:250px!important;padding:0 46px!important}
+  #subscribe .subCard{max-width:540px;margin-left:auto;margin-right:auto}
+  #subscribe .subBenefits{max-width:460px;margin-left:auto;margin-right:auto}
 }
 #subscribe #stibeeForm .stb_form_result{display:none!important}
 #bcutToast{position:fixed;left:50%;top:24px;transform:translateX(-50%) translateY(-20px);z-index:100000;background:linear-gradient(135deg,#12b76a,#0e9e7a);color:#fff;font-weight:800;font-size:14.5px;line-height:1.55;padding:16px 22px;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.35);max-width:88vw;width:max-content;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}
@@ -467,7 +468,7 @@ function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=docum
     <div class="subSub">매주 이메일로, 사이트에 없는 것까지 먼저 받아보세요.</div>
     <ul class="subBenefits">
       <li>🔓 <span>이번 주 화보 <b>구독자 전용 추가컷</b></span></li>
-      <li>⚡ <span>타임세일·패키지세일을 <b>제일 먼저</b> — 메일 받고 바로 구매</span></li>
+      <li>⚡ <span>맥심 B컷 <b>이벤트</b> 진행 시 <b>제일 먼저</b> 확인</span></li>
       <li>📊 <span>사이트엔 없는 <b>TOP 30 풀랭킹</b></span></li>
       <li>📬 <span>랭킹·신작 소식을 <b>메일로 한눈에</b> (사이트 안 들어와도)</span></li>
     </ul>

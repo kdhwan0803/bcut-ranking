@@ -774,7 +774,7 @@ function renderKatalk(){
   document.getElementById('katalkNote').style.display=url?'none':'block';
 }
 let featPicked=null,featPickedSig=null;
-function _featPool(){const hasW=m=>Object.keys(DATA.works).some(id=>(DATA.works[id].models||[]).includes(m));let pool=(DATA.featuredModels||[]).filter(hasW);if(!pool.length){const all=new Set();Object.keys(DATA.works).forEach(id=>(DATA.works[id].models||[]).forEach(m=>all.add(m)));pool=[...all].filter(hasW);}return pool;}
+function _featPool(){const cnt=m=>Object.keys(DATA.works).filter(id=>(DATA.works[id].models||[]).includes(m)).length;const ok=m=>cnt(m)>=3;let pool=(DATA.featuredModels||[]).filter(ok);if(!pool.length){const all=new Set();Object.keys(DATA.works).forEach(id=>(DATA.works[id].models||[]).forEach(m=>all.add(m)));pool=[...all].filter(ok);}return pool;}
 function pickFeatured(){const pool=_featPool();if(!pool.length)return null;const sig=(DATA.featuredModels||[]).join('|')||'__ALL__';if(featPicked&&featPickedSig===sig&&pool.includes(featPicked))return featPicked;featPicked=pool[Math.floor(Math.random()*pool.length)];featPickedSig=sig;return featPicked;}
 function renderFeatured(){
   const sec=document.getElementById('featured');if(!sec)return;const name=pickFeatured();

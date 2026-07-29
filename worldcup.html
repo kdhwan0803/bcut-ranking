@@ -5,12 +5,6 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0M1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
 
 <title>B컷 이상형 월드컵</title>
-<meta name="description" content="화보 이상형 월드컵 · 두 화보 중 더 끌리는 쪽을 골라 나만의 최애 화보를 찾아보세요.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="B컷 이상형 월드컵">
-<meta property="og:description" content="두 화보 중 더 끌리는 쪽을 골라 나만의 최애 화보를 찾아보세요. MAXIM B컷.">
-<meta property="og:image" content="https://i.ibb.co/WpB1gcLw/opt.webp">
-<meta name="twitter:card" content="summary_large_image">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
 :root{--red:#E60012;--ink:#16161a;--mut:#8a8a92;--line:#ececed;--bg:#f4f5f7}
@@ -147,6 +141,7 @@ function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=docum
       <p id="introDesc">두 화보 중 더 끌리는 쪽을 고르세요.<br>토너먼트 끝에 당신만의 <b>최애 화보</b>가 남습니다.</p>
       <div class="sizePick" id="sizePick"></div>
       <div><button class="start" onclick="startGame()">시작하기</button></div>
+      <div class="hof" id="globalTop"></div>
       <div class="hof" id="hof"></div>
     </div>
   </section>
@@ -175,11 +170,19 @@ function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=docum
 const WKEY='bcut_wc_v1';
 let DATA=null, POOL=[], SIZE=32, bracket=[], winners=[], mi=0, champion=null;
 
+/* ===== 전체 이상형 월드컵 TOP10 집계 (SheetDB) ===== */
+const SHEETDB_URL='https://sheetdb.io/api/v1/d4bc9pnsklz0n'; /* ← 사무실에서 SheetDB API URL 붙여넣기 (예: https://sheetdb.io/api/v1/xxxxxxxx) · 비우면 아래 예시 데이터만 표시 */
+const SEED_WINS={ /* 예시 데이터(5~7월 인기 기준) — 실제 우승 결과가 쌓이면 이 값들을 지워 {} 로 비우면 됩니다 */
+  '1750':48,'1711':41,'1712':37,'1910':33,'1794':29,'1865':26,'1719':22,'1932':19,'1217':16,'1706':14
+};
+
 /* ---- 저장/집계 (나중에 공용 백엔드 POST를 recordWinner에 추가) ---- */
 function loadStats(){try{return JSON.parse(localStorage.getItem(WKEY)||'{"wins":{},"plays":0}');}catch(e){return {wins:{},plays:0};}}
 function recordWinner(id){
   try{const s=loadStats();s.wins[id]=(s.wins[id]||0)+1;s.plays=(s.plays||0)+1;localStorage.setItem(WKEY,JSON.stringify(s));}catch(e){}
-  /* TODO(B단계): 여기서 공용 집계 서버로 결과 전송 (fetch POST) */
+  try{ if(SHEETDB_URL){ var w=workById(id);
+    fetch(SHEETDB_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:[{work_id:id,title:(w.title||id),ts:new Date().toISOString()}]})}).catch(function(){});
+  } }catch(e){}
 }
 
 /* ---- 헬퍼 ---- */
@@ -205,6 +208,20 @@ function renderHOF(){
   el.innerHTML=`<h3>내 픽 명예의 전당 <small>${s.plays||0}회 플레이</small></h3>`+
     (arr.length?arr.map((x,i)=>{const w=workById(x.id);return `<div class="hofrow ${i===0?'top1':''}" data-wid="${x.id}"><div class="r">${i+1}</div><img src="${w.img||''}" onerror="this.style.opacity=.15"><div class="t">${w.title||x.id}</div><div class="c">${x.c}<small>회 우승</small></div></div>`;}).join('')
       :'<div class="empty">아직 플레이 기록이 없어요. 첫 우승 화보를 뽑아보세요!</div>');
+}
+async function renderGlobalTop(elId){
+  const el=document.getElementById(elId||'globalTop'); if(!el||!DATA)return;
+  let counts=Object.assign({},SEED_WINS);
+  if(SHEETDB_URL){
+    try{const r=await fetch(SHEETDB_URL,{cache:'no-store'});const rows=await r.json();
+      (Array.isArray(rows)?rows:[]).forEach(function(row){var id=row&&(row.work_id||row.workId||row.id);if(id)counts[id]=(counts[id]||0)+1;});
+    }catch(e){}
+  }
+  const arr=Object.keys(counts).filter(id=>DATA.works&&DATA.works[id]).map(id=>({id:id,c:counts[id]})).sort((a,b)=>b.c-a.c).slice(0,10);
+  el.innerHTML='<h3>👑 전체 이상형 월드컵 TOP 10 <small>모두의 선택</small></h3>'+
+    (arr.length?arr.map(function(x,i){var w=workById(x.id);return '<div class="hofrow '+(i===0?'top1':'')+'" data-wid="'+x.id+'"><div class="r">'+(i+1)+'</div><img src="'+(w.img||'')+'" onerror="this.style.opacity=.15"><div class="t">'+(w.title||x.id)+'</div><div class="c">'+x.c+'<small>회 우승</small></div></div>';}).join('')
+      :'<div class="empty">아직 집계된 결과가 없어요.</div>');
+  try{if(getAge()==='minor'&&window.ageBlurScan)ageBlurScan();}catch(e){}
 }
 
 /* ---- 게임 ---- */
@@ -247,9 +264,10 @@ function endGame(id){
       <a class="red" href="https://bcut.maximkorea.net/work/${id}" target="_blank">B컷에서 보기 ›</a>
       <button class="primary" onclick="startGame()">다시 하기</button>
       <button class="ghost" onclick="shareResult()">결과 공유</button>
-    </div>`;
+    </div>
+    <div class="hof" id="globalTopC" style="margin-top:22px"></div>`;
   window.scrollTo({top:0,behavior:'smooth'});
-  renderHOF();
+  renderHOF(); renderGlobalTop('globalTopC');
 }
 function shareResult(){
   const w=workById(champion);
@@ -265,7 +283,7 @@ fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();
   document.getElementById('introLoading').style.display='none';
   document.getElementById('introBody').style.display='block';
   if(POOL.length<2){document.getElementById('introBody').innerHTML='<div class="loading">화보 데이터가 부족해요 (2개 이상 필요).</div>';return;}
-  renderSizePick(); renderHOF();
+  renderSizePick(); renderHOF(); renderGlobalTop("globalTop");
 }).catch(()=>{
   document.getElementById('introLoading').innerHTML='data.json을 불러오지 못했어요.<br><span style="font-size:12px">웹 서버(깃헙/넷리파이)에서 열어야 합니다.</span>';
 });

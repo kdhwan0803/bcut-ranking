@@ -4635,18 +4635,7 @@
     }
   ],
   "timesales": [],
-  "popups": [
-    {
-      "img": "https://i.ibb.co/G41SJY4m/opt.webp",
-      "link": "https://bcut.maximkorea.net/work/2002",
-      "title": "",
-      "sub": "",
-      "start": "2026-07-28T08:40",
-      "end": "2026-08-04T08:47",
-      "enabled": true,
-      "id": "p1785196041777"
-    }
-  ],
+  "popups": [],
   "bannerBlur": 5,
   "bottomBanners": [],
   "packages": [],

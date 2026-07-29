@@ -142,14 +142,14 @@ footer .fb b{color:var(--red)}
 .bfill{position:absolute;inset:0;overflow:hidden;background:#101014}
 .bfillBg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(var(--bblur,14px)) brightness(.62);transform:scale(1.16)}
 .bfillImg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);height:100%;width:auto;max-width:none;object-fit:contain;box-shadow:0 6px 30px rgba(0,0,0,.45)}
-.bmark{position:absolute;top:15px;left:15px;z-index:3;font-size:14px;font-weight:900;padding:7px 14px;border-radius:999px;color:#fff;letter-spacing:.3px;box-shadow:0 3px 14px rgba(0,0,0,.4)}
+.bmark{position:absolute;top:15px;right:15px;left:auto;z-index:3;font-size:14px;font-weight:900;padding:7px 14px;border-radius:999px;color:#fff;letter-spacing:.3px;box-shadow:0 3px 14px rgba(0,0,0,.4)}
 .bmark.mkSoon{background:rgba(18,18,24,.92);border:1px solid rgba(255,255,255,.3)}
 .bmark.mkToday{background:#e5352b}
 .bmark.mkNew{background:#f0554a}
 .bmark.mkStar{background:linear-gradient(120deg,#f5a623,#e5352b)}
 .bannerSlide.auto.active .bmark{animation:bmarkPop .5s ease}
 @keyframes bmarkPop{0%{transform:translateY(-6px);opacity:0}100%{transform:none;opacity:1}}
-@media(max-width:560px){.bmark{top:12px;left:12px;font-size:12.5px;padding:6px 12px}}
+@media(max-width:560px){.bmark{top:12px;right:12px;left:auto;font-size:12.5px;padding:6px 12px}}
 #timesaleZone.tsStrip{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;position:relative;z-index:1}
 #timesaleZone.tsStrip::-webkit-scrollbar{height:6px}
 #timesaleZone.tsStrip::-webkit-scrollbar-thumb{background:rgba(240,85,74,.45);border-radius:4px}

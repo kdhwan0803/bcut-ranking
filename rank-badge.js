@@ -1,5 +1,5 @@
 /* ============================================================
-   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v5
+   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v7
    bcutrank.com/rank-badge.js
    (흰 배경 상세페이지용 / 넷플릭스 톤 · 블랙 블록)
 
@@ -18,9 +18,10 @@
   var WEEK = '7월 4주';
   var SITE = 'https://bcutrank.com';
 
-  var TOTAL = 132;        // 이번 주 집계 대상 화보 수 (0 이면 표시 안 함)
-  var RELEASE_DAY = 1;    // 랭킹 발표 요일 (0=일 1=월 ... 6=토)
-  var MAXW = '680px';     // 배지 최대 폭 (가운데 정렬)
+  var TOP1 = '';           // 이번 주 1위 모델명. 비워두면 이름 대신 궁금증 문구가 나감
+  var DISPLAY_MAX = 20;    // 이 순위 밖이면 순위를 감추고 TOP10 배너로 대체
+  var RELEASE_DAY = 1;     // 랭킹 발표 요일 (0=일 1=월 ... 6=토)
+  var MAXW = '680px';      // 배지 최대 폭 (가운데 정렬)
 
   // { "화보ID": [이번주, 지난주, 2주전] }
   var RANK = {
@@ -219,15 +220,24 @@
       marginTop: NARROW ? '5px' : '7px', flexWrap: 'wrap'
     });
 
-    if (rank && TOTAL) {
-      metaRow.appendChild(el('span', {
-        color: DIM, fontSize: NARROW ? '11.5px' : '12.5px'
-      }, '전체 ' + TOTAL + '편 중 ' + rank + '위'));
-    } else if (!rank) {
-      metaRow.appendChild(el('span', {
-        color: DIM, fontSize: NARROW ? '11.5px' : '12.5px'
-      }, TOTAL ? '이번 주 ' + TOTAL + '편 집계' : '지금 순위 확인하기'));
+    var teaser, teaserMode;
+    if (rank === 1) {
+      teaser = '이번 주 가장 많이 본 화보';
+      teaserMode = 'top';
+    } else if (TOP1) {
+      teaser = '이번 주 1위는 ' + TOP1;
+      teaserMode = 'name';
+    } else {
+      teaser = '그럼 이번 주 1위 화보는?';
+      teaserMode = 'hide';
     }
+    window.__bcutTeaserMode = teaserMode;
+
+    metaRow.appendChild(el('span', {
+      color: teaserMode === 'hide' ? BLACK : DIM,
+      fontSize: NARROW ? '11.5px' : '12.5px',
+      fontWeight: teaserMode === 'hide' ? '700' : '400'
+    }, teaser));
 
     if (label) {
       metaRow.appendChild(el('span', {
@@ -277,7 +287,10 @@
     a.onclick = function () {
       try {
         if (typeof window.gtag === 'function') {
-          window.gtag('event', 'rank_badge_click', { rank: rank || 0, photo_id: id || '', label: label || '' });
+          window.gtag('event', 'rank_badge_click', {
+            rank: rank || 0, photo_id: id || '', label: label || '',
+            teaser_mode: window.__bcutTeaserMode || ''
+          });
         }
       } catch (e) {}
     };
@@ -408,7 +421,13 @@
     var hist = id ? RANK[id] : null;
     var rank = hist ? hist[0] : null;
     var label = makeLabel(hist);
-    log('id:', id, '/ 순위:', rank, '/ 배지:', label, '/ 전체:', TOTAL);
+
+    // 하위권이면 순위를 노출하지 않고 TOP10 배너로
+    if (rank && DISPLAY_MAX && rank > DISPLAY_MAX) {
+      log('순위 ' + rank + '위 - DISPLAY_MAX(' + DISPLAY_MAX + ') 밖이라 감춤');
+      rank = null; label = null;
+    }
+    log('id:', id, '/ 순위:', rank, '/ 배지:', label);
     renderRank(mount, rank, label, id);
 
     // 화면 폭이 바뀌면 (회전 등) 다시 그림

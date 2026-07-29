@@ -1,5 +1,5 @@
 /* ============================================================
-   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v4
+   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v5
    bcutrank.com/rank-badge.js
    (흰 배경 상세페이지용 / 넷플릭스 톤 · 블랙 블록)
 
@@ -17,6 +17,10 @@
 
   var WEEK = '7월 4주';
   var SITE = 'https://bcutrank.com';
+
+  var TOTAL = 132;        // 이번 주 집계 대상 화보 수 (0 이면 표시 안 함)
+  var RELEASE_DAY = 1;    // 랭킹 발표 요일 (0=일 1=월 ... 6=토)
+  var MAXW = '680px';     // 배지 최대 폭 (가운데 정렬)
 
   // { "화보ID": [이번주, 지난주, 2주전] }
   var RANK = {
@@ -54,7 +58,8 @@
   var LINE = '#e6e6ea';
   var DIM = '#7c7c82';
   var FONT = 'Pretendard, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
-  var NARROW = window.innerWidth < 560;
+  function isNarrow() { return window.innerWidth < 560; }
+  var NARROW = isNarrow();
 
   function log() {
     if (DEBUG && window.console) console.log.apply(console, ['[bcut-rank]'].concat([].slice.call(arguments)));
@@ -139,11 +144,21 @@
     return u;
   }
 
+  /* --- 다음 발표까지 남은 일수 --- */
+  function daysToRelease() {
+    var d = new Date().getDay();
+    var left = (RELEASE_DAY - d + 7) % 7;
+    return left;
+  }
+
   /* ================= 하단 랭킹 배지 (블랙 블록) ================= */
   function renderRank(mount, rank, label, id) {
+    NARROW = isNarrow();
+
     var a = el('a', {
-      display: 'flex', alignItems: 'stretch', width: '100%',
-      margin: '40px 0 8px', border: '1px solid ' + LINE,
+      display: 'flex', alignItems: 'stretch',
+      width: '100%', maxWidth: MAXW, margin: '40px auto 8px',
+      border: '1px solid ' + LINE,
       textDecoration: 'none', fontFamily: FONT, boxSizing: 'border-box',
       overflow: 'hidden', background: '#fff',
       transition: 'border-color .18s ease'
@@ -154,27 +169,28 @@
 
     /* 왼쪽 검정 블록 */
     var block = el('div', {
-      flex: '0 0 ' + (NARROW ? '80px' : '112px'),
+      flex: '0 0 ' + (NARROW ? '72px' : '104px'),
       background: BLACK, color: '#fff',
       display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center', gap: '3px'
+      alignItems: 'center', justifyContent: 'center', gap: '2px'
     });
 
     if (rank) {
       block.appendChild(el('strong', {
-        fontSize: NARROW ? '38px' : '50px', fontWeight: '900',
+        fontSize: NARROW ? '34px' : '46px', fontWeight: '900',
         lineHeight: '.9', letterSpacing: '-.06em'
       }, String(rank)));
       block.appendChild(el('span', {
-        fontSize: '10px', fontWeight: '800', letterSpacing: '.18em', color: RED
+        fontSize: NARROW ? '9px' : '10px', fontWeight: '800',
+        letterSpacing: '.18em', color: RED
       }, 'WEEK'));
     } else {
       block.appendChild(el('strong', {
-        fontSize: NARROW ? '20px' : '25px', fontWeight: '900',
+        fontSize: NARROW ? '17px' : '23px', fontWeight: '900',
         lineHeight: '1', letterSpacing: '-.03em'
       }, 'TOP'));
       block.appendChild(el('strong', {
-        fontSize: NARROW ? '26px' : '34px', fontWeight: '900',
+        fontSize: NARROW ? '23px' : '31px', fontWeight: '900',
         lineHeight: '1', letterSpacing: '-.04em', color: RED
       }, '10'));
     }
@@ -183,44 +199,76 @@
     /* 가운데 본문 */
     var body = el('div', {
       flex: '1 1 auto', minWidth: '0',
-      padding: NARROW ? '16px 16px' : '20px 24px'
+      padding: NARROW ? '13px 14px' : '18px 22px'
     });
 
     body.appendChild(el('div', {
-      fontSize: '10px', fontWeight: '800', letterSpacing: '.16em',
-      color: RED, marginBottom: '9px',
+      fontSize: NARROW ? '9px' : '10px', fontWeight: '800', letterSpacing: '.14em',
+      color: RED, marginBottom: NARROW ? '6px' : '8px',
       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-    }, 'MAXIM B컷 WEEKLY RANKING · ' + WEEK));
+    }, NARROW ? 'WEEKLY RANKING · ' + WEEK : 'MAXIM B컷 WEEKLY RANKING · ' + WEEK));
 
     body.appendChild(el('div', {
-      fontSize: NARROW ? '15px' : '17.5px', fontWeight: '800',
-      letterSpacing: '-.015em', lineHeight: '1.35', color: BLACK
+      fontSize: NARROW ? '14.5px' : '17px', fontWeight: '800',
+      letterSpacing: '-.015em', lineHeight: '1.3', color: BLACK
     }, rank ? '이번 주 랭킹 ' + rank + '위 화보' : '이번 주 가장 많이 본 화보 TOP 10'));
 
-    body.appendChild(el('div', {
-      color: DIM, fontSize: '12.5px', marginTop: '6px', lineHeight: '1.45'
-    }, label || (rank ? '전체 순위와 다른 화보도 확인해 보세요' : '지금 순위 확인하기')));
+    /* 부가 정보 한 줄: 전체 N편 중 / 변동 배지 */
+    var metaRow = el('div', {
+      display: 'flex', alignItems: 'center', gap: '7px',
+      marginTop: NARROW ? '5px' : '7px', flexWrap: 'wrap'
+    });
 
-    /* 좁은 화면에선 CTA를 본문 안으로 */
+    if (rank && TOTAL) {
+      metaRow.appendChild(el('span', {
+        color: DIM, fontSize: NARROW ? '11.5px' : '12.5px'
+      }, '전체 ' + TOTAL + '편 중 ' + rank + '위'));
+    } else if (!rank) {
+      metaRow.appendChild(el('span', {
+        color: DIM, fontSize: NARROW ? '11.5px' : '12.5px'
+      }, TOTAL ? '이번 주 ' + TOTAL + '편 집계' : '지금 순위 확인하기'));
+    }
+
+    if (label) {
+      metaRow.appendChild(el('span', {
+        display: 'inline-block', padding: '2px 7px',
+        background: '#fdeced', color: RED,
+        fontSize: NARROW ? '10.5px' : '11.5px', fontWeight: '800',
+        letterSpacing: '-.01em', whiteSpace: 'nowrap'
+      }, label));
+    }
+    if (metaRow.childNodes.length) body.appendChild(metaRow);
+
+    /* 좁은 화면: CTA + 다음 발표를 본문 안에 */
     if (NARROW) {
-      var inlineCta = el('span', {
-        display: 'inline-block', marginTop: '11px', fontSize: '12.5px',
-        fontWeight: '800', color: BLACK,
+      var foot = el('div', {
+        display: 'flex', alignItems: 'baseline', gap: '9px',
+        marginTop: '10px', flexWrap: 'wrap'
+      });
+      foot.appendChild(el('span', {
+        fontSize: '12px', fontWeight: '800', color: BLACK,
         borderBottom: '2px solid ' + RED, paddingBottom: '1px'
-      }, '전체 랭킹 보기');
-      body.appendChild(inlineCta);
+      }, '전체 랭킹 보기'));
+      foot.appendChild(el('span', { color: '#a3a3a9', fontSize: '11px', fontWeight: '700' }, releaseText()));
+      body.appendChild(foot);
     }
     a.appendChild(body);
 
     /* 오른쪽 CTA */
     if (!NARROW) {
       var cta = el('div', {
-        flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: '9px',
-        padding: '0 26px', borderLeft: '1px solid ' + LINE,
-        color: BLACK, fontSize: '13px', fontWeight: '800', whiteSpace: 'nowrap'
+        flex: '0 0 auto', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', gap: '5px',
+        padding: '0 22px', borderLeft: '1px solid ' + LINE, whiteSpace: 'nowrap'
       });
-      cta.appendChild(el('span', null, '전체 랭킹 보기'));
-      cta.appendChild(el('span', { color: RED, fontSize: '16px', fontWeight: '800' }, '\u2192'));
+      var ctaTop = el('div', {
+        display: 'flex', alignItems: 'center', gap: '8px',
+        color: BLACK, fontSize: '13px', fontWeight: '800'
+      });
+      ctaTop.appendChild(el('span', null, '전체 랭킹 보기'));
+      ctaTop.appendChild(el('span', { color: RED, fontSize: '16px', fontWeight: '800' }, '\u2192'));
+      cta.appendChild(ctaTop);
+      cta.appendChild(el('div', { color: '#a3a3a9', fontSize: '11px', fontWeight: '700' }, releaseText()));
       a.appendChild(cta);
     }
 
@@ -236,6 +284,12 @@
 
     mount.innerHTML = '';
     mount.appendChild(a);
+  }
+
+  function releaseText() {
+    var d = daysToRelease();
+    if (d === 0) return '오늘 순위 발표';
+    return '다음 발표까지 D-' + d;
   }
 
   /* ================= 이벤트 선택 ================= */
@@ -262,12 +316,14 @@
 
   /* ================= 상단 이벤트 스트립 ================= */
   function renderEvent(mount, ev) {
+    NARROW = isNarrow();
     var e = ev.data, end = ev.end;
     var urgent = end && (end - new Date()) <= 48 * 3600 * 1000;
 
     var a = el('a', {
-      display: 'flex', alignItems: 'stretch', width: '100%',
-      margin: '0 0 22px', border: '1px solid ' + (urgent ? RED : LINE),
+      display: 'flex', alignItems: 'stretch',
+      width: '100%', maxWidth: MAXW, margin: '0 auto 22px',
+      border: '1px solid ' + (urgent ? RED : LINE),
       background: '#fff', textDecoration: 'none', fontFamily: FONT,
       boxSizing: 'border-box', overflow: 'hidden'
     });
@@ -352,8 +408,17 @@
     var hist = id ? RANK[id] : null;
     var rank = hist ? hist[0] : null;
     var label = makeLabel(hist);
-    log('id:', id, '/ 순위:', rank, '/ 배지:', label);
+    log('id:', id, '/ 순위:', rank, '/ 배지:', label, '/ 전체:', TOTAL);
     renderRank(mount, rank, label, id);
+
+    // 화면 폭이 바뀌면 (회전 등) 다시 그림
+    var t;
+    window.addEventListener('resize', function () {
+      clearTimeout(t);
+      t = setTimeout(function () {
+        if (isNarrow() !== NARROW) renderRank(mount, rank, label, id);
+      }, 200);
+    });
   });
 })();
 

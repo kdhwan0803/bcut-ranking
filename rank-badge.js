@@ -1,6 +1,7 @@
 /* ============================================================
-   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v3
+   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v4
    bcutrank.com/rank-badge.js
+   (흰 배경 상세페이지용 / 넷플릭스 톤 · 블랙 블록)
 
    [상세페이지 최상단]
    <div id="bcut-event" data-id="화보ID"></div>
@@ -8,12 +9,6 @@
    [상세페이지 최하단]
    <div id="bcut-rank"></div>
    <script src="https://bcutrank.com/rank-badge.js"></script>
-
-   * script 태그는 하단 하나면 됨
-   * data-id 는 생성기에서 자동으로 박아주면 가장 정확함 (없어도 자동 인식 시도)
-   * 매주 월요일: WEEK / RANK 교체
-   * 세일 걸 때: EVENTS 에 한 덩어리 추가. 끝나면 자동으로 사라짐
-   * 확인용: 주소 뒤에 ?bcutdebug=1
    ============================================================ */
 (function () {
   'use strict';
@@ -25,51 +20,41 @@
 
   // { "화보ID": [이번주, 지난주, 2주전] }
   var RANK = {
-  "1952": [4, null, null],
-  "1953": [5, null, null],
-  "1966": [1, null, null],
-  "1999": [3, null, null],
-  "2011": [2, null, null]
+    "1952": [4, null, null],
+    "1953": [5, null, null],
+    "1966": [1, null, null],
+    "1999": [3, null, null],
+    "2011": [2, null, null]
   };
 
-  /* ---------- 2. 이벤트 (여러 개 동시 등록 가능) ----------
-     targets: []        -> 전 화보에 노출
-     targets: ["123"]   -> 그 화보에만 노출
+  /* ---------- 2. 이벤트 (여러 개 등록 가능) ----------
+     targets: []        -> 전 화보 노출
+     targets: ["1966"]  -> 그 화보에만
      start / end        -> "2026-08-01" 또는 "2026-08-01 21:00"
-                           날짜만 쓰면 그 날 23:59 까지
-     위에 있는 것부터 먼저 매칭 (한 페이지에 하나만 노출)
   ------------------------------------------------------------ */
 
   var EVENTS = [
     // {
     //   on: true,
-    //   targets: ["10023", "10024"],
+    //   targets: ["1966"],
     //   tag: 'TIME SALE',
     //   title: '오늘 밤 한정 50% 할인',
     //   sub: '자정까지 코인 10개 -> 5개',
     //   url: 'https://bcut.maximkorea.net/...',
     //   start: '2026-08-01 21:00',
     //   end: '2026-08-01 23:59'
-    // },
-    // {
-    //   on: true,
-    //   targets: [],
-    //   tag: 'EVENT',
-    //   title: '이상형 월드컵 오픈',
-    //   sub: '내 최애 화보 뽑고 결과 공유하기',
-    //   url: 'https://bcutrank.com/worldcup.html',
-    //   start: '2026-07-29',
-    //   end: '2026-08-11'
     // }
   ];
 
   /* ---------- 3. 아래는 건드릴 일 없음 ---------- */
 
   var DEBUG = /[?&]bcutdebug=1/.test(location.search);
-  var GOLD = '#c9a227';
-  var RED = '#e0483c';
-  var INK = '#0c0c0d';
+  var RED = '#e50914';
+  var BLACK = '#111111';
+  var LINE = '#e6e6ea';
+  var DIM = '#7c7c82';
   var FONT = 'Pretendard, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
+  var NARROW = window.innerWidth < 560;
 
   function log() {
     if (DEBUG && window.console) console.log.apply(console, ['[bcut-rank]'].concat([].slice.call(arguments)));
@@ -79,23 +64,26 @@
     else fn();
   }
   function css(el, o) { for (var k in o) el.style[k] = o[k]; }
+  function el(tag, style, text) {
+    var n = document.createElement(tag);
+    if (style) css(n, style);
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
-  // "2026-08-01" 또는 "2026-08-01 21:00"
   function parseDT(s, endOfDay) {
     if (!s) return null;
     var m = String(s).trim().match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?$/);
     if (!m) return null;
     var hasTime = m[4] !== undefined;
-    return new Date(
-      +m[1], +m[2] - 1, +m[3],
+    return new Date(+m[1], +m[2] - 1, +m[3],
       hasTime ? +m[4] : (endOfDay ? 23 : 0),
       hasTime ? +m[5] : (endOfDay ? 59 : 0),
-      hasTime ? 0 : (endOfDay ? 59 : 0)
-    );
+      hasTime ? 0 : (endOfDay ? 59 : 0));
   }
 
-  /* --- 알고 있는 화보ID 전체 (랭킹 + 이벤트 대상) --- */
+  /* --- 화보ID 인식 --- */
   var KNOWN = {};
   (function () {
     for (var k in RANK) KNOWN[k] = 1;
@@ -107,11 +95,9 @@
 
   function pickId(text) {
     if (!text) return null;
-    var found = String(text).match(/\d{4,9}/g);
+    var found = String(text).match(/\d{3,9}/g);
     if (!found) return null;
-    for (var i = 0; i < found.length; i++) {
-      if (KNOWN[found[i]]) return found[i];
-    }
+    for (var i = 0; i < found.length; i++) if (KNOWN[found[i]]) return found[i];
     return null;
   }
 
@@ -153,72 +139,93 @@
     return u;
   }
 
-  /* ---------- 하단 랭킹 배지 ---------- */
+  /* ================= 하단 랭킹 배지 (블랙 블록) ================= */
   function renderRank(mount, rank, label, id) {
-    var a = document.createElement('a');
+    var a = el('a', {
+      display: 'flex', alignItems: 'stretch', width: '100%',
+      margin: '40px 0 8px', border: '1px solid ' + LINE,
+      textDecoration: 'none', fontFamily: FONT, boxSizing: 'border-box',
+      overflow: 'hidden', background: '#fff',
+      transition: 'border-color .18s ease'
+    });
     a.href = buildUrl(SITE + '/', 'detail', (rank ? '&utm_content=rank' + rank : '') + (id ? '&pid=' + id : ''));
-    a.target = '_blank'; a.rel = 'noopener';
-    css(a, {
-      display: 'flex', alignItems: 'center', gap: '18px',
-      maxWidth: '760px', margin: '36px auto', padding: '20px 22px',
-      background: INK, border: '1px solid rgba(201,162,39,.38)',
-      borderRadius: '2px', textDecoration: 'none', fontFamily: FONT,
-      transition: 'border-color .2s ease, background .2s ease', boxSizing: 'border-box'
+    a.target = '_blank';
+    a.rel = 'noopener';
+
+    /* 왼쪽 검정 블록 */
+    var block = el('div', {
+      flex: '0 0 ' + (NARROW ? '80px' : '112px'),
+      background: BLACK, color: '#fff',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', gap: '3px'
     });
 
     if (rank) {
-      var num = document.createElement('div');
-      num.textContent = rank;
-      css(num, {
-        flex: '0 0 auto', minWidth: '62px', textAlign: 'center', color: GOLD,
-        fontSize: '46px', fontWeight: '800', lineHeight: '1', letterSpacing: '-.03em',
-        borderRight: '1px solid rgba(255,255,255,.13)', paddingRight: '18px'
-      });
-      a.appendChild(num);
+      block.appendChild(el('strong', {
+        fontSize: NARROW ? '38px' : '50px', fontWeight: '900',
+        lineHeight: '.9', letterSpacing: '-.06em'
+      }, String(rank)));
+      block.appendChild(el('span', {
+        fontSize: '10px', fontWeight: '800', letterSpacing: '.18em', color: RED
+      }, 'WEEK'));
+    } else {
+      block.appendChild(el('strong', {
+        fontSize: NARROW ? '20px' : '25px', fontWeight: '900',
+        lineHeight: '1', letterSpacing: '-.03em'
+      }, 'TOP'));
+      block.appendChild(el('strong', {
+        fontSize: NARROW ? '26px' : '34px', fontWeight: '900',
+        lineHeight: '1', letterSpacing: '-.04em', color: RED
+      }, '10'));
     }
+    a.appendChild(block);
 
-    var box = document.createElement('div');
-    css(box, { flex: '1 1 auto', minWidth: '0' });
-
-    var eyebrow = document.createElement('div');
-    eyebrow.textContent = 'MAXIM B컷 WEEKLY RANKING · ' + WEEK;
-    css(eyebrow, {
-      color: GOLD, fontSize: '11px', fontWeight: '700', letterSpacing: '.14em',
-      marginBottom: '7px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+    /* 가운데 본문 */
+    var body = el('div', {
+      flex: '1 1 auto', minWidth: '0',
+      padding: NARROW ? '16px 16px' : '20px 24px'
     });
 
-    var title = document.createElement('div');
-    title.textContent = rank ? '이 화보는 이번 주 ' + rank + '위입니다' : '이번 주 가장 많이 본 화보 TOP 10';
-    css(title, { color: '#fff', fontSize: '17px', fontWeight: '700', lineHeight: '1.4' });
+    body.appendChild(el('div', {
+      fontSize: '10px', fontWeight: '800', letterSpacing: '.16em',
+      color: RED, marginBottom: '9px',
+      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+    }, 'MAXIM B컷 WEEKLY RANKING · ' + WEEK));
 
-    box.appendChild(eyebrow);
-    box.appendChild(title);
+    body.appendChild(el('div', {
+      fontSize: NARROW ? '15px' : '17.5px', fontWeight: '800',
+      letterSpacing: '-.015em', lineHeight: '1.35', color: BLACK
+    }, rank ? '이번 주 랭킹 ' + rank + '위 화보' : '이번 주 가장 많이 본 화보 TOP 10'));
 
-    if (label) {
-      var tag = document.createElement('span');
-      tag.textContent = label;
-      css(tag, {
-        display: 'inline-block', marginTop: '8px', padding: '4px 9px',
-        background: 'rgba(201,162,39,.14)', border: '1px solid rgba(201,162,39,.45)',
-        color: GOLD, fontSize: '12px', fontWeight: '700', borderRadius: '2px'
+    body.appendChild(el('div', {
+      color: DIM, fontSize: '12.5px', marginTop: '6px', lineHeight: '1.45'
+    }, label || (rank ? '전체 순위와 다른 화보도 확인해 보세요' : '지금 순위 확인하기')));
+
+    /* 좁은 화면에선 CTA를 본문 안으로 */
+    if (NARROW) {
+      var inlineCta = el('span', {
+        display: 'inline-block', marginTop: '11px', fontSize: '12.5px',
+        fontWeight: '800', color: BLACK,
+        borderBottom: '2px solid ' + RED, paddingBottom: '1px'
+      }, '전체 랭킹 보기');
+      body.appendChild(inlineCta);
+    }
+    a.appendChild(body);
+
+    /* 오른쪽 CTA */
+    if (!NARROW) {
+      var cta = el('div', {
+        flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: '9px',
+        padding: '0 26px', borderLeft: '1px solid ' + LINE,
+        color: BLACK, fontSize: '13px', fontWeight: '800', whiteSpace: 'nowrap'
       });
-      box.appendChild(tag);
+      cta.appendChild(el('span', null, '전체 랭킹 보기'));
+      cta.appendChild(el('span', { color: RED, fontSize: '16px', fontWeight: '800' }, '\u2192'));
+      a.appendChild(cta);
     }
 
-    var sub = document.createElement('div');
-    sub.textContent = rank ? '전체 랭킹 보기' : '지금 순위 확인하기';
-    css(sub, { color: 'rgba(255,255,255,.62)', fontSize: '13px', marginTop: '7px' });
-    box.appendChild(sub);
-
-    a.appendChild(box);
-
-    var arrow = document.createElement('div');
-    arrow.textContent = '\u2192';
-    css(arrow, { flex: '0 0 auto', color: GOLD, fontSize: '20px', paddingLeft: '6px' });
-    a.appendChild(arrow);
-
-    a.onmouseover = function () { a.style.borderColor = GOLD; a.style.background = '#141414'; };
-    a.onmouseout = function () { a.style.borderColor = 'rgba(201,162,39,.38)'; a.style.background = INK; };
+    a.onmouseover = function () { a.style.borderColor = BLACK; };
+    a.onmouseout = function () { a.style.borderColor = LINE; };
     a.onclick = function () {
       try {
         if (typeof window.gtag === 'function') {
@@ -227,31 +234,23 @@
       } catch (e) {}
     };
 
-    if (window.innerWidth < 480) {
-      a.style.gap = '14px'; a.style.padding = '16px';
-      if (rank) { a.firstChild.style.fontSize = '34px'; a.firstChild.style.minWidth = '46px'; a.firstChild.style.paddingRight = '13px'; }
-      title.style.fontSize = '15px'; eyebrow.style.fontSize = '10px';
-    }
-
     mount.innerHTML = '';
     mount.appendChild(a);
   }
 
-  /* ---------- 이벤트 선택 ---------- */
+  /* ================= 이벤트 선택 ================= */
   function pickEvent(id) {
     var now = new Date();
     for (var i = 0; i < EVENTS.length; i++) {
       var e = EVENTS[i];
       if (!e || e.on === false) continue;
-
       var s = parseDT(e.start, false);
       var en = parseDT(e.end, true);
-      if (s && now < s) { log('이벤트 시작 전:', e.title); continue; }
-      if (en && now > en) { log('이벤트 종료:', e.title); continue; }
-
+      if (s && now < s) { log('시작 전:', e.title); continue; }
+      if (en && now > en) { log('종료:', e.title); continue; }
       var t = e.targets || [];
       if (t.length) {
-        if (!id) { log('대상 지정 이벤트인데 id 미인식:', e.title); continue; }
+        if (!id) { log('대상 지정인데 id 미인식:', e.title); continue; }
         var hit = false;
         for (var j = 0; j < t.length; j++) if (String(t[j]) === String(id)) { hit = true; break; }
         if (!hit) continue;
@@ -261,62 +260,60 @@
     return null;
   }
 
-  /* ---------- 상단 이벤트 스트립 ---------- */
+  /* ================= 상단 이벤트 스트립 ================= */
   function renderEvent(mount, ev) {
-    var e = ev.data;
-    var end = ev.end;
+    var e = ev.data, end = ev.end;
     var urgent = end && (end - new Date()) <= 48 * 3600 * 1000;
-    var accent = urgent ? RED : GOLD;
 
-    var a = document.createElement('a');
+    var a = el('a', {
+      display: 'flex', alignItems: 'stretch', width: '100%',
+      margin: '0 0 22px', border: '1px solid ' + (urgent ? RED : LINE),
+      background: '#fff', textDecoration: 'none', fontFamily: FONT,
+      boxSizing: 'border-box', overflow: 'hidden'
+    });
     a.href = buildUrl(e.url, 'detail_top', '');
-    a.target = '_blank'; a.rel = 'noopener';
-    css(a, {
-      display: 'flex', alignItems: 'center', gap: '12px',
-      maxWidth: '760px', margin: '0 auto 22px', padding: '13px 16px',
-      background: urgent ? 'linear-gradient(90deg,#1d0d0b,#0c0c0d)' : 'linear-gradient(90deg,#1a1509,#0c0c0d)',
-      borderLeft: '3px solid ' + accent, borderRadius: '2px',
-      textDecoration: 'none', fontFamily: FONT, boxSizing: 'border-box'
+    a.target = '_blank';
+    a.rel = 'noopener';
+
+    var tagBox = el('div', {
+      flex: '0 0 auto', display: 'flex', alignItems: 'center',
+      background: urgent ? RED : BLACK, color: '#fff',
+      padding: NARROW ? '0 11px' : '0 15px',
+      fontSize: '10px', fontWeight: '800', letterSpacing: '.14em', whiteSpace: 'nowrap'
+    }, e.tag || 'EVENT');
+    a.appendChild(tagBox);
+
+    var body = el('div', {
+      flex: '1 1 auto', minWidth: '0',
+      padding: NARROW ? '11px 13px' : '13px 18px'
     });
-
-    var tag = document.createElement('span');
-    tag.textContent = e.tag || 'EVENT';
-    css(tag, {
-      flex: '0 0 auto', color: '#fff', background: accent, fontSize: '10px', fontWeight: '800',
-      letterSpacing: '.1em', padding: '4px 7px', borderRadius: '2px', whiteSpace: 'nowrap'
-    });
-
-    var txt = document.createElement('div');
-    css(txt, { flex: '1 1 auto', minWidth: '0' });
-
-    var t1 = document.createElement('div');
-    t1.textContent = e.title;
-    css(t1, { color: '#fff', fontSize: '14px', fontWeight: '700', lineHeight: '1.35' });
-    txt.appendChild(t1);
-
+    body.appendChild(el('div', {
+      color: BLACK, fontSize: NARROW ? '13.5px' : '14.5px', fontWeight: '800',
+      lineHeight: '1.35', letterSpacing: '-.01em'
+    }, e.title));
     if (e.sub) {
-      var t2 = document.createElement('div');
-      t2.textContent = e.sub;
-      css(t2, {
-        color: 'rgba(255,255,255,.6)', fontSize: '12px', marginTop: '3px',
+      body.appendChild(el('div', {
+        color: DIM, fontSize: '12px', marginTop: '4px',
         whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-      });
-      txt.appendChild(t2);
+      }, e.sub));
     }
-
-    a.appendChild(tag); a.appendChild(txt);
+    a.appendChild(body);
 
     if (end) {
-      var clock = document.createElement('div');
-      css(clock, {
-        flex: '0 0 auto', color: accent, fontSize: '14px', fontWeight: '800',
-        letterSpacing: '.02em', fontVariantNumeric: 'tabular-nums', textAlign: 'right', minWidth: '68px'
+      var clock = el('div', {
+        flex: '0 0 auto', display: 'flex', alignItems: 'center',
+        padding: NARROW ? '0 13px' : '0 20px',
+        borderLeft: '1px solid ' + LINE,
+        color: urgent ? RED : BLACK,
+        fontSize: NARROW ? '13px' : '14.5px', fontWeight: '900',
+        letterSpacing: '.02em', fontVariantNumeric: 'tabular-nums',
+        minWidth: NARROW ? '74px' : '92px', justifyContent: 'center'
       });
       a.appendChild(clock);
 
       var tick = function () {
         var left = end - new Date();
-        if (left <= 0) { a.parentNode && a.parentNode.removeChild(a); return; }
+        if (left <= 0) { if (a.parentNode) a.parentNode.removeChild(a); return; }
         var days = Math.floor(left / 86400000);
         if (days >= 2) {
           clock.textContent = 'D-' + days;

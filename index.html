@@ -372,8 +372,9 @@ footer .fb b{color:var(--red)}
 #subscribe #stibeeForm .stb_form_policy{margin-top:12px!important}
 #subscribe #stibeeForm .stb_form_modal_open_btn{color:#ff9ba0!important;text-decoration:underline!important;background:none!important;border:0!important;padding:0!important}
 #subscribe #stibeeForm .stb_form_submit_button{background:linear-gradient(120deg,#f0554a,#e5352b)!important;color:#fff!important;border:0!important;border-radius:11px!important;padding:15px!important;font-weight:800!important;font-size:15px!important;width:100%!important;margin-top:16px!important;cursor:pointer!important}
-#subscribe #stibeeForm .stb_form_result{color:#fff!important;font-size:14px!important;font-weight:700!important;line-height:1.5!important;text-align:center!important}
-#subscribe #stibeeForm .stb_form_result:not(:empty){background:linear-gradient(135deg,#12b76a,#0e9e7a)!important;border:1.5px solid #34d399!important;border-radius:12px!important;padding:16px 18px!important;margin-top:16px!important;box-shadow:0 6px 20px rgba(18,183,106,.3)!important}
+#subscribe #stibeeForm .stb_form_result{display:none!important}
+#bcutToast{position:fixed;left:50%;top:24px;transform:translateX(-50%) translateY(-20px);z-index:100000;background:linear-gradient(135deg,#12b76a,#0e9e7a);color:#fff;font-weight:800;font-size:14.5px;line-height:1.55;padding:16px 22px;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.35);max-width:88vw;width:max-content;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}
+#bcutToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 /* 개인정보 팝업(모달)은 흰 배경 유지 */
 #subscribe #stibeeForm .stb_form_modal_body{background:#fff!important}
 #subscribe #stibeeForm .stb_form_modal_title,#subscribe #stibeeForm .stb_form_modal_text{color:#222!important}
@@ -501,6 +502,13 @@ function setAge(m){try{localStorage.setItem('bcut_age',m);}catch(e){}var g=docum
         </form>
       </div>
       <script type="text/javascript" src="https://resource.stibee.com/subscribe/stb_subscribe_form.js"></script>
+      <script>
+      (function(){function init(){var res=document.getElementById('stb_form_result');if(!res){return setTimeout(init,300);}
+        var toast=document.getElementById('bcutToast');if(!toast){toast=document.createElement('div');toast.id='bcutToast';document.body.appendChild(toast);}
+        function show(msg){var err=/오류|실패|이미|올바|잘못|다시|error/i.test(msg);toast.style.background=err?'linear-gradient(135deg,#e5352b,#b71c1c)':'linear-gradient(135deg,#12b76a,#0e9e7a)';toast.textContent=msg;toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){toast.classList.remove('show');},6000);}
+        var last='';new MutationObserver(function(){var t=(res.textContent||'').trim();if(t&&t!==last){last=t;show(t);}else if(!t){last='';}}).observe(res,{childList:true,subtree:true,characterData:true});
+      }init();})();
+      </script>
     </div>
     <!-- ▲▲▲ 스티비 폼 자리 끝 ▲▲▲ -->
     <div class="subNote">언제든 구독 해지 가능 · 스팸 없이 알찬 소식만</div>

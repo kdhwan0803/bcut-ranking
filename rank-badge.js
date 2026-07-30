@@ -1,5 +1,5 @@
 /* ============================================================
-   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v12
+   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v13
    bcutrank.com/rank-badge.js
    (흰 배경 상세페이지용 / 넷플릭스 톤 · 블랙 블록)
 
@@ -19,21 +19,16 @@
      ========================================================== */
   /* >>> WEEKLY START <<< */
 
-var WEEK = '7월 5주';
+  var WEEK = '7월 4주';
 
-// { "화보ID": [이번주, 지난주, 2주전] }
-var RANK = {
-  "1966": [1, 5, 72],
-  "2011": [2, null, null],
-  "1999": [3, 40, null],
-  "1932": [4, 3, 1],
-  "1952": [5, 89, null],
-  "1953": [6, 4, 73],
-  "2002": [7, 145, null],
-  "1750": [8, 23, 20],
-  "33": [9, null, null],
-  "1372": [10, 15, 68]
-};
+  // { "화보ID": [이번주, 지난주, 2주전] }
+  var RANK = {
+    "1952": [4, null, null],
+    "1953": [5, null, null],
+    "1966": [1, null, null],
+    "1999": [3, null, null],
+    "2011": [2, null, null]
+  };
 
   /* >>> WEEKLY END <<< */
 
@@ -47,6 +42,10 @@ var RANK = {
   var FALLBACK = true;     // 랭킹 데이터에 없는 화보에 'TOP 10 보기' 배너를 띄울지
   var RELEASE_DAY = 1;     // 랭킹 발표 요일 (0=일 1=월 ... 6=토)
   var MAXW = '680px';      // 배지 최대 폭 (가운데 정렬)
+
+  var FRAME = true;        // 상위권 화보 페이지 가장자리에 테두리를 두를지
+  var FRAME_MAX = 1;       // 몇 위까지 두를지 (1=1위만, 3=금은동)
+  var FRAME_LABEL = true;  // 상단 가운데 라벨 표시 (헤더를 가리면 false)
 
   /* ---------- 3. 이벤트 (여러 개 등록 가능) ----------
      targets: []        -> 전 화보 노출
@@ -159,6 +158,46 @@ var RANK = {
     u += 'utm_source=bcut&utm_medium=' + medium + '&utm_campaign=rank_badge';
     if (extra) u += extra;
     return u;
+  }
+
+  /* --- 1위 화보 페이지 테두리 --- */
+  var FRAME_TONE = [
+    { color: '#c9a227', soft: 'rgba(201,162,39,.20)', text: '이번 주 1위 화보' },
+    { color: '#a9adb5', soft: 'rgba(169,173,181,.20)', text: '이번 주 2위 화보' },
+    { color: '#b87333', soft: 'rgba(184,115,51,.20)', text: '이번 주 3위 화보' }
+  ];
+
+  function renderFrame(rank) {
+    if (!FRAME || !rank || rank > FRAME_MAX || rank > FRAME_TONE.length) return;
+    if (document.getElementById('bcut-frame')) return;
+
+    var tone = FRAME_TONE[rank - 1];
+    var narrow = isNarrow();
+    var w = narrow ? '3px' : '5px';
+
+    var frame = el('div', {
+      position: 'fixed', left: '0', top: '0', right: '0', bottom: '0',
+      border: w + ' solid ' + tone.color,
+      boxShadow: 'inset 0 0 22px ' + tone.soft,
+      boxSizing: 'border-box', pointerEvents: 'none', zIndex: '99998'
+    });
+    frame.id = 'bcut-frame';
+    document.body.appendChild(frame);
+
+    if (!FRAME_LABEL) return;
+
+    var tab = el('div', {
+      position: 'fixed', top: '0', left: '50%', transform: 'translateX(-50%)',
+      background: tone.color, color: '#1a1400',
+      fontFamily: FONT, fontSize: narrow ? '10.5px' : '11.5px', fontWeight: '800',
+      letterSpacing: '.06em', padding: narrow ? '4px 12px 5px' : '5px 16px 6px',
+      borderRadius: '0 0 3px 3px', pointerEvents: 'none', zIndex: '99999',
+      whiteSpace: 'nowrap'
+    }, tone.text);
+    tab.id = 'bcut-frame-label';
+    document.body.appendChild(tab);
+
+    log('테두리 표시:', rank + '위');
   }
 
   /* --- 한 줄 롤링 --- */
@@ -513,6 +552,8 @@ var RANK = {
     }
 
     log('id:', id, '/ 순위:', rank, '/ 배지:', label);
+
+    renderFrame(hist ? hist[0] : null);
 
     // 순위가 없고 폴백도 끄면 아무것도 그리지 않음
     if (!rank && !FALLBACK) {

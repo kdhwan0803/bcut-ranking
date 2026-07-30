@@ -1,5 +1,5 @@
 /* ============================================================
-   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v15
+   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v16
    bcutrank.com/rank-badge.js
    (흰 배경 상세페이지용 / 넷플릭스 톤 · 블랙 블록)
 
@@ -48,6 +48,7 @@
   var FRAME_LABEL = true;  // 테두리 좌상단 라벨 표시
   var FRAME_TARGET = '';   // 테두리를 두를 영역의 CSS 선택자. 비우면 자동 탐색
   var FRAME_MIN_H = 320;   // 자동 탐색 시 이 높이(px) 이상인 첫 조상을 대상으로
+  var FRAME_UP = 0;        // 자동 탐색 결과에서 위로 더 올라갈 단계 수 (0,1,2...)
 
   /* ---------- 3. 이벤트 (여러 개 등록 가능) ----------
      targets: []        -> 전 화보 노출
@@ -171,30 +172,57 @@
     { color: '#6c7886', soft: 'rgba(108,120,134,.14)', ink: '#ffffff', text: '이번 주 5위 화보' }
   ];
 
+  function nodeDesc(n) {
+    var r = n.getBoundingClientRect();
+    return n.tagName
+      + (n.id ? '#' + n.id : '')
+      + (n.className && typeof n.className === 'string' ? '.' + n.className.trim().split(/\s+/).join('.') : '')
+      + '  [' + Math.round(r.width) + 'x' + Math.round(r.height) + ']';
+  }
+
+  // 디버그: 조상 목록을 전부 찍어줌 (어디에 테두리를 칠지 고를 때 사용)
+  function logAncestors(mount) {
+    if (!DEBUG || !mount) return;
+    var n = mount.parentNode, i = 0;
+    log('--- 조상 목록 (위로 갈수록 큰 영역) ---');
+    while (n && n.nodeType === 1 && i < 12) {
+      log('  [' + i + ']', nodeDesc(n));
+      if (n === document.body) break;
+      n = n.parentNode; i++;
+    }
+    log('--- FRAME_TARGET 에 넣거나, FRAME_UP 으로 단계를 올리세요 ---');
+  }
+
   function frameTarget() {
+    var mount = document.getElementById('bcut-rank') || document.getElementById('bcut-event');
+    logAncestors(mount);
+
     if (FRAME_TARGET) {
       try {
         var q = document.querySelector(FRAME_TARGET);
-        if (q) { log('테두리 대상(선택자):', FRAME_TARGET); return q; }
+        if (q) { log('테두리 대상(선택자):', nodeDesc(q)); return q; }
         log('선택자에 맞는 요소 없음:', FRAME_TARGET);
       } catch (e) { log('선택자 오류:', FRAME_TARGET); }
     }
 
-    var mount = document.getElementById('bcut-rank') || document.getElementById('bcut-event');
     if (!mount) return null;
 
-    var node = mount.parentNode, step = 0;
+    var node = mount.parentNode, step = 0, found = null;
     while (node && node !== document.body && node.nodeType === 1 && step < 8) {
       var r = node.getBoundingClientRect();
-      if (r.height >= FRAME_MIN_H && r.width >= 280) {
-        log('테두리 대상(자동):', node.tagName, node.className || '(class 없음)',
-            Math.round(r.width) + 'x' + Math.round(r.height));
-        return node;
-      }
+      if (r.height >= FRAME_MIN_H && r.width >= 280) { found = node; break; }
       node = node.parentNode; step++;
     }
-    log('테두리 대상 못 찾음 - 생략');
-    return null;
+    if (!found) { log('테두리 대상 못 찾음 - 생략'); return null; }
+
+    for (var up = 0; up < FRAME_UP; up++) {
+      var pa = found.parentNode;
+      if (!pa || pa === document.body || pa.nodeType !== 1) break;
+      found = pa;
+    }
+
+    log('테두리 대상(자동, FRAME_UP=' + FRAME_UP + '):', nodeDesc(found));
+    return found;
   }
 
   function renderFrame(rank) {

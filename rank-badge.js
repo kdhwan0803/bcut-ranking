@@ -1,5 +1,5 @@
 /* ============================================================
-   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v13
+   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v14
    bcutrank.com/rank-badge.js
    (흰 배경 상세페이지용 / 넷플릭스 톤 · 블랙 블록)
 
@@ -19,7 +19,7 @@
      ========================================================== */
   /* >>> WEEKLY START <<< */
 
-  var WEEK = '7월 4주';
+  var WEEK = '7월 5주';
 
   // { "화보ID": [이번주, 지난주, 2주전] }
   var RANK = {
@@ -43,9 +43,11 @@
   var RELEASE_DAY = 1;     // 랭킹 발표 요일 (0=일 1=월 ... 6=토)
   var MAXW = '680px';      // 배지 최대 폭 (가운데 정렬)
 
-  var FRAME = true;        // 상위권 화보 페이지 가장자리에 테두리를 두를지
+  var FRAME = true;        // 상위권 화보의 본문 영역에 테두리를 두를지
   var FRAME_MAX = 1;       // 몇 위까지 두를지 (1=1위만, 3=금은동)
-  var FRAME_LABEL = true;  // 상단 가운데 라벨 표시 (헤더를 가리면 false)
+  var FRAME_LABEL = true;  // 테두리 좌상단 라벨 표시
+  var FRAME_TARGET = '';   // 테두리를 두를 영역의 CSS 선택자. 비우면 자동 탐색
+  var FRAME_MIN_H = 320;   // 자동 탐색 시 이 높이(px) 이상인 첫 조상을 대상으로
 
   /* ---------- 3. 이벤트 (여러 개 등록 가능) ----------
      targets: []        -> 전 화보 노출
@@ -160,44 +162,70 @@
     return u;
   }
 
-  /* --- 1위 화보 페이지 테두리 --- */
+  /* --- 상위권 화보 본문 테두리 --- */
   var FRAME_TONE = [
-    { color: '#c9a227', soft: 'rgba(201,162,39,.20)', text: '이번 주 1위 화보' },
-    { color: '#a9adb5', soft: 'rgba(169,173,181,.20)', text: '이번 주 2위 화보' },
-    { color: '#b87333', soft: 'rgba(184,115,51,.20)', text: '이번 주 3위 화보' }
+    { color: '#c9a227', soft: 'rgba(201,162,39,.16)', text: '이번 주 1위 화보' },
+    { color: '#a9adb5', soft: 'rgba(169,173,181,.16)', text: '이번 주 2위 화보' },
+    { color: '#b87333', soft: 'rgba(184,115,51,.16)', text: '이번 주 3위 화보' }
   ];
+
+  function frameTarget() {
+    if (FRAME_TARGET) {
+      try {
+        var q = document.querySelector(FRAME_TARGET);
+        if (q) { log('테두리 대상(선택자):', FRAME_TARGET); return q; }
+        log('선택자에 맞는 요소 없음:', FRAME_TARGET);
+      } catch (e) { log('선택자 오류:', FRAME_TARGET); }
+    }
+
+    var mount = document.getElementById('bcut-rank') || document.getElementById('bcut-event');
+    if (!mount) return null;
+
+    var node = mount.parentNode, step = 0;
+    while (node && node !== document.body && node.nodeType === 1 && step < 8) {
+      var r = node.getBoundingClientRect();
+      if (r.height >= FRAME_MIN_H && r.width >= 280) {
+        log('테두리 대상(자동):', node.tagName, node.className || '(class 없음)',
+            Math.round(r.width) + 'x' + Math.round(r.height));
+        return node;
+      }
+      node = node.parentNode; step++;
+    }
+    log('테두리 대상 못 찾음 - 생략');
+    return null;
+  }
 
   function renderFrame(rank) {
     if (!FRAME || !rank || rank > FRAME_MAX || rank > FRAME_TONE.length) return;
-    if (document.getElementById('bcut-frame')) return;
+    if (document.getElementById('bcut-frame-label')) return;
+
+    var box = frameTarget();
+    if (!box) return;
 
     var tone = FRAME_TONE[rank - 1];
     var narrow = isNarrow();
-    var w = narrow ? '3px' : '5px';
+    var w = narrow ? '3px' : '4px';
 
-    var frame = el('div', {
-      position: 'fixed', left: '0', top: '0', right: '0', bottom: '0',
-      border: w + ' solid ' + tone.color,
-      boxShadow: 'inset 0 0 22px ' + tone.soft,
-      boxSizing: 'border-box', pointerEvents: 'none', zIndex: '99998'
-    });
-    frame.id = 'bcut-frame';
-    document.body.appendChild(frame);
+    // 바깥으로 나가지 않는 안쪽 링 (레이아웃 영향 없음)
+    box.style.boxShadow = 'inset 0 0 0 ' + w + ' ' + tone.color +
+                          ', inset 0 0 30px ' + tone.soft;
 
     if (!FRAME_LABEL) return;
 
+    try {
+      if (getComputedStyle(box).position === 'static') box.style.position = 'relative';
+    } catch (e) {}
+
     var tab = el('div', {
-      position: 'fixed', top: '0', left: '50%', transform: 'translateX(-50%)',
+      position: 'absolute', top: '0', left: '0',
       background: tone.color, color: '#1a1400',
-      fontFamily: FONT, fontSize: narrow ? '10.5px' : '11.5px', fontWeight: '800',
-      letterSpacing: '.06em', padding: narrow ? '4px 12px 5px' : '5px 16px 6px',
-      borderRadius: '0 0 3px 3px', pointerEvents: 'none', zIndex: '99999',
+      fontFamily: FONT, fontSize: narrow ? '10px' : '11px', fontWeight: '800',
+      letterSpacing: '.06em', padding: narrow ? '4px 10px 5px' : '5px 14px 6px',
+      borderRadius: '0 0 3px 0', pointerEvents: 'none', zIndex: '20',
       whiteSpace: 'nowrap'
     }, tone.text);
     tab.id = 'bcut-frame-label';
-    document.body.appendChild(tab);
-
-    log('테두리 표시:', rank + '위');
+    box.appendChild(tab);
   }
 
   /* --- 한 줄 롤링 --- */

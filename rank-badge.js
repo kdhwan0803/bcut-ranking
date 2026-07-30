@@ -1,5 +1,5 @@
 /* ============================================================
-   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v7
+   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v10
    bcutrank.com/rank-badge.js
    (흰 배경 상세페이지용 / 넷플릭스 톤 · 블랙 블록)
 
@@ -19,7 +19,10 @@
   var SITE = 'https://bcutrank.com';
 
   var TOP1 = '';           // 이번 주 1위 모델명. 비워두면 이름 대신 궁금증 문구가 나감
-  var DISPLAY_MAX = 20;    // 이 순위 밖이면 순위를 감추고 TOP10 배너로 대체
+  var LABEL_MAX = 10;      // 이 순위 안에서만 변동 칩(상승/연속 등)을 띄움
+  var ROLL = true;         // 부가 문구를 롤링으로 돌릴지
+  var ROLL_MS = 3500;      // 롤링 전환 간격 (ms)
+  var FALLBACK = true;     // 랭킹 데이터에 없는 화보에 'TOP 10 보기' 배너를 띄울지
   var RELEASE_DAY = 1;     // 랭킹 발표 요일 (0=일 1=월 ... 6=토)
   var MAXW = '680px';      // 배지 최대 폭 (가운데 정렬)
 
@@ -145,6 +148,66 @@
     return u;
   }
 
+  /* --- 한 줄 롤링 --- */
+  function makeRoller(items, narrow) {
+    var h = narrow ? 18 : 20;
+    var box = el('div', {
+      position: 'relative', height: h + 'px', overflow: 'hidden',
+      marginTop: narrow ? '6px' : '8px'
+    });
+
+    var reduce = false;
+    try {
+      reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (e) {}
+
+    var nodes = [];
+    for (var i = 0; i < items.length; i++) {
+      var line = el('div', {
+        position: 'absolute', left: '0', top: '0', width: '100%', height: h + 'px',
+        display: 'flex', alignItems: 'center',
+        transform: i === 0 ? 'translateY(0)' : 'translateY(100%)',
+        opacity: i === 0 ? '1' : '0',
+        transition: 'transform .5s cubic-bezier(.4,0,.2,1), opacity .5s ease'
+      });
+      line.appendChild(items[i]);
+      box.appendChild(line);
+      nodes.push(line);
+    }
+
+    if (items.length < 2 || !ROLL || reduce) return box;
+
+    var idx = 0, timer = null;
+
+    function step() {
+      var cur = nodes[idx];
+      var nxt = nodes[(idx + 1) % nodes.length];
+
+      // 다음 줄을 애니메이션 없이 아래로 내려놓고
+      nxt.style.transition = 'none';
+      nxt.style.transform = 'translateY(100%)';
+      nxt.style.opacity = '0';
+      void nxt.offsetHeight;
+      nxt.style.transition = 'transform .5s cubic-bezier(.4,0,.2,1), opacity .5s ease';
+
+      cur.style.transform = 'translateY(-100%)';
+      cur.style.opacity = '0';
+      nxt.style.transform = 'translateY(0)';
+      nxt.style.opacity = '1';
+
+      idx = (idx + 1) % nodes.length;
+    }
+
+    function start() { if (!timer) timer = setInterval(step, ROLL_MS); }
+    function stop() { clearInterval(timer); timer = null; }
+
+    box.addEventListener('mouseenter', stop);
+    box.addEventListener('mouseleave', start);
+    start();
+
+    return box;
+  }
+
   /* --- 다음 발표까지 남은 일수 --- */
   function daysToRelease() {
     var d = new Date().getDay();
@@ -214,12 +277,7 @@
       letterSpacing: '-.015em', lineHeight: '1.3', color: BLACK
     }, rank ? '이번 주 랭킹 ' + rank + '위 화보' : '이번 주 가장 많이 본 화보 TOP 10'));
 
-    /* 부가 정보 한 줄: 전체 N편 중 / 변동 배지 */
-    var metaRow = el('div', {
-      display: 'flex', alignItems: 'center', gap: '7px',
-      marginTop: NARROW ? '5px' : '7px', flexWrap: 'wrap'
-    });
-
+    /* 부가 문구 (롤링) */
     var teaser, teaserMode;
     if (rank === 1) {
       teaser = '이번 주 가장 많이 본 화보';
@@ -233,21 +291,30 @@
     }
     window.__bcutTeaserMode = teaserMode;
 
-    metaRow.appendChild(el('span', {
-      color: teaserMode === 'hide' ? BLACK : DIM,
+    var items = [];
+
+    items.push(el('span', {
+      color: teaserMode === 'name' ? DIM : BLACK,
       fontSize: NARROW ? '11.5px' : '12.5px',
-      fontWeight: teaserMode === 'hide' ? '700' : '400'
+      fontWeight: teaserMode === 'name' ? '400' : '700',
+      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
     }, teaser));
 
     if (label) {
-      metaRow.appendChild(el('span', {
+      items.push(el('span', {
         display: 'inline-block', padding: '2px 7px',
         background: '#fdeced', color: RED,
         fontSize: NARROW ? '10.5px' : '11.5px', fontWeight: '800',
         letterSpacing: '-.01em', whiteSpace: 'nowrap'
       }, label));
     }
-    if (metaRow.childNodes.length) body.appendChild(metaRow);
+
+    items.push(el('span', {
+      color: DIM, fontSize: NARROW ? '11.5px' : '12.5px',
+      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+    }, '판매 · 조회 데이터로 매주 집계'));
+
+    body.appendChild(makeRoller(items, NARROW));
 
     /* 좁은 화면: CTA + 다음 발표를 본문 안에 */
     if (NARROW) {
@@ -422,12 +489,21 @@
     var rank = hist ? hist[0] : null;
     var label = makeLabel(hist);
 
-    // 하위권이면 순위를 노출하지 않고 TOP10 배너로
-    if (rank && DISPLAY_MAX && rank > DISPLAY_MAX) {
-      log('순위 ' + rank + '위 - DISPLAY_MAX(' + DISPLAY_MAX + ') 밖이라 감춤');
-      rank = null; label = null;
+    // 순위는 그대로 표시하고, 변동 칩만 상위권에서만
+    if (rank && LABEL_MAX && rank > LABEL_MAX) {
+      log('순위 ' + rank + '위 - LABEL_MAX(' + LABEL_MAX + ') 밖이라 변동 칩 생략');
+      label = null;
     }
+
     log('id:', id, '/ 순위:', rank, '/ 배지:', label);
+
+    // 순위가 없고 폴백도 끄면 아무것도 그리지 않음
+    if (!rank && !FALLBACK) {
+      log('표시할 순위 없음 - 배지 미노출');
+      mount.innerHTML = '';
+      return;
+    }
+
     renderRank(mount, rank, label, id);
 
     // 화면 폭이 바뀌면 (회전 등) 다시 그림

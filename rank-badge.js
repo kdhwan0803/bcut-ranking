@@ -1,5 +1,5 @@
 /* ============================================================
-   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v14
+   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v15
    bcutrank.com/rank-badge.js
    (흰 배경 상세페이지용 / 넷플릭스 톤 · 블랙 블록)
 
@@ -19,7 +19,7 @@
      ========================================================== */
   /* >>> WEEKLY START <<< */
 
-  var WEEK = '7월 5주';
+  var WEEK = '7월 4주';
 
   // { "화보ID": [이번주, 지난주, 2주전] }
   var RANK = {
@@ -44,7 +44,7 @@
   var MAXW = '680px';      // 배지 최대 폭 (가운데 정렬)
 
   var FRAME = true;        // 상위권 화보의 본문 영역에 테두리를 두를지
-  var FRAME_MAX = 1;       // 몇 위까지 두를지 (1=1위만, 3=금은동)
+  var FRAME_MAX = 5;       // 몇 위까지 두를지 (1=1위만, 3=금은동, 5=TOP5까지)
   var FRAME_LABEL = true;  // 테두리 좌상단 라벨 표시
   var FRAME_TARGET = '';   // 테두리를 두를 영역의 CSS 선택자. 비우면 자동 탐색
   var FRAME_MIN_H = 320;   // 자동 탐색 시 이 높이(px) 이상인 첫 조상을 대상으로
@@ -164,9 +164,11 @@
 
   /* --- 상위권 화보 본문 테두리 --- */
   var FRAME_TONE = [
-    { color: '#c9a227', soft: 'rgba(201,162,39,.16)', text: '이번 주 1위 화보' },
-    { color: '#a9adb5', soft: 'rgba(169,173,181,.16)', text: '이번 주 2위 화보' },
-    { color: '#b87333', soft: 'rgba(184,115,51,.16)', text: '이번 주 3위 화보' }
+    { color: '#c9a227', soft: 'rgba(201,162,39,.16)',  ink: '#1a1400', text: '이번 주 1위 화보' },
+    { color: '#9fa6b0', soft: 'rgba(159,166,176,.16)', ink: '#14181d', text: '이번 주 2위 화보' },
+    { color: '#b87333', soft: 'rgba(184,115,51,.16)',  ink: '#ffffff', text: '이번 주 3위 화보' },
+    { color: '#4f5b6b', soft: 'rgba(79,91,107,.14)',   ink: '#ffffff', text: '이번 주 4위 화보' },
+    { color: '#6c7886', soft: 'rgba(108,120,134,.14)', ink: '#ffffff', text: '이번 주 5위 화보' }
   ];
 
   function frameTarget() {
@@ -217,11 +219,12 @@
     } catch (e) {}
 
     var tab = el('div', {
-      position: 'absolute', top: '0', left: '0',
-      background: tone.color, color: '#1a1400',
-      fontFamily: FONT, fontSize: narrow ? '10px' : '11px', fontWeight: '800',
-      letterSpacing: '.06em', padding: narrow ? '4px 10px 5px' : '5px 14px 6px',
-      borderRadius: '0 0 3px 0', pointerEvents: 'none', zIndex: '20',
+      position: 'absolute', top: '0', left: '50%',
+      transform: 'translateX(-50%)',
+      background: tone.color, color: tone.ink,
+      fontFamily: FONT, fontSize: narrow ? '11px' : '12.5px', fontWeight: '900',
+      letterSpacing: '.02em', padding: narrow ? '5px 14px 6px' : '6px 20px 7px',
+      borderRadius: '0 0 4px 4px', pointerEvents: 'none', zIndex: '20',
       whiteSpace: 'nowrap'
     }, tone.text);
     tab.id = 'bcut-frame-label';

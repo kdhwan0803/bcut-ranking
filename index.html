@@ -589,7 +589,10 @@ function renderBanner(){
   sec.style.display='block';bCount=bs.length;
   sec.innerHTML=`<div class="bannerWrap"><div class="bannerTrack" id="bTrack">${bs.map(b=>b.auto?autoSlideHTML(b):manualSlideHTML(b)).join('')}</div>`+
     (bCount>1?`<button class="bnav bprev" onclick="bGo(-1)">‹</button><button class="bnav bnext" onclick="bGo(1)">›</button><div class="bdots" id="bDots">${bs.map((_,i)=>`<button onclick="bSet(${i})"></button>`).join('')}</div>`:'')+`</div>`;
-  bIdx=0;bUpdate();bAuto();
+  bIdx=0;
+  // 첫 배너도 페이드인 애니메이션 나오게: active 없이 먼저 그린 뒤 다음 프레임에 적용
+  requestAnimationFrame(function(){requestAnimationFrame(function(){bUpdate();});});
+  bAuto();
   const wrap=sec.querySelector('.bannerWrap');let sx=0;
   wrap.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
   wrap.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)bGo(dx<0?1:-1);});

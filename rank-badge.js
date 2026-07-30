@@ -46,7 +46,7 @@
   var FRAME = true;        // 상위권 화보의 본문 영역에 테두리를 두를지
   var FRAME_MAX = 5;       // 몇 위까지 두를지 (1=1위만, 3=금은동, 5=TOP5까지)
   var FRAME_LABEL = true;  // 테두리 좌상단 라벨 표시
-  var FRAME_TARGET = '';   // 테두리를 두를 영역의 CSS 선택자. 비우면 자동 탐색
+  var FRAME_TARGET = '#work-view';   // 테두리를 두를 영역의 CSS 선택자. 비우면 자동 탐색
   var FRAME_MIN_H = 320;   // 자동 탐색 시 이 높이(px) 이상인 첫 조상을 대상으로
   var FRAME_UP = 0;        // 자동 탐색 결과에서 위로 더 올라갈 단계 수 (0,1,2...)
 

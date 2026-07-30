@@ -1,5 +1,5 @@
 /* ============================================================
-   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v10
+   MAXIM B컷 - 화보 상세페이지 랭킹 배지 + 이벤트 스트립  v12
    bcutrank.com/rank-badge.js
    (흰 배경 상세페이지용 / 넷플릭스 톤 · 블랙 블록)
 
@@ -13,18 +13,13 @@
 (function () {
   'use strict';
 
-  /* ---------- 1. 매주 갱신 ---------- */
+  /* ==========================================================
+     1. 매주 갱신 - 이 블록만 통째로 갈아끼우면 됩니다
+        (admin "배지 코드 만들기" 버튼이 뽑아주는 그대로)
+     ========================================================== */
+  /* >>> WEEKLY START <<< */
 
   var WEEK = '7월 4주';
-  var SITE = 'https://bcutrank.com';
-
-  var TOP1 = '';           // 이번 주 1위 모델명. 비워두면 이름 대신 궁금증 문구가 나감
-  var LABEL_MAX = 10;      // 이 순위 안에서만 변동 칩(상승/연속 등)을 띄움
-  var ROLL = true;         // 부가 문구를 롤링으로 돌릴지
-  var ROLL_MS = 3500;      // 롤링 전환 간격 (ms)
-  var FALLBACK = true;     // 랭킹 데이터에 없는 화보에 'TOP 10 보기' 배너를 띄울지
-  var RELEASE_DAY = 1;     // 랭킹 발표 요일 (0=일 1=월 ... 6=토)
-  var MAXW = '680px';      // 배지 최대 폭 (가운데 정렬)
 
   // { "화보ID": [이번주, 지난주, 2주전] }
   var RANK = {
@@ -35,7 +30,20 @@
     "2011": [2, null, null]
   };
 
-  /* ---------- 2. 이벤트 (여러 개 등록 가능) ----------
+  /* >>> WEEKLY END <<< */
+
+  /* ---------- 2. 설정 (한 번만 정하면 끝) ---------- */
+
+  var SITE = 'https://bcutrank.com';
+  var TOP1 = '';           // 이번 주 1위 모델명. 비워두면 이름 대신 궁금증 문구가 나감
+  var LABEL_MAX = 10;      // 이 순위 안에서만 변동 칩(상승/연속 등)을 띄움
+  var ROLL = true;         // 부가 문구를 롤링으로 돌릴지
+  var ROLL_MS = 3500;      // 롤링 전환 간격 (ms)
+  var FALLBACK = true;     // 랭킹 데이터에 없는 화보에 'TOP 10 보기' 배너를 띄울지
+  var RELEASE_DAY = 1;     // 랭킹 발표 요일 (0=일 1=월 ... 6=토)
+  var MAXW = '680px';      // 배지 최대 폭 (가운데 정렬)
+
+  /* ---------- 3. 이벤트 (여러 개 등록 가능) ----------
      targets: []        -> 전 화보 노출
      targets: ["1966"]  -> 그 화보에만
      start / end        -> "2026-08-01" 또는 "2026-08-01 21:00"
@@ -54,7 +62,7 @@
     // }
   ];
 
-  /* ---------- 3. 아래는 건드릴 일 없음 ---------- */
+  /* ---------- 4. 아래는 건드릴 일 없음 ---------- */
 
   var DEBUG = /[?&]bcutdebug=1/.test(location.search);
   var RED = '#e50914';
@@ -250,13 +258,13 @@
       }, 'WEEK'));
     } else {
       block.appendChild(el('strong', {
-        fontSize: NARROW ? '17px' : '23px', fontWeight: '900',
-        lineHeight: '1', letterSpacing: '-.03em'
-      }, 'TOP'));
-      block.appendChild(el('strong', {
-        fontSize: NARROW ? '23px' : '31px', fontWeight: '900',
-        lineHeight: '1', letterSpacing: '-.04em', color: RED
-      }, '10'));
+        fontSize: NARROW ? '34px' : '46px', fontWeight: '900',
+        lineHeight: '.9', letterSpacing: '-.04em'
+      }, '?'));
+      block.appendChild(el('span', {
+        fontSize: NARROW ? '9px' : '10px', fontWeight: '800',
+        letterSpacing: '.18em', color: RED
+      }, 'RANK'));
     }
     a.appendChild(block);
 
@@ -275,11 +283,15 @@
     body.appendChild(el('div', {
       fontSize: NARROW ? '14.5px' : '17px', fontWeight: '800',
       letterSpacing: '-.015em', lineHeight: '1.3', color: BLACK
-    }, rank ? '이번 주 랭킹 ' + rank + '위 화보' : '이번 주 가장 많이 본 화보 TOP 10'));
+    }, rank ? '이번 주 랭킹 ' + rank + '위 화보'
+           : (TOP1 ? '이번 주 1위는 ' + TOP1 : '이번 주 1위 화보는?')));
 
     /* 부가 문구 (롤링) */
     var teaser, teaserMode;
-    if (rank === 1) {
+    if (!rank) {
+      teaser = 'TOP 10 전체 순위 보기';
+      teaserMode = 'fallback';
+    } else if (rank === 1) {
       teaser = '이번 주 가장 많이 본 화보';
       teaserMode = 'top';
     } else if (TOP1) {
@@ -294,9 +306,9 @@
     var items = [];
 
     items.push(el('span', {
-      color: teaserMode === 'name' ? DIM : BLACK,
+      color: (teaserMode === 'name' || teaserMode === 'top') ? DIM : BLACK,
       fontSize: NARROW ? '11.5px' : '12.5px',
-      fontWeight: teaserMode === 'name' ? '400' : '700',
+      fontWeight: (teaserMode === 'name' || teaserMode === 'top') ? '400' : '700',
       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
     }, teaser));
 

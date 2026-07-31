@@ -1273,9 +1273,11 @@ class Component extends DCLogic {
     base.wcThumbs=curList.slice(0,3).map(x=>({img:(W[x.id]||{}).img||'',blur:this.blurOf(x.id)}));
 
     /* 추천 모델 */
-    const hasW=m=>Object.keys(W).some(id=>(W[id].models||[]).includes(m));
-    let pool=(D.featuredModels||[]).filter(hasW);
-    if(!pool.length){const all=new Set();Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>all.add(m)));pool=[...all];}
+    const nWorks=m=>Object.keys(W).filter(id=>(W[id].models||[]).includes(m)).length;
+    const MIN_W=4;
+    let pool=(D.featuredModels||[]).filter(m=>nWorks(m)>=MIN_W);
+    if(!pool.length){const all=new Set();Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>all.add(m)));
+      pool=[...all].filter(m=>nWorks(m)>=MIN_W);}
     if(pool.length){if(!this._feat||!pool.includes(this._feat))this._feat=this._admin?pool[0]:pool[Math.floor(Math.random()*pool.length)];
       const nm=this._feat;const fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);
       base.featShow='block';base.feat={name:nm,img:this.modelImg(nm)||BLANK,blur:'none',open:()=>this.openModel(nm),

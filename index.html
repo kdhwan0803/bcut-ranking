@@ -35,6 +35,7 @@ select,input,button{font-family:inherit}
 @keyframes kb{0%{transform:scale(1.06)}100%{transform:scale(1.16)}}
 @keyframes fadeUp{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:none}}
 @keyframes pulseDot{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
 @keyframes shimmer{0%{opacity:.35}50%{opacity:.7}100%{opacity:.35}}
 </style>
@@ -716,6 +717,17 @@ select,input,button{font-family:inherit}
     </div>
   </sc-if>
 
+  <sc-if value="{{ bootShow }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:320;background:var(--bg0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px;text-align:center">
+      <div style="font-size:22px;font-weight:900;letter-spacing:-.4px">MAXIM <span style="color:var(--acc)">B컷</span></div>
+      <div style="width:120px;height:3px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden;display:{{ bootBarShow }}">
+        <div style="width:40%;height:100%;border-radius:2px;background:var(--acc);animation:slide 1.1s ease-in-out infinite"></div>
+      </div>
+      <div style="font-size:13.5px;color:var(--mut);line-height:1.7;max-width:300px">{{ bootMsg }}</div>
+      <button onClick="{{ bootRetry }}" style="display:{{ bootRetryShow }};background:var(--acc);color:#fff;border:0;font-weight:800;font-size:14px;padding:13px 28px;border-radius:8px;cursor:pointer">다시 시도</button>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ popup }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ popupClose }}" style="position:fixed;inset:0;z-index:260;background:rgba(4,4,6,.7);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px">
       <div onClick="{{ stop }}" style="position:relative;width:100%;max-width:360px;background:var(--bg1);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.6);animation:fadeUp .24s ease">
@@ -827,17 +839,24 @@ class Component extends DCLogic {
   applyTone(k){const t=TONES[k]||TONES.noir;const r=document.documentElement;Object.keys(t.vars).forEach(v=>r.style.setProperty(v,t.vars[v]));document.body.style.background=t.vars['--bg0'];this.setState({tone:k});}
 
   async load(){
+    let why='';
     for(const p of ['data.json','./data.json']){
-      try{const r=await fetch(p,{cache:'no-store'});if(!r.ok)continue;const d=await r.json();
+      try{
+        let r=null;
+        try{r=await fetch(p+'?v='+Date.now(),{cache:'no-store'});}catch(e1){try{r=await fetch(p);}catch(e2){why=e2&&e2.message||'네트워크 오류';}}
+        if(!r){continue;}
+        if(!r.ok){why='HTTP '+r.status;continue;}
+        const d=await r.json();
         if(Array.isArray(d.weeks))d.weeks.sort((a,b)=>((a.date||a.label||'')+'').localeCompare((b.date||b.label||'')+''));
         this._best=null;
         const last=Math.max(0,(d.weeks||[]).length-1);
         const qw=(this._qWeek!=null&&this._qWeek>=0&&this._qWeek<=last)?this._qWeek:last;
-        this.setState({D:d,wi:qw});return;
-      }catch(e){}
+        this.setState({D:d,wi:qw,err:''});return;
+      }catch(e){why=e&&e.message||'알 수 없는 오류';}
     }
-    this.setState({err:'data.json을 불러오지 못했습니다.'});
+    this.setState({err:why||'네트워크 오류'});
   }
+  retry(){this.setState({err:''});this.load();}
 
   /* ── 데이터 계산 (원본 로직 유지) ── */
   pts(r){return (this.state.D.points||[])[r-1]||0;}
@@ -965,6 +984,28 @@ class Component extends DCLogic {
   }
 
   renderVals(){
+    try{return this.vals();}
+    catch(err){
+      const S=this.state;
+      return {bootShow:true,bootBarShow:'none',bootRetryShow:'inline-block',
+        bootRetry:()=>{this._best=null;this._rand=null;this._crOrder=null;this.setState({modal:null,help:false,q:'',filter:'all',modelSel:'all',yearSel:'all'});this.load();},
+        bootMsg:'화면을 그리는 중 문제가 생겼어요.\n('+((err&&err.message)||'오류')+')',
+        gate:S.age==='',
+        setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
+        setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
+        openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),
+        tones:[],chips:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
+        recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
+        creators:[],creatorWorks:[],hof:[],upcoming:[],periods:[],filters:[],sorts:[],
+        feat:{works:[]},modal:null,popup:null,
+        recentShow:'none',wishShow:'none',tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',
+        nextShow:'none',featShow:'none',crShow:'none',kakaoShow:'none',hofShow:'none',
+        ddayShow:'none',moreShow:'none',crMoreShow:'none',noticeShow:'none',upcomingShow:'none',
+        helpShow:'none',lineShow:'none',tlNavShow:'none',stickyTop:'64px',padX:'26px',
+        rankHeading:'',rankSubline:'',q:'',topOpacity:'0',toTop:()=>{},closeModal:()=>{}};
+    }
+  }
+  vals(){
     const S=this.state,D=S.D;
     const tones=Object.keys(TONES).map(k=>({name:TONES[k].name,swatch:TONES[k].swatch,ring:S.tone===k?'#fff':'transparent',go:()=>this.applyTone(k)}));
     const base={
@@ -1002,6 +1043,11 @@ class Component extends DCLogic {
       setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
       stop:e=>e.stopPropagation(),closeModal:()=>this.close(),modal:null,
       popup:null,popupClose:()=>{},popupToday:()=>{},
+      bootShow:!D&&S.age!=='',
+      bootBarShow:S.err?'none':'block',
+      bootRetryShow:S.err?'inline-block':'none',
+      bootRetry:()=>this.retry(),
+      bootMsg:S.err?('랭킹 데이터를 불러오지 못했어요.\n('+S.err+')'):'랭킹을 불러오는 중…',
       chips:[],rows:[],slides:[],trackX:'translateX(0%)',trackDur:'.85s',spotDots:[],recent:[],recentShow:'none',
       upcoming:[],upcomingShow:'none',tapHint:'none',subCount:0,wcThumbs:[],
       modelCards:[],timeline:[],wishes:[],wishShow:'none',hall:[],hallShow:'none',

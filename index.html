@@ -839,22 +839,30 @@ class Component extends DCLogic {
   applyTone(k){const t=TONES[k]||TONES.noir;const r=document.documentElement;Object.keys(t.vars).forEach(v=>r.style.setProperty(v,t.vars[v]));document.body.style.background=t.vars['--bg0'];this.setState({tone:k});}
 
   async load(){
+    if(window.BCUT_DATA){this.apply(window.BCUT_DATA);return;}
     let why='';
-    for(const p of ['data.json','./data.json']){
+    for(const p of ['data.json','./data.json','/data.json']){
       try{
         let r=null;
         try{r=await fetch(p+'?v='+Date.now(),{cache:'no-store'});}catch(e1){try{r=await fetch(p);}catch(e2){why=e2&&e2.message||'네트워크 오류';}}
         if(!r){continue;}
         if(!r.ok){why='HTTP '+r.status;continue;}
-        const d=await r.json();
-        if(Array.isArray(d.weeks))d.weeks.sort((a,b)=>((a.date||a.label||'')+'').localeCompare((b.date||b.label||'')+''));
-        this._best=null;
-        const last=Math.max(0,(d.weeks||[]).length-1);
-        const qw=(this._qWeek!=null&&this._qWeek>=0&&this._qWeek<=last)?this._qWeek:last;
-        this.setState({D:d,wi:qw,err:''});return;
+        const d=await r.json();this.apply(d);return;
       }catch(e){why=e&&e.message||'알 수 없는 오류';}
     }
     this.setState({err:why||'네트워크 오류'});
+  }
+  apply(d){
+    if(!d||typeof d!=='object'){this.setState({err:'데이터 형식 오류'});return;}
+    if(!d.works)d.works={};
+    if(!d.models)d.models={};
+    if(!Array.isArray(d.weeks))d.weeks=[];
+    if(!Array.isArray(d.points))d.points=[100,90,80,70,60,50,40,30,20,10];
+    d.weeks.sort((a,b)=>((a.date||a.label||'')+'').localeCompare((b.date||b.label||'')+''));
+    this._best=null;
+    const last=Math.max(0,d.weeks.length-1);
+    const qw=(this._qWeek!=null&&this._qWeek>=0&&this._qWeek<=last)?this._qWeek:last;
+    this.setState({D:d,wi:qw,err:''});
   }
   retry(){this.setState({err:''});this.load();}
 

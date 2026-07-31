@@ -252,7 +252,7 @@ class Component extends DCLogic {
   applyTone(k){const t=TONES[k]||TONES.noir;const r=document.documentElement;Object.keys(t.vars).forEach(v=>r.style.setProperty(v,t.vars[v]));document.body.style.background=t.vars['--bg0'];this.setState({tone:k});}
 
   async load(){
-    for(const p of ['data.json','./data.json']){
+    for(const p of ['data.json','./data.json','/data.json']){
       try{const r=await fetch(p,{cache:'no-store'});if(!r.ok)continue;const d=await r.json();
         const pool=Object.keys(d.works||{}).filter(id=>d.works[id].img);
         this.setState({D:d,pool,size:Math.min(32,this.pow2(pool.length))});this.loadGlobal();return;

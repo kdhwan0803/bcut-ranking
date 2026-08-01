@@ -21,6 +21,8 @@
 <helmet>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MAXIM B컷 · RANKING</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 :root{--bg0:#07070a;--bg1:#101015;--bg2:#17171d;--acc:#E60012;--acc2:#ff5a63;--txt:#f4f4f6;--mut:#87878f;--line:rgba(255,255,255,.09)}
@@ -38,6 +40,12 @@ select,input,button{font-family:inherit}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
 @keyframes shimmer{0%{opacity:.35}50%{opacity:.7}100%{opacity:.35}}
+@keyframes bcTick{0%{opacity:1}18%{opacity:.15}55%{opacity:1}72%{opacity:.55}100%{opacity:1}}
+@keyframes bcRec{0%{opacity:1}22%{opacity:.2}38%{opacity:1}54%{opacity:.25}100%{opacity:1}}
+@keyframes bcScan{0%{transform:translateY(0);opacity:0}15%{opacity:.95}100%{transform:translateY(34px);opacity:0}}
+.bcScan{position:absolute;left:0;right:0;top:0;height:2px;background:var(--acc);box-shadow:0 0 12px rgba(230,0,18,.9);opacity:0;pointer-events:none}
+#bcLogo:hover .bcScan{animation:bcScan .85s linear}
+@media (prefers-reduced-motion:reduce){#bcLogo *{animation:none !important}}
 </style>
 </helmet>
 
@@ -45,8 +53,15 @@ select,input,button{font-family:inherit}
 
   <header style="position:fixed;top:0;left:0;right:0;z-index:90;transition:background .3s,backdrop-filter .3s,border-color .3s;border-bottom:1px solid transparent;background:{{ hdrBg }};border-bottom-color:{{ hdrLine }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
     <div style="max-width:1360px;margin:0 auto;height:64px;display:flex;align-items:center;gap:26px;padding:0 {{ padX }}">
-      <a href="#top" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-        <span style="font-size:19px;font-weight:900;letter-spacing:-.4px;color:#fff">MAXIM <span style="color:var(--acc)">B컷</span></span>
+      <a href="#top" id="bcLogo" title="MAXIM B컷" style="display:flex;align-items:center;gap:9px;flex-shrink:0">
+        <span style="position:relative;display:block;padding:5px 10px 5px 11px;border:1px solid rgba(255,255,255,.3);background:rgba(8,8,10,.3);overflow:hidden">
+          <span style="position:absolute;top:-1px;left:-1px;width:9px;height:9px;border-top:2px solid var(--acc);border-left:2px solid var(--acc);animation:bcTick .7s ease-out both"></span>
+          <span style="position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-bottom:2px solid var(--acc);border-right:2px solid var(--acc);animation:bcTick .7s ease-out .14s both"></span>
+          <span style="display:block;font-family:Anton,'Pretendard',sans-serif;font-size:24px;line-height:1;letter-spacing:-.4px;color:#fff">Bcut</span>
+          <span class="bcScan"></span>
+        </span>
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:bcRec 1.6s ease-out both;flex:0 0 auto"></span>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:rgba(255,255,255,.62);padding-left:8px">MAXIM</span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:var(--acc2);padding-left:9px;border-left:1px solid rgba(255,255,255,.18)">RANKING</span>
       </a>
       <nav style="gap:2px;margin-left:8px;display:{{ navShow }}">
@@ -88,7 +103,7 @@ select,input,button{font-family:inherit}
           <div style="position:absolute;inset:0;background-size:cover;background-position:center;opacity:.62;animation:kb 16s ease-out infinite alternate;background-image:{{ s.bgCss }};filter:{{ s.blur }}"></div>
           <div style="position:absolute;inset:0;background:linear-gradient(to top,var(--bg0) 2%,rgba(7,7,10,.86) 26%,rgba(7,7,10,.35) 58%,rgba(7,7,10,.55) 100%)"></div>
           <div style="position:absolute;inset:0;background:linear-gradient(to right,var(--bg0) 0%,rgba(7,7,10,.72) 34%,transparent 68%)"></div>
-          <div style="position:absolute;z-index:3;top:22px;right:{{ padX }};width:104px;aspect-ratio:3/4;border-radius:9px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.18);display:{{ s.mobCardShow }}">
+          <div style="position:absolute;z-index:3;top:{{ s.mobCardTop }};right:{{ padX }};width:104px;aspect-ratio:3/4;border-radius:9px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.18);display:{{ s.mobCardShow }}">
             <img src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
             <div style="position:absolute;bottom:6px;right:6px;font-size:8.5px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(8,8,11,.82);color:#fff;display:{{ s.vidShow }}">▶</div>
           </div>
@@ -99,8 +114,11 @@ select,input,button{font-family:inherit}
                 <span style="font-size:10.5px;font-weight:900;letter-spacing:.6px;padding:5px 9px;border-radius:4px;border:1px solid rgba(255,255,255,.42);color:rgba(255,255,255,.9);display:{{ s.vidShow }}">▶ 영상</span>
                 <span style="font-size:10.5px;font-weight:900;letter-spacing:.6px;padding:5px 8px;border-radius:4px;border:1px solid var(--acc);color:var(--acc2);display:{{ s.b19Show }}">19</span>
                 <span style="font-size:11.5px;font-weight:700;letter-spacing:2.2px;color:rgba(255,255,255,.6)">{{ s.eyebrow }}</span>
+                <sc-for list="{{ s.tags }}" as="tg" hint-placeholder-count="0">
+                  <span style="font-size:10px;font-weight:800;letter-spacing:1.4px;padding:4px 8px;border-radius:4px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.72)">{{ tg.label }}</span>
+                </sc-for>
               </div>
-              <h1 style="font-size:clamp(30px,4.6vw,58px);font-weight:900;letter-spacing:-1.8px;line-height:1.04;text-wrap:balance;text-shadow:0 4px 30px rgba(0,0,0,.6)">{{ s.title }}</h1>
+              <h1 style="font-size:{{ s.titleSize }};font-weight:900;letter-spacing:-1.4px;line-height:1.06;word-break:keep-all;overflow-wrap:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;text-shadow:0 4px 30px rgba(0,0,0,.6)">{{ s.title }}</h1>
               <div style="font-size:15.5px;font-weight:700;color:var(--acc2);margin-top:12px">{{ s.sub }}</div>
               <div style="display:flex;gap:26px;margin:26px 0 28px;flex-wrap:wrap">
                 <sc-for list="{{ s.stats }}" as="st" hint-placeholder-count="4">
@@ -867,6 +885,15 @@ class Component extends DCLogic {
   retry(){this.setState({err:''});this.load();}
 
   /* ── 데이터 계산 (원본 로직 유지) ── */
+  tParts(t){
+    let s=String(t||'').trim();const tags=[];
+    s=s.replace(/^\(\s*19\s*\)\s*/,'');
+    s=s.replace(/^\[([^\]]{1,16})\]\s*/,(m,c)=>{tags.push(c.trim());return '';});
+    s=s.replace(/\(\s*(only\s*photo|photo\s*only|photo\s*\+\s*video|photo\s*and\s*video)\s*\)/ig,(m,c)=>{tags.push(/video/i.test(c)?'PHOTO+VIDEO':'PHOTO ONLY');return ' ';});
+    s=s.replace(/\s{2,}/g,' ').replace(/^[\s·\-–]+|[\s·\-–]+$/g,'');
+    return {t:s||String(t||''),tags};
+  }
+  titleSize(n){return n<=24?'clamp(30px,4.6vw,58px)':n<=44?'clamp(26px,3.5vw,44px)':'clamp(23px,2.8vw,36px)';}
   pts(r){return (this.state.D.points||[])[r-1]||0;}
   weekEnd(wi){const d=((this.state.D.weeks||[])[wi]||{}).date;if(!d||!/\d{4}-\d{2}-\d{2}/.test(d))return '';const dt=new Date(d+'T00:00:00');dt.setDate(dt.getDate()+6);return dt.toISOString().slice(0,10);}
   pubOk(id,wi){const pub=(this.state.D.works[id]||{}).pub;if(!pub)return true;const e=this.weekEnd(wi);return !e||pub<=e;}
@@ -1079,8 +1106,9 @@ class Component extends DCLogic {
     this._slideCount=sp.length;
     const seq=sp.length>1?sp.concat([sp[0]]):sp;
     const idx=Math.min(S.spot,Math.max(0,seq.length-1));
-    base.slides=seq.map(x=>{const w=W[x.id]||{};
-      return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:x.title||'',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
+    base.slides=seq.map(x=>{const w=W[x.id]||{};const tp=this.tParts(x.title);
+      return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:tp.t,titleSize:this.titleSize(tp.t.length),
+        tags:tp.tags.map(l=>({label:l})),mobCardTop:'78px',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
         eyebrow:x.eyebrow||'',stats:x.stats||[],link:x.link||'https://bcut.maximkorea.net',
         blur:this.blurOf(x.id),cardShow:(x.img&&!S.mob)?'block':'none',
         mobCardShow:(x.img&&S.mob)?'block':'none',
@@ -1136,6 +1164,7 @@ class Component extends DCLogic {
           this._noticeHide=key;this.setState({noticeGone:true});};
       }
     }
+    base.slides.forEach(s=>{s.mobCardTop=(base.noticeShow==='block'?118:78)+'px';});
     base.rankHeading=(isMonth?'이번 달':'이번 주')+' '+(isM?'모델':'화보')+' TOP 10';
     const wkLabel=((D.weeks||[])[wi]||{}).label||'';
     base.rankSubline=(isMonth?this.monthLabel(this.wkMonth(wi)):wkLabel)+' 기준 · 판매·조회·평점 종합 · 포스터에 마우스를 올리면 6주 추이가 보여요';

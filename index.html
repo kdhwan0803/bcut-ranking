@@ -22,6 +22,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MAXIM B컷 · RANKING</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://i.ibb.co" crossorigin>
+<link rel="dns-prefetch" href="https://i.ibb.co">
 <link rel="preload" as="fetch" href="data.json" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
@@ -796,6 +798,7 @@ class Component extends DCLogic {
   state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),tone:'noir',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false};
 
   componentDidMount(){
+    this.preloadImgs();
     this.load();
     this._t=setInterval(()=>this.setState({now:Date.now()}),1000);
     this._sp=setInterval(()=>this.advance(),7000);
@@ -826,6 +829,7 @@ class Component extends DCLogic {
     }catch(e){}
   }
   componentWillUnmount(){clearInterval(this._t);clearInterval(this._sp);window.removeEventListener('scroll',this._sc);
+    clearTimeout(this._pl);if(this._io)this._io.disconnect();
     document.removeEventListener('keydown',this._key);window.removeEventListener('popstate',this._pop);}
 
   bindGlobal(){
@@ -838,7 +842,15 @@ class Component extends DCLogic {
   onTouchStart(e){this._tx=e.touches&&e.touches[0]?e.touches[0].clientX:0;}
   onTouchEnd(e){const t=e.changedTouches&&e.changedTouches[0];if(!t)return;
     const dx=t.clientX-(this._tx||0);if(Math.abs(dx)>44){dx<0?this.nextSlide():this.prevSlide();}}
-  componentDidUpdate(pp){if(pp.tone!==this.props.tone&&this.props.tone)this.applyTone(this.props.tone);}
+  /* 화면에 닿기 한창 전에 미리 썸네일을 받아둔다 */
+  preloadImgs(){
+    if(!('IntersectionObserver' in window))return;
+    if(!this._io)this._io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.loading='eager';this._io.unobserve(e.target);}});},{rootMargin:'1400px 0px'});
+    const io=this._io;
+    document.querySelectorAll('img[loading="lazy"]:not([data-eo])').forEach(i=>{i.setAttribute('data-eo','1');io.observe(i);});
+  }
+  componentDidUpdate(pp){if(pp.tone!==this.props.tone&&this.props.tone)this.applyTone(this.props.tone);
+    clearTimeout(this._pl);this._pl=setTimeout(()=>this.preloadImgs(),60);}
 
   advance(){
     const n=this._slideCount||0;if(n<2||this._admin)return;
@@ -899,7 +911,9 @@ class Component extends DCLogic {
     let s=String(t||'').trim();const tags=[];
     s=s.replace(/^\(\s*19\s*\)\s*/,'');
     s=s.replace(/^\[([^\]]{1,16})\]\s*/,(m,c)=>{tags.push(c.trim());return '';});
-    s=s.replace(/\(\s*(only\s*photo|photo\s*only|photo\s*\+\s*video|photo\s*and\s*video)\s*\)/ig,(m,c)=>{tags.push(/video/i.test(c)?'PHOTO+VIDEO':'PHOTO ONLY');return ' ';});
+    s=s.replace(/\(\s*(only\s*video|video\s*only|only\s*photo|photo\s*only|photo\s*\+\s*video|video\s*\+\s*photo|photo\s*and\s*video)\s*\)/ig,(m,c)=>{
+      const hasV=/video/i.test(c),hasP=/photo/i.test(c);
+      tags.push(hasV&&hasP?'PHOTO+VIDEO':hasV?'VIDEO ONLY':'PHOTO ONLY');return ' ';});
     s=s.replace(/\s{2,}/g,' ').replace(/^[\s·\-–]+|[\s·\-–]+$/g,'');
     return {t:s||String(t||''),tags};
   }
@@ -921,6 +935,23 @@ class Component extends DCLogic {
   monthModels(wi){if(wi<0)return [];const m={};this.weeksInMonth(wi).forEach(i=>{const mp=this.weekModelPts(i);Object.keys(mp).forEach(md=>{m[md]=(m[md]||0)+mp[md];});});return Object.keys(m).map(id=>({id,pts:m[id]})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({id:x.id,pts:x.pts,rank:i+1}));}
   monthWorkRankAt(id,wi){if(wi<0)return 0;const f=this.monthWorks(wi).find(x=>x.id===id);return f?f.rank:0;}
   monthModelRankAt(id,wi){if(wi<0)return 0;const f=this.monthModels(wi).find(x=>x.id===id);return f?f.rank:0;}
+  /* D가 바뀔 때 한 번만 계산하는 색인 (매 렌더 재계산 방지) */
+  idx(){
+    const D=this.state.D||{},W=D.works||{};
+    if(this._idx&&this._idxD===D)return this._idx;
+    const modelCount={},byC={},yearSet=new Set();
+    Object.keys(W).forEach(id=>{const w=W[id]||{};
+      (w.models||[]).forEach(m=>{modelCount[m]=(modelCount[m]||0)+1;});
+      const c=(w.photo||'').trim();if(c)(byC[c]=byC[c]||[]).push(id);
+      const y=(w.pub||'').slice(0,4);if(y)yearSet.add(y);});
+    const yr=this.today().slice(0,4);
+    const champ={};(D.weeks||[]).forEach((wk,i)=>{if(((wk.date||'').slice(0,4))!==yr)return;
+      const top=this.weekWorks(i)[0];if(top&&W[top.id])champ[top.id]=(champ[top.id]||0)+1;});
+    const hallIds=Object.keys(champ).sort((a,b)=>champ[b]-champ[a]||((W[b]||{}).pub||'').localeCompare((W[a]||{}).pub||'')).slice(0,14);
+    const crAll=Object.keys(byC).sort((a,b)=>byC[b].length-byC[a].length||a.localeCompare(b));
+    this._idxD=D;
+    return this._idx={modelCount,byC,crAll,years:[...yearSet].sort((a,b)=>b.localeCompare(a)),champ,hallIds};
+  }
   bestMap(){if(this._best)return this._best;const b={w:{},m:{}};(this.state.D.weeks||[]).forEach((_,i)=>{this.weekWorks(i).forEach(x=>{if(!b.w[x.id]||x.rank<b.w[x.id])b.w[x.id]=x.rank;});this.weekModels(i).forEach(x=>{if(!b.m[x.id]||x.rank<b.m[x.id])b.m[x.id]=x.rank;});});this._best=b;return b;}
   streak(id,wi,thr,isM){let n=0;for(let i=wi;i>=0;i--){const r=isM?this.modelRankAt(id,i):this.workRankAt(id,i);if(r&&r<=thr)n++;else break;}return n;}
   movement(cur,prev){if(!prev)return{k:'new',n:0};if(cur<prev)return{k:'up',n:prev-cur};if(cur>prev)return{k:'down',n:cur-prev};return{k:'same',n:0};}
@@ -1312,22 +1343,22 @@ class Component extends DCLogic {
     base.wcThumbs=curList.slice(0,3).map(x=>({img:(W[x.id]||{}).img||'',blur:this.blurOf(x.id)}));
 
     /* 추천 모델 */
-    const nWorks=m=>Object.keys(W).filter(id=>(W[id].models||[]).includes(m)).length;
+    const IX=this.idx();
+    const nWorks=m=>IX.modelCount[m]||0;
     const MIN_W=4;
     let pool=(D.featuredModels||[]).filter(m=>nWorks(m)>=MIN_W);
     if(!pool.length){const all=new Set();Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>all.add(m)));
       pool=[...all].filter(m=>nWorks(m)>=MIN_W);}
     if(pool.length){if(!this._feat||!pool.includes(this._feat))this._feat=this._admin?pool[0]:pool[Math.floor(Math.random()*pool.length)];
-      const nm=this._feat;const fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);
+      const nm=this._feat;
+      if(this._fwFor!==nm){this._fwFor=nm;this._fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);}
+      const fw=this._fw;
       base.featShow='block';base.feat={name:nm,img:this.modelImg(nm)||BLANK,blur:'none',open:()=>this.openModel(nm),
         works:fw.map(id=>({img:W[id].img||'',blur:this.blurOf(id),open:()=>this.openWork(id)}))};}
 
     /* 명예의 전당 */
     const bw=this.bestMap().w;
-    const yr=this.today().slice(0,4);
-    const champ={};(D.weeks||[]).forEach((wk,i)=>{if(((wk.date||'').slice(0,4))!==yr)return;
-      const top=this.weekWorks(i)[0];if(top&&W[top.id])champ[top.id]=(champ[top.id]||0)+1;});
-    const hallIds=Object.keys(champ).sort((a,b)=>champ[b]-champ[a]||(W[b].pub||'').localeCompare(W[a].pub||'')).slice(0,14);
+    const champ=IX.champ,hallIds=IX.hallIds;
     if(hallIds.length){base.hallShow='block';
       base.hall=hallIds.map(id=>({img:W[id].img||'',title:W[id].title||id,blur:this.blurOf(id),
         line:champ[id]>1?'rgba(230,0,18,.4)':'rgba(255,255,255,.08)',
@@ -1357,10 +1388,10 @@ class Component extends DCLogic {
       bg:sort===s[0]?'var(--txt)':'transparent',fg:sort===s[0]?'#0a0a0c':'var(--mut)',
       go:()=>{if(s[0]==='random')this.reshuffle();this.setState({sort:s[0],show:12});}}));
 
-    const modelCount={};Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>{modelCount[m]=(modelCount[m]||0)+1;}));
+    const modelCount=IX.modelCount;
     base.modelOpts=[{v:'all',label:'전체'}].concat(Object.keys(modelCount).sort((a,b)=>modelCount[b]-modelCount[a]||a.localeCompare(b)).slice(0,40).map(m=>({v:m,label:m+' ('+modelCount[m]+')'})));
     base.modelSel=S.modelSel||'all';base.onModel=e=>{this.reshuffle();this.setState({modelSel:e.target.value,show:12});};
-    const years=[...new Set(Object.keys(W).map(id=>(W[id].pub||'').slice(0,4)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
+    const years=IX.years;
     base.yearOpts=[{v:'all',label:'전체'}].concat(years.map(y=>({v:y,label:y+'년'})));
     base.yearSel=S.yearSel||'all';base.onYear=e=>{this.reshuffle();this.setState({yearSel:e.target.value,show:12});};
     base.resultCount=ids.length+'편';
@@ -1374,8 +1405,8 @@ class Component extends DCLogic {
     if(ids.length>S.show){base.moreShow='block';base.moreLabel='화보 '+Math.min(12,ids.length-S.show)+'개 더 보기 · 남은 '+(ids.length-S.show)+'개';base.more=()=>this.setState({show:S.show+12});}
 
     /* 작가별 */
-    const byC={};Object.keys(W).forEach(id=>{const c=((W[id]||{}).photo||'').trim();if(!c)return;(byC[c]=byC[c]||[]).push(id);});
-    let cs=Object.keys(byC).sort((a,b)=>byC[b].length-byC[a].length||a.localeCompare(b));
+    const byC=IX.byC;
+    let cs=IX.crAll;
     /* 방문마다 순서를 섞어 뒤쪽 작가도 앞에 노출 */
     if(!this._crOrder||this._crOrder.length!==cs.length||this._crOrder.some(c=>!byC[c])){
       const a=cs.slice();

@@ -3970,6 +3970,25 @@
       "nb": 0,
       "photo": "",
       "photoId": ""
+    },
+    "2083": {
+      "title": "(19) Yume of Denji",
+      "models": [
+        "심유이",
+        "옐랑"
+      ],
+      "img": "https://i.ibb.co/Z6QY3JbJ/opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-08-02",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "",
+      "photoId": ""
     }
   },
   "models": {

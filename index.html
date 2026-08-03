@@ -1519,5 +1519,33 @@ class Component extends DCLogic {
   }
 }
 </script>
+<style>
+.bcLiveDot{position:relative;display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff3b3b;margin-right:8px;vertical-align:middle;flex:0 0 auto}
+.bcLiveDot::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:rgba(255,59,59,.55);animation:bcLivePulse 1.25s ease-out infinite;z-index:-1}
+@keyframes bcLivePulse{0%{transform:scale(.55);opacity:.75}100%{transform:scale(1.9);opacity:0}}
+</style>
+<script>
+(function(){
+  function swap(){
+    var els=document.querySelectorAll('div,span');
+    for(var i=0;i<els.length;i++){
+      var el=els[i];
+      if(el.childElementCount!==0)continue;
+      var tx=el.textContent||'';
+      if(tx.charCodeAt(0)===0xD83D){ /* 🔴 서로게이트 시작 */
+        var rest=tx.replace(/^\uD83D\uDD34\s*/,'');
+        if(rest===tx)continue;
+        el.innerHTML='<span class="bcLiveDot"></span>'+rest.replace(/[&<>]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m];});
+      }
+    }
+  }
+  function start(){
+    swap();
+    try{var obs=new MutationObserver(function(){swap();});obs.observe(document.body,{subtree:true,childList:true,characterData:true});}catch(e){}
+    setInterval(swap,1200);
+  }
+  if(document.body)start(); else window.addEventListener('DOMContentLoaded',start);
+})();
+</script>
 </body>
 </html>

@@ -920,6 +920,8 @@ class Component extends DCLogic {
   titleSize(n){return n<=24?'clamp(30px,4.6vw,58px)':n<=44?'clamp(26px,3.5vw,44px)':'clamp(23px,2.8vw,36px)';}
   pts(r){return (this.state.D.points||[])[r-1]||0;}
   weekEnd(wi){const d=((this.state.D.weeks||[])[wi]||{}).date;if(!d||!/\d{4}-\d{2}-\d{2}/.test(d))return '';const dt=new Date(d+'T00:00:00');dt.setDate(dt.getDate()+6);return dt.toISOString().slice(0,10);}
+  rangeLabel(a,b){const f=s=>{const m=(s||'').match(/-(\d{2})-(\d{2})/);return m?(+m[1])+'.'+(+m[2]):'';};const x=f(a),y=f(b);return x&&y?x+'~'+y:'';}
+  weekStatus(wi){const w=((this.state.D.weeks||[])[wi]||{});const d=w.date;if(!d||!/\d{4}-\d{2}-\d{2}/.test(d))return null;const end=this.weekEnd(wi);const t=this.today();const range=this.rangeLabel(d,end);if(t>=d&&t<=end)return{live:true,text:'집계 중',range:range};if(t>end)return{live:false,text:'집계 완료',range:range};return{live:false,text:'공개 예정',range:range};}
   pubOk(id,wi){const pub=(this.state.D.works[id]||{}).pub;if(!pub)return true;const e=this.weekEnd(wi);return !e||pub<=e;}
   weekWorks(wi){const wk=(this.state.D.weeks||[])[wi];if(!wk)return [];return (wk.ranking||[]).filter(id=>this.state.D.works[id]&&this.pubOk(id,wi)).map((id,i)=>({id,rank:i+1,pts:this.pts(i+1)}));}
   workRankAt(id,wi){const f=this.weekWorks(wi).find(x=>x.id===id);return f?f.rank:0;}
@@ -1186,9 +1188,9 @@ class Component extends DCLogic {
         size:x.v===active?'16px':'13.5px',color:x.v===active?'var(--txt)':'var(--mut)',
         op:x.v===active?'1':'.75',bar:x.v===active?'var(--acc)':'transparent'}));}
     else{tl=(D.weeks||[]).map((w,i)=>({v:i,label:w.label||('W'+(i+1))})).reverse();
-      base.timeline=tl.map(x=>({label:x.label,go:()=>this.setState({wi:x.v}),
+      base.timeline=tl.map(x=>{const _s=this.weekStatus(x.v);return {label:(_s&&_s.live?'🔴 ':'')+x.label,go:()=>this.setState({wi:x.v}),
         size:x.v===wi?'16px':'13.5px',color:x.v===wi?'var(--txt)':'var(--mut)',
-        op:x.v===wi?'1':'.7',bar:x.v===wi?'var(--acc)':'rgba(255,255,255,.08)'}));}
+        op:x.v===wi?'1':'.7',bar:x.v===wi?'var(--acc)':'rgba(255,255,255,.08)'};});}
     const tlNav=base.timeline.length>(S.mob?3:6);
     base.tlNavShow=tlNav?'flex':'none';
     base.tlPad=tlNav?'34px':'0px';
@@ -1208,7 +1210,8 @@ class Component extends DCLogic {
     base.slides.forEach(s=>{s.mobCardTop=(base.noticeShow==='block'?118:78)+'px';});
     base.rankHeading=(isMonth?'이번 달':'이번 주')+' '+(isM?'모델':'화보')+' TOP 10';
     const wkLabel=((D.weeks||[])[wi]||{}).label||'';
-    base.rankSubline=(isMonth?this.monthLabel(this.wkMonth(wi)):wkLabel)+' 기준 · 판매·조회·평점 종합 · 포스터에 마우스를 올리면 6주 추이가 보여요';
+    if(isMonth){base.rankSubline=this.monthLabel(this.wkMonth(wi))+' 기준 · 판매·조회·평점 종합 · 포스터에 마우스를 올리면 6주 추이가 보여요';}
+    else{const _st=this.weekStatus(wi);base.rankSubline=(_st?(_st.live?'🔴 ':'')+wkLabel+' '+_st.text+(_st.range?' ('+_st.range+')':'')+' · ':(wkLabel?wkLabel+' 기준 · ':''))+'판매·조회·평점 종합 · 포스터에 마우스를 올리면 6주 추이가 보여요';}
 
     /* 모델 탭 — 전용 카드 */
     if(isM){

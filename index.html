@@ -68,7 +68,7 @@ select,input,button{font-family:inherit}
         <a href="#search" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">찾아보기</a>
       </nav>
       <div style="flex:1"></div>
-      <button onClick="{{ toggleTheme }}" title="{{ themeLabel }}" aria-label="{{ themeLabel }}" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:15px;line-height:1;cursor:pointer;flex:0 0 auto;transition:background .2s" style-hover="background:var(--w3)">{{ themeIcon }}</button>
+      <button onClick="{{ toggleTheme }}" title="{{ themeLabel }}" aria-label="{{ themeLabel }}" style="display:flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background-color:var(--w1);color:var(--txt);font-size:12.5px;font-weight:700;line-height:1;cursor:pointer;flex:0 0 auto;white-space:nowrap"><span style="font-size:14px;line-height:1">{{ themeIcon }}</span>{{ themeName }}</button>
       <a href="https://bcut.maximkorea.net" target="_blank" style="background:var(--acc);color:#fff;font-size:13px;font-weight:800;padding:9px 18px;border-radius:6px;white-space:nowrap">B컷 바로가기</a>
     </div>
     <div style="display:{{ noticeShow }};background:linear-gradient(90deg,rgba(230,0,18,.3),rgba(230,0,18,.08));border-top:1px solid rgba(230,0,18,.22)">
@@ -108,6 +108,7 @@ select,input,button{font-family:inherit}
                 <span style="font-size:10.5px;font-weight:900;letter-spacing:.6px;padding:5px 8px;border-radius:4px;border:1px solid var(--acc);color:var(--acc2);display:{{ s.b19Show }}">19</span>
                 <span style="font-size:11.5px;font-weight:700;letter-spacing:2.2px;color:var(--t2)">{{ s.eyebrow }}</span>
               </div>
+              <div style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:var(--t2);margin-bottom:7px;display:{{ s.tagShow }}">{{ s.tag }}</div>
               <h1 style="font-size:clamp(30px,4.6vw,58px);font-weight:900;letter-spacing:-1.8px;line-height:1.04;text-wrap:balance;text-shadow:var(--heroShadow)">{{ s.title }}</h1>
               <div style="font-size:15.5px;font-weight:700;color:var(--acc2);margin-top:12px">{{ s.sub }}</div>
               <div style="display:flex;gap:26px;margin:26px 0 28px;flex-wrap:wrap">
@@ -290,6 +291,7 @@ select,input,button{font-family:inherit}
                   <span style="font-size:9px;font-weight:900;letter-spacing:.4px;padding:3px 6px;border-radius:3px;display:{{ r.vidShow }};background:rgba(10,10,12,.82);color:#fff">▶ 영상</span>
                 </div>
                 <div style="position:absolute;left:0;right:0;bottom:0;padding:44px 11px 11px;background:linear-gradient(transparent,rgba(0,0,0,.92))">
+                  <div style="font-size:9.5px;font-weight:800;letter-spacing:.8px;color:rgba(255,255,255,.6);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:{{ r.tagShow }}">{{ r.tag }}</div>
                   <div style="font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
                   <div style="font-size:11.5px;color:var(--t2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.sub }}</div>
                 </div>
@@ -666,6 +668,7 @@ select,input,button{font-family:inherit}
           <img src="{{ modal.img }}" alt="" style="position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;object-fit:contain;display:block;z-index:1;filter:{{ modal.blur }}">
         </div>
         <div style="padding:24px 26px 28px">
+          <div style="font-size:11.5px;font-weight:800;letter-spacing:1.2px;color:var(--mut);text-align:center;margin-bottom:6px;display:{{ modal.tagShow }}">{{ modal.tag }}</div>
           <div style="font-size:22px;font-weight:900;letter-spacing:-.5px;line-height:1.25;text-align:center">{{ modal.title }}</div>
           <div style="color:var(--acc2);font-weight:800;font-size:14px;margin-top:8px;text-align:center">{{ modal.model }}</div>
           <div style="color:var(--mut);font-size:12.5px;margin-top:8px;text-align:center">{{ modal.meta }}</div>
@@ -898,6 +901,11 @@ class Component extends DCLogic {
   modelImg(md){const D=this.state.D;if(D.models[md]&&D.models[md].img)return D.models[md].img;const id=Object.keys(D.works).find(k=>(D.works[k].models||[]).includes(md));return id?D.works[id].img:'';}
   fmt(iso){if(!iso)return '-';const p=String(iso).split('-');return p.length===3?(+p[1])+'.'+(+p[2]):iso;}
   today(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+  splitTitle(t){
+    const s=String(t||'').trim();
+    const m=s.match(/^([\[(（【][^\]\)）】]{1,24}[\]\)）】])\s*(.+)$/);
+    return (m&&m[2].trim())?{tag:m[1],name:m[2].trim()}:{tag:'',name:s};
+  }
   blurOf(id){const w=(this.state.D.works||{})[id];return (this.state.age==='minor'&&w&&w.b19)?'blur(16px)':'none';}
   pad(n){return String(n).padStart(2,'0');}
   seg(ms){if(ms<0)ms=0;let s=Math.floor(ms/1000);const h=Math.floor(s/3600);s-=h*3600;const m=Math.floor(s/60);s-=m*60;return{hh:this.pad(h),mm:this.pad(m),ss:this.pad(s)};}
@@ -978,19 +986,21 @@ class Component extends DCLogic {
     const top=this.weekWorks(this.state.wi)[0];
     if(top&&W[top.id]){const w=W[top.id];const best=this.bestMap().w[top.id];const strk=this.streak(top.id,this.state.wi,3,false);
       const prev=this.workRankAt(top.id,this.state.wi-1);const mv=this.movement(1,prev);
-      out.push({id:top.id,img:w.img,bg:w.wide||w.img,title:w.title||top.id,sub:(w.models||[]).join(' & ')||'—',
+      const st1=this.splitTitle(w.title||top.id);
+      out.push({id:top.id,img:w.img,bg:w.wide||w.img,title:st1.name,tag:st1.tag,sub:(w.models||[]).join(' & ')||'—',
         mark:'RANK 1',markBg:'var(--acc)',eyebrow:'이번 주 화보 랭킹 1위',
         stats:[{v:top.pts.toLocaleString()+' pt',l:'이번 주 포인트'},
                {v:mv.k==='up'?('▲ '+mv.n):mv.k==='new'?'NEW':'1위 유지',l:'지난주 대비',color:mv.k==='up'?'#12b76a':mv.k==='new'?'#a78bfa':'var(--txt)'},
                {v:strk+'주',l:'연속 TOP3'},{v:'#'+(best||1),l:'역대 최고'}],
         link:'https://bcut.maximkorea.net/work/'+top.id});}
     Object.keys(W).forEach(id=>{const w=W[id];if(!w||w.nb)return;const md=(w.models||[]).join(' & ');
-      if(w.hl&&t<=w.hl&&w.pub&&w.pub<=t){out.push({id,img:w.img,bg:w.wide||w.img,title:w.title||id,sub:md||'MAXIM B컷',mark:'추천',markBg:'linear-gradient(120deg,#f5a623,#e5352b)',eyebrow:'EDITOR\u2019S PICK',stats:[],link:'https://bcut.maximkorea.net/work/'+id});return;}
+      if(w.hl&&t<=w.hl&&w.pub&&w.pub<=t){const sp=this.splitTitle(w.title||id);out.push({id,img:w.img,bg:w.wide||w.img,title:sp.name,tag:sp.tag,sub:md||'MAXIM B컷',mark:'추천',markBg:'linear-gradient(120deg,#f5a623,#e5352b)',eyebrow:'EDITOR\u2019S PICK',stats:[],link:'https://bcut.maximkorea.net/work/'+id});return;}
       if(!w.pub)return;const d=diff(w.pub);
       if(d<=0&&d>=-3){let mark,bg,dt;
         if(d===0){mark='오늘 공개';bg='var(--acc)';dt='오늘 새로 공개';}
         else{mark='NEW';bg='#f0554a';dt=this.fmt(w.pub)+' 공개 · 신작';}
-        out.push({id,img:w.img,bg:w.wide||w.img,title:w.title||id,sub:md||'MAXIM B컷',mark,markBg:bg,eyebrow:dt,stats:[],link:'https://bcut.maximkorea.net/work/'+id});}
+        const sp2=this.splitTitle(w.title||id);
+        out.push({id,img:w.img,bg:w.wide||w.img,title:sp2.name,tag:sp2.tag,sub:md||'MAXIM B컷',mark,markBg:bg,eyebrow:dt,stats:[],link:'https://bcut.maximkorea.net/work/'+id});}
     });
     if(this._admin)return out.slice(0,6);
     const seed=this._shuffleSeed||(this._shuffleSeed=Math.random());
@@ -1010,7 +1020,7 @@ class Component extends DCLogic {
         setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
         setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
         openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),
-        toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeLabel:'어두운 화면으로',chips:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
+        toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
         creators:[],creatorWorks:[],hof:[],upcoming:[],periods:[],filters:[],sorts:[],
         feat:{works:[]},modal:null,popup:null,
@@ -1025,7 +1035,8 @@ class Component extends DCLogic {
     const S=this.state,D=S.D;
     const dark=S.theme==='dark';
     const themeVals={toggleTheme:()=>this.toggleTheme(),
-      themeIcon:dark?'☀':'☾',themeLabel:dark?'밝은 화면으로':'어두운 화면으로'};
+      themeIcon:dark?'☀':'☾',themeName:dark?'라이트':'다크',
+      themeLabel:dark?'라이트 모드로 바꾸기':'다크 모드로 바꾸기'};
     const base=Object.assign({},themeVals,{
       mob:!!S.mob,
       loadingShow:D?'none':'flex',
@@ -1089,7 +1100,7 @@ class Component extends DCLogic {
     const seq=sp.length>1?sp.concat([sp[0]]):sp;
     const idx=Math.min(S.spot,Math.max(0,seq.length-1));
     base.slides=seq.map(x=>{const w=W[x.id]||{};
-      return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:x.title||'',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
+      return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:x.title||'',tag:x.tag||'',tagShow:x.tag?'block':'none',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
         eyebrow:x.eyebrow||'',stats:x.stats||[],link:x.link||'https://bcut.maximkorea.net',
         blur:this.blurOf(x.id),cardShow:(x.img&&!S.mob)?'block':'none',
         mobCardShow:(x.img&&S.mob)?'block':'none',
@@ -1190,7 +1201,9 @@ class Component extends DCLogic {
       const st=this.streak(row.id,wi,thr,isM);
       return {rank:row.rank,id:row.id,
         img:isM?this.modelImg(row.id):(w.img||''),
-        title:isM?row.id:(w.title||row.id),
+        title:isM?row.id:this.splitTitle(w.title||row.id).name,
+        tag:isM?'':this.splitTitle(w.title||row.id).tag,
+        tagShow:(!isM&&this.splitTitle(w.title||row.id).tag)?'block':'none',
         sub:isM?('역대 최고 #'+(best||'-')):((w.models||[]).join(' & ')||'—'),
         pts:row.pts.toLocaleString(),ptsLabel:isMonth?'이번 달 포인트':'이번 주 포인트',
         streak:st>=2?(st+'주 연속 '+lab):('이번 '+(isMonth?'달':'주')+' '+lab),
@@ -1219,7 +1232,7 @@ class Component extends DCLogic {
     /* 타임세일 */
     const ts=(D.timesales||[]).filter(t=>t&&t.id&&W[t.id]&&t.end&&new Date(t.end).getTime()-S.now>0).sort((a,b)=>new Date(a.end)-new Date(b.end));
     if(ts.length){base.tsShow='block';base.timesales=ts.map(t=>{const w=W[t.id];const g=this.seg(new Date(t.end)-S.now);
-      return {img:w.img||'',title:w.title||t.id,pct:t.pct||0,model:(w.models||[]).join(' & '),link:'https://bcut.maximkorea.net/work/'+t.id,blur:this.blurOf(t.id),hh:g.hh,mm:g.mm,ss:g.ss};});}
+      return {img:w.img||'',title:this.splitTitle(w.title||t.id).name,pct:t.pct||0,model:(w.models||[]).join(' & '),link:'https://bcut.maximkorea.net/work/'+t.id,blur:this.blurOf(t.id),hh:g.hh,mm:g.mm,ss:g.ss};});}
 
     /* 패키지 */
     const pk=(D.packages||[]).filter(p=>p&&Array.isArray(p.works)&&p.works.filter(x=>W[x]).length>=2&&(!p.end||new Date(p.end).getTime()-S.now>0));
@@ -1248,7 +1261,7 @@ class Component extends DCLogic {
         const span=u?Math.max(1,Math.round((new Date(u+'T00:00:00')-new Date(W[id].pub+'T00:00:00'))/86400000)):1;
         const pct=u?Math.max(6,Math.min(100,Math.round(left/span*100))):100;
         const col=left===null?'var(--mut)':left<=2?'var(--acc2)':left<=5?'#f5b544':'#4ade80';
-        return {img:W[id].img||'',title:W[id].title||id,date:this.fmt(W[id].pub),blur:this.blurOf(id),
+        return {img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,date:this.fmt(W[id].pub),blur:this.blurOf(id),
           vidShow:W[id].vid?'inline-block':'none',
           windowShow:u?'block':'none',window:u?('D-'+left+' · ~'+this.fmt(u)):'',
           barW:pct+'%',barColor:col,line:'var(--w2)',open:()=>this.openWork(id)};});
@@ -1299,7 +1312,7 @@ class Component extends DCLogic {
       const top=this.weekWorks(i)[0];if(top&&W[top.id])champ[top.id]=(champ[top.id]||0)+1;});
     const hallIds=Object.keys(champ).sort((a,b)=>champ[b]-champ[a]||(W[b].pub||'').localeCompare(W[a].pub||'')).slice(0,14);
     if(hallIds.length){base.hallShow='block';
-      base.hall=hallIds.map(id=>({img:W[id].img||'',title:W[id].title||id,blur:this.blurOf(id),
+      base.hall=hallIds.map(id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),
         line:champ[id]>1?'rgba(230,0,18,.4)':'var(--w3)',
         note:champ[id]>1?(champ[id]+'주 1위'):((W[id].models||[]).join(' & ')||'MAXIM B컷'),
         open:()=>this.openWork(id)}));}
@@ -1335,7 +1348,7 @@ class Component extends DCLogic {
     base.yearSel=S.yearSel||'all';base.onYear=e=>{this.reshuffle();this.setState({yearSel:e.target.value,show:12});};
     base.resultCount=ids.length+'편';
 
-    base.results=ids.slice(0,S.show).map(id=>{const ti=W[id].title||id;
+    base.results=ids.slice(0,S.show).map(id=>{const ti=this.splitTitle(W[id].title||id).name;
       let t1=ti,t2='',t3='';
       if(q){const p=ti.toLowerCase().indexOf(q);if(p>=0){t1=ti.slice(0,p);t2=ti.slice(p,p+q.length);t3=ti.slice(p+q.length);}}
       return {img:W[id].img||'',title:ti,t1,t2,t3,blur:this.blurOf(id),
@@ -1362,7 +1375,7 @@ class Component extends DCLogic {
           mBg:on?'var(--acc)':'var(--w3)',mFg:on?'#fff':'var(--t2)',
           go:()=>this.setState({creator:c,cshow:10})};});
       const cw=byC[sel];
-      base.creatorWorks=cw.slice(0,S.cshow).map(id=>({img:W[id].img||'',title:W[id].title||id,blur:this.blurOf(id),open:()=>this.openWork(id)}));
+      base.creatorWorks=cw.slice(0,S.cshow).map(id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),open:()=>this.openWork(id)}));
       if(cw.length>S.cshow){base.crMoreShow='block';base.crMoreLabel='화보 '+Math.min(10,cw.length-S.cshow)+'개 더 보기';base.crMore=()=>this.setState({cshow:S.cshow+10});}}
 
     /* 카톡 */
@@ -1404,7 +1417,9 @@ class Component extends DCLogic {
         const mp=(this.monthWorks(wi).find(x=>x.id===id)||{}).pts||0;
         const others=Object.keys(W).filter(x=>x!==id&&(W[x].models||[]).some(m=>(w.models||[]).includes(m))).slice(0,8);
         base.modal={coverShow:'block',img:w.img||'',bgImg:'url('+(w.img||'')+')',blur:this.blurOf(id),
-          title:w.title||id,model:(w.models||[]).join(' & ')||'—',
+          title:this.splitTitle(w.title||id).name,tag:this.splitTitle(w.title||id).tag,
+          tagShow:this.splitTitle(w.title||id).tag?'block':'none',
+          model:(w.models||[]).join(' & ')||'—',
           meta:[w.pub?this.fmt(w.pub)+' 공개':'',w.buy,w.photo?('작가 '+w.photo):''].filter(Boolean).join(' · '),
           desc:w.desc||'',descShow:w.desc?'block':'none',
           stats:[{v:wr?'#'+wr:'-',l:'이번 주'},{v:best?'#'+best:'-',l:'역대 최고'},{v:st+'주',l:'연속 TOP3'},{v:mp,l:'이번 달 pt'}],

@@ -12,6 +12,7 @@
 <meta property="og:url" content="https://bcutrank.com/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
+<script>(function(){try{var t=localStorage.getItem('bcut_theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0M1DPCT33G"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0M1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
 <script src="./support.js"></script>
@@ -21,21 +22,27 @@
 <helmet>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MAXIM B컷 · RANKING</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://i.ibb.co" crossorigin>
-<link rel="dns-prefetch" href="https://i.ibb.co">
-<link rel="preload" as="fetch" href="data.json" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
 <style>
-:root{--bg0:#07070a;--bg1:#101015;--bg2:#17171d;--acc:#E60012;--acc2:#ff5a63;--txt:#f4f4f6;--mut:#87878f;--line:rgba(255,255,255,.09)}
+:root{--acc:#E60012;--acc2:#ff5a63;
+  --bg0:#07070a;--bg1:#101015;--bg2:#17171d;--txt:#f4f4f6;--mut:#87878f;--line:rgba(255,255,255,.09);
+  --w1:rgba(255,255,255,.05);--w2:rgba(255,255,255,.07);--w3:rgba(255,255,255,.09);--w4:rgba(255,255,255,.15);--w5:rgba(255,255,255,.24);
+  --t1:rgba(255,255,255,.45);--t2:rgba(255,255,255,.68);--t3:rgba(255,255,255,.86);
+  --hf0:rgba(7,7,10,0);--hfA:rgba(7,7,10,.88);--hfB:rgba(7,7,10,.35);--hfC:rgba(7,7,10,.55);--hfD:rgba(7,7,10,.74);
+  --heroShadow:0 4px 30px rgba(0,0,0,.6);--heroImg:.62;--hdrTop:linear-gradient(to bottom,rgba(0,0,0,.72),transparent)}
+html[data-theme="light"]{
+  --bg0:#ffffff;--bg1:#f6f6f8;--bg2:#e9e9ee;--txt:#111114;--mut:#6c6c76;--line:rgba(0,0,0,.1);--acc2:#c9000f;
+  --w1:rgba(0,0,0,.035);--w2:rgba(0,0,0,.055);--w3:rgba(0,0,0,.09);--w4:rgba(0,0,0,.13);--w5:rgba(0,0,0,.22);
+  --t1:rgba(0,0,0,.44);--t2:rgba(0,0,0,.6);--t3:rgba(0,0,0,.82);
+  --hf0:rgba(255,255,255,0);--hfA:rgba(255,255,255,.94);--hfB:rgba(255,255,255,.42);--hfC:rgba(255,255,255,.6);--hfD:rgba(255,255,255,.86);
+  --heroShadow:0 2px 22px rgba(255,255,255,.75);--heroImg:.9;--hdrTop:linear-gradient(to bottom,rgba(255,255,255,.85),transparent)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#07070a;color:#f4f4f6;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--bg0);color:var(--txt);font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 a:hover{color:var(--acc2)}
 select,input,button{font-family:inherit}
 ::-webkit-scrollbar{height:8px;width:8px}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:6px}
+::-webkit-scrollbar-thumb{background:var(--w4);border-radius:6px}
 ::-webkit-scrollbar-track{background:transparent}
 @keyframes kb{0%{transform:scale(1.06)}100%{transform:scale(1.16)}}
 @keyframes fadeUp{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:none}}
@@ -43,42 +50,25 @@ select,input,button{font-family:inherit}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
 @keyframes shimmer{0%{opacity:.35}50%{opacity:.7}100%{opacity:.35}}
-@keyframes bcTick{0%{opacity:1}18%{opacity:.15}55%{opacity:1}72%{opacity:.55}100%{opacity:1}}
-@keyframes bcRec{0%{opacity:1}22%{opacity:.2}38%{opacity:1}54%{opacity:.25}100%{opacity:1}}
-@keyframes bcScan{0%{transform:translateY(0);opacity:0}15%{opacity:.95}100%{transform:translateY(34px);opacity:0}}
-.bcScan{position:absolute;left:0;right:0;top:0;height:2px;background:var(--acc);box-shadow:0 0 12px rgba(230,0,18,.9);opacity:0;pointer-events:none}
-#bcLogo:hover .bcScan{animation:bcScan .85s linear}
-@media (prefers-reduced-motion:reduce){#bcLogo *{animation:none !important}}
 </style>
 </helmet>
 
 <div style="min-height:100vh;background:var(--bg0);color:var(--txt);padding-bottom:0">
 
-  <header style="position:fixed;top:0;left:0;right:0;z-index:90;transition:background .3s,backdrop-filter .3s,border-color .3s;border-bottom:1px solid transparent;background:{{ hdrBg }};border-bottom-color:{{ hdrLine }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
+  <header style="position:fixed;top:0;left:0;right:0;z-index:90;border-bottom:1px solid transparent;background:{{ hdrBg }};border-bottom-color:{{ hdrLine }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
     <div style="max-width:1360px;margin:0 auto;height:64px;display:flex;align-items:center;gap:26px;padding:0 {{ padX }}">
-      <a href="#top" id="bcLogo" title="MAXIM B컷" style="display:flex;align-items:center;gap:9px;flex-shrink:0">
-        <span style="position:relative;display:block;padding:5px 10px 5px 11px;border:1px solid rgba(255,255,255,.3);background:rgba(8,8,10,.3);overflow:hidden">
-          <span style="position:absolute;top:-1px;left:-1px;width:9px;height:9px;border-top:2px solid var(--acc);border-left:2px solid var(--acc);animation:bcTick .7s ease-out both"></span>
-          <span style="position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-bottom:2px solid var(--acc);border-right:2px solid var(--acc);animation:bcTick .7s ease-out .14s both"></span>
-          <span style="display:block;font-family:Anton,'Pretendard',sans-serif;font-size:24px;line-height:1;letter-spacing:-.4px;color:#fff">Bcut</span>
-          <span class="bcScan"></span>
-        </span>
-        <span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:bcRec 1.6s ease-out both;flex:0 0 auto"></span>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:rgba(255,255,255,.62);padding-left:8px">MAXIM</span>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:var(--acc2);padding-left:9px;border-left:1px solid rgba(255,255,255,.18)">RANKING</span>
+      <a href="#top" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+        <span style="font-size:19px;font-weight:900;letter-spacing:-.4px;color:var(--txt)">MAXIM <span style="color:var(--acc)">B컷</span></span>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:var(--acc2);padding-left:9px;border-left:1px solid var(--w5)">RANKING</span>
       </a>
       <nav style="gap:2px;margin-left:8px;display:{{ navShow }}">
-        <a href="#ranking" style="font-size:13.5px;font-weight:600;color:rgba(255,255,255,.72);padding:8px 12px;border-radius:7px">주간 랭킹</a>
-        <a href="#next" style="font-size:13.5px;font-weight:600;color:rgba(255,255,255,.72);padding:8px 12px;border-radius:7px">신작</a>
-        <a href="#sub" style="font-size:13.5px;font-weight:600;color:rgba(255,255,255,.72);padding:8px 12px;border-radius:7px">구독</a>
-        <a href="#search" style="font-size:13.5px;font-weight:600;color:rgba(255,255,255,.72);padding:8px 12px;border-radius:7px">찾아보기</a>
+        <a href="#ranking" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">주간 랭킹</a>
+        <a href="#next" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">신작</a>
+        <a href="#sub" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">구독</a>
+        <a href="#search" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">찾아보기</a>
       </nav>
       <div style="flex:1"></div>
-      <div style="display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.04)">
-        <sc-for list="{{ tones }}" as="t" hint-placeholder-count="3">
-          <button onClick="{{ t.go }}" title="{{ t.name }}" style="width:22px;height:22px;border-radius:50%;border:1.5px solid;cursor:pointer;padding:0;background:{{ t.swatch }};border-color:{{ t.ring }}"></button>
-        </sc-for>
-      </div>
+      <button onClick="{{ toggleTheme }}" title="{{ themeLabel }}" aria-label="{{ themeLabel }}" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:15px;line-height:1;cursor:pointer;flex:0 0 auto;transition:background .2s" style-hover="background:var(--w3)">{{ themeIcon }}</button>
       <a href="https://bcut.maximkorea.net" target="_blank" style="background:var(--acc);color:#fff;font-size:13px;font-weight:800;padding:9px 18px;border-radius:6px;white-space:nowrap">B컷 바로가기</a>
     </div>
     <div style="display:{{ noticeShow }};background:linear-gradient(90deg,rgba(230,0,18,.3),rgba(230,0,18,.08));border-top:1px solid rgba(230,0,18,.22)">
@@ -93,7 +83,7 @@ select,input,button{font-family:inherit}
 
   <div style="position:fixed;inset:0;z-index:300;background:var(--bg0);display:{{ loadingShow }};flex-direction:column;align-items:center;justify-content:center;gap:18px">
     <div style="font-size:24px;font-weight:900;letter-spacing:-.5px">MAXIM <span style="color:var(--acc)">B컷</span></div>
-    <div style="width:140px;height:3px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden">
+    <div style="width:140px;height:3px;border-radius:2px;background:var(--w4);overflow:hidden">
       <div style="width:40%;height:100%;background:var(--acc);animation:slide 1.1s ease-in-out infinite"></div>
     </div>
     <div style="font-size:12px;color:var(--mut);font-weight:700;letter-spacing:1px">{{ loadingText }}</div>
@@ -103,25 +93,22 @@ select,input,button{font-family:inherit}
     <div style="display:flex;height:100%;will-change:transform;transition:transform {{ trackDur }} cubic-bezier(.22,.72,.16,1);transform:{{ trackX }}">
       <sc-for list="{{ slides }}" as="s" hint-placeholder-count="0">
         <div style="position:relative;flex:0 0 100%;height:100%;overflow:hidden">
-          <div style="position:absolute;inset:0;background-size:cover;background-position:center;opacity:.62;animation:kb 16s ease-out infinite alternate;background-image:{{ s.bgCss }};filter:{{ s.blur }}"></div>
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,var(--bg0) 2%,rgba(7,7,10,.86) 26%,rgba(7,7,10,.35) 58%,rgba(7,7,10,.55) 100%)"></div>
-          <div style="position:absolute;inset:0;background:linear-gradient(to right,var(--bg0) 0%,rgba(7,7,10,.72) 34%,transparent 68%)"></div>
-          <div style="position:absolute;z-index:3;top:{{ s.mobCardTop }};right:{{ padX }};width:104px;aspect-ratio:3/4;border-radius:9px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.18);display:{{ s.mobCardShow }}">
-            <img loading="lazy" decoding="async" src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
+          <div style="position:absolute;inset:0;background-size:cover;background-position:center;opacity:var(--heroImg);animation:kb 16s ease-out infinite alternate;background-image:{{ s.bgCss }};filter:{{ s.blur }}"></div>
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,var(--bg0) 2%,var(--hfA) 26%,var(--hfB) 58%,var(--hfC) 100%)"></div>
+          <div style="position:absolute;inset:0;background:linear-gradient(to right,var(--bg0) 0%,var(--hfD) 34%,transparent 68%)"></div>
+          <div style="position:absolute;z-index:3;top:22px;right:{{ padX }};width:104px;aspect-ratio:3/4;border-radius:9px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.18);display:{{ s.mobCardShow }}">
+            <img src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
             <div style="position:absolute;bottom:6px;right:6px;font-size:8.5px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(8,8,11,.82);color:#fff;display:{{ s.vidShow }}">▶</div>
           </div>
           <div style="position:relative;z-index:2;max-width:1360px;margin:0 auto;height:100%;display:flex;align-items:flex-end;padding:0 {{ padX }};gap:{{ heroGap }}">
             <div style="flex:1;min-width:0;max-width:640px;padding-bottom:{{ heroPadB }}">
               <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;flex-wrap:wrap">
                 <span style="color:#fff;font-size:11px;font-weight:900;letter-spacing:1px;padding:5px 11px;border-radius:4px;display:{{ s.markShow }};background:{{ s.markBg }}">{{ s.mark }}</span>
-                <span style="font-size:10.5px;font-weight:900;letter-spacing:.6px;padding:5px 9px;border-radius:4px;border:1px solid rgba(255,255,255,.42);color:rgba(255,255,255,.9);display:{{ s.vidShow }}">▶ 영상</span>
+                <span style="font-size:10.5px;font-weight:900;letter-spacing:.6px;padding:5px 9px;border-radius:4px;border:1px solid var(--w5);color:var(--t3);display:{{ s.vidShow }}">▶ 영상</span>
                 <span style="font-size:10.5px;font-weight:900;letter-spacing:.6px;padding:5px 8px;border-radius:4px;border:1px solid var(--acc);color:var(--acc2);display:{{ s.b19Show }}">19</span>
-                <span style="font-size:11.5px;font-weight:700;letter-spacing:2.2px;color:rgba(255,255,255,.6)">{{ s.eyebrow }}</span>
-                <sc-for list="{{ s.tags }}" as="tg" hint-placeholder-count="0">
-                  <span style="font-size:10px;font-weight:800;letter-spacing:1.4px;padding:4px 8px;border-radius:4px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.72)">{{ tg.label }}</span>
-                </sc-for>
+                <span style="font-size:11.5px;font-weight:700;letter-spacing:2.2px;color:var(--t2)">{{ s.eyebrow }}</span>
               </div>
-              <h1 style="font-size:{{ s.titleSize }};font-weight:900;letter-spacing:-1.4px;line-height:1.06;word-break:keep-all;overflow-wrap:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;text-shadow:0 4px 30px rgba(0,0,0,.6)">{{ s.title }}</h1>
+              <h1 style="font-size:clamp(30px,4.6vw,58px);font-weight:900;letter-spacing:-1.8px;line-height:1.04;text-wrap:balance;text-shadow:var(--heroShadow)">{{ s.title }}</h1>
               <div style="font-size:15.5px;font-weight:700;color:var(--acc2);margin-top:12px">{{ s.sub }}</div>
               <div style="display:flex;gap:26px;margin:26px 0 28px;flex-wrap:wrap">
                 <sc-for list="{{ s.stats }}" as="st" hint-placeholder-count="4">
@@ -133,12 +120,12 @@ select,input,button{font-family:inherit}
               </div>
               <div style="display:flex;gap:10px;flex-wrap:wrap">
                 <a href="{{ s.link }}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--acc);color:#fff;font-weight:800;font-size:14.5px;padding:14px 30px;border-radius:6px" style-hover="filter:brightness(1.12)">{{ s.ctaLabel }}</a>
-                <button onClick="{{ s.detail }}" style="align-items:center;gap:8px;background:rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:14.5px;padding:14px 26px;border-radius:6px;border:0;cursor:pointer;backdrop-filter:blur(6px);display:{{ s.detailShow }}" style-hover="background:rgba(255,255,255,.24)">ⓘ 상세 정보</button>
+                <button onClick="{{ s.detail }}" style="align-items:center;gap:8px;background:var(--w4);color:var(--txt);font-weight:800;font-size:14.5px;padding:14px 26px;border-radius:6px;border:0;cursor:pointer;backdrop-filter:blur(6px);display:{{ s.detailShow }}" style-hover="background:rgba(255,255,255,.24)">ⓘ 상세 정보</button>
               </div>
             </div>
             <div style="flex:0 0 auto;padding-bottom:64px;display:{{ s.cardShow }}">
               <div style="position:relative;width:236px;aspect-ratio:3/4;border-radius:10px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.14)">
-                <img loading="lazy" decoding="async" src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
+                <img src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
                 <div style="position:absolute;bottom:10px;right:10px;font-size:10px;font-weight:900;padding:4px 8px;border-radius:4px;background:rgba(8,8,11,.8);color:#fff;display:{{ s.vidShow }}">▶ 영상</div>
               </div>
             </div>
@@ -154,13 +141,13 @@ select,input,button{font-family:inherit}
         </sc-for>
       </div>
       <div style="display:flex;gap:7px">
-        <button onClick="{{ prevSlide }}" aria-label="이전" style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(10,10,14,.5);color:#fff;font-size:17px;cursor:pointer;backdrop-filter:blur(8px);transition:background .2s" style-hover="background:rgba(10,10,14,.85)">‹</button>
-        <button onClick="{{ nextSlide }}" aria-label="다음" style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(10,10,14,.5);color:#fff;font-size:17px;cursor:pointer;backdrop-filter:blur(8px);transition:background .2s" style-hover="background:rgba(10,10,14,.85)">›</button>
+        <button onClick="{{ prevSlide }}" aria-label="이전" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background-color:var(--bg1);color:var(--txt);font-size:17px;cursor:pointer;backdrop-filter:blur(8px);transition:opacity .2s" style-hover="opacity:.72">‹</button>
+        <button onClick="{{ nextSlide }}" aria-label="다음" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background-color:var(--bg1);color:var(--txt);font-size:17px;cursor:pointer;backdrop-filter:blur(8px);transition:opacity .2s" style-hover="opacity:.72">›</button>
       </div>
     </div>
   </section>
 
-  <div style="position:sticky;z-index:70;top:{{ stickyTop }};background:linear-gradient(to bottom,var(--bg0) 62%,rgba(7,7,10,0));padding:12px 0 16px">
+  <div style="position:sticky;z-index:70;top:{{ stickyTop }};background:linear-gradient(to bottom,var(--bg0) 62%,var(--hf0));padding:12px 0 16px">
     <div style="max-width:1360px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:0 {{ padX }}">
       <sc-for list="{{ chips }}" as="c" hint-placeholder-count="6">
         <a href="{{ c.href }}" style="flex:0 0 auto;font-size:13px;font-weight:700;padding:9px 17px;border-radius:999px;border:1px solid var(--line);white-space:nowrap;background:{{ c.bg }};color:{{ c.fg }}" style-hover="border-color:rgba(255,255,255,.3)">{{ c.label }}</a>
@@ -180,7 +167,7 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ wishes }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="flex:0 0 auto;width:150px;cursor:pointer">
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
-              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.imgFilter }}" style-hover="transform:scale(1.05)">
+              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.imgFilter }}" style-hover="transform:scale(1.05)">
               <div style="position:absolute;inset:0;display:{{ p.lockShow }};flex-direction:column;align-items:center;justify-content:center;gap:4px">
                 <div style="font-size:22px;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 12px rgba(0,0,0,.7)">{{ p.dday }}</div>
               </div>
@@ -202,7 +189,7 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ recent }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="flex:0 0 auto;width:132px;cursor:pointer">
             <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
+              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
             </div>
           </div>
         </sc-for>
@@ -215,7 +202,7 @@ select,input,button{font-family:inherit}
           <div style="font-size:10.5px;font-weight:800;letter-spacing:2.4px;color:var(--acc2);margin-bottom:7px">WEEKLY RANKING</div>
           <div style="display:flex;align-items:center;gap:10px">
             <h2 style="font-size:27px;font-weight:900;letter-spacing:-1px">{{ rankHeading }}</h2>
-            <button onClick="{{ toggleHelp }}" aria-label="점수 안내" style="width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--mut);font-size:12px;font-weight:800;cursor:pointer;flex:0 0 auto" style-hover="color:var(--txt);border-color:rgba(255,255,255,.3)">?</button>
+            <button onClick="{{ toggleHelp }}" aria-label="점수 안내" style="width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--w2);color:var(--mut);font-size:12px;font-weight:800;cursor:pointer;flex:0 0 auto" style-hover="color:var(--txt);border-color:var(--w5)">?</button>
           </div>
           <div style="font-size:12.5px;color:var(--mut);margin-top:6px">{{ rankSubline }}</div>
           <div style="display:{{ helpShow }};margin-top:14px;max-width:520px;border-radius:12px;border:1px solid var(--line);background:var(--bg1);padding:16px 18px">
@@ -229,11 +216,11 @@ select,input,button{font-family:inherit}
           </div>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <div style="display:inline-flex;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:3px">
+          <div style="display:inline-flex;background:var(--w2);border:1px solid var(--line);border-radius:8px;padding:3px">
             <button onClick="{{ setWorks }}" style="border:0;font-weight:800;font-size:13px;padding:9px 17px;border-radius:6px;cursor:pointer;background:{{ tabWorksBg }};color:{{ tabWorksFg }}">화보</button>
             <button onClick="{{ setModels }}" style="border:0;font-weight:800;font-size:13px;padding:9px 17px;border-radius:6px;cursor:pointer;background:{{ tabModelsBg }};color:{{ tabModelsFg }}">모델</button>
           </div>
-          <div style="display:inline-flex;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:3px">
+          <div style="display:inline-flex;background:var(--w2);border:1px solid var(--line);border-radius:8px;padding:3px">
             <button onClick="{{ setWeek }}" style="border:0;font-weight:800;font-size:13px;padding:9px 15px;border-radius:6px;cursor:pointer;background:{{ mWeekBg }};color:{{ mWeekFg }}">주간</button>
             <button onClick="{{ setMonth }}" style="border:0;font-weight:800;font-size:13px;padding:9px 15px;border-radius:6px;cursor:pointer;background:{{ mMonthBg }};color:{{ mMonthFg }}">월간</button>
           </div>
@@ -251,17 +238,17 @@ select,input,button{font-family:inherit}
         </div>
         <div style="position:absolute;top:0;left:0;bottom:14px;pointer-events:none;width:{{ tlPad }};background:linear-gradient(to left,transparent,var(--bg0) 62%);display:{{ tlNavShow }}"></div>
         <div style="position:absolute;top:0;right:0;bottom:14px;pointer-events:none;width:{{ tlFadeR }};background:linear-gradient(to right,transparent,var(--bg0) 62%)"></div>
-        <button onClick="{{ tlPrev }}" aria-label="이전 주차" style="position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:rgba(10,10,14,.94);color:var(--txt);font-size:13px;cursor:pointer;display:{{ tlNavShow }};align-items:center;justify-content:center">‹</button>
-        <button onClick="{{ tlNext }}" aria-label="다음 주차" style="position:absolute;right:0;top:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:rgba(10,10,14,.94);color:var(--txt);font-size:13px;cursor:pointer;display:{{ tlNavShow }};align-items:center;justify-content:center">›</button>
+        <button onClick="{{ tlPrev }}" aria-label="이전 주차" style="position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-size:13px;cursor:pointer;display:{{ tlNavShow }};align-items:center;justify-content:center">‹</button>
+        <button onClick="{{ tlNext }}" aria-label="다음 주차" style="position:absolute;right:0;top:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-size:13px;cursor:pointer;display:{{ tlNavShow }};align-items:center;justify-content:center">›</button>
       </div>
 
       <div style="display:flex;align-items:flex-start;gap:14px;overflow-x:auto;padding:18px 0 26px">
         <sc-for list="{{ modelCards }}" as="m" hint-placeholder-count="0">
-          <div onClick="{{ m.open }}" style="flex:0 0 auto;cursor:pointer;border-radius:14px;padding:20px 18px 18px;width:{{ mCardW }};background:{{ m.cardBg }};border:1px solid transparent;border-color:{{ m.cardLine }};transition:transform .22s,box-shadow .22s" style-hover="transform:translateY(-6px);box-shadow:0 0 0 1px rgba(255,255,255,.24)">
+          <div onClick="{{ m.open }}" style="flex:0 0 auto;cursor:pointer;border-radius:14px;padding:20px 18px 18px;width:{{ mCardW }};background:{{ m.cardBg }};border:1px solid transparent;border-color:{{ m.cardLine }};transition:transform .22s,box-shadow .22s" style-hover="transform:translateY(-6px);box-shadow:0 0 0 1px var(--w5)">
             <div style="display:flex;align-items:center;gap:12px">
               <div style="font-size:34px;font-weight:900;letter-spacing:-2px;line-height:1;color:{{ m.numColor }}">{{ m.rank }}</div>
               <div style="width:62px;height:62px;border-radius:50%;overflow:hidden;background:var(--bg2);border:2px solid {{ m.ring }}">
-                <img loading="lazy" decoding="async" src="{{ m.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+                <img src="{{ m.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
               </div>
               <div style="flex:1;min-width:0">
                 <div style="font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }}</div>
@@ -280,11 +267,11 @@ select,input,button{font-family:inherit}
             <div style="display:grid;gap:5px;margin-top:14px;height:96px;grid-template-columns:{{ m.gridCols }}">
               <sc-for list="{{ m.works }}" as="w" hint-placeholder-count="0">
                 <div style="border-radius:6px;overflow:hidden;background:var(--bg2);height:100%">
-                  <img loading="lazy" decoding="async" src="{{ w.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ w.blur }}">
+                  <img src="{{ w.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ w.blur }}">
                 </div>
               </sc-for>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;border-top:1px solid rgba(255,255,255,.09);padding-top:11px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;border-top:1px solid var(--w3);padding-top:11px">
               <span style="font-size:11px;color:var(--acc2);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.streak }}</span>
               <span style="font-size:11px;color:var(--mut);font-weight:700;white-space:nowrap">{{ m.worksLabel }}</span>
             </div>
@@ -294,8 +281,8 @@ select,input,button{font-family:inherit}
           <div onClick="{{ r.open }}" onMouseEnter="{{ r.enter }}" onMouseLeave="{{ r.leave }}" style="flex:0 0 auto;display:flex;align-items:flex-end;cursor:pointer;padding-right:14px;transition:transform .28s cubic-bezier(.2,.8,.3,1);transform:{{ r.lift }};z-index:{{ r.z }};position:relative">
             <div style="flex:0 0 auto;text-align:left;white-space:nowrap;font-weight:900;line-height:.72;letter-spacing:-9px;margin-right:-4px;position:relative;z-index:2;width:{{ numW }};font-size:{{ numSize }};color:{{ r.numColor }};-webkit-text-stroke:{{ r.numStroke }};text-shadow:{{ r.numShadow }}">{{ r.rank }}</div>
             <div style="position:relative;z-index:1">
-              <div style="aspect-ratio:2/3;border-radius:9px;overflow:hidden;position:relative;background:var(--bg2);border:1px solid rgba(255,255,255,.08);width:{{ posterW }};box-shadow:{{ r.shadow }}">
-                <img loading="lazy" decoding="async" src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
+              <div style="aspect-ratio:2/3;border-radius:9px;overflow:hidden;position:relative;background:var(--bg2);border:1px solid var(--w3);width:{{ posterW }};box-shadow:{{ r.shadow }}">
+                <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
                 <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+ 확인 필요</div>
                 <div style="position:absolute;top:8px;right:8px;font-size:11px;font-weight:900;padding:3px 8px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
                 <div style="position:absolute;top:8px;left:8px;display:flex;gap:4px">
@@ -304,7 +291,7 @@ select,input,button{font-family:inherit}
                 </div>
                 <div style="position:absolute;left:0;right:0;bottom:0;padding:44px 11px 11px;background:linear-gradient(transparent,rgba(0,0,0,.92))">
                   <div style="font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
-                  <div style="font-size:11.5px;color:rgba(255,255,255,.62);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.sub }}</div>
+                  <div style="font-size:11.5px;color:var(--t2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.sub }}</div>
                 </div>
                 <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,11,.96) 26%,rgba(8,8,11,.55));padding:14px;display:flex;flex-direction:column;justify-content:flex-end;transition:opacity .25s;opacity:{{ r.ovOpacity }};pointer-events:none">
                   <div style="font-size:10px;font-weight:800;letter-spacing:1.6px;color:var(--mut);margin-bottom:8px">RANK TREND · 6주</div>
@@ -316,7 +303,7 @@ select,input,button{font-family:inherit}
                       </div>
                     </sc-for>
                   </div>
-                  <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(255,255,255,.12);padding-top:9px">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--w4);padding-top:9px">
                     <div style="font-size:11px;color:var(--mut);font-weight:600">{{ r.ptsLabel }}</div>
                     <div style="font-size:17px;font-weight:900;letter-spacing:-.4px">{{ r.pts }}<span style="font-size:10px;color:var(--mut);font-weight:700"> pt</span></div>
                   </div>
@@ -341,10 +328,10 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ hall }}" as="p" hint-placeholder-count="0">
             <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ hallW }}">
               <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
-                <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+                <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
                 <div style="position:absolute;left:0;right:0;bottom:0;padding:30px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.9))">
                   <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
-                  <div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:3px">{{ p.note }}</div>
+                  <div style="font-size:11px;color:var(--t1);margin-top:3px">{{ p.note }}</div>
                 </div>
               </div>
             </div>
@@ -367,7 +354,7 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ timesales }}" as="t" hint-placeholder-count="0">
             <a href="{{ t.link }}" target="_blank" style="flex:0 0 auto;width:158px">
               <div style="position:relative;width:100%;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid rgba(255,255,255,.08)">
-                <img loading="lazy" decoding="async" src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ t.blur }}">
+                <img src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ t.blur }}">
                 <div style="position:absolute;top:8px;left:8px;display:flex;align-items:baseline;gap:3px;background:var(--acc);color:#fff;padding:5px 9px;border-radius:6px">
                   <b style="font-size:18px;font-weight:900;line-height:1">{{ t.pct }}%</b><span style="font-size:9px;font-weight:800">OFF</span>
                 </div>
@@ -398,7 +385,7 @@ select,input,button{font-family:inherit}
             <a href="{{ p.link }}" target="_blank" style="flex:0 0 auto;width:200px">
               <div style="position:relative;display:flex;gap:2px;width:100%;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid rgba(255,255,255,.08)">
                 <sc-for list="{{ p.imgs }}" as="im" hint-placeholder-count="3">
-                  <img loading="lazy" decoding="async" src="{{ im.src }}" alt="" style="flex:1;min-width:0;height:100%;object-fit:cover;display:block;filter:{{ im.blur }}">
+                  <img src="{{ im.src }}" alt="" style="flex:1;min-width:0;height:100%;object-fit:cover;display:block;filter:{{ im.blur }}">
                 </sc-for>
                 <div style="position:absolute;top:8px;left:8px;display:flex;align-items:baseline;gap:3px;background:#7c5cff;color:#fff;padding:5px 9px;border-radius:6px">
                   <b style="font-size:18px;font-weight:900;line-height:1">{{ p.pct }}%</b><span style="font-size:9px;font-weight:800">OFF</span>
@@ -421,7 +408,7 @@ select,input,button{font-family:inherit}
       <div style="font-size:12.5px;color:var(--mut);margin-bottom:18px;line-height:1.6">새 구독 화보가 공개되면 가장 오래된 한 편이 개별 구매로 내려갑니다.</div>
       <div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:12px">
         <div style="flex:0 0 auto;width:{{ subW }};display:{{ ddayShow }}">
-          <div style="width:100%;aspect-ratio:2/3;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--acc),#4d0007);border:1px solid rgba(255,255,255,.12)">
+          <div style="width:100%;aspect-ratio:2/3;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--acc),#4d0007);border:1px solid var(--w4)">
             <div style="font-size:12px;font-weight:700;opacity:.9">다음 공개</div>
             <div style="font-size:50px;font-weight:900;letter-spacing:-2.5px;margin:6px 0;line-height:1">{{ dday }}</div>
             <div style="font-size:12px;opacity:.85">{{ ddayDate }}</div>
@@ -430,16 +417,16 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ subs }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ subW }}">
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
-              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
               <div style="position:absolute;top:8px;left:8px;display:flex;gap:4px">
                 <span style="font-size:9px;font-weight:900;padding:3px 7px;border-radius:3px;background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</span>
                 <span style="font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.82);color:#fff;display:{{ p.vidShow }}">▶ 영상</span>
               </div>
               <div style="position:absolute;left:0;right:0;bottom:0;padding:38px 10px 11px;background:linear-gradient(transparent,rgba(0,0,0,.9))">
                 <div style="font-size:12.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
-                <div style="font-size:11.5px;color:rgba(255,255,255,.62);margin-top:3px"><span style="color:#4ade80;font-size:8px;vertical-align:middle">●</span> {{ p.date }} 공개</div>
+                <div style="font-size:11.5px;color:var(--t2);margin-top:3px"><span style="color:#4ade80;font-size:8px;vertical-align:middle">●</span> {{ p.date }} 공개</div>
                 <div style="margin-top:9px;display:{{ p.windowShow }}">
-                  <div style="height:3px;border-radius:2px;background:rgba(255,255,255,.16);overflow:hidden">
+                  <div style="height:3px;border-radius:2px;background:var(--w4);overflow:hidden">
                     <div style="height:100%;border-radius:2px;transition:width .4s;width:{{ p.barW }};background:{{ p.barColor }}"></div>
                   </div>
                   <div style="font-size:10.5px;font-weight:700;margin-top:5px;color:{{ p.barColor }}">구독 열람 {{ p.window }}</div>
@@ -452,18 +439,18 @@ select,input,button{font-family:inherit}
 
       <div style="display:{{ upcomingShow }};margin-top:30px">
         <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
-          <h3 style="font-size:15px;font-weight:900;letter-spacing:-.3px;color:rgba(255,255,255,.82)">곧 구독으로 열리는 화보</h3>
+          <h3 style="font-size:15px;font-weight:900;letter-spacing:-.3px;color:var(--t3)">곧 구독으로 열리는 화보</h3>
           <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">COMING TO SUBSCRIPTION</span>
         </div>
         <div style="position:relative">
           <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:12px">
             <sc-for list="{{ upcoming }}" as="p" hint-placeholder-count="0">
               <div style="flex:0 0 auto;width:146px">
-                <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid rgba(255,255,255,.07)">
-                  <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:blur(9px) brightness(.72);transform:scale(1.1)">
+                <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
+                  <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:blur(9px) brightness(.72);transform:scale(1.1)">
                   <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px">
                     <div style="font-size:26px;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 14px rgba(0,0,0,.7)">{{ p.dday }}</div>
-                    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.8)">{{ p.date }} 공개</div>
+                    <div style="font-size:11px;font-weight:700;color:var(--t3)">{{ p.date }} 공개</div>
                   </div>
                   <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 7px;border-radius:3px;background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</div>
                 </div>
@@ -484,8 +471,8 @@ select,input,button{font-family:inherit}
         <div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:12px">
           <sc-for list="{{ nexts }}" as="p" hint-placeholder-count="0">
             <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ nextW }}">
-              <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid rgba(255,255,255,.07)">
-                <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+              <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
+                <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
                 <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.82);color:#fff;display:{{ p.vidShow }}">▶ 영상</div>
                 <button onClick="{{ p.wish }}" title="공개되면 알림" style="position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.2);cursor:pointer;font-size:14px;line-height:1;backdrop-filter:blur(6px);transition:transform .15s;background:{{ p.wishBg }};color:{{ p.wishFg }}" style-hover="transform:scale(1.12)">{{ p.wishIcon }}</button>
                 <div style="position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:{{ p.subShow }};background:#ffd400;color:#111;font-size:10.5px;font-weight:900;padding:3px 11px;border-radius:4px">구독</div>
@@ -493,7 +480,7 @@ select,input,button{font-family:inherit}
               <div style="font-size:12px;font-weight:700;color:var(--acc2);margin-top:8px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.cap }}</div>
             </div>
           </sc-for>
-          <a href="https://bcut.maximkorea.net" target="_blank" style="flex:0 0 auto;width:176px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;aspect-ratio:2/3;border-radius:9px;border:1px dashed rgba(255,255,255,.22);background:rgba(255,255,255,.04);transition:background .25s,border-color .25s" style-hover="background:rgba(255,255,255,.09);border-color:var(--acc)">
+          <a href="https://bcut.maximkorea.net" target="_blank" style="flex:0 0 auto;width:176px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;aspect-ratio:2/3;border-radius:9px;border:1px dashed var(--w5);background:var(--w1);transition:background .25s,border-color .25s" style-hover="background:var(--w3);border-color:var(--acc)">
             <div style="width:44px;height:44px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">›</div>
             <div style="font-size:13px;font-weight:800">더 보러가기</div>
             <div style="font-size:11px;color:var(--mut)">B컷 공식 사이트</div>
@@ -510,7 +497,7 @@ select,input,button{font-family:inherit}
       </div>
       <div style="display:flex;gap:22px;align-items:center;border-radius:14px;padding:22px;background:linear-gradient(120deg,var(--bg1),rgba(58,20,26,.9));border:1px solid var(--line);flex-wrap:wrap">
         <div style="flex:0 0 158px;text-align:center">
-          <img loading="lazy" decoding="async" src="{{ feat.img }}" alt="" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.2);background:var(--bg2);filter:{{ feat.blur }}">
+          <img src="{{ feat.img }}" alt="" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--w5);background:var(--bg2);filter:{{ feat.blur }}">
           <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--acc2);margin-top:12px">MAXIM'S PICK</div>
           <div style="font-size:19px;font-weight:900;margin-top:4px">{{ feat.name }}</div>
           <button onClick="{{ feat.open }}" style="margin-top:12px;background:var(--acc);color:#fff;border:0;font-size:12px;font-weight:800;padding:9px 17px;border-radius:6px;cursor:pointer">모델 보기 ›</button>
@@ -519,7 +506,7 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ feat.works }}" as="p" hint-placeholder-count="0">
             <div onClick="{{ p.open }}" style="flex:0 0 auto;width:132px;cursor:pointer">
               <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-                <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.06)">
+                <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.06)">
               </div>
             </div>
           </sc-for>
@@ -532,13 +519,13 @@ select,input,button{font-family:inherit}
         <div style="min-width:0">
           <div style="font-size:10.5px;font-weight:800;letter-spacing:2.6px;color:var(--acc2)">TOURNAMENT</div>
           <div style="font-size:24px;font-weight:900;letter-spacing:-.8px;margin-top:10px">당신의 최애 화보는 뭔가요?</div>
-          <div style="font-size:13.5px;color:rgba(255,255,255,.66);margin-top:8px;line-height:1.6">둘 중 하나만 고르는 이상형 월드컵. 전체 우승 TOP 10도 함께 확인하세요.</div>
+          <div style="font-size:13.5px;color:var(--t2);margin-top:8px;line-height:1.6">둘 중 하나만 고르는 이상형 월드컵. 전체 우승 TOP 10도 함께 확인하세요.</div>
         </div>
         <div style="display:flex;align-items:center;gap:16px">
           <div style="display:flex;gap:-10px">
             <sc-for list="{{ wcThumbs }}" as="t" hint-placeholder-count="0">
-              <div style="width:62px;aspect-ratio:2/3;border-radius:7px;overflow:hidden;border:1px solid rgba(255,255,255,.18);margin-left:-14px;box-shadow:0 8px 20px rgba(0,0,0,.5)">
-                <img loading="lazy" decoding="async" src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ t.blur }}">
+              <div style="width:62px;aspect-ratio:2/3;border-radius:7px;overflow:hidden;border:1px solid var(--w5);margin-left:-14px;box-shadow:0 8px 20px rgba(0,0,0,.5)">
+                <img src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ t.blur }}">
               </div>
             </sc-for>
           </div>
@@ -552,19 +539,19 @@ select,input,button{font-family:inherit}
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">화보 찾아보기</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">SEARCH</span>
       </div>
-      <input value="{{ q }}" onInput="{{ onQ }}" placeholder="모델명 · 화보 제목 검색" style="width:100%;padding:15px 18px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:rgba(255,255,255,.05);color:var(--txt);outline:none" style-focus="border-color:var(--acc)">
+      <input value="{{ q }}" onInput="{{ onQ }}" placeholder="모델명 · 화보 제목 검색" style="width:100%;padding:15px 18px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:var(--w1);color:var(--txt);outline:none" style-focus="border-color:var(--acc)">
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 12px">
         <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
           <button onClick="{{ f.go }}" style="border:1px solid var(--line);font-weight:700;font-size:12.5px;padding:8px 16px;border-radius:999px;cursor:pointer;background:{{ f.bg }};color:{{ f.fg }}">{{ f.label }}</button>
         </sc-for>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px">
-        <div style="display:inline-flex;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:8px;padding:3px">
+        <div style="display:inline-flex;background:var(--w1);border:1px solid var(--line);border-radius:8px;padding:3px">
           <sc-for list="{{ sorts }}" as="s" hint-placeholder-count="3">
             <button onClick="{{ s.go }}" style="border:0;font-weight:800;font-size:12.5px;padding:8px 14px;border-radius:6px;cursor:pointer;background:{{ s.bg }};color:{{ s.fg }}">{{ s.label }}</button>
           </sc-for>
         </div>
-        <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:8px;padding:8px 12px">
+        <div style="display:inline-flex;align-items:center;gap:7px;background:var(--w1);border:1px solid var(--line);border-radius:8px;padding:8px 12px">
           <span style="font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.4px">모델</span>
           <select value="{{ modelSel }}" onChange="{{ onModel }}" style="background:transparent;border:0;color:var(--txt);font-size:12.5px;font-weight:700;cursor:pointer;outline:none;max-width:150px">
             <sc-for list="{{ modelOpts }}" as="o" hint-placeholder-count="0">
@@ -572,7 +559,7 @@ select,input,button{font-family:inherit}
             </sc-for>
           </select>
         </div>
-        <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:8px;padding:8px 12px">
+        <div style="display:inline-flex;align-items:center;gap:7px;background:var(--w1);border:1px solid var(--line);border-radius:8px;padding:8px 12px">
           <span style="font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.4px">연도</span>
           <select value="{{ yearSel }}" onChange="{{ onYear }}" style="background:transparent;border:0;color:var(--txt);font-size:12.5px;font-weight:700;cursor:pointer;outline:none">
             <sc-for list="{{ yearOpts }}" as="o" hint-placeholder-count="0">
@@ -587,18 +574,18 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ results }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="cursor:pointer">
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
               <div style="position:absolute;top:7px;left:7px;font-size:8.5px;font-weight:900;letter-spacing:.5px;padding:3px 6px;border-radius:3px;display:{{ p.origShow }};background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</div>
               <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ p.lockShow }}">19+ 확인 필요</div>
             </div>
-            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.82)">{{ p.t1 }}<span style="color:var(--acc2);background:rgba(230,0,18,.16);border-radius:3px">{{ p.t2 }}</span>{{ p.t3 }}</div>
+            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t3)">{{ p.t1 }}<span style="color:var(--acc2);background:rgba(230,0,18,.16);border-radius:3px">{{ p.t2 }}</span>{{ p.t3 }}</div>
           </div>
         </sc-for>
       </div>
       <div style="position:absolute;left:0;right:0;bottom:0;height:170px;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--bg0) 88%);display:{{ moreShow }}"></div>
       </div>
       <div style="text-align:center;margin-top:-30px;position:relative;z-index:2;display:{{ moreShow }}">
-        <button onClick="{{ more }}" style="background:rgba(255,255,255,.09);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:13px 30px;border-radius:8px;cursor:pointer" style-hover="background:rgba(255,255,255,.16)">{{ moreLabel }}</button>
+        <button onClick="{{ more }}" style="background:var(--w3);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:13px 30px;border-radius:8px;cursor:pointer" style-hover="background:var(--w4)">{{ moreLabel }}</button>
       </div>
     </section>
 
@@ -610,7 +597,7 @@ select,input,button{font-family:inherit}
       <div style="position:relative;margin-bottom:22px">
         <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:10px">
           <sc-for list="{{ creators }}" as="c" hint-placeholder-count="4">
-            <button onClick="{{ c.go }}" style="flex:0 0 auto;display:flex;align-items:center;gap:11px;border:1px solid transparent;border-color:{{ c.line }};border-radius:12px;padding:11px 16px 11px 11px;cursor:pointer;transition:transform .18s,box-shadow .18s;background:{{ c.bg }}" style-hover="transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,255,255,.28)">
+            <button onClick="{{ c.go }}" style="flex:0 0 auto;display:flex;align-items:center;gap:11px;border:1px solid transparent;border-color:{{ c.line }};border-radius:12px;padding:11px 16px 11px 11px;cursor:pointer;transition:transform .18s,box-shadow .18s;background:{{ c.bg }}" style-hover="transform:translateY(-2px);box-shadow:0 0 0 1px var(--w5)">
               <span style="width:34px;height:34px;flex:0 0 auto;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;background:{{ c.mBg }};color:{{ c.mFg }}">{{ c.initial }}</span>
               <span style="text-align:left">
                 <span style="display:block;font-size:13.5px;font-weight:800;white-space:nowrap;color:{{ c.fg }}">{{ c.name }}</span>
@@ -626,27 +613,27 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ creatorWorks }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="cursor:pointer">
             <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
             </div>
-            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.82)">{{ p.title }}</div>
+            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t3)">{{ p.title }}</div>
           </div>
         </sc-for>
       </div>
       <div style="position:absolute;left:0;right:0;bottom:0;height:170px;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--bg0) 88%);display:{{ crMoreShow }}"></div>
       </div>
       <div style="text-align:center;margin-top:-30px;position:relative;z-index:2;display:{{ crMoreShow }}">
-        <button onClick="{{ crMore }}" style="background:rgba(255,255,255,.09);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:13px 30px;border-radius:8px;cursor:pointer">{{ crMoreLabel }}</button>
+        <button onClick="{{ crMore }}" style="background:var(--w3);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:13px 30px;border-radius:8px;cursor:pointer">{{ crMoreLabel }}</button>
       </div>
     </section>
 
     <section style="display:{{ promoShow }};flex-direction:column;gap:12px">
       <div style="display:flex;align-items:baseline;gap:12px">
-        <h2 style="font-size:15px;font-weight:900;letter-spacing:-.3px;color:rgba(255,255,255,.8)">맥심 매거진</h2>
+        <h2 style="font-size:15px;font-weight:900;letter-spacing:-.3px;color:var(--t3)">맥심 매거진</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MAGAZINE</span>
       </div>
       <sc-for list="{{ promos }}" as="b" hint-placeholder-count="0">
         <a href="{{ b.link }}" target="_blank" style="display:block;border-radius:12px;overflow:hidden;border:1px solid var(--line)">
-          <img loading="lazy" decoding="async" src="{{ b.img }}" alt="" style="width:100%;aspect-ratio:1080/300;object-fit:cover;display:block;background:var(--bg2);opacity:.9;transition:opacity .3s" style-hover="opacity:1">
+          <img src="{{ b.img }}" alt="" style="width:100%;aspect-ratio:1080/300;object-fit:cover;display:block;background:var(--bg2);opacity:.9;transition:opacity .3s" style-hover="opacity:1">
         </a>
       </sc-for>
     </section>
@@ -663,12 +650,12 @@ select,input,button{font-family:inherit}
   </main>
 
   <footer style="border-top:1px solid var(--line);padding:40px 26px 60px;text-align:center;color:var(--mut);font-size:12px;line-height:1.9">
-    <div style="font-weight:900;font-size:15px;letter-spacing:2px;color:rgba(255,255,255,.8);margin-bottom:10px">MAXIM <span style="color:var(--acc2)">B컷</span></div>
+    <div style="font-weight:900;font-size:15px;letter-spacing:2px;color:var(--t3);margin-bottom:10px">MAXIM <span style="color:var(--acc2)">B컷</span></div>
     (주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br>
     <a href="https://bcut.maximkorea.net" target="_blank" style="text-decoration:underline">B컷 바로가기</a> · <a onClick="{{ openGate }}" style="text-decoration:underline;cursor:pointer">연령 설정 변경</a>
   </footer>
 
-  <button onClick="{{ toTop }}" style="position:fixed;right:20px;bottom:20px;z-index:80;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:rgba(20,20,26,.9);color:#fff;font-size:19px;cursor:pointer;backdrop-filter:blur(8px);transition:opacity .25s;opacity:{{ topOpacity }}">↑</button>
+  <button onClick="{{ toTop }}" style="position:fixed;right:20px;bottom:20px;z-index:80;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-size:19px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:{{ topOpacity }}">↑</button>
 
   <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:200;background:rgba(4,4,6,.82);backdrop-filter:blur(6px);padding:22px;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center">
@@ -676,7 +663,7 @@ select,input,button{font-family:inherit}
         <button onClick="{{ closeModal }}" style="position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:0;font-size:14px;cursor:pointer">✕</button>
         <div style="position:relative;width:100%;aspect-ratio:3/4;max-height:460px;overflow:hidden;background:#000;display:{{ modal.coverShow }}">
           <div style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(34px) brightness(.6);transform:scale(1.3);background-image:{{ modal.bgImg }}"></div>
-          <img loading="lazy" decoding="async" src="{{ modal.img }}" alt="" style="position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;object-fit:contain;display:block;z-index:1;filter:{{ modal.blur }}">
+          <img src="{{ modal.img }}" alt="" style="position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;object-fit:contain;display:block;z-index:1;filter:{{ modal.blur }}">
         </div>
         <div style="padding:24px 26px 28px">
           <div style="font-size:22px;font-weight:900;letter-spacing:-.5px;line-height:1.25;text-align:center">{{ modal.title }}</div>
@@ -690,16 +677,16 @@ select,input,button{font-family:inherit}
               </div>
             </sc-for>
           </div>
-          <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.7;color:rgba(255,255,255,.72);margin-top:18px;display:{{ modal.descShow }}">{{ modal.desc }}</div>
+          <div style="background:var(--w1);border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.7;color:var(--t2);margin-top:18px;display:{{ modal.descShow }}">{{ modal.desc }}</div>
           <div style="margin-top:22px;display:{{ modal.lineShow }}">
             <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--mut);margin-bottom:12px">주차별 순위 변화</div>
-            <div style="border-radius:10px;overflow:hidden;background:rgba(255,255,255,.04);border:1px solid var(--line)">
-              <img loading="lazy" decoding="async" src="{{ modal.lineImg }}" alt="" style="width:100%;display:block">
+            <div style="border-radius:10px;overflow:hidden;background:var(--w1);border:1px solid var(--line)">
+              <img src="{{ modal.lineImg }}" alt="" style="width:100%;display:block">
             </div>
           </div>
           <div style="margin-top:22px;display:{{ modal.trendShow }}">
             <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--mut);margin-bottom:12px">주차별 순위 추이</div>
-            <div style="display:flex;align-items:flex-end;gap:6px;height:96px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px 14px">
+            <div style="display:flex;align-items:flex-end;gap:6px;height:96px;background:var(--w1);border-radius:10px;padding:12px 14px">
               <sc-for list="{{ modal.trend }}" as="t" hint-placeholder-count="0">
                 <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;height:100%">
                   <div style="font-size:9.5px;font-weight:800;color:{{ t.lc }}">{{ t.label }}</div>
@@ -713,7 +700,7 @@ select,input,button{font-family:inherit}
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
             <sc-for list="{{ modal.others }}" as="o" hint-placeholder-count="0">
               <div onClick="{{ o.open }}" style="cursor:pointer;border-radius:7px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2)">
-                <img loading="lazy" decoding="async" src="{{ o.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ o.blur }}">
+                <img src="{{ o.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ o.blur }}">
               </div>
             </sc-for>
           </div>
@@ -722,7 +709,7 @@ select,input,button{font-family:inherit}
             <sc-for list="{{ modal.similar }}" as="o" hint-placeholder-count="0">
               <div onClick="{{ o.open }}" style="cursor:pointer">
                 <div style="border-radius:7px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2)">
-                  <img loading="lazy" decoding="async" src="{{ o.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ o.blur }}">
+                  <img src="{{ o.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ o.blur }}">
                 </div>
                 <div style="font-size:10px;font-weight:700;color:var(--mut);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ o.why }}</div>
               </div>
@@ -730,8 +717,8 @@ select,input,button{font-family:inherit}
           </div>
           <a href="{{ modal.cta }}" target="_blank" style="display:block;text-align:center;background:var(--acc);color:#fff;font-weight:800;font-size:14.5px;padding:15px;border-radius:8px;margin-top:22px">{{ modal.ctaLabel }}</a>
           <div style="display:flex;gap:8px;margin-top:10px">
-            <button onClick="{{ modal.copy }}" style="flex:1;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13px;padding:13px;border-radius:8px;cursor:pointer" style-hover="background:rgba(255,255,255,.14)">{{ modal.copyLabel }}</button>
-            <button onClick="{{ modal.share }}" style="flex:1;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13px;padding:13px;border-radius:8px;cursor:pointer" style-hover="background:rgba(255,255,255,.14)">공유하기</button>
+            <button onClick="{{ modal.copy }}" style="flex:1;background:var(--w2);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13px;padding:13px;border-radius:8px;cursor:pointer" style-hover="background:var(--w4)">{{ modal.copyLabel }}</button>
+            <button onClick="{{ modal.share }}" style="flex:1;background:var(--w2);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13px;padding:13px;border-radius:8px;cursor:pointer" style-hover="background:var(--w4)">공유하기</button>
           </div>
         </div>
       </div>
@@ -741,7 +728,7 @@ select,input,button{font-family:inherit}
   <sc-if value="{{ bootShow }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;inset:0;z-index:320;background:var(--bg0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px;text-align:center">
       <div style="font-size:22px;font-weight:900;letter-spacing:-.4px">MAXIM <span style="color:var(--acc)">B컷</span></div>
-      <div style="width:120px;height:3px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden;display:{{ bootBarShow }}">
+      <div style="width:120px;height:3px;border-radius:2px;background:var(--w4);overflow:hidden;display:{{ bootBarShow }}">
         <div style="width:40%;height:100%;border-radius:2px;background:var(--acc);animation:slide 1.1s ease-in-out infinite"></div>
       </div>
       <div style="font-size:13.5px;color:var(--mut);line-height:1.7;max-width:300px">{{ bootMsg }}</div>
@@ -754,15 +741,15 @@ select,input,button{font-family:inherit}
       <div onClick="{{ stop }}" style="position:relative;width:100%;max-width:360px;background:var(--bg1);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.6);animation:fadeUp .24s ease">
         <button onClick="{{ popupClose }}" aria-label="닫기" style="position:absolute;top:10px;right:10px;z-index:2;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;border:0;font-size:13px;cursor:pointer">✕</button>
         <a href="{{ popup.link }}" target="_blank" style="display:block">
-          <img loading="lazy" decoding="async" src="{{ popup.img }}" alt="" style="width:100%;display:block">
+          <img src="{{ popup.img }}" alt="" style="width:100%;display:block">
         </a>
         <div style="padding:16px 18px 4px;display:{{ popup.bodyShow }}">
           <div style="font-size:15.5px;font-weight:800;line-height:1.4">{{ popup.title }}</div>
           <div style="font-size:13px;color:var(--mut);margin-top:7px;line-height:1.55;display:{{ popup.subShow }}">{{ popup.sub }}</div>
         </div>
         <div style="display:flex;border-top:1px solid var(--line);margin-top:14px">
-          <button onClick="{{ popupToday }}" style="flex:1;border:0;background:transparent;color:var(--mut);padding:14px;font-size:13px;font-weight:700;cursor:pointer;border-right:1px solid var(--line)" style-hover="background:rgba(255,255,255,.05)">오늘 하루 보지 않기</button>
-          <button onClick="{{ popupClose }}" style="flex:1;border:0;background:transparent;color:var(--txt);padding:14px;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:rgba(255,255,255,.05)">닫기</button>
+          <button onClick="{{ popupToday }}" style="flex:1;border:0;background:transparent;color:var(--mut);padding:14px;font-size:13px;font-weight:700;cursor:pointer;border-right:1px solid var(--line)" style-hover="background:var(--w1)">오늘 하루 보지 않기</button>
+          <button onClick="{{ popupClose }}" style="flex:1;border:0;background:transparent;color:var(--txt);padding:14px;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:var(--w1)">닫기</button>
         </div>
       </div>
     </div>
@@ -776,29 +763,23 @@ select,input,button{font-family:inherit}
         <div style="font-size:13.5px;line-height:1.7;color:var(--mut);margin-top:12px">이 사이트에는 <b style="color:var(--txt)">만 19세 이상</b> 성인 화보가 포함돼 있어요.<br>선택에 따라 19금 이미지가 흐리게 표시됩니다.</div>
         <div style="display:flex;flex-direction:column;gap:9px;margin-top:24px">
           <button onClick="{{ setAdult }}" style="border:0;font-size:14.5px;font-weight:800;padding:15px;border-radius:9px;cursor:pointer;background:var(--acc);color:#fff">만 19세 이상 · 모두 보기</button>
-          <button onClick="{{ setMinor }}" style="border:1px solid var(--line);font-size:14.5px;font-weight:800;padding:15px;border-radius:9px;cursor:pointer;background:rgba(255,255,255,.06);color:var(--txt)">만 19세 미만 · 19금은 가리기</button>
+          <button onClick="{{ setMinor }}" style="border:1px solid var(--line);font-size:14.5px;font-weight:800;padding:15px;border-radius:9px;cursor:pointer;background:var(--w2);color:var(--txt)">만 19세 미만 · 19금은 가리기</button>
         </div>
-        <div style="font-size:11px;color:rgba(255,255,255,.32);margin-top:16px;line-height:1.6">선택은 이 기기에 저장돼요.</div>
+        <div style="font-size:11px;color:var(--w5);margin-top:16px;line-height:1.6">선택은 이 기기에 저장돼요.</div>
       </div>
     </div>
   </sc-if>
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;tone&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;noir&quot;,&quot;gold&quot;,&quot;mono&quot;],&quot;default&quot;:&quot;noir&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;테마&quot;}}">
-const TONES={
-  noir:{name:'NOIR RED',swatch:'#E60012',vars:{'--bg0':'#07070a','--bg1':'#101015','--bg2':'#17171d','--acc':'#E60012','--acc2':'#ff5a63','--txt':'#f4f4f6','--mut':'#87878f','--line':'rgba(255,255,255,.09)'}},
-  gold:{name:'MIDNIGHT GOLD',swatch:'#c9a227',vars:{'--bg0':'#0a0c12','--bg1':'#12151f','--bg2':'#1a1e2b','--acc':'#c9a227','--acc2':'#e8cd7a','--txt':'#f2f1ee','--mut':'#8b8d99','--line':'rgba(255,255,255,.1)'}},
-  mono:{name:'MONO',swatch:'#e9e9ec',vars:{'--bg0':'#0a0a0a','--bg1':'#141414','--bg2':'#1c1c1c','--acc':'#e9e9ec','--acc2':'#ffffff','--txt':'#f3f3f3','--mut':'#8a8a8a','--line':'rgba(255,255,255,.12)'}}
-};
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;테마&quot;}}">
 const BLANK='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-const MVC={up:['#12b76a','rgba(18,183,106,.16)'],down:['#f04438','rgba(240,68,56,.16)'],new:['#fff','#7a5af8'],same:['#b0b0b8','rgba(255,255,255,.1)']};
+const MVC={up:['#12b76a','rgba(18,183,106,.16)'],down:['#f04438','rgba(240,68,56,.16)'],new:['#fff','#7a5af8'],same:['#b0b0b8','var(--w3)']};
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),tone:'noir',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false};
 
   componentDidMount(){
-    this.preloadImgs();
     this.load();
     this._t=setInterval(()=>this.setState({now:Date.now()}),1000);
     this._sp=setInterval(()=>this.advance(),7000);
@@ -813,7 +794,8 @@ class Component extends DCLogic {
     try{age=localStorage.getItem('bcut_age');rec=JSON.parse(localStorage.getItem('bcut_recent')||'[]');
       wish=JSON.parse(localStorage.getItem('bcut_wish')||'[]');}catch(e){}
     this.setState({age:age||'',recent:Array.isArray(rec)?rec:[],wish:Array.isArray(wish)?wish:[]});
-    this.applyTone(this.props.tone||this.state.tone);
+    let th=null;try{th=localStorage.getItem('bcut_theme');}catch(e){}
+    this.applyTheme(th||this.props.theme||'light');
     this.bindGlobal();
     try{const q=new URLSearchParams(location.search),st={};
       if(q.get('tab')==='models')st.tab='models';
@@ -829,7 +811,6 @@ class Component extends DCLogic {
     }catch(e){}
   }
   componentWillUnmount(){clearInterval(this._t);clearInterval(this._sp);window.removeEventListener('scroll',this._sc);
-    clearTimeout(this._pl);if(this._io)this._io.disconnect();
     document.removeEventListener('keydown',this._key);window.removeEventListener('popstate',this._pop);}
 
   bindGlobal(){
@@ -842,15 +823,7 @@ class Component extends DCLogic {
   onTouchStart(e){this._tx=e.touches&&e.touches[0]?e.touches[0].clientX:0;}
   onTouchEnd(e){const t=e.changedTouches&&e.changedTouches[0];if(!t)return;
     const dx=t.clientX-(this._tx||0);if(Math.abs(dx)>44){dx<0?this.nextSlide():this.prevSlide();}}
-  /* 화면에 닿기 한창 전에 미리 썸네일을 받아둔다 */
-  preloadImgs(){
-    if(!('IntersectionObserver' in window))return;
-    if(!this._io)this._io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.loading='eager';this._io.unobserve(e.target);}});},{rootMargin:'1400px 0px'});
-    const io=this._io;
-    document.querySelectorAll('img[loading="lazy"]:not([data-eo])').forEach(i=>{i.setAttribute('data-eo','1');io.observe(i);});
-  }
-  componentDidUpdate(pp){if(pp.tone!==this.props.tone&&this.props.tone)this.applyTone(this.props.tone);
-    clearTimeout(this._pl);this._pl=setTimeout(()=>this.preloadImgs(),60);}
+  componentDidUpdate(pp){if(pp.theme!==this.props.theme&&this.props.theme)this.applyTheme(this.props.theme);}
 
   advance(){
     const n=this._slideCount||0;if(n<2||this._admin)return;
@@ -867,27 +840,25 @@ class Component extends DCLogic {
       requestAnimationFrame(()=>requestAnimationFrame(()=>this.setState({spot:n-1,noAnim:false})));}
     else this.setState({spot:this.state.spot-1,noAnim:false});
   }
-  applyTone(k){const t=TONES[k]||TONES.noir;const r=document.documentElement;Object.keys(t.vars).forEach(v=>r.style.setProperty(v,t.vars[v]));document.body.style.background=t.vars['--bg0'];this.setState({tone:k});}
+  applyTheme(k){const t=(k==='dark')?'dark':'light';
+    document.documentElement.setAttribute('data-theme',t);
+    try{localStorage.setItem('bcut_theme',t);}catch(e){}
+    this.setState({theme:t});}
+  toggleTheme(){this.applyTheme(this.state.theme==='dark'?'light':'dark');}
 
   async load(){
     if(window.BCUT_DATA){this.apply(window.BCUT_DATA);return;}
-    /* 1) 지난 방문 캐시를 즉시 그려 로딩 화면을 건너뛴다 */
-    try{const c=localStorage.getItem('bcut:data');
-      if(c){const o=JSON.parse(c);if(o&&o.d){this._cached=true;this.apply(o.d);}}}catch(e){}
-    /* 2) 네트워크에서 최신본을 받아 조용히 교체 (브라우저 캐시 사용) */
     let why='';
     for(const p of ['data.json','./data.json','/data.json']){
       try{
         let r=null;
-        try{r=await fetch(p);}catch(e1){why=e1&&e1.message||'네트워크 오류';}
+        try{r=await fetch(p+'?v='+Date.now(),{cache:'no-store'});}catch(e1){try{r=await fetch(p);}catch(e2){why=e2&&e2.message||'네트워크 오류';}}
         if(!r){continue;}
         if(!r.ok){why='HTTP '+r.status;continue;}
-        const d=await r.json();
-        try{localStorage.setItem('bcut:data',JSON.stringify({t:Date.now(),d:d}));}catch(e){}
-        this.apply(d);return;
+        const d=await r.json();this.apply(d);return;
       }catch(e){why=e&&e.message||'알 수 없는 오류';}
     }
-    if(!this._cached)this.setState({err:why||'네트워크 오류'});
+    this.setState({err:why||'네트워크 오류'});
   }
   apply(d){
     if(!d||typeof d!=='object'){this.setState({err:'데이터 형식 오류'});return;}
@@ -899,29 +870,13 @@ class Component extends DCLogic {
     this._best=null;
     const last=Math.max(0,d.weeks.length-1);
     const qw=(this._qWeek!=null&&this._qWeek>=0&&this._qWeek<=last)?this._qWeek:last;
-    /* 캐시로 이미 그린 뒤 최신본이 오면, 사용자가 보던 주차는 유지 */
-    const keep=(this._autoWi!=null&&this.state.wi!==this._autoWi&&this.state.wi<=last)?this.state.wi:qw;
-    this._autoWi=qw;
-    this.setState({D:d,wi:keep,err:''});
+    this.setState({D:d,wi:qw,err:''});
   }
   retry(){this.setState({err:''});this.load();}
 
   /* ── 데이터 계산 (원본 로직 유지) ── */
-  tParts(t){
-    let s=String(t||'').trim();const tags=[];
-    s=s.replace(/^\(\s*19\s*\)\s*/,'');
-    s=s.replace(/^\[([^\]]{1,16})\]\s*/,(m,c)=>{tags.push(c.trim());return '';});
-    s=s.replace(/\(\s*(only\s*video|video\s*only|only\s*photo|photo\s*only|photo\s*\+\s*video|video\s*\+\s*photo|photo\s*and\s*video)\s*\)/ig,(m,c)=>{
-      const hasV=/video/i.test(c),hasP=/photo/i.test(c);
-      tags.push(hasV&&hasP?'PHOTO+VIDEO':hasV?'VIDEO ONLY':'PHOTO ONLY');return ' ';});
-    s=s.replace(/\s{2,}/g,' ').replace(/^[\s·\-–]+|[\s·\-–]+$/g,'');
-    return {t:s||String(t||''),tags};
-  }
-  titleSize(n){return n<=24?'clamp(30px,4.6vw,58px)':n<=44?'clamp(26px,3.5vw,44px)':'clamp(23px,2.8vw,36px)';}
   pts(r){return (this.state.D.points||[])[r-1]||0;}
   weekEnd(wi){const d=((this.state.D.weeks||[])[wi]||{}).date;if(!d||!/\d{4}-\d{2}-\d{2}/.test(d))return '';const dt=new Date(d+'T00:00:00');dt.setDate(dt.getDate()+6);return dt.toISOString().slice(0,10);}
-  rangeLabel(a,b){const f=s=>{const m=(s||'').match(/-(\d{2})-(\d{2})/);return m?(+m[1])+'.'+(+m[2]):'';};const x=f(a),y=f(b);return x&&y?x+'~'+y:'';}
-  weekStatus(wi){const w=((this.state.D.weeks||[])[wi]||{});const d=w.date;if(!d||!/\d{4}-\d{2}-\d{2}/.test(d))return null;const end=this.weekEnd(wi);const t=this.today();const range=this.rangeLabel(d,end);if(t>=d&&t<=end)return{live:true,text:'집계 중',range:range};if(t>end)return{live:false,text:'집계 완료',range:range};return{live:false,text:'공개 예정',range:range};}
   pubOk(id,wi){const pub=(this.state.D.works[id]||{}).pub;if(!pub)return true;const e=this.weekEnd(wi);return !e||pub<=e;}
   weekWorks(wi){const wk=(this.state.D.weeks||[])[wi];if(!wk)return [];return (wk.ranking||[]).filter(id=>this.state.D.works[id]&&this.pubOk(id,wi)).map((id,i)=>({id,rank:i+1,pts:this.pts(i+1)}));}
   workRankAt(id,wi){const f=this.weekWorks(wi).find(x=>x.id===id);return f?f.rank:0;}
@@ -937,23 +892,6 @@ class Component extends DCLogic {
   monthModels(wi){if(wi<0)return [];const m={};this.weeksInMonth(wi).forEach(i=>{const mp=this.weekModelPts(i);Object.keys(mp).forEach(md=>{m[md]=(m[md]||0)+mp[md];});});return Object.keys(m).map(id=>({id,pts:m[id]})).sort((a,b)=>b.pts-a.pts).map((x,i)=>({id:x.id,pts:x.pts,rank:i+1}));}
   monthWorkRankAt(id,wi){if(wi<0)return 0;const f=this.monthWorks(wi).find(x=>x.id===id);return f?f.rank:0;}
   monthModelRankAt(id,wi){if(wi<0)return 0;const f=this.monthModels(wi).find(x=>x.id===id);return f?f.rank:0;}
-  /* D가 바뀔 때 한 번만 계산하는 색인 (매 렌더 재계산 방지) */
-  idx(){
-    const D=this.state.D||{},W=D.works||{};
-    if(this._idx&&this._idxD===D)return this._idx;
-    const modelCount={},byC={},yearSet=new Set();
-    Object.keys(W).forEach(id=>{const w=W[id]||{};
-      (w.models||[]).forEach(m=>{modelCount[m]=(modelCount[m]||0)+1;});
-      const c=(w.photo||'').trim();if(c)(byC[c]=byC[c]||[]).push(id);
-      const y=(w.pub||'').slice(0,4);if(y)yearSet.add(y);});
-    const yr=this.today().slice(0,4);
-    const champ={};(D.weeks||[]).forEach((wk,i)=>{if(((wk.date||'').slice(0,4))!==yr)return;
-      const top=this.weekWorks(i)[0];if(top&&W[top.id])champ[top.id]=(champ[top.id]||0)+1;});
-    const hallIds=Object.keys(champ).sort((a,b)=>champ[b]-champ[a]||((W[b]||{}).pub||'').localeCompare((W[a]||{}).pub||'')).slice(0,14);
-    const crAll=Object.keys(byC).sort((a,b)=>byC[b].length-byC[a].length||a.localeCompare(b));
-    this._idxD=D;
-    return this._idx={modelCount,byC,crAll,years:[...yearSet].sort((a,b)=>b.localeCompare(a)),champ,hallIds};
-  }
   bestMap(){if(this._best)return this._best;const b={w:{},m:{}};(this.state.D.weeks||[]).forEach((_,i)=>{this.weekWorks(i).forEach(x=>{if(!b.w[x.id]||x.rank<b.w[x.id])b.w[x.id]=x.rank;});this.weekModels(i).forEach(x=>{if(!b.m[x.id]||x.rank<b.m[x.id])b.m[x.id]=x.rank;});});this._best=b;return b;}
   streak(id,wi,thr,isM){let n=0;for(let i=wi;i>=0;i--){const r=isM?this.modelRankAt(id,i):this.workRankAt(id,i);if(r&&r<=thr)n++;else break;}return n;}
   movement(cur,prev){if(!prev)return{k:'new',n:0};if(cur<prev)return{k:'up',n:prev-cur};if(cur>prev)return{k:'down',n:cur-prev};return{k:'same',n:0};}
@@ -994,10 +932,10 @@ class Component extends DCLogic {
     const iw=W-PL-PR,ih=H-PT-PB;
     const px=i=>PL+(n<=1?iw/2:iw*i/(n-1));
     const py=r=>PT+ih*((Math.min(10,r)-1)/9);
-    x.strokeStyle='rgba(255,255,255,.09)';x.lineWidth=1;x.font='500 13px Pretendard, sans-serif';
+    x.strokeStyle='var(--w3)';x.lineWidth=1;x.font='500 13px Pretendard, sans-serif';
     [1,3,5,10].forEach(r=>{const y=Math.round(py(r))+.5;
       x.beginPath();x.moveTo(PL,y);x.lineTo(W-PR,y);x.stroke();
-      x.fillStyle='rgba(255,255,255,.35)';x.textAlign='right';x.fillText('#'+r,PL-10,y+4);});
+      x.fillStyle='var(--t1)';x.textAlign='right';x.fillText('#'+r,PL-10,y+4);});
     const seg=[];let cur=[];
     pts.forEach((p,i)=>{if(p.r){cur.push([px(i),py(p.r),p.r,i]);}else if(cur.length){seg.push(cur);cur=[];}});
     if(cur.length)seg.push(cur);
@@ -1008,7 +946,7 @@ class Component extends DCLogic {
       x.beginPath();x.arc(p[0],p[1],p[2]<=3?6:4.5,0,Math.PI*2);
       x.fillStyle=p[2]<=3?'#E60012':'#ff8a90';x.fill();
       x.strokeStyle='#0f0f14';x.lineWidth=2;x.stroke();}));
-    x.textAlign='center';x.font='700 12px Pretendard, sans-serif';x.fillStyle='rgba(255,255,255,.4)';
+    x.textAlign='center';x.font='700 12px Pretendard, sans-serif';x.fillStyle='var(--t1)';
     pts.forEach((p,i)=>{if(n>7&&i%2)return;
       const m=(p.lb.match(/(\d+)월\s*(\d+)/)||[]).slice(1).join('/');
       x.fillText(m||String(i+1),px(i),H-16);});
@@ -1072,7 +1010,7 @@ class Component extends DCLogic {
         setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
         setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
         openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),
-        tones:[],chips:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
+        toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeLabel:'어두운 화면으로',chips:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
         creators:[],creatorWorks:[],hof:[],upcoming:[],periods:[],filters:[],sorts:[],
         feat:{works:[]},modal:null,popup:null,
@@ -1085,8 +1023,10 @@ class Component extends DCLogic {
   }
   vals(){
     const S=this.state,D=S.D;
-    const tones=Object.keys(TONES).map(k=>({name:TONES[k].name,swatch:TONES[k].swatch,ring:S.tone===k?'#fff':'transparent',go:()=>this.applyTone(k)}));
-    const base={
+    const dark=S.theme==='dark';
+    const themeVals={toggleTheme:()=>this.toggleTheme(),
+      themeIcon:dark?'☀':'☾',themeLabel:dark?'밝은 화면으로':'어두운 화면으로'};
+    const base=Object.assign({},themeVals,{
       mob:!!S.mob,
       loadingShow:D?'none':'flex',
       loadingText:S.err||'랭킹 불러오는 중',
@@ -1110,8 +1050,7 @@ class Component extends DCLogic {
       gridMin:S.mob?'110px':'148px',
       secGap:S.mob?'46px':'64px',
       h2Size:S.mob?'17px':'19px',
-      tones,
-      hdrBg:S.scrolled?'rgba(7,7,10,.92)':'linear-gradient(to bottom,rgba(0,0,0,.75),transparent)',
+      hdrBg:S.scrolled?(dark?'rgba(7,7,10,.92)':'rgba(255,255,255,.93)'):'var(--hdrTop)',
       hdrLine:S.scrolled?'var(--line)':'transparent',
       topOpacity:S.scrolled?'1':'0',
       toTop:()=>window.scrollTo({top:0,behavior:'smooth'}),
@@ -1138,7 +1077,7 @@ class Component extends DCLogic {
       tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',nextShow:'none',featShow:'none',crShow:'none',kakaoShow:'none',
       ddayShow:'none',moreShow:'none',crMoreShow:'none',q:S.q,
       rankHeading:S.err||'랭킹 불러오는 중…',rankSubline:''
-    };
+    });
     if(!D)return base;
 
     const wi=S.wi,isM=S.tab==='models',isMonth=S.mode==='month',W=D.works||{};
@@ -1149,9 +1088,8 @@ class Component extends DCLogic {
     this._slideCount=sp.length;
     const seq=sp.length>1?sp.concat([sp[0]]):sp;
     const idx=Math.min(S.spot,Math.max(0,seq.length-1));
-    base.slides=seq.map(x=>{const w=W[x.id]||{};const tp=this.tParts(x.title);
-      return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:tp.t,titleSize:this.titleSize(tp.t.length),
-        tags:tp.tags.map(l=>({label:l})),mobCardTop:'78px',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
+    base.slides=seq.map(x=>{const w=W[x.id]||{};
+      return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:x.title||'',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
         eyebrow:x.eyebrow||'',stats:x.stats||[],link:x.link||'https://bcut.maximkorea.net',
         blur:this.blurOf(x.id),cardShow:(x.img&&!S.mob)?'block':'none',
         mobCardShow:(x.img&&S.mob)?'block':'none',
@@ -1163,16 +1101,16 @@ class Component extends DCLogic {
     base.trackX='translateX(-'+(idx*100)+'%)';
     base.trackDur=S.noAnim?'0s':'.85s';
     const act=sp.length?idx%sp.length:0;
-    base.spotDots=sp.map((_,i)=>({w:i===act?'26px':'12px',bg:i===act?'var(--acc)':'rgba(255,255,255,.35)',go:()=>this.goSlide(i)}));
+    base.spotDots=sp.map((_,i)=>({w:i===act?'26px':'12px',bg:i===act?'var(--acc)':'var(--t1)',go:()=>this.goSlide(i)}));
 
     /* 칩 */
     base.chips=[['#ranking','이번 주 랭킹'],['#next','신작'],['#sub','구독 화보'],['#creators','작가별'],['#search','찾아보기'],['worldcup.html','이상형 월드컵']]
-      .map(c=>({href:c[0],label:c[1],bg:c[0].indexOf('월드컵')>=0?'var(--acc)':'rgba(255,255,255,.05)',fg:c[0].indexOf('월드컵')>=0?'#fff':'rgba(255,255,255,.8)'}));
+      .map(c=>({href:c[0],label:c[1],bg:c[0].indexOf('월드컵')>=0?'var(--acc)':'var(--w1)',fg:c[0].indexOf('월드컵')>=0?'#fff':'var(--t3)'}));
 
     /* 랭킹 */
     const on='var(--txt)',off='var(--mut)';
-    base.tabWorksBg=isM?'transparent':'rgba(255,255,255,.14)';base.tabWorksFg=isM?off:on;
-    base.tabModelsBg=isM?'rgba(255,255,255,.14)':'transparent';base.tabModelsFg=isM?on:off;
+    base.tabWorksBg=isM?'transparent':'var(--w4)';base.tabWorksFg=isM?off:on;
+    base.tabModelsBg=isM?'var(--w4)':'transparent';base.tabModelsFg=isM?on:off;
     base.mWeekBg=isMonth?'transparent':'var(--acc)';base.mWeekFg=isMonth?off:'#fff';
     base.mMonthBg=isMonth?'var(--acc)':'transparent';base.mMonthFg=isMonth?'#fff':off;
     base.setWorks=()=>this.setState({tab:'works'});base.setModels=()=>this.setState({tab:'models'});
@@ -1188,9 +1126,9 @@ class Component extends DCLogic {
         size:x.v===active?'16px':'13.5px',color:x.v===active?'var(--txt)':'var(--mut)',
         op:x.v===active?'1':'.75',bar:x.v===active?'var(--acc)':'transparent'}));}
     else{tl=(D.weeks||[]).map((w,i)=>({v:i,label:w.label||('W'+(i+1))})).reverse();
-      base.timeline=tl.map(x=>{const _s=this.weekStatus(x.v);return {label:(_s&&_s.live?'🔴 ':'')+x.label,go:()=>this.setState({wi:x.v}),
+      base.timeline=tl.map(x=>({label:x.label,go:()=>this.setState({wi:x.v}),
         size:x.v===wi?'16px':'13.5px',color:x.v===wi?'var(--txt)':'var(--mut)',
-        op:x.v===wi?'1':'.7',bar:x.v===wi?'var(--acc)':'rgba(255,255,255,.08)'};});}
+        op:x.v===wi?'1':'.7',bar:x.v===wi?'var(--acc)':'var(--w3)'}));}
     const tlNav=base.timeline.length>(S.mob?3:6);
     base.tlNavShow=tlNav?'flex':'none';
     base.tlPad=tlNav?'34px':'0px';
@@ -1207,11 +1145,9 @@ class Component extends DCLogic {
           this._noticeHide=key;this.setState({noticeGone:true});};
       }
     }
-    base.slides.forEach(s=>{s.mobCardTop=(base.noticeShow==='block'?118:78)+'px';});
     base.rankHeading=(isMonth?'이번 달':'이번 주')+' '+(isM?'모델':'화보')+' TOP 10';
     const wkLabel=((D.weeks||[])[wi]||{}).label||'';
-    if(isMonth){base.rankSubline=this.monthLabel(this.wkMonth(wi))+' 기준 · 판매·조회·평점 종합 · 포스터에 마우스를 올리면 6주 추이가 보여요';}
-    else{const _st=this.weekStatus(wi);base.rankSubline=(_st?(_st.live?'🔴 ':'')+wkLabel+' '+_st.text+(_st.range?' ('+_st.range+')':'')+' · ':(wkLabel?wkLabel+' 기준 · ':''))+'판매·조회·평점 종합 · 포스터에 마우스를 올리면 6주 추이가 보여요';}
+    base.rankSubline=(isMonth?this.monthLabel(this.wkMonth(wi)):wkLabel)+' 기준 · 판매·조회·평점 종합 · 포스터에 마우스를 올리면 6주 추이가 보여요';
 
     /* 모델 탭 — 전용 카드 */
     if(isM){
@@ -1220,16 +1156,16 @@ class Component extends DCLogic {
         const mv=this.movement(row.rank,prev),c=MVC[mv.k];
         const form=[];for(let i=Math.max(0,wi-5);i<=wi;i++){const r=this.modelRankAt(row.id,i);
           form.push({h:r?Math.max(8,Math.round((11-Math.min(10,r))/10*100))+'%':'6%',
-            bg:!r?'rgba(255,255,255,.1)':r<=3?'var(--acc)':r<=10?'rgba(255,90,99,.45)':'rgba(255,255,255,.22)'});}
+            bg:!r?'var(--w3)':r<=3?'var(--acc)':r<=10?'rgba(255,90,99,.45)':'var(--w5)'});}
         let thr=10,lab='TOP10';if(row.rank===1){thr=1;lab='TOP1';}else if(row.rank<=5){thr=5;lab='TOP5';}
         const st=this.streak(row.id,wi,thr,true);
         const allW=Object.keys(W).filter(id=>(W[id].models||[]).includes(row.id));
         const works=allW.slice(0,3);
         return {rank:row.rank,name:row.id,img:this.modelImg(row.id),pts:row.pts.toLocaleString(),
           ptsLabel:isMonth?'이번 달':'이번 주',
-          numColor:row.rank<=3?'var(--acc)':'rgba(255,255,255,.3)',
-          ring:row.rank===1?'var(--acc)':'rgba(255,255,255,.16)',
-          cardBg:row.rank===1?'linear-gradient(150deg,rgba(230,0,18,.16),rgba(255,255,255,.04))':'rgba(255,255,255,.04)',
+          numColor:row.rank<=3?'var(--acc)':'var(--w5)',
+          ring:row.rank===1?'var(--acc)':'var(--w4)',
+          cardBg:row.rank===1?'linear-gradient(150deg,rgba(230,0,18,.16),var(--w1))':'var(--w1)',
           cardLine:row.rank===1?'rgba(230,0,18,.34)':'var(--line)',
           mvShow:'inline-block',mvBg:c[1],mvFg:c[0],
           mvLabel:mv.k==='up'?('▲ '+mv.n):mv.k==='down'?('▼ '+mv.n):mv.k==='new'?'NEW':'유지',
@@ -1244,9 +1180,9 @@ class Component extends DCLogic {
                         :(isM?this.modelRankAt(row.id,wi-1):this.workRankAt(row.id,wi-1));
       const mv=this.movement(row.rank,prev);const c=MVC[mv.k];
       const form=[];for(let i=Math.max(0,wi-5);i<=wi;i++){const r=isM?this.modelRankAt(row.id,i):this.workRankAt(row.id,i);
-        form.push({label:r?String(r):'–',lc:r&&r<=3?'var(--acc2)':'rgba(255,255,255,.5)',
+        form.push({label:r?String(r):'–',lc:r&&r<=3?'var(--acc2)':'var(--t1)',
           h:r?Math.max(8,Math.round((11-Math.min(10,r))/10*100))+'%':'6%',
-          bg:!r?'rgba(255,255,255,.12)':r<=3?'var(--acc)':r<=10?'rgba(255,90,99,.5)':'rgba(255,255,255,.25)'});}
+          bg:!r?'var(--w4)':r<=3?'var(--acc)':r<=10?'rgba(255,90,99,.5)':'var(--w5)'});}
       const hov=S.hover===row.id;
       const w=isM?null:(W[row.id]||{});
       const best=isM?this.bestMap().m[row.id]:this.bestMap().w[row.id];
@@ -1261,7 +1197,7 @@ class Component extends DCLogic {
         mvLabel:mv.k==='up'?('▲ '+mv.n):mv.k==='down'?('▼ '+mv.n):mv.k==='new'?'NEW':'–',
         mvFg:c[0],mvBg:c[1],form,
         numColor:row.rank<=3?'var(--acc)':'transparent',
-        numStroke:row.rank<=3?'0':'1.6px rgba(255,255,255,.42)',
+        numStroke:row.rank<=3?'0':'1.6px var(--t1)',
         numShadow:row.rank<=3?'0 8px 30px rgba(230,0,18,.45)':'none',
         shadow:hov?'0 22px 50px rgba(0,0,0,.7)':'0 8px 24px rgba(0,0,0,.45)',
         lift:hov?'translateY(-10px)':'none',z:hov?'6':'1',ovOpacity:hov?'1':'0',
@@ -1315,7 +1251,7 @@ class Component extends DCLogic {
         return {img:W[id].img||'',title:W[id].title||id,date:this.fmt(W[id].pub),blur:this.blurOf(id),
           vidShow:W[id].vid?'inline-block':'none',
           windowShow:u?'block':'none',window:u?('D-'+left+' · ~'+this.fmt(u)):'',
-          barW:pct+'%',barColor:col,line:'rgba(255,255,255,.07)',open:()=>this.openWork(id)};});
+          barW:pct+'%',barColor:col,line:'var(--w2)',open:()=>this.openWork(id)};});
       if(fut.length){base.upcomingShow='block';
         base.upcoming=fut.slice(0,8).map(id=>({img:W[id].img||'',date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub)}));}}
 
@@ -1337,7 +1273,7 @@ class Component extends DCLogic {
         return {img:w.img||'',open:()=>this.openWork(id),wish:e=>this.toggleWish(id,e),
           imgFilter:open?this.blurOf(id):'blur(7px) brightness(.7)',
           lockShow:open?'none':'flex',openedShow:open?'block':'none',
-          dday:open?'':('D-'+dd(w.pub)),line:open?'rgba(230,0,18,.4)':'rgba(255,255,255,.08)',
+          dday:open?'':('D-'+dd(w.pub)),line:open?'rgba(230,0,18,.4)':'var(--w3)',
           cap:open?'지금 볼 수 있어요':(this.fmt(w.pub)+' 공개')};});}
     base.tapHint=this._touch?'block':'none';
 
@@ -1346,31 +1282,31 @@ class Component extends DCLogic {
     base.wcThumbs=curList.slice(0,3).map(x=>({img:(W[x.id]||{}).img||'',blur:this.blurOf(x.id)}));
 
     /* 추천 모델 */
-    const IX=this.idx();
-    const nWorks=m=>IX.modelCount[m]||0;
+    const nWorks=m=>Object.keys(W).filter(id=>(W[id].models||[]).includes(m)).length;
     const MIN_W=4;
     let pool=(D.featuredModels||[]).filter(m=>nWorks(m)>=MIN_W);
     if(!pool.length){const all=new Set();Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>all.add(m)));
       pool=[...all].filter(m=>nWorks(m)>=MIN_W);}
     if(pool.length){if(!this._feat||!pool.includes(this._feat))this._feat=this._admin?pool[0]:pool[Math.floor(Math.random()*pool.length)];
-      const nm=this._feat;
-      if(this._fwFor!==nm){this._fwFor=nm;this._fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);}
-      const fw=this._fw;
+      const nm=this._feat;const fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);
       base.featShow='block';base.feat={name:nm,img:this.modelImg(nm)||BLANK,blur:'none',open:()=>this.openModel(nm),
         works:fw.map(id=>({img:W[id].img||'',blur:this.blurOf(id),open:()=>this.openWork(id)}))};}
 
     /* 명예의 전당 */
     const bw=this.bestMap().w;
-    const champ=IX.champ,hallIds=IX.hallIds;
+    const yr=this.today().slice(0,4);
+    const champ={};(D.weeks||[]).forEach((wk,i)=>{if(((wk.date||'').slice(0,4))!==yr)return;
+      const top=this.weekWorks(i)[0];if(top&&W[top.id])champ[top.id]=(champ[top.id]||0)+1;});
+    const hallIds=Object.keys(champ).sort((a,b)=>champ[b]-champ[a]||(W[b].pub||'').localeCompare(W[a].pub||'')).slice(0,14);
     if(hallIds.length){base.hallShow='block';
       base.hall=hallIds.map(id=>({img:W[id].img||'',title:W[id].title||id,blur:this.blurOf(id),
-        line:champ[id]>1?'rgba(230,0,18,.4)':'rgba(255,255,255,.08)',
+        line:champ[id]>1?'rgba(230,0,18,.4)':'var(--w3)',
         note:champ[id]>1?(champ[id]+'주 1위'):((W[id].models||[]).join(' & ')||'MAXIM B컷'),
         open:()=>this.openWork(id)}));}
 
   /* 검색 */
     base.filters=[['all','전체'],['19','19'],['영상','영상'],['오리지널','맥심 오리지널'],['프리미엄','프리미엄']].map(f=>({
-      label:f[1],bg:S.filter===f[0]?'var(--txt)':'rgba(255,255,255,.05)',fg:S.filter===f[0]?'#0a0a0c':'rgba(255,255,255,.75)',
+      label:f[1],bg:S.filter===f[0]?'var(--txt)':'var(--w1)',fg:S.filter===f[0]?'var(--bg0)':'var(--t2)',
       go:()=>{this.reshuffle();this.setState({filter:f[0],show:12});}}));
     base.onQ=e=>this.setState({q:e.target.value,show:12});
     if(!this._rand)this._rand=(()=>{const a=Object.keys(W);if(this._admin)return a;
@@ -1388,13 +1324,13 @@ class Component extends DCLogic {
     if(sort==='latest')ids=ids.slice().sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
     else if(sort==='popular')ids=ids.slice().sort((a,b)=>((bw[a]||99)-(bw[b]||99))||(W[b].pub||'').localeCompare(W[a].pub||''));
     base.sorts=[['random','랜덤'],['latest','최신순'],['popular','인기순']].map(s=>({label:s[1],
-      bg:sort===s[0]?'var(--txt)':'transparent',fg:sort===s[0]?'#0a0a0c':'var(--mut)',
+      bg:sort===s[0]?'var(--txt)':'transparent',fg:sort===s[0]?'var(--bg0)':'var(--mut)',
       go:()=>{if(s[0]==='random')this.reshuffle();this.setState({sort:s[0],show:12});}}));
 
-    const modelCount=IX.modelCount;
+    const modelCount={};Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>{modelCount[m]=(modelCount[m]||0)+1;}));
     base.modelOpts=[{v:'all',label:'전체'}].concat(Object.keys(modelCount).sort((a,b)=>modelCount[b]-modelCount[a]||a.localeCompare(b)).slice(0,40).map(m=>({v:m,label:m+' ('+modelCount[m]+')'})));
     base.modelSel=S.modelSel||'all';base.onModel=e=>{this.reshuffle();this.setState({modelSel:e.target.value,show:12});};
-    const years=IX.years;
+    const years=[...new Set(Object.keys(W).map(id=>(W[id].pub||'').slice(0,4)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
     base.yearOpts=[{v:'all',label:'전체'}].concat(years.map(y=>({v:y,label:y+'년'})));
     base.yearSel=S.yearSel||'all';base.onYear=e=>{this.reshuffle();this.setState({yearSel:e.target.value,show:12});};
     base.resultCount=ids.length+'편';
@@ -1408,8 +1344,8 @@ class Component extends DCLogic {
     if(ids.length>S.show){base.moreShow='block';base.moreLabel='화보 '+Math.min(12,ids.length-S.show)+'개 더 보기 · 남은 '+(ids.length-S.show)+'개';base.more=()=>this.setState({show:S.show+12});}
 
     /* 작가별 */
-    const byC=IX.byC;
-    let cs=IX.crAll;
+    const byC={};Object.keys(W).forEach(id=>{const c=((W[id]||{}).photo||'').trim();if(!c)return;(byC[c]=byC[c]||[]).push(id);});
+    let cs=Object.keys(byC).sort((a,b)=>byC[b].length-byC[a].length||a.localeCompare(b));
     /* 방문마다 순서를 섞어 뒤쪽 작가도 앞에 노출 */
     if(!this._crOrder||this._crOrder.length!==cs.length||this._crOrder.some(c=>!byC[c])){
       const a=cs.slice();
@@ -1420,10 +1356,10 @@ class Component extends DCLogic {
       base.crShow='block';
       base.creators=cs.map(c=>{const on=c===sel;
         return {name:c,n:byC[c].length,initial:(c||'?').trim().charAt(0),
-          bg:on?'linear-gradient(130deg,rgba(230,0,18,.22),rgba(255,255,255,.06))':'rgba(255,255,255,.04)',
+          bg:on?'linear-gradient(130deg,rgba(230,0,18,.22),var(--w2))':'var(--w1)',
           line:on?'rgba(230,0,18,.45)':'var(--line)',
-          fg:on?'var(--txt)':'rgba(255,255,255,.8)',sub:on?'var(--acc2)':'var(--mut)',
-          mBg:on?'var(--acc)':'rgba(255,255,255,.09)',mFg:on?'#fff':'rgba(255,255,255,.7)',
+          fg:on?'var(--txt)':'var(--t3)',sub:on?'var(--acc2)':'var(--mut)',
+          mBg:on?'var(--acc)':'var(--w3)',mFg:on?'#fff':'var(--t2)',
           go:()=>this.setState({creator:c,cshow:10})};});
       const cw=byC[sel];
       base.creatorWorks=cw.slice(0,S.cshow).map(id=>({img:W[id].img||'',title:W[id].title||id,blur:this.blurOf(id),open:()=>this.openWork(id)}));
@@ -1457,10 +1393,10 @@ class Component extends DCLogic {
     const trendOf=(id,isModel)=>{const out=[];
       for(let i=Math.max(0,wi-7);i<=wi;i++){const r=isModel?this.modelRankAt(id,i):this.workRankAt(id,i);
         const lb=((D.weeks||[])[i]||{}).label||'';
-        out.push({label:r?String(r):'–',lc:r&&r<=3?'var(--acc2)':'rgba(255,255,255,.5)',
+        out.push({label:r?String(r):'–',lc:r&&r<=3?'var(--acc2)':'var(--t1)',
           wk:(lb.match(/(\d+)월\s*(\d+)/)||[]).slice(1).join('/')||('W'+(i+1)),
           h:r?Math.max(8,Math.round((11-Math.min(10,r))/10*100))+'%':'6%',
-          bg:!r?'rgba(255,255,255,.1)':r<=3?'var(--acc)':r<=10?'rgba(255,90,99,.45)':'rgba(255,255,255,.22)'});}
+          bg:!r?'var(--w3)':r<=3?'var(--acc)':r<=10?'rgba(255,90,99,.45)':'var(--w5)'});}
       return out;};
     if(S.modal){
       if(S.modal.kind==='work'){const id=S.modal.id,w=W[id]||{};
@@ -1515,37 +1451,9 @@ class Component extends DCLogic {
           share:()=>{const u=md.creatorId?('https://bcut.maximkorea.net/creator/'+md.creatorId):'https://bcut.maximkorea.net';
             if(navigator.share)navigator.share({title:nm,url:u}).catch(()=>{});else{try{navigator.clipboard.writeText(u);}catch(e){}}}};}
     }
-    return base;
+    return Object.assign(base,themeVals);
   }
 }
-</script>
-<style>
-.bcLiveDot{position:relative;display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff3b3b;margin-right:8px;vertical-align:middle;flex:0 0 auto}
-.bcLiveDot::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:rgba(255,59,59,.55);animation:bcLivePulse 1.25s ease-out infinite;z-index:-1}
-@keyframes bcLivePulse{0%{transform:scale(.55);opacity:.75}100%{transform:scale(1.9);opacity:0}}
-</style>
-<script>
-(function(){
-  function swap(){
-    var els=document.querySelectorAll('div,span');
-    for(var i=0;i<els.length;i++){
-      var el=els[i];
-      if(el.childElementCount!==0)continue;
-      var tx=el.textContent||'';
-      if(tx.charCodeAt(0)===0xD83D){ /* 🔴 서로게이트 시작 */
-        var rest=tx.replace(/^\uD83D\uDD34\s*/,'');
-        if(rest===tx)continue;
-        el.innerHTML='<span class="bcLiveDot"></span>'+rest.replace(/[&<>]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m];});
-      }
-    }
-  }
-  function start(){
-    swap();
-    try{var obs=new MutationObserver(function(){swap();});obs.observe(document.body,{subtree:true,childList:true,characterData:true});}catch(e){}
-    setInterval(swap,1200);
-  }
-  if(document.body)start(); else window.addEventListener('DOMContentLoaded',start);
-})();
 </script>
 </body>
 </html>

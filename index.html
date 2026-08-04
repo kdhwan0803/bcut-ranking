@@ -29,13 +29,15 @@
   --w1:rgba(255,255,255,.05);--w2:rgba(255,255,255,.07);--w3:rgba(255,255,255,.09);--w4:rgba(255,255,255,.15);--w5:rgba(255,255,255,.24);
   --t1:rgba(255,255,255,.45);--t2:rgba(255,255,255,.68);--t3:rgba(255,255,255,.86);
   --hf0:rgba(7,7,10,0);--hfA:rgba(7,7,10,.88);--hfB:rgba(7,7,10,.35);--hfC:rgba(7,7,10,.55);--hfD:rgba(7,7,10,.74);
-  --heroShadow:0 4px 30px rgba(0,0,0,.6);--heroImg:.62;--hdrTop:linear-gradient(to bottom,rgba(0,0,0,.72),transparent)}
+  --heroShadow:0 4px 30px rgba(0,0,0,.6);--heroImg:.62;--hdrTop:linear-gradient(to bottom,rgba(0,0,0,.72),transparent);
+  --logoFilter:invert(1) hue-rotate(180deg);--logoBlend:screen}
 html[data-theme="light"]{
   --bg0:#ffffff;--bg1:#f6f6f8;--bg2:#e9e9ee;--txt:#111114;--mut:#6c6c76;--line:rgba(0,0,0,.1);--acc2:#c9000f;
   --w1:rgba(0,0,0,.035);--w2:rgba(0,0,0,.055);--w3:rgba(0,0,0,.09);--w4:rgba(0,0,0,.13);--w5:rgba(0,0,0,.22);
   --t1:rgba(0,0,0,.44);--t2:rgba(0,0,0,.6);--t3:rgba(0,0,0,.82);
   --hf0:rgba(255,255,255,0);--hfA:rgba(255,255,255,.94);--hfB:rgba(255,255,255,.42);--hfC:rgba(255,255,255,.6);--hfD:rgba(255,255,255,.86);
-  --heroShadow:0 2px 22px rgba(255,255,255,.75);--heroImg:.9;--hdrTop:linear-gradient(to bottom,rgba(255,255,255,.85),transparent)}
+  --heroShadow:0 2px 22px rgba(255,255,255,.75);--heroImg:.9;--hdrTop:linear-gradient(to bottom,rgba(255,255,255,.85),transparent);
+  --logoFilter:none;--logoBlend:multiply}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg0);color:var(--txt);font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
@@ -50,6 +52,21 @@ select,input,button{font-family:inherit}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
 @keyframes shimmer{0%{opacity:.35}50%{opacity:.7}100%{opacity:.35}}
+@keyframes logoBeat{
+  0%{transform:scale(1) rotate(0)}
+  3%{transform:scale(1.16) rotate(-7deg)}
+  6%{transform:scale(.95) rotate(5deg)}
+  9%{transform:scale(1.06) rotate(-2deg)}
+  13%{transform:scale(1) rotate(0)}
+  100%{transform:scale(1) rotate(0)}}
+@keyframes logoHover{
+  0%{transform:scale(1) rotate(0)}
+  30%{transform:scale(1.18) rotate(-8deg)}
+  60%{transform:scale(.97) rotate(4deg)}
+  100%{transform:scale(1.08) rotate(0)}}
+.logo>span{animation:logoBeat 7s ease-in-out infinite}
+.logo:hover>span{animation:logoHover .5s cubic-bezier(.3,1.4,.5,1) forwards}
+@keyframes liveBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.82)}}
 </style>
 </helmet>
 
@@ -57,8 +74,10 @@ select,input,button{font-family:inherit}
 
   <header style="position:fixed;top:0;left:0;right:0;z-index:90;border-bottom:1px solid transparent;background:{{ hdrBg }};border-bottom-color:{{ hdrLine }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
     <div style="max-width:1360px;margin:0 auto;height:64px;display:flex;align-items:center;gap:26px;padding:0 {{ padX }}">
-      <a href="#top" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-        <span style="font-size:19px;font-weight:900;letter-spacing:-.4px;color:var(--txt)">MAXIM <span style="color:var(--acc)">B컷</span></span>
+      <a href="#top" class="logo" style="display:flex;align-items:center;gap:9px;flex-shrink:0">
+        <span style="position:relative;display:block;width:78px;height:35px;overflow:hidden;flex:0 0 auto;filter:var(--logoFilter);mix-blend-mode:var(--logoBlend);transform-origin:50% 55%">
+          <img src="https://i.ibb.co/WpB1gcLw/opt.webp" alt="MAXIM B컷" style="position:absolute;left:-20.5px;top:-42px;width:119px;height:119px;display:block;max-width:none">
+        </span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:var(--acc2);padding-left:9px;border-left:1px solid var(--w5)">RANKING</span>
       </a>
       <nav style="gap:2px;margin-left:8px;display:{{ navShow }}">
@@ -232,7 +251,9 @@ select,input,button{font-family:inherit}
         <div id="tlScroll" style="display:flex;gap:0;overflow-x:auto;align-items:flex-end;scroll-behavior:smooth;padding:2px {{ tlPad }} 14px">
           <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="8">
             <button onClick="{{ t.go }}" style="flex:0 0 auto;border:0;background:transparent;cursor:pointer;padding:0 2px;text-align:center;transition:opacity .2s;opacity:{{ t.op }}">
-              <div style="font-weight:800;letter-spacing:-.2px;white-space:nowrap;padding:0 12px;font-size:{{ t.size }};color:{{ t.color }}">{{ t.label }}</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;padding:0 12px;font-size:{{ t.size }};color:{{ t.color }}">
+                <span style="width:7px;height:7px;border-radius:50%;background:var(--acc);flex:0 0 auto;animation:liveBlink 1.4s ease-in-out infinite;display:{{ t.liveShow }}"></span>{{ t.label }}
+              </div>
               <div style="height:3px;margin:8px 6px 0;border-radius:2px;transition:background .2s;background:{{ t.bar }}"></div>
             </button>
           </sc-for>
@@ -870,7 +891,7 @@ class Component extends DCLogic {
     if(!Array.isArray(d.weeks))d.weeks=[];
     if(!Array.isArray(d.points))d.points=[100,90,80,70,60,50,40,30,20,10];
     d.weeks.sort((a,b)=>((a.date||a.label||'')+'').localeCompare((b.date||b.label||'')+''));
-    this._best=null;
+    this._best=null;this._spans=null;
     const last=Math.max(0,d.weeks.length-1);
     const qw=(this._qWeek!=null&&this._qWeek>=0&&this._qWeek<=last)?this._qWeek:last;
     this.setState({D:d,wi:qw,err:''});
@@ -901,6 +922,36 @@ class Component extends DCLogic {
   modelImg(md){const D=this.state.D;if(D.models[md]&&D.models[md].img)return D.models[md].img;const id=Object.keys(D.works).find(k=>(D.works[k].models||[]).includes(md));return id?D.works[id].img:'';}
   fmt(iso){if(!iso)return '-';const p=String(iso).split('-');return p.length===3?(+p[1])+'.'+(+p[2]):iso;}
   today(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+  /* 각 주차를 월요일~일요일로 정규화 (등록일이 며칠 어긋나도 가장 가까운 월요일로 맞춤) */
+  weekSpans(){
+    if(this._spans)return this._spans;
+    const ws=(this.state.D||{}).weeks||[];
+    let prev=null;
+    this._spans=ws.map(w=>{
+      const d=w&&w.date;
+      if(!d||!/^\d{4}-\d{2}-\d{2}$/.test(d))return null;
+      const x=new Date(d+'T00:00:00');
+      const dow=(x.getDay()+6)%7;            /* 월=0 … 일=6 */
+      const a=new Date(x);
+      a.setDate(a.getDate()-dow);            /* 그 날짜가 속한 주의 월요일 */
+      if(prev&&a<=prev)a.setTime(prev.getTime()+7*86400000);
+      prev=new Date(a);
+      const b=new Date(a);b.setDate(b.getDate()+6);
+      return {a,b};
+    });
+    return this._spans;
+  }
+  weekSpan(wi){return this.weekSpans()[wi]||null;}
+  weekRange(wi){
+    const s=this.weekSpan(wi);if(!s)return '';
+    const f=x=>(x.getMonth()+1)+'월 '+x.getDate()+'일';
+    return f(s.a)+' ~ '+f(s.b);
+  }
+  weekLive(wi){
+    const s=this.weekSpan(wi);if(!s)return false;
+    const t=new Date(this.today()+'T00:00:00');
+    return t>=s.a&&t<=s.b;
+  }
   splitTitle(t){
     const s=String(t||'').trim();
     const m=s.match(/^([\[(（【][^\]\)）】]{1,24}[\]\)）】])\s*(.+)$/);
@@ -1133,11 +1184,13 @@ class Component extends DCLogic {
         tl.push({v:this.lastWeekOfMonth(mo),label:this.monthLabel(mo)});});
       const active=this.lastWeekOfMonth(this.wkMonth(wi));
       tl.reverse();
-      base.timeline=tl.map(x=>({label:x.label,go:()=>this.setState({wi:x.v}),
+      base.timeline=tl.map(x=>({label:x.label,go:()=>this.setState({wi:x.v}),liveShow:'none',
         size:x.v===active?'16px':'13.5px',color:x.v===active?'var(--txt)':'var(--mut)',
         op:x.v===active?'1':'.75',bar:x.v===active?'var(--acc)':'transparent'}));}
     else{tl=(D.weeks||[]).map((w,i)=>({v:i,label:w.label||('W'+(i+1))})).reverse();
+      const liveWi=(D.weeks||[]).map((_,i)=>i).filter(i=>this.weekLive(i)).pop();
       base.timeline=tl.map(x=>({label:x.label,go:()=>this.setState({wi:x.v}),
+        liveShow:x.v===liveWi?'block':'none',
         size:x.v===wi?'16px':'13.5px',color:x.v===wi?'var(--txt)':'var(--mut)',
         op:x.v===wi?'1':'.7',bar:x.v===wi?'var(--acc)':'var(--w3)'}));}
     const tlNav=base.timeline.length>(S.mob?3:6);
@@ -1158,7 +1211,10 @@ class Component extends DCLogic {
     }
     base.rankHeading=(isMonth?'이번 달':'이번 주')+' '+(isM?'모델':'화보')+' TOP 10';
     const wkLabel=((D.weeks||[])[wi]||{}).label||'';
-    base.rankSubline=(isMonth?this.monthLabel(this.wkMonth(wi)):wkLabel)+' 기준 · 판매·조회·평점 종합 · 포스터에 마우스를 올리면 6주 추이가 보여요';
+    const liveNow=!isMonth&&this.weekLive(wi);
+    const rng=isMonth?'':this.weekRange(wi);
+    base.rankSubline=(isMonth?this.monthLabel(this.wkMonth(wi)):(wkLabel+(rng?' · '+rng:'')))
+      +(liveNow?' · 집계 진행 중':'')+' · 판매·조회·평점 종합';
 
     /* 모델 탭 — 전용 카드 */
     if(isM){

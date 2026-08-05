@@ -712,6 +712,11 @@ select,input,button{font-family:inherit}
       <div onClick="{{ stop }}" style="position:relative;width:100%;max-width:540px;margin:auto;background:var(--bg1);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.7);animation:fadeUp .22s ease;display:flex;flex-direction:column;max-height:calc(100dvh - 44px)">
         <button onClick="{{ closeModal }}" style="position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:0;font-size:14px;cursor:pointer">✕</button>
         <div style="flex:1 1 auto;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch">
+        <div style="display:{{ modal.mheadShow }};flex-direction:column;align-items:center;text-align:center;padding:34px 26px 4px;background:linear-gradient(180deg,rgba(230,0,18,.14),transparent)">
+          <img loading="lazy" decoding="async" src="{{ modal.avatar }}" alt="{{ modal.title }}" style="width:104px;height:104px;border-radius:50%;object-fit:cover;border:3px solid var(--acc);background:var(--bg2);display:{{ modal.avatarShow }}">
+          <div style="width:104px;height:104px;border-radius:50%;background:var(--w2);border:3px solid var(--w5);align-items:center;justify-content:center;font-size:40px;font-weight:900;color:var(--mut);display:{{ modal.avatarNoneShow }}">{{ modal.initial }}</div>
+          <div style="font-size:10.5px;font-weight:800;letter-spacing:2.6px;color:var(--acc2);margin-top:14px">MODEL</div>
+        </div>
         <div style="position:relative;width:100%;aspect-ratio:3/4;max-height:460px;overflow:hidden;background:#000;display:{{ modal.coverShow }}">
           <div style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(34px) brightness(.6);transform:scale(1.3);background-image:{{ modal.bgImg }}"></div>
           <img loading="lazy" decoding="async" src="{{ modal.img }}" alt="{{ modal.title }}" style="position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;object-fit:contain;display:block;z-index:1;filter:{{ modal.blur }}">
@@ -1506,6 +1511,7 @@ class Component extends DCLogic {
         const mp=(this.monthWorks(wi).find(x=>x.id===id)||{}).pts||0;
         const others=Object.keys(W).filter(x=>x!==id&&(W[x].models||[]).some(m=>(w.models||[]).includes(m))).slice(0,8);
         base.modal={coverShow:'block',img:w.img||'',bgImg:'url('+(w.img||'')+')',blur:this.blurOf(id),
+          mheadShow:'none',avatar:'',avatarShow:'none',avatarNoneShow:'none',initial:'',
           title:this.splitTitle(w.title||id).name,tag:this.splitTitle(w.title||id).tag,
           tagShow:this.splitTitle(w.title||id).tag?'block':'none',
           model:(w.models||[]).join(' & ')||'—',
@@ -1541,6 +1547,7 @@ class Component extends DCLogic {
         const st=this.streak(nm,wi,thr,true);
         const works=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
         base.modal={coverShow:'none',img:'',bgImg:'none',blur:'none',
+          mheadShow:'flex',avatar:md.img||'',avatarShow:md.img?'block':'none',avatarNoneShow:md.img?'none':'flex',initial:(nm||'?').trim().charAt(0),
           title:nm,model:md.creatorId?('크리에이터 #'+md.creatorId):'MAXIM B컷 모델',
           meta:'화보 '+works.length+'편',desc:'',descShow:'none',
           stats:[{v:mr.rank?'#'+mr.rank:'-',l:'이번 달'},{v:mr.pts||0,l:'이번 달 pt'},{v:best?'#'+best:'-',l:'역대 최고'},{v:st+'주',l:'연속 '+lab}],

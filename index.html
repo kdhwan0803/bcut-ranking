@@ -11,6 +11,18 @@
 <meta property="og:image" content="https://i.ibb.co/WpB1gcLw/opt.webp">
 <meta property="og:url" content="https://bcutrank.com/">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MAXIM B컷 주간 랭킹">
+<meta name="twitter:description" content="이번 주 인기 화보 랭킹 · 신작 · 구독 화보를 한눈에. MAXIM B컷.">
+<meta name="twitter:image" content="https://i.ibb.co/WpB1gcLw/opt.webp">
+<link rel="canonical" href="https://bcutrank.com/">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#07070a" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"MAXIM B컷 주간 랭킹","alternateName":"MAXIM B컷 RANKING","url":"https://bcutrank.com/","publisher":{"@type":"Organization","name":"(주)맥심코리아","url":"https://bcut.maximkorea.net"}}
+</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -131,7 +143,7 @@ select,input,button{font-family:inherit}
           <div style="position:absolute;inset:0;background:linear-gradient(to top,var(--bg0) 2%,var(--hfA) 26%,var(--hfB) 58%,var(--hfC) 100%)"></div>
           <div style="position:absolute;inset:0;background:linear-gradient(to right,var(--bg0) 0%,var(--hfD) 34%,transparent 68%)"></div>
           <div style="position:absolute;z-index:3;top:22px;right:{{ padX }};width:104px;aspect-ratio:3/4;border-radius:9px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.18);display:{{ s.mobCardShow }}">
-            <img src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
+            <img loading="eager" fetchpriority="high" decoding="async" src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
             <div style="position:absolute;bottom:6px;right:6px;font-size:8.5px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(8,8,11,.82);color:#fff;display:{{ s.vidShow }}">▶</div>
           </div>
           <div style="position:relative;z-index:2;max-width:1360px;margin:0 auto;height:100%;display:flex;align-items:flex-end;padding:0 {{ padX }};gap:{{ heroGap }}">
@@ -160,7 +172,7 @@ select,input,button{font-family:inherit}
             </div>
             <div style="flex:0 0 auto;padding-bottom:64px;display:{{ s.cardShow }}">
               <div style="position:relative;width:236px;aspect-ratio:3/4;border-radius:10px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.14)">
-                <img src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
+                <img loading="eager" fetchpriority="high" decoding="async" src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
                 <div style="position:absolute;bottom:10px;right:10px;font-size:10px;font-weight:900;padding:4px 8px;border-radius:4px;background:rgba(8,8,11,.8);color:#fff;display:{{ s.vidShow }}">▶ 영상</div>
               </div>
             </div>
@@ -202,7 +214,7 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ wishes }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="flex:0 0 auto;width:150px;cursor:pointer">
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
-              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.imgFilter }}" style-hover="transform:scale(1.05)">
+              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.imgFilter }}" style-hover="transform:scale(1.05)">
               <div style="position:absolute;inset:0;display:{{ p.lockShow }};flex-direction:column;align-items:center;justify-content:center;gap:4px">
                 <div style="font-size:22px;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 12px rgba(0,0,0,.7)">{{ p.dday }}</div>
               </div>
@@ -224,7 +236,7 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ recent }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="flex:0 0 auto;width:132px;cursor:pointer">
             <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
+              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
             </div>
           </div>
         </sc-for>
@@ -285,7 +297,7 @@ select,input,button{font-family:inherit}
             <div style="display:flex;align-items:center;gap:12px">
               <div style="font-size:34px;font-weight:900;letter-spacing:-2px;line-height:1;color:{{ m.numColor }}">{{ m.rank }}</div>
               <div style="width:62px;height:62px;border-radius:50%;overflow:hidden;background:var(--bg2);border:2px solid {{ m.ring }}">
-                <img src="{{ m.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+                <img loading="lazy" decoding="async" src="{{ m.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
               </div>
               <div style="flex:1;min-width:0">
                 <div style="font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }}</div>
@@ -304,7 +316,7 @@ select,input,button{font-family:inherit}
             <div style="display:grid;gap:5px;margin-top:14px;height:96px;grid-template-columns:{{ m.gridCols }}">
               <sc-for list="{{ m.works }}" as="w" hint-placeholder-count="0">
                 <div style="border-radius:6px;overflow:hidden;background:var(--bg2);height:100%">
-                  <img src="{{ w.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ w.blur }}">
+                  <img loading="lazy" decoding="async" src="{{ w.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ w.blur }}">
                 </div>
               </sc-for>
             </div>
@@ -319,7 +331,7 @@ select,input,button{font-family:inherit}
             <div style="flex:0 0 auto;text-align:left;white-space:nowrap;font-weight:900;line-height:.72;letter-spacing:-9px;margin-right:-4px;position:relative;z-index:2;width:{{ numW }};font-size:{{ numSize }};color:{{ r.numColor }};-webkit-text-stroke:{{ r.numStroke }};text-shadow:{{ r.numShadow }}">{{ r.rank }}</div>
             <div style="position:relative;z-index:1">
               <div style="aspect-ratio:2/3;border-radius:9px;overflow:hidden;position:relative;background:var(--bg2);border:1px solid var(--w3);width:{{ posterW }};box-shadow:{{ r.shadow }}">
-                <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
+                <img loading="lazy" decoding="async" src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
                 <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+ 확인 필요</div>
                 <div style="position:absolute;top:8px;right:8px;font-size:11px;font-weight:900;padding:3px 8px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
                 <div style="position:absolute;top:8px;left:8px;display:flex;gap:4px">
@@ -366,7 +378,7 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ hall }}" as="p" hint-placeholder-count="0">
             <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ hallW }}">
               <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
-                <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+                <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
                 <div style="position:absolute;left:0;right:0;bottom:0;padding:30px 10px 10px;background:linear-gradient(transparent,var(--posterFade))">
                   <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
                   <div style="font-size:11px;color:var(--t1);margin-top:3px">{{ p.note }}</div>
@@ -392,7 +404,7 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ timesales }}" as="t" hint-placeholder-count="0">
             <a href="{{ t.link }}" target="_blank" style="flex:0 0 auto;width:158px">
               <div style="position:relative;width:100%;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid rgba(255,255,255,.08)">
-                <img src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ t.blur }}">
+                <img loading="lazy" decoding="async" src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ t.blur }}">
                 <div style="position:absolute;top:8px;left:8px;display:flex;align-items:baseline;gap:3px;background:var(--acc);color:#fff;padding:5px 9px;border-radius:6px">
                   <b style="font-size:18px;font-weight:900;line-height:1">{{ t.pct }}%</b><span style="font-size:9px;font-weight:800">OFF</span>
                 </div>
@@ -423,7 +435,7 @@ select,input,button{font-family:inherit}
             <a href="{{ p.link }}" target="_blank" style="flex:0 0 auto;width:200px">
               <div style="position:relative;display:flex;gap:2px;width:100%;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid rgba(255,255,255,.08)">
                 <sc-for list="{{ p.imgs }}" as="im" hint-placeholder-count="3">
-                  <img src="{{ im.src }}" alt="" style="flex:1;min-width:0;height:100%;object-fit:cover;display:block;filter:{{ im.blur }}">
+                  <img loading="lazy" decoding="async" src="{{ im.src }}" alt="" style="flex:1;min-width:0;height:100%;object-fit:cover;display:block;filter:{{ im.blur }}">
                 </sc-for>
                 <div style="position:absolute;top:8px;left:8px;display:flex;align-items:baseline;gap:3px;background:#7c5cff;color:#fff;padding:5px 9px;border-radius:6px">
                   <b style="font-size:18px;font-weight:900;line-height:1">{{ p.pct }}%</b><span style="font-size:9px;font-weight:800">OFF</span>
@@ -455,7 +467,7 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ subs }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ subW }}">
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
-              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
               <div style="position:absolute;top:8px;left:8px;display:flex;gap:4px">
                 <span style="font-size:9px;font-weight:900;padding:3px 7px;border-radius:3px;background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</span>
                 <span style="font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.82);color:#fff;display:{{ p.vidShow }}">▶ 영상</span>
@@ -485,7 +497,7 @@ select,input,button{font-family:inherit}
             <sc-for list="{{ upcoming }}" as="p" hint-placeholder-count="0">
               <div style="flex:0 0 auto;width:146px">
                 <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
-                  <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:blur(9px) brightness(.72);transform:scale(1.1)">
+                  <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:blur(9px) brightness(.72);transform:scale(1.1)">
                   <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px">
                     <div style="font-size:26px;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 14px rgba(0,0,0,.7)">{{ p.dday }}</div>
                     <div style="font-size:11px;font-weight:700;color:var(--t3)">{{ p.date }} 공개</div>
@@ -510,7 +522,7 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ nexts }}" as="p" hint-placeholder-count="0">
             <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ nextW }}">
               <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
-                <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+                <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
                 <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.82);color:#fff;display:{{ p.vidShow }}">▶ 영상</div>
                 <button onClick="{{ p.wish }}" title="공개되면 알림" style="position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.2);cursor:pointer;font-size:14px;line-height:1;backdrop-filter:blur(6px);transition:transform .15s;background:{{ p.wishBg }};color:{{ p.wishFg }}" style-hover="transform:scale(1.12)">{{ p.wishIcon }}</button>
                 <div style="position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:{{ p.subShow }};background:#ffd400;color:#111;font-size:10.5px;font-weight:900;padding:3px 11px;border-radius:4px">구독</div>
@@ -535,7 +547,7 @@ select,input,button{font-family:inherit}
       </div>
       <div style="display:flex;gap:22px;align-items:center;border-radius:14px;padding:22px;background:linear-gradient(120deg,var(--bg1),rgba(58,20,26,.9));border:1px solid var(--line);flex-wrap:wrap">
         <div style="flex:0 0 158px;text-align:center">
-          <img src="{{ feat.img }}" alt="" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--w5);background:var(--bg2);filter:{{ feat.blur }}">
+          <img loading="lazy" decoding="async" src="{{ feat.img }}" alt="" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--w5);background:var(--bg2);filter:{{ feat.blur }}">
           <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--acc2);margin-top:12px">MAXIM'S PICK</div>
           <div style="font-size:19px;font-weight:900;margin-top:4px">{{ feat.name }}</div>
           <button onClick="{{ feat.open }}" style="margin-top:12px;background:var(--acc);color:#fff;border:0;font-size:12px;font-weight:800;padding:9px 17px;border-radius:6px;cursor:pointer">모델 보기 ›</button>
@@ -544,7 +556,7 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ feat.works }}" as="p" hint-placeholder-count="0">
             <div onClick="{{ p.open }}" style="flex:0 0 auto;width:132px;cursor:pointer">
               <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-                <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.06)">
+                <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.06)">
               </div>
             </div>
           </sc-for>
@@ -563,7 +575,7 @@ select,input,button{font-family:inherit}
           <div style="display:flex;gap:-10px">
             <sc-for list="{{ wcThumbs }}" as="t" hint-placeholder-count="0">
               <div style="width:62px;aspect-ratio:2/3;border-radius:7px;overflow:hidden;border:1px solid var(--w5);margin-left:-14px;box-shadow:0 8px 20px rgba(0,0,0,.5)">
-                <img src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ t.blur }}">
+                <img loading="lazy" decoding="async" src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ t.blur }}">
               </div>
             </sc-for>
           </div>
@@ -612,7 +624,7 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ results }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="cursor:pointer">
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
               <div style="position:absolute;top:7px;left:7px;font-size:8.5px;font-weight:900;letter-spacing:.5px;padding:3px 6px;border-radius:3px;display:{{ p.origShow }};background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</div>
               <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ p.lockShow }}">19+ 확인 필요</div>
             </div>
@@ -651,7 +663,7 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ creatorWorks }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="cursor:pointer">
             <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
             </div>
             <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t3)">{{ p.title }}</div>
           </div>
@@ -670,8 +682,8 @@ select,input,button{font-family:inherit}
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MAGAZINE</span>
       </div>
       <sc-for list="{{ promos }}" as="b" hint-placeholder-count="0">
-        <a href="{{ b.link }}" target="_blank" style="display:block;border-radius:12px;overflow:hidden;border:1px solid var(--line)">
-          <img src="{{ b.img }}" alt="" style="width:100%;aspect-ratio:1080/300;object-fit:cover;display:block;background:var(--bg2);opacity:.9;transition:opacity .3s" style-hover="opacity:1">
+        <a href="{{ b.link }}" target="_blank" data-banner="magazine" style="display:block;border-radius:12px;overflow:hidden;border:1px solid var(--line)">
+          <img loading="lazy" decoding="async" src="{{ b.img }}" alt="" style="width:100%;aspect-ratio:1080/300;object-fit:cover;display:block;background:var(--bg2);opacity:.9;transition:opacity .3s" style-hover="opacity:1">
         </a>
       </sc-for>
     </section>
@@ -701,7 +713,7 @@ select,input,button{font-family:inherit}
         <button onClick="{{ closeModal }}" style="position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:0;font-size:14px;cursor:pointer">✕</button>
         <div style="position:relative;width:100%;aspect-ratio:3/4;max-height:460px;overflow:hidden;background:#000;display:{{ modal.coverShow }}">
           <div style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(34px) brightness(.6);transform:scale(1.3);background-image:{{ modal.bgImg }}"></div>
-          <img src="{{ modal.img }}" alt="" style="position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;object-fit:contain;display:block;z-index:1;filter:{{ modal.blur }}">
+          <img loading="lazy" decoding="async" src="{{ modal.img }}" alt="" style="position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;object-fit:contain;display:block;z-index:1;filter:{{ modal.blur }}">
         </div>
         <div style="padding:24px 26px 28px">
           <div style="font-size:11.5px;font-weight:800;letter-spacing:1.2px;color:var(--mut);text-align:center;margin-bottom:6px;display:{{ modal.tagShow }}">{{ modal.tag }}</div>
@@ -720,7 +732,7 @@ select,input,button{font-family:inherit}
           <div style="margin-top:22px;display:{{ modal.lineShow }}">
             <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--mut);margin-bottom:12px">주차별 순위 변화</div>
             <div style="border-radius:10px;overflow:hidden;background:var(--w1);border:1px solid var(--line)">
-              <img src="{{ modal.lineImg }}" alt="" style="width:100%;display:block">
+              <img loading="lazy" decoding="async" src="{{ modal.lineImg }}" alt="" style="width:100%;display:block">
             </div>
           </div>
           <div style="margin-top:22px;display:{{ modal.trendShow }}">
@@ -739,7 +751,7 @@ select,input,button{font-family:inherit}
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
             <sc-for list="{{ modal.others }}" as="o" hint-placeholder-count="0">
               <div onClick="{{ o.open }}" style="cursor:pointer;border-radius:7px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2)">
-                <img src="{{ o.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ o.blur }}">
+                <img loading="lazy" decoding="async" src="{{ o.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ o.blur }}">
               </div>
             </sc-for>
           </div>
@@ -748,7 +760,7 @@ select,input,button{font-family:inherit}
             <sc-for list="{{ modal.similar }}" as="o" hint-placeholder-count="0">
               <div onClick="{{ o.open }}" style="cursor:pointer">
                 <div style="border-radius:7px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2)">
-                  <img src="{{ o.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ o.blur }}">
+                  <img loading="lazy" decoding="async" src="{{ o.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ o.blur }}">
                 </div>
                 <div style="font-size:10px;font-weight:700;color:var(--mut);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ o.why }}</div>
               </div>
@@ -780,7 +792,7 @@ select,input,button{font-family:inherit}
       <div onClick="{{ stop }}" style="position:relative;width:100%;max-width:360px;background:var(--bg1);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.6);animation:fadeUp .24s ease">
         <button onClick="{{ popupClose }}" aria-label="닫기" style="position:absolute;top:10px;right:10px;z-index:2;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;border:0;font-size:13px;cursor:pointer">✕</button>
         <a href="{{ popup.link }}" target="_blank" style="display:block">
-          <img src="{{ popup.img }}" alt="" style="width:100%;display:block">
+          <img loading="lazy" decoding="async" src="{{ popup.img }}" alt="" style="width:100%;display:block">
         </a>
         <div style="padding:16px 18px 4px;display:{{ popup.bodyShow }}">
           <div style="font-size:15.5px;font-weight:800;line-height:1.4">{{ popup.title }}</div>
@@ -1550,6 +1562,14 @@ document.addEventListener('click',function(e){
   if(!a)return;
   var m=(a.href||'').match(/\/work\/([^/?#]+)/);
   try{if(window.gtag)gtag('event','go_bcut',m?{work_id:m[1]}:{});}catch(err){}
+},true);
+/* 배너 클릭(click_banner) 추적 */
+document.addEventListener('click',function(e){
+  var b=e.target&&e.target.closest?e.target.closest('[data-banner]'):null;
+  if(!b)return;
+  var name=b.getAttribute('data-banner')||'banner';
+  var m=(b.href||'').match(/\/work\/([^/?#]+)/);
+  try{if(typeof track==='function')track('click_banner',m?{banner:name,work_id:m[1]}:{banner:name});}catch(err){}
 },true);
 </script>
 </body>

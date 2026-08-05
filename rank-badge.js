@@ -7,7 +7,8 @@
     mountId:  "bcut-rank",
     topN:     20,
     showLink: true,
-    showMove: false
+    showMove: false,
+    showStreak: false
   };
   function getWorkId(){
     var m = (location.pathname||"").match(/\/work\/(\d+)/);
@@ -82,7 +83,7 @@
       "<span style='font-size:12px'>🏆</span><span>주간 "+rank+"위</span>"));
     if(CFG.showMove && mv) wrap.appendChild(el("span",
       "display:inline-flex;align-items:center;font-weight:800;font-size:12.5px;line-height:1;color:"+mv.c, mv.t));
-    if(streak>=2) wrap.appendChild(el("span",
+    if(CFG.showStreak && streak>=2) wrap.appendChild(el("span",
       "display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;line-height:1;color:#8a6a1a;background:#fbeecb;border:1px solid #efd99a;padding:6px 9px;border-radius:999px;white-space:nowrap",
       streak+"주 연속"));
     if(CFG.showLink) wrap.appendChild(el("span",

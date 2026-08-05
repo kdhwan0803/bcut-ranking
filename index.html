@@ -1447,7 +1447,7 @@ class Component extends DCLogic {
           fg:on?'var(--txt)':'var(--t3)',sub:on?'var(--acc2)':'var(--mut)',
           mBg:on?'var(--acc)':'var(--w3)',mFg:on?'#fff':'var(--t2)',
           go:()=>this.setState({creator:c,cshow:10})};});
-      const cw=byC[sel];
+      const cw=byC[sel].slice().sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
       base.creatorWorks=cw.slice(0,S.cshow).map(id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),open:()=>this.openWork(id)}));
       if(cw.length>S.cshow){base.crMoreShow='block';base.crMoreLabel='화보 '+Math.min(10,cw.length-S.cshow)+'개 더 보기';base.crMore=()=>this.setState({cshow:S.cshow+10});}}
 

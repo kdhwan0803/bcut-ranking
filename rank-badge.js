@@ -6,7 +6,8 @@
     rankSite: window.BCUT_RANK_SITE    || "https://bcutrank.com/",
     mountId:  "bcut-rank",
     topN:     20,
-    showLink: true
+    showLink: true,
+    showMove: false
   };
   function getWorkId(){
     var m = (location.pathname||"").match(/\/work\/(\d+)/);
@@ -79,7 +80,7 @@
     wrap.appendChild(el("span",
       "display:inline-flex;align-items:center;gap:5px;background:#E60012;color:#fff;font-weight:800;font-size:13px;line-height:1;padding:8px 13px;border-radius:999px;white-space:nowrap",
       "<span style='font-size:12px'>🏆</span><span>주간 "+rank+"위</span>"));
-    if(mv) wrap.appendChild(el("span",
+    if(CFG.showMove && mv) wrap.appendChild(el("span",
       "display:inline-flex;align-items:center;font-weight:800;font-size:12.5px;line-height:1;color:"+mv.c, mv.t));
     if(streak>=2) wrap.appendChild(el("span",
       "display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;line-height:1;color:#8a6a1a;background:#fbeecb;border:1px solid #efd99a;padding:6px 9px;border-radius:999px;white-space:nowrap",

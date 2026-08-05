@@ -73,19 +73,19 @@
     else if(rank<prevRank) mv={t:"▲"+(prevRank-rank),c:"#12b76a"};
     else if(rank>prevRank) mv={t:"▼"+(rank-prevRank),c:"#f04438"};
     else mv={t:"—",c:"#9a9aa2"};
-    var wrap=el("a", "display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-family:inherit;vertical-align:middle;background:#fff;border:1px solid #f1c7cb;border-radius:999px;padding:5px 5px;box-shadow:0 2px 10px rgba(230,0,18,.10)");
+    var wrap=el("a", "display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-family:inherit;vertical-align:middle;background:#fff;border:1px solid #f1c7cb;border-radius:999px;padding:4px 6px 4px 4px;box-shadow:0 2px 10px rgba(230,0,18,.10);line-height:1");
     wrap.href=CFG.rankSite; wrap.target="_blank"; wrap.rel="noopener";
     wrap.setAttribute("aria-label","이번 주 주간 랭킹 "+rank+"위");
     wrap.appendChild(el("span",
-      "display:inline-flex;align-items:center;gap:5px;background:#E60012;color:#fff;font-weight:800;font-size:13px;line-height:1;padding:7px 12px;border-radius:999px",
-      "🏆 주간 <b style='font-size:14px'>"+rank+"위</b>"));
+      "display:inline-flex;align-items:center;gap:5px;background:#E60012;color:#fff;font-weight:800;font-size:13px;line-height:1;padding:8px 13px;border-radius:999px;white-space:nowrap",
+      "<span style='font-size:12px'>🏆</span><span>주간 "+rank+"위</span>"));
     if(mv) wrap.appendChild(el("span",
-      "font-weight:800;font-size:12.5px;line-height:1;color:"+mv.c, mv.t));
+      "display:inline-flex;align-items:center;font-weight:800;font-size:12.5px;line-height:1;color:"+mv.c, mv.t));
     if(streak>=2) wrap.appendChild(el("span",
-      "font-size:12px;font-weight:700;line-height:1;color:#8a6a1a;background:#fbeecb;border:1px solid #efd99a;padding:5px 9px;border-radius:999px",
+      "display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;line-height:1;color:#8a6a1a;background:#fbeecb;border:1px solid #efd99a;padding:6px 9px;border-radius:999px;white-space:nowrap",
       streak+"주 연속"));
     if(CFG.showLink) wrap.appendChild(el("span",
-      "font-size:12px;font-weight:700;line-height:1;color:#E60012;padding-right:8px","전체 랭킹 ›"));
+      "display:inline-flex;align-items:center;font-size:12px;font-weight:700;line-height:1;color:#E60012;padding-right:6px;white-space:nowrap","전체 랭킹 ›"));
     try{ if(window.gtag) wrap.addEventListener("click",function(){gtag("event","rank_badge_click",{work_id:String(id),rank:rank});}); }catch(e){}
     var title = (D.works && D.works[id] && D.works[id].title) || "";
     var titleEl = title ? findTitleEl(title) : null;

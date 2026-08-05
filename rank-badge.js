@@ -43,9 +43,26 @@
     if(html!=null) e.innerHTML=html;
     return e;
   }
+  function norm(s){ return (s||"").replace(/\s+/g,"").replace(/\(19\)/g,"").toLowerCase(); }
+  function findTitleEl(title){
+    var nt=norm(title); if(nt.length<4) return null;
+    var best=null, bestLen=Infinity, els=document.body.getElementsByTagName("*");
+    for(var i=0;i<els.length;i++){
+      var e=els[i];
+      if(e.id===CFG.mountId) continue;
+      if(e.closest && e.closest("#"+CFG.mountId)) continue;
+      if(e.children && e.children.length>3) continue;
+      var tx=norm(e.textContent||"");
+      if(!tx) continue;
+      if(tx.indexOf(nt)>=0 && tx.length<=nt.length+40){
+        if(tx.length<bestLen){ bestLen=tx.length; best=e; }
+      }
+    }
+    return best;
+  }
   function render(D){
     var id=getWorkId(); if(!id) return;
-    var mount=document.getElementById(CFG.mountId); if(!mount) return;
+    var mount=document.getElementById(CFG.mountId);
     var weeks=(D&&D.weeks)||[]; var pk=pickWeeks(weeks); if(!pk.cur) return;
     var rank=rankIn(pk.cur, id);
     if(!rank || rank>CFG.topN) return;
@@ -69,9 +86,17 @@
       streak+"주 연속"));
     if(CFG.showLink) wrap.appendChild(el("span",
       "font-size:12px;font-weight:700;line-height:1;color:#E60012;padding-right:8px","전체 랭킹 ›"));
-    mount.innerHTML="";
-    mount.appendChild(wrap);
     try{ if(window.gtag) wrap.addEventListener("click",function(){gtag("event","rank_badge_click",{work_id:String(id),rank:rank});}); }catch(e){}
+    var title = (D.works && D.works[id] && D.works[id].title) || "";
+    var titleEl = title ? findTitleEl(title) : null;
+    if(titleEl && titleEl.parentNode){
+      var box=el("div","margin:10px 0 4px");
+      box.appendChild(wrap);
+      titleEl.parentNode.insertBefore(box, titleEl.nextSibling);
+      if(mount) mount.innerHTML="";
+    } else if(mount){
+      mount.innerHTML=""; mount.appendChild(wrap);
+    }
   }
   function boot(){
     if(!getWorkId()) return;

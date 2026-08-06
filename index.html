@@ -74,6 +74,17 @@ select,input,button{font-family:inherit}
 .bcScan{position:absolute;left:0;right:0;top:0;height:2px;background:var(--acc);box-shadow:0 0 12px rgba(230,0,18,.9);opacity:0;pointer-events:none}
 #bcLogo:hover .bcScan{animation:bcScan .85s linear}
 @keyframes liveBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.82)}}
+/* SPECIAL RELEASE 이벤트 띠: 모바일 세로 배치(배지→썸네일→제목·글→버튼 가운데) */
+@media(min-width:681px){.evKickMob{display:none!important}}
+@media(max-width:680px){
+  .evRow{flex-direction:column!important;align-items:center!important;gap:14px!important}
+  .evKickMob{display:inline-flex!important}
+  .evKickInline{display:none!important}
+  .evThumbs{width:100%;justify-content:center!important}
+  .evText{min-width:0!important;width:100%;text-align:center}
+  .evCta{width:100%;justify-content:center!important}
+  .evCard{width:74px!important}
+}
 @keyframes evSweep{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 @keyframes evGlow{0%,100%{opacity:.45}50%{opacity:.9}}
 .evCard{transition:transform .3s cubic-bezier(.2,.8,.3,1),box-shadow .3s}
@@ -192,10 +203,11 @@ select,input,button{font-family:inherit}
       <div style="width:26%;height:100%;background:linear-gradient(90deg,transparent,var(--acc),transparent);animation:evSweep 3.4s linear infinite"></div>
     </div>
 
-    <div style="position:relative;z-index:2;max-width:1360px;margin:0 auto;padding:{{ ev.padY }} {{ padX }};display:flex;align-items:center;gap:20px;flex-wrap:{{ ev.wrap }}">
-      <div style="display:flex;align-items:center;gap:9px;flex:0 0 auto">
+    <div class="evRow" style="position:relative;z-index:2;max-width:1360px;margin:0 auto;padding:{{ ev.padY }} {{ padX }};display:flex;align-items:center;gap:20px;flex-wrap:{{ ev.wrap }}">
+      <span class="evKickMob" style="display:none;align-items:center;justify-content:center;gap:5px;padding:5px 13px;border-radius:999px;border:1px solid rgba(230,0,18,.6);background:rgba(230,0,18,.16);color:#ff9aa0;font-size:11px;font-weight:900;letter-spacing:1.4px">{{ ev.kicker }}</span>
+      <div class="evThumbs" style="display:flex;align-items:center;gap:9px;flex:0 0 auto">
         <sc-for list="{{ ev.items }}" as="e" hint-placeholder-count="4">
-          <div onClick="{{ e.open }}" class="evCard" style="cursor:pointer;border-radius:7px;overflow:hidden;position:relative;width:56px;aspect-ratio:2/3;background:#14141a;border:1px solid {{ e.line }};flex:0 0 auto">
+          <div onClick="{{ e.open }}" class="evCard" style="cursor:pointer;border-radius:7px;overflow:hidden;position:relative;width:64px;aspect-ratio:2/3;background:#14141a;border:1px solid {{ e.line }};flex:0 0 auto">
             <img src="{{ e.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ e.filter }}">
             <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,9,.85) 0%,transparent 55%)"></div>
             <div style="position:absolute;top:3px;left:3px;padding:1.5px 4px;border-radius:3px;font-size:7.5px;font-weight:900;background:{{ e.dayBg }};color:{{ e.dayFg }}">{{ e.day }}</div>
@@ -208,13 +220,13 @@ select,input,button{font-family:inherit}
 
       <div style="width:1px;align-self:stretch;background:rgba(255,255,255,.14);flex:0 0 auto;display:{{ ev.divShow }}"></div>
 
-      <div style="flex:1;min-width:220px">
-        <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;border:1px solid rgba(230,0,18,.6);background:rgba(230,0,18,.16);color:#ff9aa0;font-size:10px;font-weight:900;letter-spacing:1.4px">{{ ev.kicker }}</span>
+      <div class="evText" style="flex:1;min-width:220px">
+        <span class="evKickInline" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;border:1px solid rgba(230,0,18,.6);background:rgba(230,0,18,.16);color:#ff9aa0;font-size:10px;font-weight:900;letter-spacing:1.4px">{{ ev.kicker }}</span>
         <div style="font-size:clamp(18px,2.1vw,25px);font-weight:900;letter-spacing:-.6px;line-height:1.15;margin-top:9px;text-wrap:balance">{{ ev.title }}</div>
         <div style="font-size:13px;color:rgba(255,255,255,.74);margin-top:7px;font-weight:600;line-height:1.5">{{ ev.sub }}</div>
       </div>
 
-      <div style="display:flex;align-items:center;gap:16px;flex:0 0 auto">
+      <div class="evCta" style="display:flex;align-items:center;gap:16px;flex:0 0 auto">
         <div style="font-size:12.5px;font-weight:800;color:rgba(255,255,255,.85);white-space:nowrap;display:{{ ev.pitchShow }}">{{ ev.pitch }}</div>
         <a href="{{ ev.cta }}" target="_blank" style="display:inline-flex;align-items:center;background:var(--acc);color:#fff;font-weight:900;font-size:13px;padding:10px 20px;border-radius:6px;white-space:nowrap;box-shadow:0 10px 24px rgba(230,0,18,.3)" style-hover="filter:brightness(1.1)">{{ ev.ctaLabel }}</a>
       </div>

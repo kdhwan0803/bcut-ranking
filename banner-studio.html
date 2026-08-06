@@ -1,0 +1,328 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>맥심 B컷 배너 생성기</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+@font-face{font-family:'GmarketSans';src:url('GmarketSansBold.ttf') format('truetype');font-weight:700;font-display:swap}
+@font-face{font-family:'GmarketSansM';src:url('GmarketSansMedium.ttf') format('truetype');font-weight:500;font-display:swap}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1b1b1f;color:#eee;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;padding:24px 20px 80px}
+h1{font-size:20px;font-weight:800;margin-bottom:4px}
+.desc{font-size:13px;color:#9a9aa2;margin-bottom:18px;line-height:1.6}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#242429;border:1px solid #333;border-radius:10px;padding:12px 14px;margin-bottom:22px}
+.bar input{flex:1;min-width:220px;background:#151519;border:1px solid #3a3a42;color:#eee;border-radius:7px;padding:9px 11px;font-size:13px}
+.bar button,.dl{background:#E60012;color:#fff;border:0;border-radius:7px;padding:10px 16px;font-size:13px;font-weight:800;cursor:pointer}
+.bar .st{font-size:12.5px;color:#8f8;min-width:100%;order:9}
+.bar .st.err{color:#ff8080}
+.sect{margin-bottom:34px}
+.sect h2{font-size:15px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{background:#2a2a30;border:1px solid #3a3a42;color:#cfcfd6;border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:700;cursor:pointer}
+.tab.on{background:#fff;color:#111;border-color:#fff}
+.previewwrap{background:#0e0e11;border:1px solid #333;border-radius:12px;padding:20px;overflow:auto}
+.preview{transform-origin:top left;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.row2{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.hint{font-size:12px;color:#8a8a92}
+/* offscreen render holder */
+#stageHolder{position:fixed;left:-99999px;top:0}
+
+/* ===================== BANNER STYLES ===================== */
+.ban{position:relative;overflow:hidden;background:#0a0a0d;color:#fff;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif}
+.ban img{display:block}
+/* Bcut logo */
+.bclogo{display:flex;align-items:center}
+.bclogo .box{position:relative;display:block;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.05)}
+.bclogo .tl,.bclogo .br2{position:absolute;border-color:#E60012;border-style:solid}
+.bclogo .tl{top:-1px;left:-1px;border-top-width:2px;border-left-width:2px;border-right-width:0;border-bottom-width:0}
+.bclogo .br2{bottom:-1px;right:-1px;border-bottom-width:2px;border-right-width:2px;border-top-width:0;border-left-width:0}
+.bclogo .bc{display:block;font-family:Anton,'Pretendard',sans-serif;color:#f4f4f6;line-height:1}
+.bclogo .dot{border-radius:50%;background:#E60012;flex:0 0 auto}
+.bclogo .mx{font-weight:800;color:#87878f}
+.bclogo .rk{font-weight:800;color:#ff5a63;border-left:1px solid rgba(255,255,255,.24)}
+.acc{color:#f4c64e}.accm{color:#33e0b5}
+.gsans{font-family:'GmarketSans',sans-serif;font-weight:700}
+.gsm{font-family:'GmarketSansM',sans-serif;font-weight:500}
+.cg{position:absolute;inset:0}
+.cn{position:absolute;left:0;right:0;text-align:center;font-family:'GmarketSans',sans-serif;font-weight:700;text-shadow:0 2px 6px #000}
+</style></head><body>
+
+<h1>맥심 B컷 배너 생성기</h1>
+<div class="desc">data.json에서 <b>랭킹(최신 주차 순위)</b>과 <b>신간(공개일 최신순)</b>을 자동으로 불러와 배너를 만듭니다. 규격 탭을 고르고 <b>PNG 다운로드</b>를 누르세요. 매주 새 데이터가 반영되면 그대로 다시 뽑으면 됩니다.</div>
+
+<div class="bar">
+  <span class="hint">data.json 주소</span>
+  <input id="src" value="https://bcutrank.com/data.json">
+  <button onclick="loadData()">새로고침</button>
+  <span class="st" id="st">불러오는 중…</span>
+</div>
+
+<div class="sect">
+  <h2>🏆 랭킹 배너</h2>
+  <div class="tabs" id="tabs_rk"></div>
+  <div class="previewwrap"><div class="preview" id="prev_rk"></div></div>
+  <div class="row2"><button class="dl" onclick="download('rk')">PNG 다운로드</button><span class="hint" id="dlhint_rk"></span></div>
+</div>
+
+<div class="sect">
+  <h2>✨ 신간 배너</h2>
+  <div class="tabs" id="tabs_nw"></div>
+  <div class="previewwrap"><div class="preview" id="prev_nw"></div></div>
+  <div class="row2"><button class="dl" onclick="download('nw')">PNG 다운로드</button><span class="hint" id="dlhint_nw"></span></div>
+</div>
+
+<div id="stageHolder"></div>
+
+<script>
+/* -------- test fallback data (local images) -------- */
+const TEST = new URLSearchParams(location.search).has('test');
+const TEST_IMGS=['kim.jpg','yun.jpg','babi.jpg','chae.jpg'];
+const TEST_DATA={
+  works:{a:{title:'김연지 화보',models:['김연지'],img:'kim.jpg',pub:'2026-08-07'},
+         b:{title:'윤설화 화보',models:['윤설화'],img:'yun.jpg',pub:'2026-08-07'},
+         c:{title:'바비앙 화보',models:['바비앙'],img:'babi.jpg',pub:'2026-08-06'},
+         d:{title:'채솔 화보',models:['채솔'],img:'chae.jpg',pub:'2026-08-05'},
+         e:{title:'예하 화보',models:['예하'],img:'yun.jpg',pub:'2026-08-04'},
+         f:{title:'나정 화보',models:['김나정'],img:'kim.jpg',pub:'2026-08-03'}},
+  weeks:[{label:'w',date:'2026-08-01',ranking:['a','b','c','d','e','f']}]
+};
+
+const SIZES=[
+  {k:'pc',  label:'PC 헤드 1215×300', w:1215,h:300, fam:'wide'},
+  {k:'mob', label:'모바일 640×180',   w:640, h:180, fam:'wide'},
+  {k:'hmob',label:'헤드 모바일 645×450',w:645,h:450, fam:'hmob'},
+  {k:'sky', label:'세로배너 140×600', w:140, h:600, fam:'sky'},
+  {k:'sns', label:'인스타 1080×1350', w:1080,h:1350,fam:'portrait'},
+];
+let RANK=[], NEW=[], curSize={rk:'pc',nw:'pc'};
+
+function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function cover(item){return item?item.img:''}
+function nameOf(item){return item&&item.models&&item.models[0]?item.models[0]:''}
+
+async function loadData(){
+  const st=document.getElementById('st');
+  try{
+    let d;
+    if(TEST){ d=TEST_DATA; }
+    else{
+      const url=document.getElementById('src').value.trim();
+      const r=await fetch(url,{cache:'no-store'}); d=await r.json();
+    }
+    // ranking: latest week by date
+    const weeks=(d.weeks||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    const last=weeks[weeks.length-1];
+    const ids=(last&&last.ranking)||[];
+    RANK=ids.slice(0,5).map(id=>d.works[id]).filter(Boolean);
+    // new: works by pub desc
+    NEW=Object.values(d.works).filter(w=>w&&w.img&&w.pub).sort((a,b)=>(b.pub||'').localeCompare(a.pub||'')).slice(0,6);
+    st.textContent='불러오기 완료 · 랭킹 '+RANK.length+'개 / 신간 '+NEW.length+'개'+(TEST?' (테스트 모드)':'');
+    st.className='st';
+    renderBoth();
+  }catch(e){
+    st.textContent='불러오기 실패: '+e.message+' — data.json 주소를 확인하거나, 이 페이지를 bcutrank.com에 올려 실행하세요.';
+    st.className='st err';
+  }
+}
+
+/* build the Bcut logo scaled by factor s (1 = 24px Bcut) */
+function logo(s){
+  return `<div class="bclogo" style="gap:${9*s}px">
+    <span class="box" style="padding:${5*s}px ${10*s}px ${5*s}px ${11*s}px">
+      <span class="tl" style="width:${9*s}px;height:${9*s}px"></span><span class="br2" style="width:${9*s}px;height:${9*s}px"></span>
+      <span class="bc" style="font-size:${24*s}px;letter-spacing:${-.4*s}px">Bcut</span>
+    </span>
+    <span class="dot" style="width:${6*s}px;height:${6*s}px"></span>
+    <span class="mx" style="font-size:${10.5*s}px;letter-spacing:${3.2*s}px;padding-left:${8*s}px">MAXIM</span>
+    <span class="rk" style="font-size:${10.5*s}px;letter-spacing:${3.2*s}px;padding-left:${9*s}px;border-left-width:1px">RANKING</span>
+  </div>`;
+}
+function covImg(src){return `<img crossorigin="anonymous" src="${src}" style="width:100%;height:100%;object-fit:cover;object-position:center 15%">`}
+
+/* ---------- WIDE (pc / mob) ---------- */
+function wide(type,W,H){
+  const f=H/300, isRk=type==='rk', accent=isRk?'#f4c64e':'#33e0b5';
+  const bg=isRk?'#0a0a0d':'#0a0d0c';
+  const glow=isRk
+    ?`radial-gradient(85% 120% at 80% 12%,rgba(244,198,78,.22),transparent 56%),linear-gradient(90deg,${bg} 30%,rgba(10,10,13,.35) 100%)`
+    :`radial-gradient(85% 120% at 80% 8%,rgba(51,224,181,.2),transparent 56%),linear-gradient(90deg,${bg} 26%,rgba(10,13,12,.3) 100%)`;
+  const kick=isRk?'WEEKLY RANKING':'NEW THIS WEEK';
+  const title=isRk?`이번 주 <span class="acc">인기 화보</span> 랭킹`:`이번 주 <span class="accm">신간 화보</span>`;
+  const sub=isRk?'가장 많이 본 B컷, 실시간 랭킹':'따끈하게 업데이트된 신상 B컷';
+  let right='';
+  if(isRk){
+    const cw=158*f, ch=250*f, offs=[0,122,214,290,352].map(x=>x*f);
+    const op=[1,.9,.74,.4,.2], bl=[0,.6,1.1,2.2,3].map(b=>b*f), sc=[1,.95,.90,.85,.80];
+    const bd=['#f4c64e','#cfd6de','#d68f5a',null,null];
+    let items='';
+    for(let i=4;i>=0;i--){ const it=RANK[i]; if(!it)continue;
+      const border=bd[i]?`2px solid ${bd[i]}`:`1px solid rgba(255,255,255,.18)`;
+      const glowsh=i===0?`,0 0 ${20*f}px rgba(244,198,78,.45)`:'';
+      items+=`<div style="position:absolute;left:${offs[i]}px;top:50%;z-index:${5-i};width:${cw}px;height:${ch}px;border-radius:${12*f}px;overflow:hidden;border:${border};background:#14141a;box-shadow:0 ${16*f}px ${40*f}px rgba(0,0,0,.6)${glowsh};transform:translateY(-50%) scale(${sc[i]});filter:blur(${bl[i]}px);opacity:${op[i]}">
+        ${covImg(cover(it))}<div class="cg" style="background:linear-gradient(to top,rgba(6,6,9,.55),transparent 50%)"></div></div>`;
+    }
+    right=`<div style="position:absolute;right:${120*f}px;top:50%;transform:translateY(-50%);width:${520*f}px;height:${250*f}px;z-index:2">${items}</div>`;
+  }else{
+    const cw=138*f, ch=250*f;
+    const nCov=W<800?4:5;
+    let items='';
+    NEW.slice(0,nCov).forEach((it,i)=>{
+      const isMore=i===nCov-1 && NEW.length>=nCov;
+      items+=`<div style="width:${cw}px;height:${ch}px;border-radius:${11*f}px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.16);background:#14141a;box-shadow:0 ${12*f}px ${30*f}px rgba(0,0,0,.5)">
+        ${covImg(cover(it))}<div class="cg" style="background:linear-gradient(to top,rgba(6,9,8,.5),transparent 46%)"></div>
+        ${isMore?`<div style="position:absolute;inset:0;background:linear-gradient(to right,transparent 12%,rgba(10,13,12,.5) 55%,rgba(10,13,12,.97) 100%)"></div><div class="gsans" style="position:absolute;top:50%;right:${16*f}px;transform:translateY(-50%);text-align:right;color:#33e0b5;line-height:1.15;text-shadow:0 2px 8px #000"><div style="font-size:${30*f}px">＋</div><div style="font-size:${14*f}px">더보기</div></div>`:''}
+      </div>`;
+    });
+    right=`<div style="position:absolute;right:${34*f}px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:${13*f}px;z-index:2">${items}</div>`;
+  }
+  return `<div class="ban" style="width:${W}px;height:${H}px;background:${bg}">
+    <div style="position:absolute;inset:0;background:${glow}"></div>
+    <div style="position:absolute;left:${56*f}px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;z-index:3">
+      <div style="margin-bottom:${22*f}px;transform:scale(${f});transform-origin:left center">${logo(1)}</div>
+      <div class="gsans" style="font-size:${16*f}px;letter-spacing:${3*f}px;color:${accent}">${kick}</div>
+      <div class="gsans" style="font-size:${44*f}px;letter-spacing:${-1.4*f}px;line-height:1.08;margin-top:${13*f}px">${title}</div>
+      <div class="gsm" style="font-size:${16*f}px;color:rgba(255,255,255,.6);margin-top:${13*f}px">${sub}</div>
+    </div>
+    ${right}
+  </div>`;
+}
+
+/* ---------- HEAD MOBILE (645x450) : centered text top + covers row ---------- */
+function hmob(type,W,H){
+  const isRk=type==='rk', accent=isRk?'#f4c64e':'#33e0b5', bg=isRk?'#0a0a0d':'#0a0d0c';
+  const glow=isRk?`radial-gradient(90% 60% at 50% 0,rgba(244,198,78,.24),transparent 60%),${bg}`:`radial-gradient(90% 60% at 50% 0,rgba(51,224,181,.22),transparent 60%),${bg}`;
+  const kick=isRk?'WEEKLY RANKING':'NEW THIS WEEK';
+  const title=isRk?`이번 주 <span class="acc">인기 화보</span> 랭킹`:`이번 주 <span class="accm">신간 화보</span>`;
+  let cards='';
+  const list=isRk?RANK:NEW.slice(0,5);
+  const cw=104,ch=176;
+  list.forEach((it,i)=>{
+    const bd=isRk?['#f4c64e','#cfd6de','#d68f5a',null,null][i]:null;
+    const border=bd?`2px solid ${bd}`:`1px solid rgba(255,255,255,.16)`;
+    const isMore=!isRk&&i===4&&NEW.length>=5;
+    cards+=`<div style="width:${cw}px;height:${ch}px;border-radius:11px;overflow:hidden;position:relative;border:${border};background:#14141a;box-shadow:0 10px 24px rgba(0,0,0,.5)">
+      ${covImg(cover(it))}<div class="cg" style="background:linear-gradient(to top,rgba(6,6,9,.5),transparent 48%)"></div>
+      ${isMore?`<div style="position:absolute;inset:0;background:linear-gradient(to right,transparent,rgba(10,13,12,.96))"></div><div class="gsans" style="position:absolute;top:50%;right:9px;transform:translateY(-50%);text-align:right;color:#33e0b5;text-shadow:0 2px 8px #000"><div style="font-size:22px">＋</div><div style="font-size:11px">더보기</div></div>`:''}</div>`;
+  });
+  return `<div class="ban" style="width:${W}px;height:${H}px;background:${bg}">
+    <div style="position:absolute;inset:0;background:${glow}"></div>
+    <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px">
+      <div style="transform:scale(1.05)">${logo(1)}</div>
+      <div class="gsans" style="font-size:15px;letter-spacing:2.5px;color:${accent}">${kick}</div>
+      <div class="gsans" style="font-size:38px;letter-spacing:-1.2px;text-align:center">${title}</div>
+      <div style="display:flex;gap:11px;justify-content:center;margin-top:4px">${cards}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- SKY (140x600) vertical: brand top, #1/newest hero ---------- */
+function sky(type,W,H){
+  const isRk=type==='rk', accent=isRk?'#f4c64e':'#33e0b5', bg=isRk?'#0a0a0d':'#0a0d0c';
+  const glow=isRk?`radial-gradient(120% 40% at 50% 0,rgba(244,198,78,.3),transparent 62%),${bg}`:`radial-gradient(120% 40% at 50% 0,rgba(51,224,181,.28),transparent 62%),${bg}`;
+  const hero=isRk?RANK[0]:NEW[0];
+  const label=isRk?'이번 주 <span class="acc">1위</span>':'이번 주 <span class="accm">신간</span>';
+  const kick=isRk?'WEEKLY RANKING':'NEW THIS WEEK';
+  const border=isRk?'2px solid #f4c64e':'1px solid rgba(255,255,255,.2)';
+  return `<div class="ban" style="width:${W}px;height:${H}px;background:${bg}">
+    <div style="position:absolute;inset:0;background:${glow}"></div>
+    <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;padding:16px 10px 16px">
+      <div style="transform:scale(.62);transform-origin:top center;margin-bottom:2px">${logo(1)}</div>
+      <div class="gsans" style="font-size:9px;letter-spacing:2px;color:${accent};margin-top:4px">${kick}</div>
+      <div class="gsans" style="font-size:19px;letter-spacing:-.5px;margin-top:6px;text-align:center">${label}</div>
+      <div style="position:relative;width:118px;height:404px;margin-top:12px;border-radius:11px;overflow:hidden;border:${border};background:#14141a;box-shadow:0 14px 34px rgba(0,0,0,.6)${isRk?',0 0 16px rgba(244,198,78,.4)':''}">
+        ${hero?covImg(cover(hero)):''}<div class="cg" style="background:linear-gradient(to top,rgba(6,6,9,.55),transparent 55%)"></div>
+      </div>
+      <div class="gsans" style="margin-top:auto;background:#E60012;color:#fff;width:100%;text-align:center;font-size:12px;padding:9px 0;border-radius:7px">보러가기 ›</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- PORTRAIT (1080x1350) : top text + hero/grid ---------- */
+function portrait(type,W,H){
+  const isRk=type==='rk', accent=isRk?'#f4c64e':'#33e0b5', bg=isRk?'#0a0a0d':'#0a0d0c';
+  const glow=isRk?`radial-gradient(80% 42% at 50% 4%,rgba(244,198,78,.28),transparent 58%),${bg}`:`radial-gradient(80% 42% at 50% 4%,rgba(51,224,181,.26),transparent 58%),${bg}`;
+  const kick=isRk?'WEEKLY RANKING':'NEW THIS WEEK';
+  const title=isRk?`이번 주 <span class="acc">인기 화보</span> 랭킹`:`이번 주 <span class="accm">신간 화보</span>`;
+  const sub=isRk?'가장 많이 본 B컷, 실시간 랭킹':'따끈하게 업데이트된 신상 B컷';
+  let body='';
+  if(isRk){
+    const hero=RANK[0];
+    let rowc='';
+    RANK.slice(1,5).forEach((it,i)=>{
+      const bd=['#cfd6de','#d68f5a',null,null][i];
+      const border=bd?`2px solid ${bd}`:`1px solid rgba(255,255,255,.16)`;
+      rowc+=`<div style="width:205px;height:274px;border-radius:12px;overflow:hidden;position:relative;border:${border};background:#14141a;box-shadow:0 12px 28px rgba(0,0,0,.5)">${covImg(cover(it))}<div class="cg" style="background:linear-gradient(to top,rgba(6,6,9,.5),transparent 50%)"></div></div>`;
+    });
+    body=`<div style="width:396px;height:556px;border-radius:16px;overflow:hidden;position:relative;border:3px solid #f4c64e;background:#14141a;box-shadow:0 20px 50px rgba(0,0,0,.6),0 0 34px rgba(244,198,78,.4)">${hero?covImg(cover(hero)):''}<div class="cg" style="background:linear-gradient(to top,rgba(6,6,9,.55),transparent 52%)"></div></div>
+      <div style="display:flex;gap:18px;justify-content:center;margin-top:22px">${rowc}</div>`;
+  }else{
+    let g='';
+    NEW.slice(0,6).forEach((it,i)=>{
+      const isMore=i===5&&NEW.length>=6;
+      g+=`<div style="width:288px;height:384px;border-radius:14px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.16);background:#14141a;box-shadow:0 14px 32px rgba(0,0,0,.5)">${covImg(cover(it))}<div class="cg" style="background:linear-gradient(to top,rgba(6,9,8,.5),transparent 48%)"></div>
+        ${isMore?`<div style="position:absolute;inset:0;background:linear-gradient(to right,transparent 10%,rgba(10,13,12,.97))"></div><div class="gsans" style="position:absolute;top:50%;right:22px;transform:translateY(-50%);text-align:right;color:#33e0b5;text-shadow:0 2px 8px #000"><div style="font-size:46px">＋</div><div style="font-size:20px">더보기</div></div>`:''}</div>`;
+    });
+    body=`<div style="display:grid;grid-template-columns:repeat(3,288px);gap:18px;justify-content:center">${g}</div>`;
+  }
+  return `<div class="ban" style="width:${W}px;height:${H}px;background:${bg}">
+    <div style="position:absolute;inset:0;background:${glow}"></div>
+    <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:70px 60px">
+      <div style="transform:scale(1.4)">${logo(1)}</div>
+      <div class="gsans" style="font-size:26px;letter-spacing:4px;color:${accent};margin-top:8px">${kick}</div>
+      <div class="gsans" style="font-size:74px;letter-spacing:-2px;text-align:center;line-height:1.1">${title}</div>
+      <div class="gsm" style="font-size:26px;color:rgba(255,255,255,.62);margin-bottom:10px">${sub}</div>
+      ${body}
+    </div>
+  </div>`;
+}
+
+function buildBanner(type,sizeKey){
+  const s=SIZES.find(x=>x.k===sizeKey);
+  if(s.fam==='wide')return wide(type,s.w,s.h);
+  if(s.fam==='hmob')return hmob(type,s.w,s.h);
+  if(s.fam==='sky')return sky(type,s.w,s.h);
+  return portrait(type,s.w,s.h);
+}
+
+function renderPreview(type){
+  const s=SIZES.find(x=>x.k===curSize[type]);
+  const host=document.getElementById('prev_'+type);
+  host.innerHTML=buildBanner(type,curSize[type]);
+  // scale preview to fit ~ max 1000px wide / 520 tall
+  const maxW=Math.min(1000, window.innerWidth-90), maxH=560;
+  const sc=Math.min(1, maxW/s.w, maxH/s.h);
+  host.style.transform='scale('+sc+')';
+  host.parentElement.style.height=(s.h*sc+2)+'px';
+  document.getElementById('dlhint_'+type).textContent=s.w+'×'+s.h+' PNG로 저장';
+}
+function renderBoth(){renderPreview('rk');renderPreview('nw');}
+
+function buildTabs(type){
+  const t=document.getElementById('tabs_'+type); t.innerHTML='';
+  SIZES.forEach(s=>{const b=document.createElement('div');b.className='tab'+(curSize[type]===s.k?' on':'');b.textContent=s.label;
+    b.onclick=()=>{curSize[type]=s.k;[...t.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');renderPreview(type);};
+    t.appendChild(b);});
+}
+
+async function download(type){
+  const s=SIZES.find(x=>x.k===curSize[type]);
+  const holder=document.getElementById('stageHolder');
+  holder.innerHTML=buildBanner(type,curSize[type]);
+  const node=holder.firstElementChild;
+  await document.fonts.ready;
+  await new Promise(r=>setTimeout(r,120)); // let images settle
+  const canvas=await html2canvas(node,{scale:2,useCORS:true,backgroundColor:null,width:s.w,height:s.h,logging:false});
+  // downscale to exact size
+  const out=document.createElement('canvas');out.width=s.w;out.height=s.h;
+  out.getContext('2d').drawImage(canvas,0,0,s.w,s.h);
+  const a=document.createElement('a');
+  a.download=(type==='rk'?'ranking':'new')+'_'+s.w+'x'+s.h+'.png';
+  a.href=out.toDataURL('image/png'); a.click();
+  holder.innerHTML='';
+}
+
+buildTabs('rk');buildTabs('nw');
+loadData();
+window.addEventListener('resize',renderBoth);
+</script>
+</body></html>

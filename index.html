@@ -84,6 +84,7 @@ select,input,button{font-family:inherit}
   .evText{min-width:0!important;width:100%;text-align:center}
   .evCta{width:100%;justify-content:center!important}
   .evCard{width:74px!important}
+  .evSub{white-space:pre-line}
 }
 @keyframes evSweep{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 @keyframes evGlow{0%,100%{opacity:.45}50%{opacity:.9}}
@@ -223,7 +224,7 @@ select,input,button{font-family:inherit}
       <div class="evText" style="flex:1;min-width:220px">
         <span class="evKickInline" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;border:1px solid rgba(230,0,18,.6);background:rgba(230,0,18,.16);color:#ff9aa0;font-size:10px;font-weight:900;letter-spacing:1.4px">{{ ev.kicker }}</span>
         <div style="font-size:clamp(18px,2.1vw,25px);font-weight:900;letter-spacing:-.6px;line-height:1.15;margin-top:9px;text-wrap:balance">{{ ev.title }}</div>
-        <div style="font-size:13px;color:rgba(255,255,255,.74);margin-top:7px;font-weight:600;line-height:1.5">{{ ev.sub }}</div>
+        <div class="evSub" style="font-size:13px;color:rgba(255,255,255,.74);margin-top:7px;font-weight:600;line-height:1.5">{{ ev.sub }}</div>
       </div>
 
       <div class="evCta" style="display:flex;align-items:center;gap:16px;flex:0 0 auto">
@@ -1172,7 +1173,7 @@ class Component extends DCLogic {
     }
 
     return {show:'block',bg:W[bgId]?(W[bgId].wide||W[bgId].img||''):'',
-      padY:mob?'16px 0':'22px 0',
+      padY:mob?'16px':'22px',
       wrap:mob?'wrap':'nowrap',
       divShow:mob?'none':'block',
       pitchShow:mob?'none':'block',

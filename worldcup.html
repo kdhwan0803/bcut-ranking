@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://i.ibb.co/WpB1gcLw/opt.webp">
 <meta property="og:url" content="https://bcutrank.com/worldcup.html">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 <script>(function(){try{var t=localStorage.getItem('bcut_theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0M1DPCT33G"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0M1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
@@ -49,6 +49,11 @@ button{font-family:inherit}
 @keyframes logoHover{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.18) rotate(-8deg)}60%{transform:scale(.97) rotate(4deg)}100%{transform:scale(1.08) rotate(0)}}
 .logo>span:first-child{animation:logoBeat 7s ease-in-out infinite}
 .logo:hover>span:first-child{animation:logoHover .5s cubic-bezier(.3,1.4,.5,1) forwards}
+@keyframes bcTick{0%{opacity:1}18%{opacity:.15}55%{opacity:1}72%{opacity:.55}100%{opacity:1}}
+@keyframes bcRec{0%{opacity:1}22%{opacity:.2}38%{opacity:1}54%{opacity:.25}100%{opacity:1}}
+@keyframes bcScan{0%{transform:translateY(0);opacity:0}15%{opacity:.95}100%{transform:translateY(34px);opacity:0}}
+.bcScan{position:absolute;left:0;right:0;top:0;height:2px;background:var(--acc);box-shadow:0 0 12px rgba(230,0,18,.9);opacity:0;pointer-events:none}
+#bcLogo:hover .bcScan{animation:bcScan .85s linear}
 </style>
 </helmet>
 
@@ -56,8 +61,15 @@ button{font-family:inherit}
 
   <header style="position:sticky;top:0;z-index:60;background:var(--bg0);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;gap:22px">
-      <a href="index.html" class="logo" style="display:flex;align-items:center;gap:9px">
-        <span style="display:block;font-size:19px;font-weight:900;letter-spacing:-.4px;color:var(--txt);white-space:nowrap;transform-origin:50% 55%;text-shadow:var(--logoShadow)">MAXIM <span style="color:var(--acc)">B컷</span></span>
+      <a href="index.html" id="bcLogo" title="MAXIM B컷" style="display:flex;align-items:center;gap:9px">
+        <span style="position:relative;display:block;padding:5px 10px 5px 11px;border:1px solid var(--w5);background:var(--w1);overflow:hidden">
+          <span style="position:absolute;top:-1px;left:-1px;width:9px;height:9px;border-top:2px solid var(--acc);border-left:2px solid var(--acc);animation:bcTick .7s ease-out both"></span>
+          <span style="position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-bottom:2px solid var(--acc);border-right:2px solid var(--acc);animation:bcTick .7s ease-out .14s both"></span>
+          <span style="display:block;font-family:Anton,'Pretendard',sans-serif;font-size:24px;line-height:1;letter-spacing:-.4px;color:var(--txt)">Bcut</span>
+          <span class="bcScan"></span>
+        </span>
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:bcRec 1.6s ease-out both;flex:0 0 auto"></span>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:var(--mut);padding-left:8px">MAXIM</span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:var(--acc2);padding-left:9px;border-left:1px solid var(--w5)">PLAY</span>
       </a>
       <nav style="display:flex;gap:2px">

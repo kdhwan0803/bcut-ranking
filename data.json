@@ -6609,5 +6609,21 @@
   "featuredModel": "예하",
   "featuredModels": [],
   "featuredBg": "linear-gradient(120deg,#16161a,#5a0a12)",
-  "kakaoUrl": ""
+  "kakaoUrl": "",
+  "event": {
+    "enabled": true,
+    "works": [
+      "2114",
+      "2130",
+      "2110",
+      "2106"
+    ],
+    "kicker": "MAXIM 7월호 표지 · B컷 단독",
+    "title": "브라운더스트2 × MAXIM, 표지 미공개컷",
+    "sub": "화제의 성인 RPG 코스프레 표지에서 못 본 컷 — 김연지·윤설화·바비앙·채솔, 금·토·일 4연속",
+    "pitch": "구독하면 4편 전부",
+    "ctaLabel": "구독하고 먼저 보기",
+    "start": "2026-08-06",
+    "end": "2026-08-10"
+  }
 }

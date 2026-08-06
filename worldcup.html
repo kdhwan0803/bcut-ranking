@@ -262,7 +262,7 @@ class Component extends DCLogic {
   toggleTheme(){this.applyTheme(this.state.theme==='dark'?'light':'dark');}
 
   async load(){
-    for(const p of ['data.json','./data.json','/data.json']){
+    for(const p of ['data.json','./data.json','/data.json','uploads/data-2c882565.json','data-2c882565.json','uploads/data.json','./uploads/data.json']){
       try{const r=await fetch(p,{cache:'no-store'});if(!r.ok)continue;const d=await r.json();
         const pool=Object.keys(d.works||{}).filter(id=>d.works[id].img);
         this.setState({D:d,pool,size:Math.min(32,this.pow2(pool.length))});this.loadGlobal();return;

@@ -1,0 +1,103 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAXIM B컷 · 주간 데이터 리포트</title>
+<meta name="robots" content="noindex">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg1:#f6f6f8;--bg2:#eeeef2;--txt:#111114;--mut:#6c6c76;--line:rgba(0,0,0,.1);--acc:#E60012;--acc2:#c9000f}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg1);color:var(--txt);font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header{background:var(--bg);border-bottom:1px solid var(--line)}
+header .wrap{height:64px;display:flex;align-items:center;gap:14px}
+.logo{font-family:Anton,sans-serif;font-size:22px;border:1px solid rgba(0,0,0,.2);padding:3px 9px}
+.htitle{font-size:16px;font-weight:900;letter-spacing:-.3px}
+.hdate{margin-left:auto;font-size:12.5px;color:var(--mut);font-weight:700}
+h2{font-size:16px;font-weight:900;letter-spacing:-.3px;margin:30px 0 14px;display:flex;align-items:center;gap:9px}
+h2 .en{font-size:10px;font-weight:800;letter-spacing:2px;color:var(--mut)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:16px}
+.tile .l{font-size:11.5px;color:var(--mut);font-weight:700}
+.tile .v{font-size:26px;font-weight:900;letter-spacing:-1px;margin-top:6px;line-height:1.05}
+.tile .s{font-size:11.5px;color:var(--acc2);font-weight:800;margin-top:4px}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:8px 6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rrow,.mrow{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:10px}
+.rrow:hover,.mrow:hover{background:var(--bg1)}
+.rnum{width:26px;text-align:center;font-weight:900;font-size:17px;color:var(--acc2)}
+.rth,.mth{width:38px;height:52px;border-radius:6px;overflow:hidden;background:var(--bg2);flex:0 0 auto}
+.rth img,.mth img{width:100%;height:100%;object-fit:cover;display:block}
+.rinfo,.minfo{flex:1;min-width:0}
+.rt,.mt{font-weight:800;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm,.mm{color:var(--acc2);font-weight:700;font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rmove,.mdelta{font-size:13px;font-weight:800;flex:0 0 auto;text-align:right}
+.mrank{display:block;font-size:10.5px;color:var(--mut);font-weight:700;margin-top:2px}
+.empty{color:var(--mut);font-size:13px;padding:16px 12px}
+.subh{font-size:12.5px;font-weight:800;color:var(--mut);padding:6px 12px 2px}
+.brow{display:flex;align-items:center;gap:12px;padding:7px 12px}
+.bname{width:42%;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btrack{flex:1;height:12px;background:var(--bg2);border-radius:99px;overflow:hidden}
+.bfill{height:100%;background:linear-gradient(90deg,#ff5a63,#E60012);border-radius:99px}
+.bval{width:60px;text-align:right;font-size:12.5px;font-weight:800}
+.note{color:var(--mut);font-size:12px;margin-top:10px;line-height:1.7}
+footer{color:var(--mut);font-size:12px;text-align:center;padding:36px 0 50px;line-height:1.8}
+#load{padding:60px 0;text-align:center;color:var(--mut)}
+@media(max-width:720px){.tiles{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+</style></head><body>
+<header><div class="wrap"><span class="logo">Bcut</span><span class="htitle">주간 데이터 리포트</span><span class="hdate" id="hdate"></span></div></header>
+<div class="wrap"><div id="app"><div id="load">데이터 불러오는 중…</div></div></div>
+<script>
+const esc=s=>(''+(s==null?'':s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+(async function(){
+ let d;
+ for(const u of ['data.json','./data.json','/data.json']){try{const r=await fetch(u,{cache:'no-store'});if(r.ok){d=await r.json();break;}}catch(e){}}
+ if(!d){document.getElementById('load').textContent='data.json을 불러오지 못했어요. 이 페이지가 bcutrank.com에 올라가 있어야 동작합니다.';return;}
+ const W=d.works||{}, PTS=d.points||[100,90,80,70,60,50,40,30,20,10];
+ const title=id=>(W[id]&&W[id].title)||('화보 '+id);
+ const model=id=>{const m=W[id]&&W[id].models;return (m&&m[0])||'—';};
+ const img=id=>(W[id]&&W[id].img)||'';
+ let wks=(d.weeks||[]).filter(w=>w.ranking&&w.ranking.length).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+ const latest=wks[wks.length-1], prev=wks[wks.length-2];
+ const lr={},pr={}; latest.ranking.forEach((id,i)=>lr[id]=i+1); if(prev)prev.ranking.forEach((id,i)=>pr[id]=i+1);
+ document.getElementById('hdate').textContent=(latest.label||'')+' · '+(latest.date||'')+' 기준';
+ // movers
+ const moves=Object.keys(lr).filter(id=>id in pr).map(id=>[id,pr[id]-lr[id]]);
+ const ups=moves.filter(m=>m[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ const downs=moves.filter(m=>m[1]<0).sort((a,b)=>a[1]-b[1]).slice(0,5);
+ const news=latest.ranking.filter(id=>!(id in pr)).slice(0,8);
+ // longrun
+ const appear={}; wks.forEach(wk=>wk.ranking.forEach(id=>appear[id]=(appear[id]||0)+1));
+ const longrun=Object.entries(appear).sort((a,b)=>b[1]-a[1]).slice(0,6);
+ // model power
+ const mp={}; wks.forEach(wk=>wk.ranking.forEach((id,i)=>{if(i<PTS.length)(W[id]&&W[id].models||[]).forEach(m=>{if(m)mp[m]=(mp[m]||0)+PTS[i];});}));
+ const mpow=Object.entries(mp).sort((a,b)=>b[1]-a[1]).slice(0,8);
+ // catalog
+ const tot=Object.keys(W).length; let sub=0,coin=0,b19=0,vid=0; const mods=new Set();
+ Object.values(W).forEach(w=>{if(w.buy==='구독')sub++;if(w.buy==='코인')coin++;if(w.b19)b19++;if(w.vid)vid++;(w.models||[]).forEach(m=>mods.add(m));});
+ const arrow=id=>{if(!(id in pr))return '<span style="color:var(--acc);font-weight:800">NEW</span>';const dd=pr[id]-lr[id];if(dd>0)return '<span style="color:#1a9e5c;font-weight:800">▲'+dd+'</span>';if(dd<0)return '<span style="color:var(--acc);font-weight:800">▼'+(-dd)+'</span>';return '<span style="color:var(--mut)">–</span>';};
+ const rtop=(id,i)=>`<div class="rrow"><div class="rnum">${i}</div><div class="rth"><img src="${esc(img(id))}" loading="lazy"></div><div class="rinfo"><div class="rt">${esc(title(id))}</div><div class="rm">${esc(model(id))}</div></div><div class="rmove">${arrow(id)}</div></div>`;
+ const mrow=(id,right)=>`<div class="mrow"><div class="mth"><img src="${esc(img(id))}" loading="lazy"></div><div class="minfo"><div class="mt">${esc(title(id))}</div><div class="mm">${esc(model(id))}</div></div><div class="mdelta">${right}</div></div>`;
+ const movel=(items,pos)=>items.length?items.map(([id,dl])=>mrow(id,`<span style="color:${pos?'#1a9e5c':'var(--acc)'}">${pos?'▲':'▼'}${Math.abs(dl)}<span class="mrank">${pr[id]||'-'}→${lr[id]}</span></span>`)).join(''):'<div class="empty">해당 없음</div>';
+ const newl=()=>news.length?news.map(id=>mrow(id,`<span style="color:var(--acc)">#${lr[id]}</span>`)).join(''):'<div class="empty">신규 없음</div>';
+ const bars=(items,unit,mx,label)=>items.map(([k,v])=>`<div class="brow"><div class="bname">${esc(label?label(k):k)}</div><div class="btrack"><div class="bfill" style="width:${Math.round(v/mx*100)}%"></div></div><div class="bval">${Math.round(v)}${unit}</div></div>`).join('');
+ const html=`
+ <div class="tiles">
+ <div class="tile"><div class="l">총 화보</div><div class="v">${tot}<span style="font-size:14px">편</span></div><div class="s">구독 ${sub} · 코인 ${coin}</div></div>
+ <div class="tile"><div class="l">총 모델</div><div class="v">${mods.size}<span style="font-size:14px">명</span></div><div class="s">집계 ${wks.length}주차</div></div>
+ <div class="tile"><div class="l">이번 주 1위</div><div class="v" style="font-size:18px">${esc(model(latest.ranking[0]))}</div><div class="s">${esc(title(latest.ranking[0]).slice(0,16))}</div></div>
+ <div class="tile"><div class="l">19금 · 영상 포함</div><div class="v">${b19}<span style="font-size:14px"> / </span>${vid}</div><div class="s">전체 ${tot}편 중</div></div>
+ </div>
+ <h2>이번 주 인기 랭킹 TOP 10 <span class="en">WEEKLY RANKING</span></h2>
+ <div class="card">${latest.ranking.slice(0,10).map((id,i)=>rtop(id,i+1)).join('')}</div>
+ <h2>순위 변동 <span class="en">MOVERS · 지난주 대비</span></h2>
+ <div class="two"><div class="card"><div class="subh">📈 급상승</div>${movel(ups,true)}</div><div class="card"><div class="subh">📉 급하락</div>${movel(downs,false)}</div></div>
+ <h2>신규 진입 <span class="en">NEW ENTRY</span></h2><div class="card">${newl()}</div>
+ <h2>롱런 화보 <span class="en">LONG-RUN · 등장 주차수</span></h2>
+ <div class="card" style="padding:14px 6px">${bars(longrun,'주',longrun[0]?longrun[0][1]:1,id=>title(id)+' · '+model(id))}</div>
+ <h2>모델 파워랭킹 <span class="en">MODEL POWER · 누적 포인트</span></h2>
+ <div class="card" style="padding:14px 6px">${bars(mpow,'pt',mpow[0]?mpow[0][1]:1)}</div>
+ <div class="note">※ 파워랭킹 = 매주 각 모델 화보가 TOP10에서 얻은 포인트(1위 100…10위 10)를 ${wks.length}주간 누적 합산.</div>
+ <footer><b style="color:var(--txt)">MAXIM B컷</b> · 주간 데이터 리포트 (관리자용) · 열 때마다 최신 자동 갱신<br>랭킹·인기(투표) 데이터 기준</footer>`;
+ document.getElementById('app').innerHTML=html;
+})();
+</script></body></html>

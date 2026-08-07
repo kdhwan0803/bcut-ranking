@@ -16,15 +16,12 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0M1DPCT33G"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0M1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
 <script src="./support.js"></script>
-<script src="./seo.js" defer></script>
-<meta name="naver-site-verification" content="4e596c1ed9dab5c9c349eec19ec6eb18b8bfb58e" />
 </head>
 <body>
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MAXIM B컷 · RANKING</title>
-<link rel="canonical" href="https://bcutrank.com/">
 
 <style>
 :root{--acc:#E60012;--acc2:#ff5a63;
@@ -116,6 +113,7 @@ select,input,button{font-family:inherit}
         <a href="#next" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">신작</a>
         <a href="#sub" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">구독</a>
         <a href="#search" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">찾아보기</a>
+        <a href="#models" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">모델별</a>
       </nav>
       <div style="flex:1"></div>
       <button onClick="{{ toggleTheme }}" title="{{ themeLabel }}" aria-label="{{ themeLabel }}" style="display:flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background-color:var(--w1);color:var(--txt);font-size:12.5px;font-weight:700;line-height:1;cursor:pointer;flex:0 0 auto;white-space:nowrap"><span style="font-size:14px;line-height:1">{{ themeIcon }}</span>{{ themeName }}</button>
@@ -682,6 +680,44 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
+    <section id="models" style="display:{{ mdShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">모델별로 보기</h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">BY MODEL</span>
+        <a href="models/models.html" style="margin-left:auto;font-size:12.5px;font-weight:800;color:var(--acc2);white-space:nowrap">전체 모델 →</a>
+      </div>
+      <div style="position:relative;margin-bottom:22px">
+        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:10px">
+          <sc-for list="{{ mdChips }}" as="c" hint-placeholder-count="4">
+            <button onClick="{{ c.go }}" style="flex:0 0 auto;display:flex;align-items:center;gap:11px;border:1px solid transparent;border-color:{{ c.line }};border-radius:12px;padding:11px 16px 11px 11px;cursor:pointer;transition:transform .18s,box-shadow .18s;background:{{ c.bg }}" style-hover="transform:translateY(-2px);box-shadow:0 0 0 1px var(--w5)">
+              <span style="width:34px;height:34px;flex:0 0 auto;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;background:{{ c.mBg }};color:{{ c.mFg }}">{{ c.initial }}</span>
+              <span style="text-align:left">
+                <span style="display:block;font-size:13.5px;font-weight:800;white-space:nowrap;color:{{ c.fg }}">{{ c.name }}</span>
+                <span style="display:block;font-size:11px;font-weight:700;margin-top:2px;color:{{ c.sub }}">화보 {{ c.n }}편</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="position:absolute;top:0;right:0;bottom:10px;width:70px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
+      </div>
+      <div style="position:relative">
+      <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr))">
+        <sc-for list="{{ mdWorks }}" as="p" hint-placeholder-count="0">
+          <div onClick="{{ p.open }}" style="cursor:pointer">
+            <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
+              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+            </div>
+            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t3)">{{ p.title }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:170px;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--bg0) 88%);display:{{ mdMoreShow }}"></div>
+      </div>
+      <div style="text-align:center;margin-top:-30px;position:relative;z-index:2;display:{{ mdMoreShow }}">
+        <button onClick="{{ mdMore }}" style="background:var(--w3);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:13px 30px;border-radius:8px;cursor:pointer">{{ mdMoreLabel }}</button>
+      </div>
+    </section>
+
     <section id="creators" style="display:{{ crShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">작가별로 보기</h2>
@@ -871,7 +907,7 @@ const BLANK='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICT
 const MVC={up:['#12b76a','rgba(18,183,106,.16)'],down:['#f04438','rgba(240,68,56,.16)'],new:['#fff','#7a5af8'],same:['#b0b0b8','var(--w3)']};
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false};
 
   componentDidMount(){
     this.load();
@@ -1242,11 +1278,11 @@ class Component extends DCLogic {
         toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
         ev:{show:'none',items:[],clock:[]},
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
-        creators:[],creatorWorks:[],hof:[],upcoming:[],periods:[],filters:[],sorts:[],
+        creators:[],creatorWorks:[],mdChips:[],mdWorks:[],hof:[],upcoming:[],periods:[],filters:[],sorts:[],
         feat:{works:[]},modal:null,popup:null,
         recentShow:'none',wishShow:'none',tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',
-        nextShow:'none',featShow:'none',crShow:'none',kakaoShow:'none',hofShow:'none',
-        ddayShow:'none',moreShow:'none',crMoreShow:'none',noticeShow:'none',upcomingShow:'none',
+        nextShow:'none',featShow:'none',crShow:'none',mdShow:'none',kakaoShow:'none',hofShow:'none',
+        ddayShow:'none',moreShow:'none',crMoreShow:'none',mdMoreShow:'none',noticeShow:'none',upcomingShow:'none',
         helpShow:'none',lineShow:'none',tlNavShow:'none',stickyTop:'64px',padX:'26px',
         rankHeading:'',rankSubline:'',q:'',topOpacity:'0',toTop:()=>{},closeModal:()=>{}};
     }
@@ -1303,11 +1339,11 @@ class Component extends DCLogic {
       sorts:[],modelOpts:[],yearOpts:[],modelSel:'all',yearSel:'all',resultCount:'',
       onModel:()=>{},onYear:()=>{},
       prevSlide:()=>{},nextSlide:()=>{},
-      timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],creators:[],creatorWorks:[],
+      timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],creators:[],creatorWorks:[],mdChips:[],mdWorks:[],
       feat:{works:[],name:'',img:BLANK,blur:'none',open:()=>{}},filters:[],periods:[],
-      dday:'',ddayDate:'',moreLabel:'',crMoreLabel:'',more:()=>{},crMore:()=>{},
-      tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',nextShow:'none',featShow:'none',crShow:'none',kakaoShow:'none',
-      ddayShow:'none',moreShow:'none',crMoreShow:'none',q:S.q,
+      dday:'',ddayDate:'',moreLabel:'',crMoreLabel:'',mdMoreLabel:'',more:()=>{},crMore:()=>{},mdMore:()=>{},
+      tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',nextShow:'none',featShow:'none',crShow:'none',mdShow:'none',kakaoShow:'none',
+      ddayShow:'none',moreShow:'none',crMoreShow:'none',mdMoreShow:'none',q:S.q,
       rankHeading:S.err||'랭킹 불러오는 중…',rankSubline:''
     });
     if(!D)return base;
@@ -1336,7 +1372,7 @@ class Component extends DCLogic {
     base.spotDots=sp.map((_,i)=>({w:i===act?'26px':'12px',bg:i===act?'var(--acc)':'var(--t1)',go:()=>this.goSlide(i)}));
 
     /* 칩 */
-    base.chips=[['#ranking','이번 주 랭킹'],['#next','신작'],['#sub','구독 화보'],['#creators','작가별'],['#search','찾아보기'],['worldcup.html','이상형 월드컵']]
+    base.chips=[['#ranking','이번 주 랭킹'],['#next','신작'],['#sub','구독 화보'],['#creators','작가별'],['#models','모델별'],['#search','찾아보기'],['worldcup.html','이상형 월드컵']]
       .map(c=>({href:c[0],label:c[1],bg:c[0].indexOf('월드컵')>=0?'var(--acc)':'var(--w1)',fg:c[0].indexOf('월드컵')>=0?'#fff':'var(--t3)'}));
 
     /* 랭킹 */
@@ -1603,6 +1639,27 @@ class Component extends DCLogic {
       const cw=byC[sel];
       base.creatorWorks=cw.slice(0,S.cshow).map(id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),open:()=>this.openWork(id)}));
       if(cw.length>S.cshow){base.crMoreShow='block';base.crMoreLabel='화보 '+Math.min(10,cw.length-S.cshow)+'개 더 보기';base.crMore=()=>this.setState({cshow:S.cshow+10});}}
+
+    /* 모델별 */
+    const byM={};Object.keys(W).forEach(id=>{(W[id].models||[]).forEach(m=>{m=(m||'').trim();if(!m)return;(byM[m]=byM[m]||[]).push(id);});});
+    let ms=Object.keys(byM).sort((a,b)=>byM[b].length-byM[a].length||a.localeCompare(b));
+    if(!this._mdOrder||this._mdOrder.length!==ms.length||this._mdOrder.some(m=>!byM[m])){
+      const a=ms.slice();
+      if(!this._admin)for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}
+      this._mdOrder=a;}
+    ms=this._mdOrder;
+    if(ms.length){const sel=S.model&&byM[S.model]?S.model:ms[0];
+      base.mdShow='block';
+      base.mdChips=ms.map(m=>{const on=m===sel;
+        return {name:m,n:byM[m].length,initial:(m||'?').trim().charAt(0),
+          bg:on?'linear-gradient(130deg,rgba(230,0,18,.22),var(--w2))':'var(--w1)',
+          line:on?'rgba(230,0,18,.45)':'var(--line)',
+          fg:on?'var(--txt)':'var(--t3)',sub:on?'var(--acc2)':'var(--mut)',
+          mBg:on?'var(--acc)':'var(--w3)',mFg:on?'#fff':'var(--t2)',
+          go:()=>this.setState({model:m,mshow:10})};});
+      const mw=byM[sel];
+      base.mdWorks=mw.slice(0,S.mshow).map(id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),open:()=>this.openWork(id)}));
+      if(mw.length>S.mshow){base.mdMoreShow='block';base.mdMoreLabel='화보 '+Math.min(10,mw.length-S.mshow)+'개 더 보기';base.mdMore=()=>this.setState({mshow:S.mshow+10});}}
 
     /* 카톡 */
     if((D.kakaoUrl||'').trim()){base.kakaoShow='block';base.kakaoUrl=D.kakaoUrl.trim();}

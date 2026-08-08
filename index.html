@@ -94,9 +94,9 @@ select,input,button{font-family:inherit}
   .rkSmall{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 }
 /* TOP3 은은한 무빙 */
-@keyframes rkBadgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}}
+@keyframes rkBadgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 @keyframes rkGoldGlow{0%,100%{box-shadow:0 0 0 2px rgba(255,207,70,.5),0 8px 22px rgba(0,0,0,.14)}50%{box-shadow:0 0 0 5px rgba(255,207,70,.92),0 12px 34px rgba(255,176,32,.48)}}
-.rkPulse{animation:rkBadgePulse 1.9s ease-in-out infinite;transform-origin:center;will-change:transform}
+.rkPulse{animation:rkBadgePulse 1.9s ease-in-out infinite;transform-origin:left bottom;will-change:transform}
 .rkGold{animation:rkGoldGlow 2.4s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.rkPulse,.rkGold{animation:none!important}}
 @keyframes evSweep{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
@@ -385,37 +385,34 @@ select,input,button{font-family:inherit}
       <div style="display:{{ wRankShow }};padding:16px 0 26px">
         <div class="rkBig">
           <sc-for list="{{ bigRows }}" as="r" hint-placeholder-count="0">
-            <div onClick="{{ r.open }}" class="{{ r.cardCls }}" style="cursor:pointer;border-radius:12px;overflow:hidden;background:var(--w1);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
-              <div style="position:relative;aspect-ratio:2/3;overflow:hidden;background:var(--bg2)">
-                <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
-                <div class="{{ r.rkAnim }}" style="position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:900;letter-spacing:-.2px;padding:4px 9px;border-radius:8px;background:{{ r.rkBg }};color:{{ r.rkFg }};box-shadow:0 3px 10px rgba(0,0,0,.3);animation-delay:{{ r.animDelay }}">{{ r.rkLabel }}</div>
-                <div style="position:absolute;top:8px;right:8px;font-size:10px;font-weight:900;padding:3px 7px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
-                <div style="position:absolute;bottom:8px;left:8px;display:flex;gap:4px">
-                  <span style="font-size:9px;font-weight:900;letter-spacing:.6px;padding:3px 7px;border-radius:3px;display:{{ r.origShow }};background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</span>
-                  <span style="font-size:9px;font-weight:900;letter-spacing:.4px;padding:3px 6px;border-radius:3px;display:{{ r.vidShow }};background:rgba(10,10,12,.82);color:#fff">▶ 영상</span>
+            <div onClick="{{ r.open }}" class="{{ r.cardCls }}" style="position:relative;cursor:pointer;border-radius:12px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
+              <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
+              <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,9,.94) 0%,rgba(6,6,9,.55) 24%,rgba(6,6,9,.05) 50%,transparent 68%)"></div>
+              <div style="position:absolute;top:9px;left:11px;font-size:16px;display:{{ r.crownShow }};filter:drop-shadow(0 2px 5px rgba(0,0,0,.6))">👑</div>
+              <div style="position:absolute;top:9px;right:9px;font-size:10px;font-weight:900;padding:3px 7px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+ 확인 필요</div>
+              <div style="position:absolute;left:0;right:0;bottom:0;padding:12px 13px 13px;display:flex;align-items:flex-end;gap:9px">
+                <div class="{{ r.rkAnim }}" style="flex:0 0 auto;font-weight:900;line-height:.78;letter-spacing:-3px;font-size:56px;color:{{ r.numColor2 }};text-shadow:0 3px 14px rgba(0,0,0,.75);animation-delay:{{ r.animDelay }}">{{ r.rank }}</div>
+                <div style="min-width:0;flex:1;padding-bottom:5px">
+                  <div style="font-size:14.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 8px rgba(0,0,0,.7)">{{ r.title }}</div>
+                  <div style="font-size:11.5px;font-weight:700;color:rgba(255,255,255,.78);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 8px rgba(0,0,0,.7)">{{ r.sub }}</div>
                 </div>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+ 확인 필요</div>
-              </div>
-              <div style="padding:11px 12px 13px">
-                <div style="font-size:14px;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
-                <div style="font-size:11.5px;font-weight:700;color:var(--mut);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.sub }}</div>
-                <div style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--acc);color:#fff;font-weight:800;font-size:12px;padding:8px 10px;border-radius:8px">▶ 화보 보기</div>
               </div>
             </div>
           </sc-for>
         </div>
         <div class="rkSmall">
           <sc-for list="{{ smallRows }}" as="r" hint-placeholder-count="0">
-            <div onClick="{{ r.open }}" style="cursor:pointer;border-radius:9px;overflow:hidden;background:var(--w1);border:1px solid var(--line);box-shadow:0 3px 9px rgba(0,0,0,.07);transition:transform .2s" style-hover="transform:translateY(-3px)">
-              <div style="position:relative;aspect-ratio:2/3;overflow:hidden;background:var(--bg2)">
-                <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
-                <div class="{{ r.rkAnim }}" style="position:absolute;top:6px;left:6px;z-index:2;font-size:11px;font-weight:900;padding:2px 7px;border-radius:6px;background:{{ r.rkBg }};color:{{ r.rkFg }};box-shadow:0 2px 8px rgba(0,0,0,.3);animation-delay:{{ r.animDelay }}">{{ r.rkLabel }}</div>
-                <div style="position:absolute;top:6px;right:6px;font-size:8.5px;font-weight:900;padding:2px 5px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:900;letter-spacing:.3px;padding:3px 7px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+</div>
-              </div>
-              <div style="padding:7px 8px 9px">
-                <div style="font-size:11.5px;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
-                <div style="font-size:10px;font-weight:800;color:var(--acc2);margin-top:4px">▶ 보기</div>
+            <div onClick="{{ r.open }}" style="position:relative;cursor:pointer;border-radius:10px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:1px solid var(--line);box-shadow:0 3px 9px rgba(0,0,0,.12);transition:transform .2s" style-hover="transform:translateY(-3px)">
+              <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
+              <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,9,.92) 0%,rgba(6,6,9,.45) 26%,transparent 54%)"></div>
+              <div style="position:absolute;top:6px;right:6px;font-size:8.5px;font-weight:900;padding:2px 5px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:900;letter-spacing:.3px;padding:3px 7px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+</div>
+              <div style="position:absolute;left:0;right:0;bottom:0;padding:8px 9px 9px;display:flex;align-items:flex-end;gap:6px">
+                <div class="{{ r.rkAnim }}" style="flex:0 0 auto;font-weight:900;line-height:.78;letter-spacing:-2px;font-size:34px;color:{{ r.numColor2 }};text-shadow:0 2px 10px rgba(0,0,0,.8);animation-delay:{{ r.animDelay }}">{{ r.rank }}</div>
+                <div style="min-width:0;flex:1;padding-bottom:3px">
+                  <div style="font-size:11px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 6px rgba(0,0,0,.75)">{{ r.title }}</div>
+                </div>
               </div>
             </div>
           </sc-for>
@@ -1506,6 +1503,8 @@ class Component extends DCLogic {
         rkAnim:row.rank<=3?'rkPulse':'',
         animDelay:row.rank===1?'0s':row.rank===2?'.25s':'.5s',
         cardCls:row.rank===1?'rkGold':'',
+        crownShow:row.rank===1?'block':'none',
+        numColor2:row.rank===1?'#ffd24a':row.rank===2?'#eef2f7':row.rank===3?'#f0c79a':'#fff',
         shadow:hov?'0 22px 50px rgba(0,0,0,.7)':'0 8px 24px rgba(0,0,0,.45)',
         lift:hov?'translateY(-10px)':'none',z:hov?'6':'1',ovOpacity:hov?'1':'0',
         origShow:(!isM&&w&&w.buy==='구독')?'inline-block':'none',

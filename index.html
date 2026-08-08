@@ -573,6 +573,26 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
+    <section id="newweek" style="display:{{ recentNewShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">이번 주 공개된 신작</h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">NEW THIS WEEK</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr));gap:14px">
+        <sc-for list="{{ recentNew }}" as="p" hint-placeholder-count="0">
+          <div onClick="{{ p.open }}" style="cursor:pointer">
+            <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
+              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+              <div style="position:absolute;top:8px;left:8px;font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:4px;background:var(--acc);color:#fff">{{ p.cap }}</div>
+              <div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.82);color:#fff;display:{{ p.vidShow }}">▶ 영상</div>
+              <div style="position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:{{ p.subShow }};background:#ffd400;color:#111;font-size:10.5px;font-weight:900;padding:3px 11px;border-radius:4px">구독</div>
+            </div>
+            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
     <section id="next" style="display:{{ nextShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">앞으로 공개될 신작</h2>
@@ -1317,7 +1337,7 @@ class Component extends DCLogic {
         creators:[],creatorWorks:[],mdChips:[],mdWorks:[],hof:[],upcoming:[],periods:[],filters:[],sorts:[],
         feat:{works:[]},modal:null,popup:null,
         recentShow:'none',wishShow:'none',tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',
-        nextShow:'none',featShow:'none',crShow:'none',mdShow:'none',kakaoShow:'none',hofShow:'none',
+        nextShow:'none',recentNewShow:'none',recentNew:[],featShow:'none',crShow:'none',mdShow:'none',kakaoShow:'none',hofShow:'none',
         ddayShow:'none',moreShow:'none',crMoreShow:'none',mdMoreShow:'none',noticeShow:'none',upcomingShow:'none',
         helpShow:'none',lineShow:'none',tlNavShow:'none',stickyTop:'64px',padX:'26px',
         rankHeading:'',rankSubline:'',q:'',topOpacity:'0',toTop:()=>{},closeModal:()=>{}};
@@ -1384,7 +1404,7 @@ class Component extends DCLogic {
       timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],creators:[],creatorWorks:[],mdChips:[],mdWorks:[],
       feat:{works:[],name:'',img:BLANK,blur:'none',open:()=>{}},filters:[],periods:[],
       dday:'',ddayDate:'',moreLabel:'',crMoreLabel:'',mdMoreLabel:'',more:()=>{},crMore:()=>{},mdMore:()=>{},
-      tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',nextShow:'none',featShow:'none',crShow:'none',mdShow:'none',kakaoShow:'none',
+      tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',nextShow:'none',recentNewShow:'none',recentNew:[],featShow:'none',crShow:'none',mdShow:'none',kakaoShow:'none',
       ddayShow:'none',moreShow:'none',crMoreShow:'none',mdMoreShow:'none',q:S.q,
       rankHeading:S.err||'랭킹 불러오는 중…',rankSubline:''
     });
@@ -1593,8 +1613,8 @@ class Component extends DCLogic {
       if(fut.length){base.upcomingShow='block';
         base.upcoming=fut.slice(0,8).map(id=>({img:W[id].img||'',date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub)}));}}
 
-    /* 신작 */
-    const nx=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>=today).sort((a,b)=>W[a].pub.localeCompare(W[b].pub)).slice(0,12);
+    /* 신작 — 앞으로 공개(coming soon) : 오늘 이후 */
+    const nx=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>today).sort((a,b)=>W[a].pub.localeCompare(W[b].pub)).slice(0,12);
     const wish=S.wish||[];
     const wished=id=>wish.includes(id);
     if(nx.length){base.nextShow='block';base.nexts=nx.map(id=>({img:W[id].img||'',blur:this.blurOf(id),
@@ -1602,6 +1622,17 @@ class Component extends DCLogic {
       vidShow:W[id].vid?'block':'none',
       wish:e=>this.toggleWish(id,e),wishIcon:wished(id)?'♥':'♡',
       wishBg:wished(id)?'rgba(230,0,18,.9)':'rgba(10,10,14,.5)',wishFg:'#fff',
+      open:()=>this.openWork(id)}));}
+    /* 이번 주 공개된 신작 (최근 7일, 이미 공개분) */
+    const _p2=n=>String(n).padStart(2,'0');
+    const _wa=new Date(today+'T00:00:00');_wa.setDate(_wa.getDate()-6);
+    const wkAgoStr=_wa.getFullYear()+'-'+_p2(_wa.getMonth()+1)+'-'+_p2(_wa.getDate());
+    const rn=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>=wkAgoStr&&W[id].pub<=today)
+      .sort((a,b)=>W[b].pub.localeCompare(W[a].pub)||(+b-+a)).slice(0,30);
+    if(rn.length){base.recentNewShow='block';base.recentNew=rn.map(id=>({img:W[id].img||'',blur:this.blurOf(id),
+      cap:W[id].pub===today?'오늘 공개':(this.fmt(W[id].pub)+' 공개'),
+      title:this.splitTitle(W[id].title||id).name,
+      subShow:W[id].buy==='구독'?'block':'none',vidShow:W[id].vid?'block':'none',
       open:()=>this.openWork(id)}));}
 
     /* 위시리스트 */
@@ -1826,6 +1857,7 @@ class Component extends DCLogic {
       base.heroShow='none';base.rankingShow='none';if(base.ev)base.ev.show='none';
       base.wishShow='none';base.recentShow='none';base.hallShow='none';base.wcShow='none';base.kakaoShow='none';
       base.nextShow=(V==='new')?base.nextShow:'none';
+      base.recentNewShow=(V==='new')?base.recentNewShow:'none';
       base.featShow=(V==='new')?base.featShow:'none';
       base.subShow=(V==='sub')?base.subShow:'none';
       base.pkgShow=(V==='sub')?base.pkgShow:'none';

@@ -578,18 +578,22 @@ select,input,button{font-family:inherit}
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">이번 주 공개된 신작</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">NEW THIS WEEK</span>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr));gap:14px">
+      <div style="display:grid;grid-template-columns:{{ nwGrid }};gap:14px">
         <sc-for list="{{ recentNew }}" as="p" hint-placeholder-count="0">
-          <div onClick="{{ p.open }}" style="cursor:pointer">
+          <div onClick="{{ p.open }}" style="cursor:pointer;min-width:0">
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
               <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
-              <div style="position:absolute;top:8px;left:8px;font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:4px;background:var(--acc);color:#fff">{{ p.cap }}</div>
-              <div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.82);color:#fff;display:{{ p.vidShow }}">▶ 영상</div>
+              <div style="position:absolute;top:0;left:0;right:0;height:46%;background:linear-gradient(to bottom,rgba(6,6,9,.7),rgba(6,6,9,.2) 55%,transparent);pointer-events:none"></div>
+              <div style="position:absolute;top:8px;left:8px;font-size:10px;font-weight:900;padding:3px 9px;border-radius:5px;background:var(--acc);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);text-shadow:0 1px 2px rgba(0,0,0,.3)">{{ p.cap }}</div>
+              <div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.85);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.5);display:{{ p.vidShow }}">▶ 영상</div>
               <div style="position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:{{ p.subShow }};background:#ffd400;color:#111;font-size:10.5px;font-weight:900;padding:3px 11px;border-radius:4px">구독</div>
             </div>
             <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
           </div>
         </sc-for>
+      </div>
+      <div style="display:{{ nwMoreShow }};justify-content:center;margin-top:18px">
+        <button onClick="{{ nwMore }}" style="border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:13px;font-weight:800;padding:11px 26px;border-radius:999px;cursor:pointer" style-hover="border-color:var(--w5);background:var(--w3)">{{ nwMoreLabel }} ↓</button>
       </div>
     </section>
 
@@ -947,7 +951,7 @@ const BLANK='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICT
 const MVC={up:['#12b76a','rgba(18,183,106,.16)'],down:['#f04438','rgba(240,68,56,.16)'],new:['#fff','#7a5af8'],same:['#b0b0b8','var(--w3)']};
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home'};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9};
 
   componentDidMount(){
     this.load();
@@ -1377,6 +1381,8 @@ class Component extends DCLogic {
       nextW:S.mob?'148px':'176px',
       hallW:S.mob?'136px':'164px',
       gridMin:S.mob?'110px':'148px',
+      nwGrid:S.mob?'repeat(3,1fr)':'repeat(auto-fill,minmax(150px,1fr))',
+      nwMoreShow:'none',nwMoreLabel:'',nwMore:()=>{},
       secGap:S.mob?'46px':'64px',
       h2Size:S.mob?'17px':'19px',
       hdrBg:S.scrolled?(dark?'rgba(7,7,10,.92)':'rgba(255,255,255,.93)'):'var(--hdrTop)',
@@ -1627,13 +1633,15 @@ class Component extends DCLogic {
     const _p2=n=>String(n).padStart(2,'0');
     const _wa=new Date(today+'T00:00:00');_wa.setDate(_wa.getDate()-6);
     const wkAgoStr=_wa.getFullYear()+'-'+_p2(_wa.getMonth()+1)+'-'+_p2(_wa.getDate());
-    const rn=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>=wkAgoStr&&W[id].pub<=today)
-      .sort((a,b)=>W[b].pub.localeCompare(W[a].pub)||(+b-+a)).slice(0,30);
-    if(rn.length){base.recentNewShow='block';base.recentNew=rn.map(id=>({img:W[id].img||'',blur:this.blurOf(id),
+    const rnAll=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>=wkAgoStr&&W[id].pub<=today)
+      .sort((a,b)=>W[b].pub.localeCompare(W[a].pub)||(+b-+a));
+    const rnShown=rnAll.slice(0,S.nwn);
+    if(rnShown.length){base.recentNewShow='block';base.recentNew=rnShown.map(id=>({img:W[id].img||'',blur:this.blurOf(id),
       cap:W[id].pub===today?'오늘 공개':(this.fmt(W[id].pub)+' 공개'),
       title:this.splitTitle(W[id].title||id).name,
       subShow:W[id].buy==='구독'?'block':'none',vidShow:W[id].vid?'block':'none',
-      open:()=>this.openWork(id)}));}
+      open:()=>this.openWork(id)}));
+      if(rnAll.length>S.nwn){base.nwMoreShow='block';base.nwMoreLabel='이번 주 신작 '+(rnAll.length-S.nwn)+'개 더보기';base.nwMore=()=>this.setState({nwn:S.nwn+(S.mob?9:12)});}}
 
     /* 위시리스트 */
     const wl=wish.filter(id=>W[id]);

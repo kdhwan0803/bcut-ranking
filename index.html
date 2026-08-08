@@ -86,6 +86,15 @@ select,input,button{font-family:inherit}
   .evCard{width:48px!important}
   .evSub{white-space:normal}
 }
+/* 랭킹 포디움(1~3위) + 나머지(4~10위) */
+.rkPodium{display:grid;grid-template-columns:repeat(3,minmax(0,320px));justify-content:center;gap:18px}
+.rkRest{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:14px;margin-top:22px}
+@media(max-width:680px){
+  .rkPodium{grid-template-columns:1fr 1fr;gap:10px}
+  .rkPodium>.rk1{grid-column:1/-1}
+  .rkPodium>.rk1 .rkPost{aspect-ratio:16/10!important}
+  .rkRest{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+}
 @keyframes evSweep{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 @keyframes evGlow{0%,100%{opacity:.45}50%{opacity:.9}}
 .evCard{transition:transform .3s cubic-bezier(.2,.8,.3,1),box-shadow .3s}
@@ -332,7 +341,7 @@ select,input,button{font-family:inherit}
         <button onClick="{{ tlNext }}" aria-label="다음 주차" style="position:absolute;right:0;top:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-size:13px;cursor:pointer;display:{{ tlNavShow }};align-items:center;justify-content:center">›</button>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax({{ rankColW }},1fr));align-items:start;gap:{{ rankGap }};padding:16px 0 26px">
+      <div style="display:{{ mRankShow }};grid-template-columns:repeat(auto-fill,minmax({{ rankColW }},1fr));align-items:start;gap:{{ rankGap }};padding:16px 0 26px">
         <sc-for list="{{ modelCards }}" as="m" hint-placeholder-count="0">
           <div onClick="{{ m.open }}" style="cursor:pointer;border-radius:14px;padding:20px 18px 18px;width:100%;background:{{ m.cardBg }};border:1px solid transparent;border-color:{{ m.cardLine }};transition:transform .22s,box-shadow .22s" style-hover="transform:translateY(-6px);box-shadow:0 0 0 1px var(--w5)">
             <div style="display:flex;align-items:center;gap:12px">
@@ -367,27 +376,49 @@ select,input,button{font-family:inherit}
             </div>
           </div>
         </sc-for>
-        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="0">
-          <div onClick="{{ r.open }}" style="cursor:pointer;position:relative;border-radius:12px;overflow:hidden;background:var(--bg2);border:1px solid var(--w3);box-shadow:0 8px 22px rgba(0,0,0,.4);transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px);box-shadow:0 20px 46px rgba(0,0,0,.6)">
-            <div style="position:relative;aspect-ratio:2/3;overflow:hidden">
-              <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
-              <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,11,.95) 3%,rgba(8,8,11,.55) 28%,rgba(8,8,11,.05) 52%,transparent 70%)"></div>
-              <div style="position:absolute;top:0;left:11px;font-weight:900;line-height:.86;letter-spacing:-3px;font-size:{{ rankNumSize }};color:{{ r.badgeColor }};text-shadow:0 3px 16px rgba(0,0,0,.85)">{{ r.rank }}</div>
-              <div style="position:absolute;top:9px;right:9px;font-size:10.5px;font-weight:900;padding:3px 8px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
-              <div style="position:absolute;bottom:118px;left:11px;display:flex;gap:4px">
-                <span style="font-size:9px;font-weight:900;letter-spacing:.6px;padding:3px 7px;border-radius:3px;display:{{ r.origShow }};background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</span>
-                <span style="font-size:9px;font-weight:900;letter-spacing:.4px;padding:3px 6px;border-radius:3px;display:{{ r.vidShow }};background:rgba(10,10,12,.82);color:#fff">▶ 영상</span>
-              </div>
-              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+ 확인 필요</div>
-              <div style="position:absolute;left:0;right:0;bottom:0;padding:40px 12px 12px">
-                <div style="font-size:9.5px;font-weight:800;letter-spacing:.8px;color:var(--t2);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:{{ r.tagShow }}">{{ r.tag }}</div>
-                <div style="font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
-                <div style="font-size:11.5px;color:var(--t2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.sub }}</div>
-                <div style="margin-top:11px;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--acc);color:#fff;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:8px;box-shadow:0 6px 16px rgba(230,0,18,.34)">▶ 화보 보기</div>
+      </div>
+
+      <div style="display:{{ wRankShow }};padding:16px 0 26px">
+        <div class="rkPodium">
+          <sc-for list="{{ topRows }}" as="r" hint-placeholder-count="0">
+            <div class="{{ r.cls }}" onClick="{{ r.open }}" style="cursor:pointer;position:relative;border-radius:14px;overflow:hidden;background:var(--bg2);border:2px solid {{ r.ring }};box-shadow:{{ r.cardGlow }};transition:transform .2s" style-hover="transform:translateY(-6px)">
+              <div class="rkPost" style="position:relative;aspect-ratio:2/3;overflow:hidden">
+                <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,11,.95) 3%,rgba(8,8,11,.55) 28%,rgba(8,8,11,.05) 52%,transparent 70%)"></div>
+                <div style="position:absolute;top:11px;left:11px;z-index:3;display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;background:{{ r.ribbonBg }};color:{{ r.ribbonFg }};font-size:13px;font-weight:900;letter-spacing:-.2px;box-shadow:0 5px 14px rgba(0,0,0,.4)">{{ r.ribbon }}</div>
+                <div style="position:absolute;top:11px;right:11px;font-size:10.5px;font-weight:900;padding:3px 8px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
+                <div style="position:absolute;bottom:120px;left:11px;display:flex;gap:4px">
+                  <span style="font-size:9px;font-weight:900;letter-spacing:.6px;padding:3px 7px;border-radius:3px;display:{{ r.origShow }};background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</span>
+                  <span style="font-size:9px;font-weight:900;letter-spacing:.4px;padding:3px 6px;border-radius:3px;display:{{ r.vidShow }};background:rgba(10,10,12,.82);color:#fff">▶ 영상</span>
+                </div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+ 확인 필요</div>
+                <div style="position:absolute;left:0;right:0;bottom:0;padding:40px 13px 13px">
+                  <div style="font-size:9.5px;font-weight:800;letter-spacing:.8px;color:var(--t2);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:{{ r.tagShow }}">{{ r.tag }}</div>
+                  <div style="font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
+                  <div style="font-size:11.5px;color:var(--t2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.sub }}</div>
+                  <div style="margin-top:11px;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--acc);color:#fff;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:8px;box-shadow:0 6px 16px rgba(230,0,18,.34)">▶ 화보 보기</div>
+                </div>
               </div>
             </div>
-          </div>
-        </sc-for>
+          </sc-for>
+        </div>
+        <div class="rkRest">
+          <sc-for list="{{ restRows }}" as="r" hint-placeholder-count="0">
+            <div onClick="{{ r.open }}" style="cursor:pointer;position:relative;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid var(--w3);box-shadow:0 6px 16px rgba(0,0,0,.35);transition:transform .2s" style-hover="transform:translateY(-4px)">
+              <div style="position:relative;aspect-ratio:2/3;overflow:hidden">
+                <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,11,.94) 4%,rgba(8,8,11,.4) 30%,transparent 56%)"></div>
+                <div style="position:absolute;top:-2px;left:8px;font-weight:900;line-height:.9;letter-spacing:-2px;font-size:{{ restNumSize }};color:{{ r.badgeColor }};text-shadow:0 2px 10px rgba(0,0,0,.85)">{{ r.rank }}</div>
+                <div style="position:absolute;top:7px;right:7px;font-size:9px;font-weight:900;padding:2px 6px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9.5px;font-weight:900;letter-spacing:.3px;padding:4px 8px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+</div>
+                <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 9px 9px">
+                  <div style="font-size:11.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
+                  <div style="font-size:10.5px;font-weight:800;color:var(--acc2);margin-top:4px">▶ 보기</div>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
       </div>
     </section>
 
@@ -1296,6 +1327,8 @@ class Component extends DCLogic {
       rankColW:S.mob?'150px':'216px',
       rankGap:S.mob?'14px 10px':'22px 16px',
       rankNumSize:S.mob?'42px':'54px',
+      restNumSize:S.mob?'30px':'34px',
+      topRows:[],restRows:[],mRankShow:'none',wRankShow:'block',
       mCardW:S.mob?'196px':'224px',
       subW:S.mob?'168px':'212px',
       nextW:S.mob?'148px':'176px',
@@ -1434,7 +1467,10 @@ class Component extends DCLogic {
           streak:st>=2?(st+'주 연속 '+lab):('이번 '+(isMonth?'달':'주')+' '+lab),
           open:()=>this.openModel(row.id)};});
     }
-    base.rows=isM?[]:list.slice(0,10).map(row=>{
+    const RK={1:{ring:'#ffd24a',rb:'👑 1위',rbg:'linear-gradient(90deg,#ffcf46,#ff8a00)',rfg:'#3a2600',glow:'0 0 0 2px #ffd24a,0 18px 46px rgba(255,180,40,.32)'},
+      2:{ring:'#cfd6dd',rb:'2위',rbg:'linear-gradient(90deg,#eef2f6,#c2cbd4)',rfg:'#2a2f36',glow:'0 12px 32px rgba(0,0,0,.5)'},
+      3:{ring:'#e0a173',rb:'3위',rbg:'linear-gradient(90deg,#eabf95,#c07c48)',rfg:'#2e1c0e',glow:'0 12px 32px rgba(0,0,0,.5)'}};
+    const rowsAll=isM?[]:list.slice(0,10).map(row=>{
       const prev=isMonth?(isM?this.monthModelRankAt(row.id,this.prevMonthRef(wi)):this.monthWorkRankAt(row.id,this.prevMonthRef(wi)))
                         :(isM?this.modelRankAt(row.id,wi-1):this.workRankAt(row.id,wi-1));
       const mv=this.movement(row.rank,prev);const c=MVC[mv.k];
@@ -1461,6 +1497,12 @@ class Component extends DCLogic {
         numStroke:row.rank<=3?'0':'1.6px var(--t1)',
         numShadow:row.rank<=3?'0 8px 30px rgba(230,0,18,.45)':'none',
         badgeColor:row.rank<=3?'var(--acc2)':'#fff',
+        cls:row.rank===1?'rk1':'',
+        ring:RK[row.rank]?RK[row.rank].ring:'var(--w3)',
+        ribbon:RK[row.rank]?RK[row.rank].rb:'',
+        ribbonBg:RK[row.rank]?RK[row.rank].rbg:'var(--w4)',
+        ribbonFg:RK[row.rank]?RK[row.rank].rfg:'#fff',
+        cardGlow:RK[row.rank]?RK[row.rank].glow:'0 8px 22px rgba(0,0,0,.4)',
         shadow:hov?'0 22px 50px rgba(0,0,0,.7)':'0 8px 24px rgba(0,0,0,.45)',
         lift:hov?'translateY(-10px)':'none',z:hov?'6':'1',ovOpacity:hov?'1':'0',
         origShow:(!isM&&w&&w.buy==='구독')?'inline-block':'none',
@@ -1471,6 +1513,10 @@ class Component extends DCLogic {
         leave:()=>{if(!this._touch)this.setState({hover:null});},
         open:()=>{ isM?this.openModel(row.id):this.openWork(row.id); }};
     });
+    base.topRows=rowsAll.filter(r=>r.rank<=3);
+    base.restRows=rowsAll.filter(r=>r.rank>3);
+    base.mRankShow=isM?'grid':'none';
+    base.wRankShow=isM?'none':'block';
 
     /* 최근 본 */
     const rec=S.recent.filter(id=>W[id]);

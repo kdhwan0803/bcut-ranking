@@ -77,14 +77,14 @@ select,input,button{font-family:inherit}
 /* SPECIAL RELEASE 이벤트 띠: 모바일 세로 배치(배지→썸네일→제목·글→버튼 가운데) */
 @media(min-width:681px){.evKickMob{display:none!important}}
 @media(max-width:680px){
-  .evRow{flex-direction:column!important;align-items:center!important;gap:14px!important}
-  .evKickMob{display:inline-flex!important}
-  .evKickInline{display:none!important}
-  .evThumbs{width:100%;justify-content:center!important}
-  .evText{min-width:0!important;width:100%;text-align:center}
-  .evCta{width:100%;justify-content:center!important}
-  .evCard{width:74px!important}
-  .evSub{white-space:pre-line}
+  .evRow{flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;gap:10px 12px!important}
+  .evKickMob{display:none!important}
+  .evKickInline{display:inline-flex!important;margin-bottom:5px}
+  .evThumbs{flex:0 0 auto!important;gap:6px!important}
+  .evText{min-width:0!important;flex:1 1 150px!important;text-align:left!important}
+  .evCta{width:100%!important;justify-content:center!important}
+  .evCard{width:48px!important}
+  .evSub{white-space:normal}
 }
 @keyframes evSweep{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 @keyframes evGlow{0%,100%{opacity:.45}50%{opacity:.9}}
@@ -157,7 +157,7 @@ select,input,button{font-family:inherit}
                 <span style="font-size:11.5px;font-weight:700;letter-spacing:2.2px;color:var(--t2)">{{ s.eyebrow }}</span>
               </div>
               <div style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:var(--t2);margin-bottom:7px;display:{{ s.tagShow }}">{{ s.tag }}</div>
-              <h1 style="font-size:clamp(30px,4.6vw,58px);font-weight:900;letter-spacing:-1.8px;line-height:1.04;text-wrap:balance;text-shadow:var(--heroShadow)">{{ s.title }}</h1>
+              <h1 style="font-size:clamp(26px,4.6vw,58px);font-weight:900;letter-spacing:-1.8px;line-height:1.06;text-wrap:balance;overflow-wrap:anywhere;word-break:keep-all;text-shadow:var(--heroShadow)">{{ s.title }}</h1>
               <div style="font-size:15.5px;font-weight:700;color:var(--acc2);margin-top:12px">{{ s.sub }}</div>
               <div style="display:flex;gap:26px;margin:26px 0 28px;flex-wrap:wrap">
                 <sc-for list="{{ s.stats }}" as="st" hint-placeholder-count="4">
@@ -1195,14 +1195,14 @@ class Component extends DCLogic {
     }
 
     return {show:'block',bg:W[bgId]?(W[bgId].wide||W[bgId].img||''):'',
-      padY:mob?'16px':'22px',
+      padY:mob?'12px':'22px',
       wrap:mob?'wrap':'nowrap',
       divShow:mob?'none':'block',
       pitchShow:mob?'none':'block',
       kicker:kicker||'SPECIAL RELEASE',
       title:title||'맥심 표지모델, 이번 주 연속 공개',
       sub:sub||(ids.length+'편이 '+(span||'0시에')+' 열립니다.'),
-      titleSize:mob?'21px':'clamp(23px,2.3vw,30px)',
+      titleSize:mob?'18px':'clamp(23px,2.3vw,30px)',
       subSize:mob?'12.5px':'13.5px',
       perks:[{t:'공개일 0시, 구독자가 가장 먼저'},
         {t:'구독 하나로 '+ids.length+'편 모두 열람'},
@@ -1346,7 +1346,7 @@ class Component extends DCLogic {
       return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:x.title||'',tag:x.tag||'',tagShow:x.tag?'block':'none',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
         eyebrow:x.eyebrow||'',stats:x.stats||[],link:x.link||'https://bcut.maximkorea.net',
         blur:this.blurOf(x.id),cardShow:(x.img&&!S.mob)?'block':'none',
-        mobCardShow:(x.img&&S.mob)?'block':'none',
+        mobCardShow:'none',
         vidShow:w.vid?'inline-block':'none',b19Show:w.b19?'inline-block':'none',
         markShow:x.mark?'inline-block':'none',detailShow:x.id?'inline-flex':'none',
         ctaLabel:x.manual?'자세히 보기':'▶ 화보 보러가기',

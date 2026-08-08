@@ -1108,8 +1108,15 @@ class Component extends DCLogic {
     }catch(e){}
   }
   openWork(id){try{const a=[id].concat(this.state.recent.filter(x=>x!==id)).slice(0,12);localStorage.setItem('bcut_recent',JSON.stringify(a));this.setState({recent:a});}catch(e){}
+    this.hit(id);
     this.setState({modal:{kind:'work',id}});document.body.style.overflow='hidden';
     try{if(!this._hist){history.pushState({m:1},'');this._hist=true;}}catch(e){}}
+  /* 화보 조회 카운터: data.json 의 counterUrl 이 있으면 세션당 1회 집계 */
+  hit(id){try{const D=this.state.D;const u=D&&D.counterUrl;if(!u||!id)return;
+    const K='bcut_hit_'+id;if(sessionStorage.getItem(K))return;sessionStorage.setItem(K,'1');
+    const img=new Image();img.referrerPolicy='no-referrer';
+    img.src=u+(u.indexOf('?')>=0?'&':'?')+'hit='+encodeURIComponent(id)+'&t='+Date.now();
+  }catch(e){}}
   openModel(n){this.setState({modal:{kind:'model',id:n}});document.body.style.overflow='hidden';
     try{if(!this._hist){history.pushState({m:1},'');this._hist=true;}}catch(e){}}
   close(){this.setState({modal:null});document.body.style.overflow='';

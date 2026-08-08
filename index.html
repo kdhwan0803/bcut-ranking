@@ -93,6 +93,12 @@ select,input,button{font-family:inherit}
   .rkBig{grid-template-columns:repeat(2,1fr);gap:10px}
   .rkSmall{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 }
+/* TOP3 은은한 무빙 */
+@keyframes rkBadgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}}
+@keyframes rkGoldGlow{0%,100%{box-shadow:0 0 0 2px rgba(255,207,70,.5),0 8px 22px rgba(0,0,0,.14)}50%{box-shadow:0 0 0 5px rgba(255,207,70,.92),0 12px 34px rgba(255,176,32,.48)}}
+.rkPulse{animation:rkBadgePulse 1.9s ease-in-out infinite;transform-origin:center;will-change:transform}
+.rkGold{animation:rkGoldGlow 2.4s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.rkPulse,.rkGold{animation:none!important}}
 @keyframes evSweep{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 @keyframes evGlow{0%,100%{opacity:.45}50%{opacity:.9}}
 .evCard{transition:transform .3s cubic-bezier(.2,.8,.3,1),box-shadow .3s}
@@ -379,10 +385,10 @@ select,input,button{font-family:inherit}
       <div style="display:{{ wRankShow }};padding:16px 0 26px">
         <div class="rkBig">
           <sc-for list="{{ bigRows }}" as="r" hint-placeholder-count="0">
-            <div onClick="{{ r.open }}" style="cursor:pointer;border-radius:12px;overflow:hidden;background:var(--w1);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
+            <div onClick="{{ r.open }}" class="{{ r.cardCls }}" style="cursor:pointer;border-radius:12px;overflow:hidden;background:var(--w1);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
               <div style="position:relative;aspect-ratio:2/3;overflow:hidden;background:var(--bg2)">
                 <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
-                <div style="position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:900;letter-spacing:-.2px;padding:4px 9px;border-radius:8px;background:{{ r.rkBg }};color:{{ r.rkFg }};box-shadow:0 3px 10px rgba(0,0,0,.3)">{{ r.rkLabel }}</div>
+                <div class="{{ r.rkAnim }}" style="position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:900;letter-spacing:-.2px;padding:4px 9px;border-radius:8px;background:{{ r.rkBg }};color:{{ r.rkFg }};box-shadow:0 3px 10px rgba(0,0,0,.3);animation-delay:{{ r.animDelay }}">{{ r.rkLabel }}</div>
                 <div style="position:absolute;top:8px;right:8px;font-size:10px;font-weight:900;padding:3px 7px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
                 <div style="position:absolute;bottom:8px;left:8px;display:flex;gap:4px">
                   <span style="font-size:9px;font-weight:900;letter-spacing:.6px;padding:3px 7px;border-radius:3px;display:{{ r.origShow }};background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</span>
@@ -403,7 +409,7 @@ select,input,button{font-family:inherit}
             <div onClick="{{ r.open }}" style="cursor:pointer;border-radius:9px;overflow:hidden;background:var(--w1);border:1px solid var(--line);box-shadow:0 3px 9px rgba(0,0,0,.07);transition:transform .2s" style-hover="transform:translateY(-3px)">
               <div style="position:relative;aspect-ratio:2/3;overflow:hidden;background:var(--bg2)">
                 <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
-                <div style="position:absolute;top:6px;left:6px;z-index:2;font-size:11px;font-weight:900;padding:2px 7px;border-radius:6px;background:{{ r.rkBg }};color:{{ r.rkFg }};box-shadow:0 2px 8px rgba(0,0,0,.3)">{{ r.rkLabel }}</div>
+                <div class="{{ r.rkAnim }}" style="position:absolute;top:6px;left:6px;z-index:2;font-size:11px;font-weight:900;padding:2px 7px;border-radius:6px;background:{{ r.rkBg }};color:{{ r.rkFg }};box-shadow:0 2px 8px rgba(0,0,0,.3);animation-delay:{{ r.animDelay }}">{{ r.rkLabel }}</div>
                 <div style="position:absolute;top:6px;right:6px;font-size:8.5px;font-weight:900;padding:2px 5px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
                 <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:900;letter-spacing:.3px;padding:3px 7px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+</div>
               </div>
@@ -1497,6 +1503,9 @@ class Component extends DCLogic {
         rkLabel:row.rank===1?'👑 1':String(row.rank),
         cardBorder:row.rank===1?'2px solid #ffd24a':'1px solid var(--line)',
         cardGlow:row.rank===1?'0 0 0 3px rgba(255,207,70,.22),0 10px 26px rgba(0,0,0,.16)':'0 4px 14px rgba(0,0,0,.10)',
+        rkAnim:row.rank<=3?'rkPulse':'',
+        animDelay:row.rank===1?'0s':row.rank===2?'.25s':'.5s',
+        cardCls:row.rank===1?'rkGold':'',
         shadow:hov?'0 22px 50px rgba(0,0,0,.7)':'0 8px 24px rgba(0,0,0,.45)',
         lift:hov?'translateY(-10px)':'none',z:hov?'6':'1',ovOpacity:hov?'1':'0',
         origShow:(!isM&&w&&w.buy==='구독')?'inline-block':'none',

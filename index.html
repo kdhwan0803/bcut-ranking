@@ -93,12 +93,12 @@ select,input,button{font-family:inherit}
   .rkBig{grid-template-columns:repeat(2,1fr);gap:10px}
   .rkSmall{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 }
-/* TOP3 은은한 무빙 */
+/* TOP3 은은한 무빙 (가벼운 transform/opacity만 사용) */
 @keyframes rkBadgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-@keyframes rkGoldGlow{0%,100%{box-shadow:0 0 0 2px rgba(255,207,70,.5),0 8px 22px rgba(0,0,0,.14)}50%{box-shadow:0 0 0 5px rgba(255,207,70,.92),0 12px 34px rgba(255,176,32,.48)}}
-.rkPulse{animation:rkBadgePulse 1.9s ease-in-out infinite;transform-origin:left bottom;will-change:transform}
-.rkGold{animation:rkGoldGlow 2.4s ease-in-out infinite}
-@media(prefers-reduced-motion:reduce){.rkPulse,.rkGold{animation:none!important}}
+@keyframes rkGlowOp{0%,100%{opacity:.35}50%{opacity:.9}}
+.rkPulse{animation:rkBadgePulse 2.2s ease-in-out infinite;transform-origin:left bottom}
+.rkRing{box-shadow:inset 0 0 0 2px #ffd24a,inset 0 0 26px 2px rgba(255,186,48,.5);animation:rkGlowOp 2.8s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.rkPulse,.rkRing{animation:none!important}}
 @keyframes evSweep{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 @keyframes evGlow{0%,100%{opacity:.45}50%{opacity:.9}}
 .evCard{transition:transform .3s cubic-bezier(.2,.8,.3,1),box-shadow .3s}
@@ -110,7 +110,7 @@ select,input,button{font-family:inherit}
 
   <header style="position:fixed;top:0;left:0;right:0;z-index:90;border-bottom:1px solid transparent;background:{{ hdrBg }};border-bottom-color:{{ hdrLine }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
     <div style="max-width:1360px;margin:0 auto;height:64px;display:flex;align-items:center;gap:26px;padding:0 {{ padX }}">
-      <a href="#top" id="bcLogo" title="MAXIM B컷" style="display:flex;align-items:center;gap:9px;flex-shrink:0">
+      <a href="#/" id="bcLogo" title="MAXIM B컷" style="display:flex;align-items:center;gap:9px;flex-shrink:0">
         <span style="position:relative;display:block;padding:5px 10px 5px 11px;border:1px solid var(--w5);background:var(--w1);overflow:hidden">
           <span style="position:absolute;top:-1px;left:-1px;width:9px;height:9px;border-top:2px solid var(--acc);border-left:2px solid var(--acc);animation:bcTick .7s ease-out both"></span>
           <span style="position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-bottom:2px solid var(--acc);border-right:2px solid var(--acc);animation:bcTick .7s ease-out .14s both"></span>
@@ -122,11 +122,12 @@ select,input,button{font-family:inherit}
         <span style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:var(--acc2);padding-left:9px;border-left:1px solid var(--w5)">RANKING</span>
       </a>
       <nav style="gap:2px;margin-left:8px;display:{{ navShow }}">
-        <a href="#ranking" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">주간 랭킹</a>
-        <a href="#next" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">신작</a>
-        <a href="#sub" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">구독</a>
-        <a href="#search" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">찾아보기</a>
-        <a href="#models" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">모델별</a>
+        <a href="#/" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">주간 랭킹</a>
+        <a href="#/new" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">신작</a>
+        <a href="#/sub" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">구독</a>
+        <a href="#/creators" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">작가별</a>
+        <a href="#/models" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">모델별</a>
+        <a href="#/search" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">찾아보기</a>
       </nav>
       <div style="flex:1"></div>
       <button onClick="{{ toggleTheme }}" title="{{ themeLabel }}" aria-label="{{ themeLabel }}" style="display:flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background-color:var(--w1);color:var(--txt);font-size:12.5px;font-weight:700;line-height:1;cursor:pointer;flex:0 0 auto;white-space:nowrap"><span style="font-size:14px;line-height:1">{{ themeIcon }}</span>{{ themeName }}</button>
@@ -150,7 +151,7 @@ select,input,button{font-family:inherit}
     <div style="font-size:12px;color:var(--mut);font-weight:700;letter-spacing:1px">{{ loadingText }}</div>
   </div>
 
-  <section id="top" onTouchStart="{{ onTouchStart }}" onTouchEnd="{{ onTouchEnd }}" style="position:relative;min-height:440px;overflow:hidden;background:var(--bg1);height:{{ heroH }}">
+  <section id="top" onTouchStart="{{ onTouchStart }}" onTouchEnd="{{ onTouchEnd }}" style="display:{{ heroShow }};position:relative;min-height:440px;overflow:hidden;background:var(--bg1);height:{{ heroH }}">
     <div style="display:flex;height:100%;will-change:transform;transition:transform {{ trackDur }} cubic-bezier(.22,.72,.16,1);transform:{{ trackX }}">
       <sc-for list="{{ slides }}" as="s" hint-placeholder-count="0">
         <div style="position:relative;flex:0 0 100%;height:100%;overflow:hidden">
@@ -248,6 +249,7 @@ select,input,button{font-family:inherit}
     </div>
   </section>
 
+  <div style="display:{{ pageHeadShow }};height:{{ stickyTop }}"></div>
   <div style="position:sticky;z-index:70;top:{{ stickyTop }};background:linear-gradient(to bottom,var(--bg0) 62%,var(--hf0));padding:12px 0 16px">
     <div style="max-width:1360px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:0 {{ padX }}">
       <sc-for list="{{ chips }}" as="c" hint-placeholder-count="6">
@@ -257,6 +259,11 @@ select,input,button{font-family:inherit}
   </div>
 
   <main style="max-width:1360px;margin:0 auto;display:flex;flex-direction:column;padding:0 {{ padX }} 90px;gap:{{ secGap }}">
+
+    <div style="display:{{ pageHeadShow }};align-items:center;gap:12px;padding:22px 0 2px">
+      <button onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:13px;font-weight:800;padding:9px 15px;border-radius:999px;cursor:pointer" style-hover="border-color:var(--w5)">← 홈</button>
+      <h1 style="font-size:23px;font-weight:900;letter-spacing:-.6px">{{ pageTitle }}</h1>
+    </div>
 
     <section id="wish" style="display:{{ wishShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap">
@@ -297,7 +304,7 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
-    <section id="ranking">
+    <section id="ranking" style="display:{{ rankingShow }}">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
         <div>
           <div style="font-size:10.5px;font-weight:800;letter-spacing:2.4px;color:var(--acc2);margin-bottom:7px">WEEKLY RANKING</div>
@@ -385,9 +392,10 @@ select,input,button{font-family:inherit}
       <div style="display:{{ wRankShow }};padding:16px 0 26px">
         <div class="rkBig">
           <sc-for list="{{ bigRows }}" as="r" hint-placeholder-count="0">
-            <div onClick="{{ r.open }}" class="{{ r.cardCls }}" style="position:relative;cursor:pointer;border-radius:12px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
+            <div onClick="{{ r.open }}" style="position:relative;cursor:pointer;border-radius:12px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
               <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
               <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,9,.94) 0%,rgba(6,6,9,.55) 24%,rgba(6,6,9,.05) 50%,transparent 68%)"></div>
+              <div class="rkRing" style="position:absolute;inset:0;border-radius:12px;pointer-events:none;display:{{ r.goldRingShow }}"></div>
               <div style="position:absolute;top:9px;left:11px;font-size:16px;display:{{ r.crownShow }};filter:drop-shadow(0 2px 5px rgba(0,0,0,.6))">👑</div>
               <div style="position:absolute;top:9px;right:9px;font-size:10px;font-weight:900;padding:3px 7px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
               <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+ 확인 필요</div>
@@ -617,7 +625,7 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
-    <section id="wcPromo">
+    <section id="wcPromo" style="display:{{ wcShow }}">
       <a href="worldcup.html" style="display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;border-radius:16px;padding:30px 32px;background:linear-gradient(115deg,var(--bg1) 0%,rgba(74,10,18,.9) 62%,rgba(120,14,26,.85) 100%);border:1px solid rgba(230,0,18,.28);overflow:hidden;transition:box-shadow .25s,transform .25s" style-hover="box-shadow:0 0 0 1px var(--acc);transform:translateY(-3px)">
         <div style="min-width:0">
           <div style="font-size:10.5px;font-weight:800;letter-spacing:2.6px;color:var(--acc2)">TOURNAMENT</div>
@@ -637,7 +645,7 @@ select,input,button{font-family:inherit}
       </a>
     </section>
 
-    <section id="search">
+    <section id="search" style="display:{{ searchShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">화보 찾아보기</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">SEARCH</span>
@@ -919,7 +927,7 @@ const BLANK='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICT
 const MVC={up:['#12b76a','rgba(18,183,106,.16)'],down:['#f04438','rgba(240,68,56,.16)'],new:['#fff','#7a5af8'],same:['#b0b0b8','var(--w3)']};
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home'};
 
   componentDidMount(){
     this.load();
@@ -939,6 +947,9 @@ class Component extends DCLogic {
     let th=null;try{th=localStorage.getItem('bcut_theme');}catch(e){}
     this.applyTheme(th||this.props.theme||'light');
     this.bindGlobal();
+    this._hashV=()=>{if(this.state.modal)return;this.setState({view:this.viewFromHash()});try{window.scrollTo(0,0);}catch(e){}};
+    window.addEventListener('hashchange',this._hashV);
+    try{const iv=this.viewFromHash();if(iv!=='home')this.setState({view:iv});}catch(e){}
     try{const q=new URLSearchParams(location.search),st={};
       if(q.get('tab')==='models')st.tab='models';
       if(q.get('mode')==='month')st.mode='month';
@@ -953,7 +964,12 @@ class Component extends DCLogic {
     }catch(e){}
   }
   componentWillUnmount(){clearInterval(this._t);clearInterval(this._sp);window.removeEventListener('scroll',this._sc);
-    document.removeEventListener('keydown',this._key);window.removeEventListener('popstate',this._pop);}
+    document.removeEventListener('keydown',this._key);window.removeEventListener('popstate',this._pop);
+    if(this._hashV)window.removeEventListener('hashchange',this._hashV);}
+  viewFromHash(){var h=(location.hash||'').replace(/^#\/?/,'').split('?')[0].toLowerCase();
+    var map={'':'home','home':'home','top':'home','ranking':'home','new':'new','next':'new','sub':'sub','creators':'creators','models':'models','search':'search'};
+    return map[h]||'home';}
+  goView(v){try{location.hash=(v&&v!=='home')?('#/'+v):'';}catch(e){}this.setState({view:v});try{window.scrollTo(0,0);}catch(e){}}
 
   bindGlobal(){
     this._key=e=>{if(e.key==='Escape'){if(this.state.modal)this.close();else if(this.state.help)this.setState({help:false});}};
@@ -1087,7 +1103,8 @@ class Component extends DCLogic {
       if(S.sort&&S.sort!=='random')q.set('sort',S.sort);
       if(S.modelSel&&S.modelSel!=='all')q.set('model',S.modelSel);
       if(S.yearSel&&S.yearSel!=='all')q.set('year',S.yearSel);
-      history.replaceState(null,'',location.pathname+'?'+q.toString());
+      const vh=(S.view&&S.view!=='home')?('#/'+S.view):'';
+      history.replaceState(null,'',location.pathname+'?'+q.toString()+vh);
     }catch(e){}
   }
   openWork(id){try{const a=[id].concat(this.state.recent.filter(x=>x!==id)).slice(0,12);localStorage.setItem('bcut_recent',JSON.stringify(a));this.setState({recent:a});}catch(e){}
@@ -1327,6 +1344,7 @@ class Component extends DCLogic {
       rankNumSize:S.mob?'42px':'54px',
       restNumSize:S.mob?'30px':'34px',
       bigRows:[],smallRows:[],mRankShow:'none',wRankShow:'block',
+      heroShow:'block',rankingShow:'block',searchShow:'none',wcShow:'none',pageHeadShow:'none',pageTitle:'',goHome:()=>{},
       mCardW:S.mob?'196px':'224px',
       subW:S.mob?'168px':'212px',
       nextW:S.mob?'148px':'176px',
@@ -1366,6 +1384,7 @@ class Component extends DCLogic {
     if(!D)return base;
 
     const wi=S.wi,isM=S.tab==='models',isMonth=S.mode==='month',W=D.works||{};
+    const V=S.view||'home';
     const list=isM?(isMonth?this.monthModels(wi):this.weekModels(wi)):(isMonth?this.monthWorks(wi):this.weekWorks(wi));
 
     /* 스포트라이트 (무한 슬라이드) */
@@ -1388,9 +1407,11 @@ class Component extends DCLogic {
     const act=sp.length?idx%sp.length:0;
     base.spotDots=sp.map((_,i)=>({w:i===act?'26px':'12px',bg:i===act?'var(--acc)':'var(--t1)',go:()=>this.goSlide(i)}));
 
-    /* 칩 */
-    base.chips=[['#ranking','이번 주 랭킹'],['#next','신작'],['#sub','구독 화보'],['#creators','작가별'],['#models','모델별'],['#search','찾아보기'],['worldcup.html','이상형 월드컵']]
-      .map(c=>({href:c[0],label:c[1],bg:c[0].indexOf('월드컵')>=0?'var(--acc)':'var(--w1)',fg:c[0].indexOf('월드컵')>=0?'#fff':'var(--t3)'}));
+    /* 칩 = 페이지 메뉴 (현재 뷰 강조) */
+    base.chips=[['#/','home','이번 주 랭킹'],['#/new','new','신작'],['#/sub','sub','구독 화보'],['#/creators','creators','작가별'],['#/models','models','모델별'],['#/search','search','찾아보기'],['worldcup.html','wc','이상형 월드컵']]
+      .map(c=>({href:c[0],label:c[2],
+        bg:c[1]==='wc'?'var(--acc)':(V===c[1]?'var(--txt)':'var(--w1)'),
+        fg:c[1]==='wc'?'#fff':(V===c[1]?'var(--bg0)':'var(--t3)')}));
 
     /* 랭킹 */
     const on='var(--txt)',off='var(--mut)';
@@ -1504,6 +1525,7 @@ class Component extends DCLogic {
         animDelay:row.rank===1?'0s':row.rank===2?'.25s':'.5s',
         cardCls:row.rank===1?'rkGold':'',
         crownShow:row.rank===1?'block':'none',
+        goldRingShow:row.rank===1?'block':'none',
         numColor2:row.rank===1?'#ffd24a':row.rank===2?'#eef2f7':row.rank===3?'#f0c79a':'#fff',
         shadow:hov?'0 22px 50px rgba(0,0,0,.7)':'0 8px 24px rgba(0,0,0,.45)',
         lift:hov?'translateY(-10px)':'none',z:hov?'6':'1',ovOpacity:hov?'1':'0',
@@ -1786,6 +1808,28 @@ class Component extends DCLogic {
           share:()=>{const u=md.creatorId?('https://bcut.maximkorea.net/creator/'+md.creatorId):'https://bcut.maximkorea.net';
             if(navigator.share)navigator.share({title:nm,url:u}).catch(()=>{});else{try{navigator.clipboard.writeText(u);}catch(e){}}}};}
     }
+    /* ── 뷰(페이지) 라우팅: 홈은 랭킹 중심, 나머지는 각 페이지 ── */
+    const inHome=V==='home';
+    base.heroShow=inHome?'block':'none';
+    base.rankingShow=inHome?'block':'none';
+    if(!inHome&&base.ev)base.ev.show='none';
+    base.wishShow=inHome?base.wishShow:'none';
+    base.recentShow=inHome?base.recentShow:'none';
+    base.hallShow=inHome?base.hallShow:'none';
+    base.wcShow=inHome?'block':'none';
+    base.kakaoShow=inHome?base.kakaoShow:'none';
+    base.nextShow=(V==='new')?base.nextShow:'none';
+    base.featShow=(V==='new')?base.featShow:'none';
+    base.subShow=(V==='sub')?base.subShow:'none';
+    base.pkgShow=(V==='sub')?base.pkgShow:'none';
+    base.tsShow=(V==='sub')?base.tsShow:'none';
+    base.crShow=(V==='creators')?base.crShow:'none';
+    base.mdShow=(V==='models')?base.mdShow:'none';
+    base.searchShow=(V==='search')?'block':'none';
+    const _titles={new:'신작 화보',sub:'구독 화보',creators:'작가별 화보',models:'모델별 화보',search:'화보 찾아보기'};
+    base.pageHeadShow=inHome?'none':'flex';
+    base.pageTitle=_titles[V]||'';
+    base.goHome=()=>this.goView('home');
     return Object.assign(base,themeVals);
   }
 }

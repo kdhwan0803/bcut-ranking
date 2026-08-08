@@ -1808,27 +1808,26 @@ class Component extends DCLogic {
           share:()=>{const u=md.creatorId?('https://bcut.maximkorea.net/creator/'+md.creatorId):'https://bcut.maximkorea.net';
             if(navigator.share)navigator.share({title:nm,url:u}).catch(()=>{});else{try{navigator.clipboard.writeText(u);}catch(e){}}}};}
     }
-    /* ── 뷰(페이지) 라우팅: 홈은 랭킹 중심, 나머지는 각 페이지 ── */
+    /* ── 뷰(페이지) 라우팅: 홈은 전체 노출(원래대로), 카테고리는 해당 섹션만 ── */
     const inHome=V==='home';
-    base.heroShow=inHome?'block':'none';
-    base.rankingShow=inHome?'block':'none';
-    if(!inHome&&base.ev)base.ev.show='none';
-    base.wishShow=inHome?base.wishShow:'none';
-    base.recentShow=inHome?base.recentShow:'none';
-    base.hallShow=inHome?base.hallShow:'none';
-    base.wcShow=inHome?'block':'none';
-    base.kakaoShow=inHome?base.kakaoShow:'none';
-    base.nextShow=(V==='new')?base.nextShow:'none';
-    base.featShow=(V==='new')?base.featShow:'none';
-    base.subShow=(V==='sub')?base.subShow:'none';
-    base.pkgShow=(V==='sub')?base.pkgShow:'none';
-    base.tsShow=(V==='sub')?base.tsShow:'none';
-    base.crShow=(V==='creators')?base.crShow:'none';
-    base.mdShow=(V==='models')?base.mdShow:'none';
-    base.searchShow=(V==='search')?'block':'none';
     const _titles={new:'신작 화보',sub:'구독 화보',creators:'작가별 화보',models:'모델별 화보',search:'화보 찾아보기'};
-    base.pageHeadShow=inHome?'none':'flex';
-    base.pageTitle=_titles[V]||'';
+    if(inHome){
+      /* 홈 = 원래 풀 페이지: 히어로+랭킹+나머지 섹션 전부 계산값 그대로 노출 */
+      base.heroShow='block';base.rankingShow='block';base.wcShow='block';base.searchShow='block';
+      base.pageHeadShow='none';base.pageTitle='';
+    }else{
+      base.heroShow='none';base.rankingShow='none';if(base.ev)base.ev.show='none';
+      base.wishShow='none';base.recentShow='none';base.hallShow='none';base.wcShow='none';base.kakaoShow='none';
+      base.nextShow=(V==='new')?base.nextShow:'none';
+      base.featShow=(V==='new')?base.featShow:'none';
+      base.subShow=(V==='sub')?base.subShow:'none';
+      base.pkgShow=(V==='sub')?base.pkgShow:'none';
+      base.tsShow=(V==='sub')?base.tsShow:'none';
+      base.crShow=(V==='creators')?base.crShow:'none';
+      base.mdShow=(V==='models')?base.mdShow:'none';
+      base.searchShow=(V==='search')?'block':'none';
+      base.pageHeadShow='flex';base.pageTitle=_titles[V]||'';
+    }
     base.goHome=()=>this.goView('home');
     return Object.assign(base,themeVals);
   }

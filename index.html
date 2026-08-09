@@ -731,7 +731,11 @@ select,input,button{font-family:inherit}
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">모델별로 보기</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">BY MODEL</span>
-        <a href="models/models.html" style="margin-left:auto;font-size:12.5px;font-weight:800;color:var(--acc2);white-space:nowrap">전체 모델 →</a>
+        <a href="{{ mdAllHref }}" style="margin-left:auto;font-size:12.5px;font-weight:800;color:var(--acc2);white-space:nowrap">{{ mdAllLabel }}</a>
+      </div>
+      <div style="margin:-4px 0 18px;display:{{ mdSearchShow }}">
+        <input type="text" onInput="{{ onMq }}" placeholder="모델 이름으로 검색" style="width:100%;max-width:320px;padding:11px 15px;border-radius:9px;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:13.5px;font-weight:600;outline:none">
+        <span style="font-size:12px;color:var(--mut);font-weight:700;margin-left:10px">{{ mdSearchHint }}</span>
       </div>
       <div style="display:grid;gap:14px;grid-template-columns:{{ mdCols }};margin-bottom:26px">
         <sc-for list="{{ mdCards }}" as="c" hint-placeholder-count="6">
@@ -748,6 +752,10 @@ select,input,button{font-family:inherit}
           </div>
         </sc-for>
       </div>
+      <div style="text-align:center;margin:-10px 0 26px;display:{{ mdCardMoreShow }}">
+        <button onClick="{{ mdCardMore }}" style="background:var(--w3);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:12px 28px;border-radius:8px;cursor:pointer" style-hover="background:var(--w4)">{{ mdCardMoreLabel }}</button>
+      </div>
+      <div style="display:{{ mdSelWrapShow }}">
       <div style="display:flex;align-items:center;gap:11px;margin:6px 0 16px">
         <img src="{{ mdSelImg }}" alt="" style="width:38px;height:38px;border-radius:10px;object-fit:cover;flex:0 0 auto;box-shadow:0 3px 10px rgba(0,0,0,.15)">
         <div>
@@ -770,6 +778,7 @@ select,input,button{font-family:inherit}
       </div>
       <div style="text-align:center;margin-top:-30px;position:relative;z-index:2;display:{{ mdMoreShow }}">
         <button onClick="{{ mdMore }}" style="background:var(--w3);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:13px 30px;border-radius:8px;cursor:pointer">{{ mdMoreLabel }}</button>
+      </div>
       </div>
     </section>
 
@@ -962,7 +971,7 @@ const BLANK='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICT
 const MVC={up:['#12b76a','rgba(18,183,106,.16)'],down:['#f04438','rgba(240,68,56,.16)'],new:['#fff','#7a5af8'],same:['#b0b0b8','var(--w3)']};
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9};
 
   componentDidMount(){
     this.load();
@@ -1351,7 +1360,7 @@ class Component extends DCLogic {
         toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
         ev:{show:'none',items:[],clock:[]},
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
-        creators:[],creatorWorks:[],mdChips:[],mdCards:[],mdWorks:[],mdSelName:'',mdSelCount:'',mdSelImg:'',hof:[],upcoming:[],periods:[],filters:[],sorts:[],
+        creators:[],creatorWorks:[],mdChips:[],mdCards:[],mdWorks:[],mdSelName:'',mdSelCount:'',mdSelImg:'',mdAllHref:'#/models',mdAllLabel:'전체 모델 →',mdSearchShow:'none',mdSearchHint:'',mdCardMoreShow:'none',mdCardMoreLabel:'',mdSelWrapShow:'block',onMq:()=>{},mdCardMore:()=>{},hof:[],upcoming:[],periods:[],filters:[],sorts:[],
         feat:{works:[]},modal:null,popup:null,
         recentShow:'none',wishShow:'none',tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',
         nextShow:'none',recentNewShow:'none',recentNew:[],featShow:'none',crShow:'none',mdShow:'none',kakaoShow:'none',hofShow:'none',
@@ -1778,19 +1787,35 @@ class Component extends DCLogic {
       if(!this._admin)for(let i=_top.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_top[i];_top[i]=_top[j];_top[j]=t;}
       this._mdOrder2=_top.concat(_rest);this._mdOrderN=ms.length;}
     const msO=this._mdOrder2;
+    const _homeMd=(V==='home');
     if(msO.length){const sel=S.model&&byM[S.model]?S.model:msO[0];
       base.mdShow='block';
-      const shown=msO.slice(0,S.mob?12:18);
-      base.mdCards=shown.map(m=>{const on=m===sel;const meta=MM[m]||{};
+      const _b18=S.mob?12:18;
+      const _mq=(S.mq||'').trim(),_mql=_mq.toLowerCase();
+      let _pool=msO,_shown;
+      if(_homeMd){_shown=msO.slice(0,S.mob?6:12);}
+      else if(_mq){_pool=msO.filter(m=>m.toLowerCase().indexOf(_mql)>=0);_shown=_pool.slice(0,60);}
+      else{_shown=msO.slice(0,S.mdcn||_b18);}
+      base.mdCards=_shown.map(m=>{const on=(!_homeMd)&&m===sel;const meta=MM[m]||{};
         return {name:m,n:byM[m].length,img:_mImg(m),blur:'none',
           tag:meta.tag||'',tagShow:(meta.tag)?'inline-block':'none',
           newShow:(_mLatest(m)>=mWkAgo)?'inline-block':'none',
           ring:on?'3px solid var(--acc)':'0',pinShow:on?'flex':'none',
-          go:()=>this.setState({model:m,mshow:10})};});
-      base.mdSelName=sel;base.mdSelCount=byM[sel].length;base.mdSelImg=_mImg(sel);
-      const mw=byM[sel].slice().sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
-      base.mdWorks=mw.slice(0,S.mshow).map(id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),open:()=>this.openWork(id)}));
-      if(mw.length>S.mshow){base.mdMoreShow='block';base.mdMoreLabel='화보 '+Math.min(10,mw.length-S.mshow)+'개 더 보기';base.mdMore=()=>this.setState({mshow:S.mshow+10});}}
+          go:_homeMd?(()=>{this.setState({model:m});this.goView('models');}):(()=>this.setState({model:m,mshow:10}))};});
+      base.mdAllHref=_homeMd?'#/models':'models/models.html';
+      base.mdAllLabel=_homeMd?'전체 모델 →':'전체 모델 페이지 →';
+      base.mdSearchShow=_homeMd?'none':'block';
+      base.onMq=e=>this.setState({mq:e.target.value,mdcn:0});
+      base.mdSearchHint=(!_homeMd&&_mq)?(_pool.length+'명'):'';
+      if(!_homeMd&&!_mq&&msO.length>_shown.length){base.mdCardMoreShow='block';base.mdCardMoreLabel='모델 더보기 ('+(msO.length-_shown.length)+'명)';base.mdCardMore=()=>this.setState({mdcn:_shown.length+_b18});}
+      else base.mdCardMoreShow='none';
+      if(_homeMd){base.mdSelWrapShow='none';}
+      else{base.mdSelWrapShow='block';
+        base.mdSelName=sel;base.mdSelCount=byM[sel].length;base.mdSelImg=_mImg(sel);
+        const mw=byM[sel].slice().sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
+        base.mdWorks=mw.slice(0,S.mshow).map(id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),open:()=>this.openWork(id)}));
+        if(mw.length>S.mshow){base.mdMoreShow='block';base.mdMoreLabel='화보 '+Math.min(10,mw.length-S.mshow)+'개 더 보기';base.mdMore=()=>this.setState({mshow:S.mshow+10});}}
+    }
 
     /* 카톡 */
     if((D.kakaoUrl||'').trim()){base.kakaoShow='block';base.kakaoUrl=D.kakaoUrl.trim();}

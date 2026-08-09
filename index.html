@@ -29,7 +29,7 @@
   --w1:rgba(255,255,255,.05);--w2:rgba(255,255,255,.07);--w3:rgba(255,255,255,.09);--w4:rgba(255,255,255,.15);--w5:rgba(255,255,255,.24);
   --t1:rgba(255,255,255,.45);--t2:rgba(255,255,255,.68);--t3:rgba(255,255,255,.86);
   --hf0:rgba(7,7,10,0);--hfA:rgba(7,7,10,.88);--hfB:rgba(7,7,10,.35);--hfC:rgba(7,7,10,.55);--hfD:rgba(7,7,10,.74);
-  --heroShadow:0 4px 30px rgba(0,0,0,.6);--heroImg:.62;--hdrTop:linear-gradient(to bottom,rgba(0,0,0,.72),transparent);
+  --heroShadow:0 4px 30px rgba(0,0,0,.6);--heroImg:.62;--heroCardSh:0 24px 55px rgba(0,0,0,.6);--hdrTop:linear-gradient(to bottom,rgba(0,0,0,.72),transparent);
   --logoFilter:invert(1) hue-rotate(180deg);--logoBlend:screen;
   --posterFade:rgba(0,0,0,.92);--logoShadow:0 0 14px rgba(255,255,255,.5)}
 html[data-theme="light"]{
@@ -37,7 +37,7 @@ html[data-theme="light"]{
   --w1:rgba(0,0,0,.035);--w2:rgba(0,0,0,.055);--w3:rgba(0,0,0,.09);--w4:rgba(0,0,0,.13);--w5:rgba(0,0,0,.22);
   --t1:rgba(0,0,0,.44);--t2:rgba(0,0,0,.6);--t3:rgba(0,0,0,.82);
   --hf0:rgba(255,255,255,0);--hfA:rgba(255,255,255,.94);--hfB:rgba(255,255,255,.42);--hfC:rgba(255,255,255,.6);--hfD:rgba(255,255,255,.86);
-  --heroShadow:0 2px 22px rgba(255,255,255,.75);--heroImg:.9;--hdrTop:linear-gradient(to bottom,rgba(255,255,255,.85),transparent);
+  --heroShadow:0 2px 22px rgba(255,255,255,.75);--heroImg:.9;--heroCardSh:0 16px 38px rgba(0,0,0,.2);--hdrTop:linear-gradient(to bottom,rgba(255,255,255,.85),transparent);
   --logoFilter:none;--logoBlend:multiply;
   --posterFade:rgba(255,255,255,.96);--logoShadow:0 2px 10px rgba(0,0,0,.32)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -186,10 +186,10 @@ select,input,button{font-family:inherit}
                 <button onClick="{{ s.detail }}" style="align-items:center;gap:8px;background:var(--w4);color:var(--txt);font-weight:800;font-size:14.5px;padding:14px 26px;border-radius:6px;border:0;cursor:pointer;backdrop-filter:blur(6px);display:{{ s.detailShow }}" style-hover="background:rgba(255,255,255,.24)">ⓘ 상세 정보</button>
               </div>
             </div>
-            <div style="flex:0 0 auto;padding-bottom:64px;display:{{ s.cardShow }}">
-              <div style="position:relative;width:236px;aspect-ratio:3/4;border-radius:10px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.14)">
+            <div style="flex:0 0 auto;padding-bottom:{{ heroCardPB }};display:{{ s.cardShow }}">
+              <div style="position:relative;width:{{ heroCardW }};aspect-ratio:3/4;border-radius:10px;overflow:hidden;box-shadow:var(--heroCardSh);border:1px solid rgba(255,255,255,.14)">
                 <img src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
-                <div style="position:absolute;bottom:10px;right:10px;font-size:10px;font-weight:900;padding:4px 8px;border-radius:4px;background:rgba(8,8,11,.8);color:#fff;display:{{ s.vidShow }}">▶ 영상</div>
+                <div style="position:absolute;bottom:{{ heroVidB }};right:{{ heroVidB }};font-size:{{ heroVidFs }};font-weight:900;padding:4px 8px;border-radius:4px;background:rgba(8,8,11,.8);color:#fff;display:{{ s.vidShow }}">▶ 영상</div>
               </div>
             </div>
           </div>
@@ -197,13 +197,13 @@ select,input,button{font-family:inherit}
       </sc-for>
     </div>
 
-    <div style="position:absolute;right:26px;bottom:24px;z-index:4;display:flex;align-items:center;gap:14px">
+    <div style="position:absolute;right:{{ heroNavR }};left:{{ heroNavL }};bottom:{{ heroNavB }};z-index:4;display:flex;align-items:center;gap:14px">
       <div style="display:flex;gap:6px;align-items:center">
         <sc-for list="{{ spotDots }}" as="d" hint-placeholder-count="5">
           <button onClick="{{ d.go }}" style="height:3px;border:0;padding:0;cursor:pointer;border-radius:2px;transition:width .3s,background .3s;width:{{ d.w }};background:{{ d.bg }}"></button>
         </sc-for>
       </div>
-      <div style="display:flex;gap:7px">
+      <div style="gap:7px;display:{{ heroArrowShow }}">
         <button onClick="{{ prevSlide }}" aria-label="이전" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background-color:var(--bg1);color:var(--txt);font-size:17px;cursor:pointer;backdrop-filter:blur(8px);transition:opacity .2s" style-hover="opacity:.72">‹</button>
         <button onClick="{{ nextSlide }}" aria-label="다음" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background-color:var(--bg1);color:var(--txt);font-size:17px;cursor:pointer;backdrop-filter:blur(8px);transition:opacity .2s" style-hover="opacity:.72">›</button>
       </div>
@@ -1123,15 +1123,17 @@ class Component extends DCLogic {
   seg(ms){if(ms<0)ms=0;let s=Math.floor(ms/1000);const h=Math.floor(s/3600);s-=h*3600;const m=Math.floor(s/60);s-=m*60;return{hh:this.pad(h),mm:this.pad(m),ss:this.pad(s)};}
 
   syncUrl(){
-    try{const S=this.state,q=new URLSearchParams();
+    try{const S=this.state,D=S.D,q=new URLSearchParams();
+      const lastWi=(D&&D.weeks&&D.weeks.length)?D.weeks.length-1:0;
       if(S.tab==='models')q.set('tab','models');
       if(S.mode==='month')q.set('mode','month');
-      q.set('week',String(S.wi));
+      if(S.wi!==lastWi)q.set('week',String(S.wi));   /* 최신 주차면 생략(주소 깔끔) */
       if(S.sort&&S.sort!=='random')q.set('sort',S.sort);
       if(S.modelSel&&S.modelSel!=='all')q.set('model',S.modelSel);
       if(S.yearSel&&S.yearSel!=='all')q.set('year',S.yearSel);
+      const qs=q.toString();
       const vh=(S.view&&S.view!=='home')?('#/'+S.view):'';
-      history.replaceState(null,'',location.pathname+'?'+q.toString()+vh);
+      history.replaceState(null,'',location.pathname+(qs?('?'+qs):'')+vh);
     }catch(e){}
   }
   openWork(id){try{const a=[id].concat(this.state.recent.filter(x=>x!==id)).slice(0,12);localStorage.setItem('bcut_recent',JSON.stringify(a));this.setState({recent:a});}catch(e){}
@@ -1369,7 +1371,15 @@ class Component extends DCLogic {
       navShow:S.mob?'none':'flex',
       heroH:S.mob?'min(56vh,430px)':'min(58vh,600px)',
       heroPadB:S.mob?'30px':'40px',
-      heroGap:S.mob?'0':'38px',
+      heroGap:S.mob?'14px':'38px',
+      heroCardW:S.mob?'112px':'236px',
+      heroCardPB:S.mob?'30px':'64px',
+      heroVidB:S.mob?'6px':'10px',
+      heroVidFs:S.mob?'8.5px':'10px',
+      heroNavR:S.mob?'auto':'26px',
+      heroNavL:S.mob?'16px':'auto',
+      heroNavB:S.mob?'12px':'24px',
+      heroArrowShow:S.mob?'none':'flex',
       numSize:S.mob?'82px':'132px',
       numW:S.mob?'40px':'58px',
       posterW:S.mob?'150px':'206px',
@@ -1431,7 +1441,7 @@ class Component extends DCLogic {
     base.slides=seq.map(x=>{const w=W[x.id]||{};
       return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:x.title||'',tag:x.tag||'',tagShow:x.tag?'block':'none',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
         eyebrow:x.eyebrow||'',stats:x.stats||[],link:x.link||'https://bcut.maximkorea.net',
-        blur:this.blurOf(x.id),cardShow:(x.img&&!S.mob)?'block':'none',
+        blur:this.blurOf(x.id),cardShow:(x.img)?'block':'none',
         mobCardShow:'none',
         vidShow:w.vid?'inline-block':'none',b19Show:w.b19?'inline-block':'none',
         markShow:x.mark?'inline-block':'none',detailShow:x.id?'inline-flex':'none',

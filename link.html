@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>맥심 B컷</title>
+<meta name="description" content="맥심코리아 공식 웹화보 플랫폼">
+<meta property="og:title" content="맥심 B컷">
+<meta property="og:description" content="맥심코리아 공식 웹화보 플랫폼">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0a0a0d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --acc:#E60012; --acc2:#ff5a63;
+  --bg:#0a0a0d; --blk:#16161c; --blkH:#1e1e26; --deep:#0e0e13;
+  --line:rgba(255,255,255,.07); --lineH:rgba(255,255,255,.18);
+  --txt:#f4f4f6; --mut:#8d8d97;
+  --sub:#b0b0ba;              /* 모델명 */
+  --no:#55555f;               /* 순위 숫자 */
+  --bio:#c3c3cb;
+  --foot:#55555f;
+  --grid:rgba(255,255,255,.022);
+  --sheen:rgba(255,255,255,.07);
+  --glow:rgba(230,0,18,.20);
+  --shadow:0 12px 36px rgba(0,0,0,.55);
+  --shadowH:0 14px 30px rgba(0,0,0,.5);
+  --mkLine:rgba(255,255,255,.26);
+  --mkBg:rgba(255,255,255,.05);
+  --bdBg:rgba(255,255,255,.07);
+  --mmC:#ffd76a; --mmBg:rgba(255,196,58,.13); --mmLine:rgba(255,196,58,.28);
+  --gateBg:rgba(4,4,7,.94);
+  --mailBg:#1f2a44; --mailC:#8fb4ff;
+  --kr:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+/* 기기 설정이 라이트일 때 */
+@media (prefers-color-scheme: light){
+  :root{
+    --acc:#E60012; --acc2:#c9000f;
+    --bg:#ffffff; --blk:#f6f6f8; --blkH:#eeeef2; --deep:#e9e9ee;
+    --line:rgba(0,0,0,.09); --lineH:rgba(0,0,0,.20);
+    --txt:#111114; --mut:#6c6c76;
+    --sub:#4a4a54;
+    --no:#b8b8c2;
+    --bio:#3c3c46;
+    --foot:#8a8a94;
+    --grid:rgba(0,0,0,.028);
+    --sheen:rgba(0,0,0,.045);
+    --glow:rgba(230,0,18,.12);
+    --shadow:0 12px 30px rgba(0,0,0,.10);
+    --shadowH:0 14px 26px rgba(0,0,0,.12);
+    --mkLine:rgba(0,0,0,.22);
+    --mkBg:rgba(0,0,0,.035);
+    --bdBg:rgba(0,0,0,.055);
+    --mmC:#8a6a00; --mmBg:rgba(255,196,58,.18); --mmLine:rgba(180,140,20,.35);
+    --gateBg:rgba(255,255,255,.94);
+    --mailBg:#dbe6ff; --mailC:#28457f;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);font-family:var(--kr);
+  -webkit-font-smoothing:antialiased;min-height:100vh;padding:0 0 56px}
+.bgp{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:64px 82px}
+.amb{position:fixed;inset:0 0 auto;height:380px;pointer-events:none;z-index:0;
+  background:radial-gradient(85% 100% at 50% 0%,var(--glow),transparent 70%)}
+.wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 20px}
+
+/* 헤더 */
+.head{text-align:center;padding:46px 0 6px}
+.ava{width:96px;height:96px;margin:0 auto 18px;border-radius:28px;background:var(--blk);
+  border:1px solid var(--line);position:relative;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow)}
+.ava .mk{font-family:Anton,sans-serif;font-size:32px;letter-spacing:-.5px;
+  border:1px solid var(--mkLine);padding:5px 12px;background:var(--mkBg)}
+.ava i{position:absolute;width:12px;height:12px;border:2px solid var(--acc)}
+.ava i.tl{top:13px;left:13px;border-right:0;border-bottom:0}
+.ava i.br{bottom:13px;right:13px;border-left:0;border-top:0}
+.head h1{font-size:22px;font-weight:900;letter-spacing:-.4px}
+.head .hd{color:var(--mut);font-size:13.5px;margin-top:5px;font-weight:500}
+.head .bio{color:var(--bio);font-size:14px;margin-top:13px;line-height:1.6;font-weight:500}
+.social{display:flex;justify-content:center;gap:11px;margin:24px 0 32px}
+.social a{width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;
+  background:var(--blk);border:1px solid var(--line);color:var(--txt);
+  transition:transform .24s cubic-bezier(.2,.9,.3,1.25),background .24s,border-color .24s}
+.social a:hover{transform:translateY(-4px);background:var(--blkH);border-color:var(--lineH)}
+.social svg{width:19px;height:19px;fill:currentColor}
+
+/* 섹션 */
+.sec{margin-bottom:32px}
+.st{text-align:center;margin-bottom:15px}
+.st h2{font-size:17.5px;font-weight:900;letter-spacing:-.3px}
+.st h2 em{font-style:normal;color:var(--acc2)}
+.st p{color:var(--mut);font-size:12px;margin-top:6px;font-weight:500}
+
+/* 카드 컨테이너 */
+.box{background:var(--blk);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+
+/* 랭킹 행 */
+.rk{display:flex;align-items:center;gap:14px;padding:15px 16px;
+  border-bottom:1px solid var(--line);text-decoration:none;color:var(--txt);
+  cursor:default;transition:background .2s}
+.rk:last-of-type{border-bottom:1px solid var(--line)}
+.rk:hover{background:var(--blkH)}
+.rk .no{font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1;
+  flex:0 0 30px;text-align:center;color:var(--no);transition:color .22s}
+.rk:first-child .no{color:var(--acc)}
+.rk:hover .no{color:var(--acc2)}
+.rk .tx{flex:1;min-width:0}
+.rk .tx .t{font-size:14px;font-weight:700;letter-spacing:-.2px;line-height:1.3;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk .tx .m{font-size:12px;color:var(--sub);margin-top:6px;font-weight:600;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rk .tx .m .mm{font-size:9.5px;font-weight:800;color:var(--mmC);
+  background:var(--mmBg);border:1px solid var(--mmLine);
+  padding:2px 6px;border-radius:4px;letter-spacing:-.2px;flex:0 0 auto}
+.rk .bd{font-size:10px;font-weight:800;padding:3px 7px;border-radius:5px;
+  background:var(--bdBg);color:var(--mut);flex:0 0 auto}
+.rk .bd.up{background:rgba(230,0,18,.16);color:var(--acc2)}
+
+/* 신작 행 */
+.nw .dt{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--acc2);
+  flex:0 0 42px;text-align:center;letter-spacing:.5px}
+
+/* 자세히 버튼 */
+.more{display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:15px;background:var(--deep);color:var(--txt);text-decoration:none;
+  font-size:13.5px;font-weight:800;letter-spacing:-.2px;cursor:pointer;
+  position:relative;overflow:hidden;transition:background .24s,color .24s}
+.more::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 22%,var(--sheen) 50%,transparent 78%);
+  transform:translateX(-115%);transition:transform .6s ease}
+.more:hover{background:var(--acc);color:#fff}
+.more:hover::before{transform:translateX(115%)}
+.more .ar{transition:transform .24s}
+.more:hover .ar{transform:translateX(4px)}
+.load{padding:22px;text-align:center;color:var(--foot);font-size:12.5px}
+
+/* B컷 대표 버튼 */
+.btn{display:flex;align-items:center;width:100%;background:var(--blk);
+  border:1px solid var(--line);border-radius:18px;padding:14px;color:var(--txt);
+  text-decoration:none;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;
+  transition:transform .26s cubic-bezier(.2,.9,.3,1.2),background .26s,border-color .26s,box-shadow .26s}
+.btn::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 22%,var(--sheen) 50%,transparent 78%);
+  transform:translateX(-115%);transition:transform .65s ease}
+.btn:hover{transform:translateY(-3px);background:var(--blkH);border-color:var(--lineH);
+  box-shadow:var(--shadowH)}
+.btn:hover::before{transform:translateX(115%)}
+.btn .tile{width:62px;height:62px;flex:0 0 62px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .3s cubic-bezier(.2,.9,.3,1.3)}
+.btn:hover .tile{transform:scale(1.06) rotate(-2deg)}
+.btn .tile svg{width:26px;height:26px;fill:currentColor}
+.btn .tile.mark{background:var(--deep);border:1px solid var(--lineH);
+  font-family:Anton,sans-serif;font-size:19px;color:#fff}
+.btn .tile.mail{background:var(--mailBg);color:var(--mailC)}
+.btn .tile.kakao{background:#FEE500;color:#191600}
+.btn .lb{flex:1;text-align:center;padding:0 10px;min-width:0}
+.btn .lb .t{font-size:15.5px;font-weight:800;letter-spacing:-.3px}
+.btn .lb .s{font-size:11.5px;color:var(--mut);margin-top:4px;font-weight:500}
+.btn .sp{width:62px;flex:0 0 62px}
+
+.foot{text-align:center;color:var(--foot);font-size:11px;line-height:1.9;margin-top:36px}
+.foot b{color:var(--mut);font-weight:700}
+
+/* 연령 확인 */
+.gate{position:fixed;inset:0;z-index:99;background:var(--gateBg);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  display:none;align-items:center;justify-content:center;padding:24px}
+.gate.on{display:flex;animation:fade .25s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.gbox{max-width:340px;width:100%;background:var(--blk);border:1px solid var(--line);
+  border-radius:22px;padding:30px 24px;text-align:center;animation:pop .32s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes pop{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+.gbox .n{font-family:Anton,sans-serif;font-size:36px;color:var(--acc)}
+.gbox h3{font-size:16px;font-weight:900;margin:12px 0 9px}
+.gbox p{font-size:12.5px;color:var(--mut);line-height:1.75}
+.gbox .row{display:flex;gap:9px;margin-top:22px}
+.gbox button{flex:1;padding:14px;border-radius:13px;border:1px solid var(--line);
+  background:var(--deep);color:var(--txt);font-family:inherit;font-size:13.5px;
+  font-weight:800;cursor:pointer;transition:.2s}
+.gbox button:hover{background:var(--blkH)}
+.gbox button.y{background:var(--acc);border-color:var(--acc);color:#fff}
+
+@media(hover:none){
+  .btn:hover,.social a:hover{transform:none;box-shadow:none}
+  .btn:hover .tile{transform:none}
+  .btn:hover::before,.more:hover::before{transform:translateX(-115%)}
+  .more:hover{background:var(--deep);color:var(--txt)}
+}
+</style>
+</head>
+<body>
+<div class="bgp"></div><div class="amb"></div>
+<div class="wrap">
+
+  <div class="head">
+    <div class="ava"><i class="tl"></i><span class="mk">Bcut</span><i class="br"></i></div>
+    <h1>맥심 B컷</h1>
+    <div class="hd">@maximbcut</div>
+    <div class="bio">맥심코리아 공식 웹화보 플랫폼</div>
+  </div>
+  <div class="social" id="social"></div>
+
+  <!-- 화보 랭킹 -->
+  <div class="sec">
+    <div class="st"><h2>이번 주 <em>화보 랭킹</em></h2><p id="wkSub">주간 화보 순위</p></div>
+    <div class="box" id="workRank"><div class="load">불러오는 중...</div></div>
+  </div>
+
+  <!-- 모델 랭킹 -->
+  <div class="sec">
+    <div class="st"><h2>이번 주 <em>모델 랭킹</em></h2><p id="mdSub">화보 순위 포인트 합산 기준</p></div>
+    <div class="box" id="modelRank"><div class="load">불러오는 중...</div></div>
+  </div>
+
+  <!-- 신작 -->
+  <div class="sec">
+    <div class="st"><h2>이번 주 <em>신작</em></h2><p>새로 공개된 화보입니다</p></div>
+    <div class="box" id="news"><div class="load">불러오는 중...</div></div>
+  </div>
+
+  <!-- B컷 -->
+  <div class="sec">
+    <div class="st"><h2>맥심 <em>B컷</em></h2><p>화보 전체는 B컷에서 볼 수 있습니다</p></div>
+    <a class="btn" href="#" data-gate="1">
+      <span class="tile mark">B</span>
+      <span class="lb"><span class="t">B컷 바로가기</span><span class="s">성인 인증 후 이용 가능</span></span>
+      <span class="sp"></span>
+    </a>
+  </div>
+
+  <!-- 구독 -->
+  <div class="sec">
+    <div class="st"><h2>구독하고 <em>먼저 받기</em></h2><p>새 화보와 주간 랭킹 알림</p></div>
+    <a class="btn" id="btnNews" href="#" target="_blank" rel="noopener">
+      <span class="tile mail"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5zm2 2v.4l7 4.4 7-4.4V7H5zm0 2.8V17h14V9.8l-7 4.4-7-4.4z"/></svg></span>
+      <span class="lb"><span class="t">뉴스레터 구독</span><span class="s">주간 랭킹 메일로 받기</span></span>
+      <span class="sp"></span>
+    </a>
+    <a class="btn" id="btnKakao" href="#" target="_blank" rel="noopener">
+      <span class="tile kakao"><svg viewBox="0 0 24 24"><path d="M12 3.2c-5 0-9.1 3.2-9.1 7.2 0 2.5 1.7 4.8 4.2 6.1l-1 3.8c-.1.4.3.7.7.5l4.5-3c.2 0 .5.1.7.1 5 0 9.1-3.2 9.1-7.2S17 3.2 12 3.2z"/></svg></span>
+      <span class="lb"><span class="t">카카오톡 채널</span><span class="s">공개 알림 받기</span></span>
+      <span class="sp"></span>
+    </a>
+  </div>
+
+  <div class="foot">
+    <b>(주)맥심코리아</b><br>
+    본 페이지에서 연결되는 일부 콘텐츠는<br>만 19세 이상만 이용할 수 있습니다.
+  </div>
+</div>
+
+<div class="gate" id="gate">
+  <div class="gbox">
+    <div class="n">19</div>
+    <h3>성인 인증이 필요합니다</h3>
+    <p>이동하려는 페이지에는 청소년유해매체물이 포함되어 있습니다. 만 19세 이상만 이용할 수 있습니다.</p>
+    <div class="row">
+      <button onclick="closeGate()">돌아가기</button>
+      <button class="y" onclick="passGate()">19세 이상입니다</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== 설정 ===================== */
+const CONFIG = {
+  dataUrl   : 'https://bcutrank.com/data.json',
+  rankUrl   : 'https://bcutrank.com/',
+  bcutUrl   : 'https://bcut.maximkorea.net',
+  instagram : 'https://www.instagram.com/maximbcut/',  // 실제 계정으로 수정
+  x         : 'https://x.com/maximbcut',
+  newsletter: '',   // 스티비 구독 폼 — 비우면 버튼 숨김
+  kakao     : '',   // 카카오톡 채널 — 비우면 버튼 숨김
+  rankCount : 3,
+  newsCount : 6
+};
+/* =============================================== */
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const utm=(u,c)=>u+(u.includes('?')?'&':'?')+'utm_source=instagram&utm_medium=bio&utm_campaign='+c;
+
+function tidy(t){
+  return String(t||'')
+    .replace(/\(\s*19\s*\)/g,'').replace(/\[[^\]]*\]/g,'')
+    .replace(/nude|누드|19금|garter\s*belt|h-?cup/gi,'')
+    .replace(/['"\u2018\u2019]/g,'').replace(/\(\s*\)/g,'')
+    .replace(/\s{2,}/g,' ')
+    .replace(/^[\s\-\u00b7,.]+|[\s\-\u00b7,]+$/g,'').trim();
+}
+const fdate=s=>{const m=String(s||'').match(/(\d{4})-(\d{2})-(\d{2})/);return m?(+m[2])+'.'+(+m[3]):''};
+
+/* ===== 랭킹 계산 (본 사이트와 동일 로직) ===== */
+let D=null;
+const pts=r=>((D.points||[])[r-1])||0;
+function weekEnd(wi){
+  const d=((D.weeks||[])[wi]||{}).date;
+  if(!d||!/\d{4}-\d{2}-\d{2}/.test(d))return '';
+  const dt=new Date(d+'T00:00:00'); dt.setDate(dt.getDate()+6);
+  return dt.toISOString().slice(0,10);
+}
+function weekWorks(wi){
+  const wk=(D.weeks||[])[wi]; if(!wk)return [];
+  const e=weekEnd(wi);
+  return (wk.ranking||[])
+    .filter(id=>{const w=D.works[id];if(!w)return false;
+      return !w.pub||!e||w.pub<=e;})
+    .map((id,i)=>({id,rank:i+1,pts:pts(i+1)}));
+}
+function weekModels(wi){
+  const m={};
+  weekWorks(wi).forEach(w=>{
+    ((D.works[w.id]||{}).models||[]).forEach(md=>{m[md]=(m[md]||0)+w.pts});
+  });
+  return Object.keys(m).map(md=>({id:md,pts:m[md]}))
+    .sort((a,b)=>b.pts-a.pts).map((x,i)=>Object.assign({},x,{rank:i+1}));
+}
+function modelRankAt(md,wi){const f=weekModels(wi).find(x=>x.id===md);return f?f.rank:0}
+function workRankAt(id,wi){const f=weekWorks(wi).find(x=>x.id===id);return f?f.rank:0}
+
+/* 순위 변동 배지 */
+function delta(cur,prev){
+  if(!prev)return '<span class="bd up">NEW</span>';
+  const d=prev-cur;
+  if(d>0)return '<span class="bd up">▲'+d+'</span>';
+  if(d<0)return '<span class="bd">▼'+(-d)+'</span>';
+  return '<span class="bd">–</span>';
+}
+
+/* ===== 렌더 ===== */
+function moreBtn(label,camp){
+  return '<a class="more" href="'+utm(CONFIG.rankUrl,camp)+'" target="_blank" rel="noopener">'
+       + label+' <span class="ar">→</span></a>';
+}
+function renderWorks(wi){
+  const rows=weekWorks(wi).slice(0,CONFIG.rankCount).map(r=>{
+    const w=D.works[r.id]||{};
+    const t=tidy(w.title)||'화보';
+    const ms=(w.models||[]);
+    const prev=wi>0?workRankAt(r.id,wi-1):0;
+    let sub='';
+    if(ms.length){
+      const mm=ms.some(n=>(((D.models||{})[n]||{}).tag||'').trim()==='미스맥심');
+      sub='<span class="m">'+(mm?'<span class="mm">미스맥심</span>':'')
+        +esc(ms.join(', '))+'</span>';
+    }
+    return '<div class="rk">'
+      +'<span class="no">'+r.rank+'</span>'
+      +'<span class="tx"><span class="t">'+esc(t)+'</span>'+sub+'</span>'
+      +delta(r.rank,prev)+'</div>';
+  }).join('');
+  $('workRank').innerHTML=rows+moreBtn('화보 랭킹 자세히 보기','work_rank');
+}
+function renderModels(wi){
+  const rows=weekModels(wi).slice(0,CONFIG.rankCount).map(r=>{
+    const md=(D.models||{})[r.id]||{};
+    const prev=wi>0?modelRankAt(r.id,wi-1):0;
+    const tag=(md.tag||'').trim();
+    const sub=tag?'<span class="m"><span class="mm">'+esc(tag)+'</span></span>':'';
+    return '<div class="rk">'
+      +'<span class="no">'+r.rank+'</span>'
+      +'<span class="tx"><span class="t">'+esc(r.id)+'</span>'+sub+'</span>'
+      +delta(r.rank,prev)+'</div>';
+  }).join('');
+  $('modelRank').innerHTML=rows+moreBtn('모델 랭킹 자세히 보기','model_rank');
+}
+/* 같은 촬영의 PHOTO/VIDEO 분리본을 한 줄로 묶기 */
+function baseTitle(t){
+  return String(t||'')
+    .replace(/\(\s*(?:PHOTO\s*\+\s*VIDEO|PHOTO\s*ONLY|VIDEO\s*ONLY|PHOTO|VIDEO)\s*\)/gi,'')
+    .replace(/\s{2,}/g,' ')
+    .replace(/^[\s\-\u00b7,]+|[\s\-\u00b7,]+$/g,'')
+    .trim();
+}
+function kindsOf(t){
+  const s=String(t||'');
+  if(/PHOTO\s*\+\s*VIDEO/i.test(s))return ['사진','영상'];
+  if(/VIDEO\s*ONLY/i.test(s))return ['영상'];
+  if(/PHOTO\s*ONLY/i.test(s))return ['사진'];
+  if(/\(\s*VIDEO\s*\)/i.test(s))return ['영상'];
+  if(/\(\s*PHOTO\s*\)/i.test(s))return ['사진'];
+  return [];
+}
+function renderNews(){
+  const today=new Date().toISOString().slice(0,10);
+  const rows=Object.entries(D.works||{})
+    .filter(([id,w])=>w.pub&&w.pub<=today)
+    .sort((a,b)=>b[1].pub.localeCompare(a[1].pub));
+
+  const map=new Map();
+  for(const [id,w] of rows){
+    const key=w.pub+'|'+baseTitle(w.title)+'|'+(w.models||[]).join(',');
+    if(!map.has(key)){
+      map.set(key,{pub:w.pub,title:baseTitle(w.title),models:w.models||[],kinds:new Set()});
+    }
+    kindsOf(w.title).forEach(k=>map.get(key).kinds.add(k));
+    if(map.size>=CONFIG.newsCount&&!map.has(key))break;
+  }
+  const items=[...map.values()].slice(0,CONFIG.newsCount);
+  if(!items.length){$('news').innerHTML='<div class="load">표시할 신작이 없습니다.</div>';return}
+
+  const html=items.map(g=>{
+    const t=tidy(g.title)||'신작 화보';
+    const mm=g.models.some(n=>(((D.models||{})[n]||{}).tag||'').trim()==='미스맥심');
+    const sub=g.models.length
+      ? '<span class="m">'+(mm?'<span class="mm">미스맥심</span>':'')+esc(g.models.join(', '))+'</span>'
+      : '';
+    const kinds=[...g.kinds];
+    const kb=kinds.length?'<span class="bd">'+kinds.join(' · ')+'</span>':'<span class="bd up">NEW</span>';
+    return '<div class="rk nw">'
+      +'<span class="dt">'+fdate(g.pub)+'</span>'
+      +'<span class="tx"><span class="t">'+esc(t)+'</span>'+sub+'</span>'
+      +kb+'</div>';
+  }).join('');
+  $('news').innerHTML=html
+    +'<a class="more" href="#" data-gate="1">신작 전체 보기 <span class="ar">→</span></a>';
+}
+
+/* ===== 소셜 ===== */
+const ICONS={
+  instagram:'<path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.8.1-1.1 0-1.7.2-2.1.3-.5.2-.9.4-1.2.8-.4.3-.6.7-.8 1.2-.1.4-.3 1-.3 2.1-.1 1.3-.1 1.7-.1 4.8s0 3.5.1 4.8c0 1.1.2 1.7.3 2.1.2.5.4.9.8 1.2.3.4.7.6 1.2.8.4.1 1 .3 2.1.3 1.3.1 1.7.1 4.8.1s3.5 0 4.8-.1c1.1 0 1.7-.2 2.1-.3.5-.2.9-.4 1.2-.8.4-.3.6-.7.8-1.2.1-.4.3-1 .3-2.1.1-1.3.1-1.7.1-4.8s0-3.5-.1-4.8c0-1.1-.2-1.7-.3-2.1-.2-.5-.4-.9-.8-1.2-.3-.4-.7-.6-1.2-.8-.4-.1-1-.3-2.1-.3-1.3-.1-1.7-.1-4.8-.1zm0 3.1a4.9 4.9 0 110 9.8 4.9 4.9 0 010-9.8zm0 8a3.1 3.1 0 100-6.2 3.1 3.1 0 000 6.2zm6.2-8.2a1.1 1.1 0 11-2.3 0 1.1 1.1 0 012.3 0z"/>',
+  x:'<path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.65l-5.21-6.82-5.97 6.82H1.68l7.73-8.83L1.25 2.25h6.83l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z"/>'
+};
+function socials(){
+  const list=[];
+  if(CONFIG.instagram)list.push(['instagram',CONFIG.instagram,'Instagram']);
+  if(CONFIG.x)list.push(['x',CONFIG.x,'X']);
+  $('social').innerHTML=list.map(([k,u,l])=>
+    '<a href="'+utm(u,'social_'+k)+'" target="_blank" rel="noopener" aria-label="'+l+'" title="'+l+'">'+
+    '<svg viewBox="0 0 24 24">'+ICONS[k]+'</svg></a>').join('');
+}
+
+/* ===== 연령 확인 ===== */
+let pending='';
+function bindGate(){
+  document.querySelectorAll('[data-gate]').forEach(el=>{
+    if(el.__b)return; el.__b=1;
+    el.addEventListener('click',ev=>{
+      ev.preventDefault();
+      const url=utm(CONFIG.bcutUrl,'bcut');
+      if(localStorage.getItem('bcut_age')==='1'){window.open(url,'_blank','noopener');return}
+      pending=url;$('gate').classList.add('on');
+    });
+  });
+}
+function closeGate(){$('gate').classList.remove('on');pending=''}
+function passGate(){
+  try{localStorage.setItem('bcut_age','1')}catch(e){}
+  $('gate').classList.remove('on');
+  if(pending)window.open(pending,'_blank','noopener');
+  pending='';
+}
+$('gate').addEventListener('click',e=>{if(e.target.id==='gate')closeGate()});
+
+function links(){
+  const n=$('btnNews'),k=$('btnKakao');
+  if(CONFIG.newsletter)n.href=utm(CONFIG.newsletter,'newsletter'); else n.remove();
+  if(CONFIG.kakao)k.href=utm(CONFIG.kakao,'kakao'); else k.remove();
+  if(!CONFIG.newsletter&&!CONFIG.kakao){
+    const s=document.querySelectorAll('.sec');
+    s[s.length-1].remove();
+  }
+}
+
+async function boot(){
+  socials();links();bindGate();
+  try{
+    const res=await fetch(CONFIG.dataUrl,{cache:'no-store'});
+    D=await res.json();
+    if(!Array.isArray(D.points))D.points=[100,90,80,70,60,50,40,30,20,10];
+    const wi=(D.weeks||[]).length-1;
+    if(wi<0)throw new Error('no weeks');
+    const wk=D.weeks[wi];
+    $('wkSub').textContent=wk.label+' 기준';
+    if($('mdSub'))$('mdSub').textContent=wk.label+' 기준';
+    renderWorks(wi); renderModels(wi); renderNews();
+    bindGate();
+  }catch(e){
+    ['workRank','modelRank','news'].forEach(id=>{
+      $(id).innerHTML='<div class="load">정보를 불러오지 못했습니다.</div>'
+        +'<a class="more" href="'+CONFIG.rankUrl+'" target="_blank" rel="noopener">랭킹 사이트로 이동 <span class="ar">→</span></a>';
+    });
+  }
+}
+boot();
+</script>
+</body>
+</html>

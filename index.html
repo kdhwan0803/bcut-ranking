@@ -733,19 +733,27 @@ select,input,button{font-family:inherit}
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">BY MODEL</span>
         <a href="models/models.html" style="margin-left:auto;font-size:12.5px;font-weight:800;color:var(--acc2);white-space:nowrap">전체 모델 →</a>
       </div>
-      <div style="position:relative;margin-bottom:22px">
-        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:10px">
-          <sc-for list="{{ mdChips }}" as="c" hint-placeholder-count="4">
-            <button onClick="{{ c.go }}" style="flex:0 0 auto;display:flex;align-items:center;gap:11px;border:1px solid transparent;border-color:{{ c.line }};border-radius:12px;padding:11px 16px 11px 11px;cursor:pointer;transition:transform .18s,box-shadow .18s;background:{{ c.bg }}" style-hover="transform:translateY(-2px);box-shadow:0 0 0 1px var(--w5)">
-              <span style="width:34px;height:34px;flex:0 0 auto;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;background:{{ c.mBg }};color:{{ c.mFg }}">{{ c.initial }}</span>
-              <span style="text-align:left">
-                <span style="display:block;font-size:13.5px;font-weight:800;white-space:nowrap;color:{{ c.fg }}">{{ c.name }}</span>
-                <span style="display:block;font-size:11px;font-weight:700;margin-top:2px;color:{{ c.sub }}">화보 {{ c.n }}편</span>
-              </span>
-            </button>
-          </sc-for>
+      <div style="display:grid;gap:14px;grid-template-columns:{{ mdCols }};margin-bottom:26px">
+        <sc-for list="{{ mdCards }}" as="c" hint-placeholder-count="6">
+          <div onClick="{{ c.go }}" style="position:relative;cursor:pointer;border-radius:13px;overflow:hidden;aspect-ratio:3/4;background:var(--bg2);box-shadow:0 6px 18px rgba(0,0,0,.1);outline:{{ c.ring }};outline-offset:-3px;transition:transform .16s,box-shadow .16s" style-hover="transform:translateY(-3px);box-shadow:0 12px 26px rgba(0,0,0,.16)">
+            <img src="{{ c.img }}" alt="{{ c.name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ c.blur }}">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,9,.86) 0%,rgba(6,6,9,.28) 42%,transparent 70%)"></div>
+            <span style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;color:#fff;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:5px;display:{{ c.tagShow }}">{{ c.tag }}</span>
+            <span style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:900;color:#fff;background:var(--acc);padding:3px 7px;border-radius:5px;box-shadow:0 3px 10px rgba(230,0,18,.4);display:{{ c.newShow }}">NEW</span>
+            <div style="position:absolute;left:11px;right:11px;bottom:10px">
+              <span style="display:block;font-size:14.5px;font-weight:900;color:#fff;letter-spacing:-.3px;text-shadow:0 2px 8px rgba(0,0,0,.55)">{{ c.name }}</span>
+              <span style="display:block;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.82);margin-top:2px">화보 {{ c.n }}편</span>
+            </div>
+            <span style="position:absolute;bottom:8px;right:8px;width:21px;height:21px;border-radius:50%;background:var(--acc);color:#fff;align-items:center;justify-content:center;font-size:11px;font-weight:900;display:{{ c.pinShow }}">✓</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:11px;margin:6px 0 16px">
+        <img src="{{ mdSelImg }}" alt="" style="width:38px;height:38px;border-radius:10px;object-fit:cover;flex:0 0 auto;box-shadow:0 3px 10px rgba(0,0,0,.15)">
+        <div>
+          <div style="font-size:16px;font-weight:900;letter-spacing:-.3px"><span style="color:var(--acc2)">{{ mdSelName }}</span> 의 화보</div>
+          <div style="font-size:11.5px;color:var(--mut);font-weight:700;margin-top:1px">{{ mdSelCount }}편</div>
         </div>
-        <div style="position:absolute;top:0;right:0;bottom:10px;width:70px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
       </div>
       <div style="position:relative">
       <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr))">
@@ -1343,7 +1351,7 @@ class Component extends DCLogic {
         toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
         ev:{show:'none',items:[],clock:[]},
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
-        creators:[],creatorWorks:[],mdChips:[],mdWorks:[],hof:[],upcoming:[],periods:[],filters:[],sorts:[],
+        creators:[],creatorWorks:[],mdChips:[],mdCards:[],mdWorks:[],mdSelName:'',mdSelCount:'',mdSelImg:'',hof:[],upcoming:[],periods:[],filters:[],sorts:[],
         feat:{works:[]},modal:null,popup:null,
         recentShow:'none',wishShow:'none',tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',
         nextShow:'none',recentNewShow:'none',recentNew:[],featShow:'none',crShow:'none',mdShow:'none',kakaoShow:'none',hofShow:'none',
@@ -1396,6 +1404,7 @@ class Component extends DCLogic {
       hallW:S.mob?'136px':'164px',
       gridMin:S.mob?'110px':'148px',
       nwGrid:S.mob?'repeat(3,1fr)':'repeat(auto-fill,minmax(150px,1fr))',
+      mdCols:S.mob?'repeat(3,1fr)':'repeat(auto-fill,minmax(150px,1fr))',
       nwMoreShow:'none',nwMoreLabel:'',nwMore:()=>{},
       secGap:S.mob?'46px':'64px',
       h2Size:S.mob?'17px':'19px',
@@ -1757,23 +1766,24 @@ class Component extends DCLogic {
       if(cw.length>S.cshow){base.crMoreShow='block';base.crMoreLabel='화보 '+Math.min(10,cw.length-S.cshow)+'개 더 보기';base.crMore=()=>this.setState({cshow:S.cshow+10});}}
 
     /* 모델별 */
+    const MM=D.models||{};
     const byM={};Object.keys(W).forEach(id=>{(W[id].models||[]).forEach(m=>{m=(m||'').trim();if(!m)return;(byM[m]=byM[m]||[]).push(id);});});
     let ms=Object.keys(byM).filter(m=>byM[m].length>=3).sort((a,b)=>byM[b].length-byM[a].length||a.localeCompare(b));
-    if(!this._mdOrder||this._mdOrder.length!==ms.length||this._mdOrder.some(m=>!byM[m])){
-      const a=ms.slice();
-      if(!this._admin)for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}
-      this._mdOrder=a;}
-    ms=this._mdOrder;
+    const _mLatest=m=>byM[m].reduce((x,id)=>{const p=W[id].pub||'';return p>x?p:x;},'');
+    const _mImg=m=>{if(MM[m]&&MM[m].img)return MM[m].img;const s=byM[m].slice().sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));return (W[s[0]]||{}).img||'';};
+    const _mwa=new Date(today+'T00:00:00');_mwa.setDate(_mwa.getDate()-7);const _mp=n=>String(n).padStart(2,'0');
+    const mWkAgo=_mwa.getFullYear()+'-'+_mp(_mwa.getMonth()+1)+'-'+_mp(_mwa.getDate());
     if(ms.length){const sel=S.model&&byM[S.model]?S.model:ms[0];
       base.mdShow='block';
-      base.mdChips=ms.map(m=>{const on=m===sel;
-        return {name:m,n:byM[m].length,initial:(m||'?').trim().charAt(0),
-          bg:on?'linear-gradient(130deg,rgba(230,0,18,.22),var(--w2))':'var(--w1)',
-          line:on?'rgba(230,0,18,.45)':'var(--line)',
-          fg:on?'var(--txt)':'var(--t3)',sub:on?'var(--acc2)':'var(--mut)',
-          mBg:on?'var(--acc)':'var(--w3)',mFg:on?'#fff':'var(--t2)',
+      const shown=ms.slice(0,S.mob?12:18);
+      base.mdCards=shown.map(m=>{const on=m===sel;const meta=MM[m]||{};
+        return {name:m,n:byM[m].length,img:_mImg(m),blur:'none',
+          tag:meta.tag||'',tagShow:(meta.tag)?'inline-block':'none',
+          newShow:(_mLatest(m)>=mWkAgo)?'inline-block':'none',
+          ring:on?'3px solid var(--acc)':'0',pinShow:on?'flex':'none',
           go:()=>this.setState({model:m,mshow:10})};});
-      const mw=byM[sel];
+      base.mdSelName=sel;base.mdSelCount=byM[sel].length;base.mdSelImg=_mImg(sel);
+      const mw=byM[sel].slice().sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
       base.mdWorks=mw.slice(0,S.mshow).map(id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),open:()=>this.openWork(id)}));
       if(mw.length>S.mshow){base.mdMoreShow='block';base.mdMoreLabel='화보 '+Math.min(10,mw.length-S.mshow)+'개 더 보기';base.mdMore=()=>this.setState({mshow:S.mshow+10});}}
 

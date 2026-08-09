@@ -164,19 +164,19 @@ select,input,button{font-family:inherit}
           </div>
           <div style="position:relative;z-index:2;max-width:1360px;margin:0 auto;height:100%;display:flex;align-items:flex-end;padding:0 {{ padX }};gap:{{ heroGap }}">
             <div style="flex:1;min-width:0;max-width:640px;padding-bottom:{{ heroPadB }}">
-              <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;flex-wrap:wrap">
                 <span style="color:#fff;font-size:11px;font-weight:900;letter-spacing:1px;padding:5px 11px;border-radius:4px;display:{{ s.markShow }};background:{{ s.markBg }}">{{ s.mark }}</span>
                 <span style="font-size:10.5px;font-weight:900;letter-spacing:.6px;padding:5px 9px;border-radius:4px;border:1px solid var(--w5);color:var(--t3);display:{{ s.vidShow }}">▶ 영상</span>
                 <span style="font-size:10.5px;font-weight:900;letter-spacing:.6px;padding:5px 8px;border-radius:4px;border:1px solid var(--acc);color:var(--acc2);display:{{ s.b19Show }}">19</span>
                 <span style="font-size:11.5px;font-weight:700;letter-spacing:2.2px;color:var(--t2)">{{ s.eyebrow }}</span>
               </div>
               <div style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:var(--t2);margin-bottom:7px;display:{{ s.tagShow }}">{{ s.tag }}</div>
-              <h1 style="font-size:clamp(26px,4.6vw,58px);font-weight:900;letter-spacing:-1.8px;line-height:1.06;text-wrap:balance;overflow-wrap:anywhere;word-break:keep-all;text-shadow:var(--heroShadow)">{{ s.title }}</h1>
-              <div style="font-size:15.5px;font-weight:700;color:var(--acc2);margin-top:12px">{{ s.sub }}</div>
-              <div style="display:flex;gap:26px;margin:26px 0 28px;flex-wrap:wrap">
+              <h1 style="font-size:clamp(25px,3.7vw,50px);font-weight:900;letter-spacing:-1.6px;line-height:1.05;text-wrap:balance;overflow-wrap:anywhere;word-break:keep-all;text-shadow:var(--heroShadow)">{{ s.title }}</h1>
+              <div style="font-size:15.5px;font-weight:700;color:var(--acc2);margin-top:8px">{{ s.sub }}</div>
+              <div style="display:{{ s.statsShow }};gap:22px;margin:12px 0 16px;flex-wrap:wrap">
                 <sc-for list="{{ s.stats }}" as="st" hint-placeholder-count="4">
                   <div>
-                    <div style="font-size:21px;font-weight:900;letter-spacing:-.6px;line-height:1.1;color:{{ st.color }}">{{ st.v }}</div>
+                    <div style="font-size:18px;font-weight:900;letter-spacing:-.6px;line-height:1.1;color:{{ st.color }}">{{ st.v }}</div>
                     <div style="font-size:11px;font-weight:600;color:var(--mut);margin-top:4px;letter-spacing:.3px">{{ st.l }}</div>
                   </div>
                 </sc-for>
@@ -1370,7 +1370,7 @@ class Component extends DCLogic {
       padX:S.mob?'16px':'26px',
       navShow:S.mob?'none':'flex',
       heroH:S.mob?'min(56vh,430px)':'min(58vh,600px)',
-      heroPadB:S.mob?'30px':'40px',
+      heroPadB:S.mob?'28px':'20px',
       heroGap:S.mob?'14px':'38px',
       heroCardW:S.mob?'112px':'auto',
       heroCardH:S.mob?'auto':'min(315px, calc(max(440px, min(58vh, 600px)) - 182px))',
@@ -1441,7 +1441,7 @@ class Component extends DCLogic {
     const idx=Math.min(S.spot,Math.max(0,seq.length-1));
     base.slides=seq.map(x=>{const w=W[x.id]||{};
       return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:x.title||'',tag:x.tag||'',tagShow:x.tag?'block':'none',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
-        eyebrow:x.eyebrow||'',stats:x.stats||[],link:x.link||'https://bcut.maximkorea.net',
+        eyebrow:x.eyebrow||'',stats:x.stats||[],statsShow:(x.stats&&x.stats.length)?'flex':'none',link:x.link||'https://bcut.maximkorea.net',
         blur:this.blurOf(x.id),cardShow:(x.img)?'block':'none',
         mobCardShow:'none',
         vidShow:w.vid?'inline-block':'none',b19Show:w.b19?'inline-block':'none',

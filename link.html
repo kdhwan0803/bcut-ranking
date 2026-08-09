@@ -273,7 +273,9 @@ body{background:var(--bg);color:var(--txt);font-family:var(--kr);
 /* ===================== 설정 ===================== */
 const CONFIG = {
   dataUrl   : 'https://bcutrank.com/data.json',
-  rankUrl   : 'https://bcutrank.com/',
+  rankUrl   : 'https://bcutrank.com/',                 // 화보 랭킹
+  modelUrl  : 'https://bcutrank.com/?tab=models',      // 모델 랭킹
+  newUrl    : 'https://bcutrank.com/#/new',            // 신작 전체
   bcutUrl   : 'https://bcut.maximkorea.net',
   instagram : 'https://www.instagram.com/maximbcut/',  // 실제 계정으로 수정
   x         : 'https://x.com/maximbcut',
@@ -286,7 +288,14 @@ const CONFIG = {
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const utm=(u,c)=>u+(u.includes('?')?'&':'?')+'utm_source=instagram&utm_medium=bio&utm_campaign='+c;
+/* 해시(#/new) 앞에 쿼리를 넣어야 GA4가 UTM을 인식한다 */
+function utm(u,c){
+  const q='utm_source=instagram&utm_medium=bio&utm_campaign='+c;
+  const i=String(u).indexOf('#');
+  if(i<0)return u+(u.includes('?')?'&':'?')+q;
+  const head=u.slice(0,i), hash=u.slice(i);
+  return head+(head.includes('?')?'&':'?')+q+hash;
+}
 
 function tidy(t){
   return String(t||'')
@@ -336,8 +345,8 @@ function delta(cur,prev){
 }
 
 /* ===== 렌더 ===== */
-function moreBtn(label,camp){
-  return '<a class="more" href="'+utm(CONFIG.rankUrl,camp)+'" target="_blank" rel="noopener">'
+function moreBtn(label,camp,url){
+  return '<a class="more" href="'+utm(url||CONFIG.rankUrl,camp)+'" target="_blank" rel="noopener">'
        + label+' <span class="ar">→</span></a>';
 }
 function renderWorks(wi){
@@ -370,7 +379,7 @@ function renderModels(wi){
       +'<span class="tx"><span class="t">'+esc(r.id)+'</span>'+sub+'</span>'
       +delta(r.rank,prev)+'</div>';
   }).join('');
-  $('modelRank').innerHTML=rows+moreBtn('모델 랭킹 자세히 보기','model_rank');
+  $('modelRank').innerHTML=rows+moreBtn('모델 랭킹 자세히 보기','model_rank',CONFIG.modelUrl);
 }
 /* 같은 촬영의 PHOTO/VIDEO 분리본을 한 줄로 묶기 */
 function baseTitle(t){
@@ -420,8 +429,7 @@ function renderNews(){
       +'<span class="tx"><span class="t">'+esc(t)+'</span>'+sub+'</span>'
       +kb+'</div>';
   }).join('');
-  $('news').innerHTML=html
-    +'<a class="more" href="#" data-gate="1">신작 전체 보기 <span class="ar">→</span></a>';
+  $('news').innerHTML=html+moreBtn('신작 전체 보기','new',CONFIG.newUrl);
 }
 
 /* ===== 소셜 ===== */
@@ -486,7 +494,7 @@ async function boot(){
   }catch(e){
     ['workRank','modelRank','news'].forEach(id=>{
       $(id).innerHTML='<div class="load">정보를 불러오지 못했습니다.</div>'
-        +'<a class="more" href="'+CONFIG.rankUrl+'" target="_blank" rel="noopener">랭킹 사이트로 이동 <span class="ar">→</span></a>';
+        +'<a class="more" href="'+utm(CONFIG.rankUrl,'fallback')+'" target="_blank" rel="noopener">랭킹 사이트로 이동 <span class="ar">→</span></a>';
     });
   }
 }

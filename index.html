@@ -578,6 +578,7 @@ select,input,button{font-family:inherit}
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">이번 주 공개된 신작</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">NEW THIS WEEK</span>
       </div>
+      <div style="position:relative">
       <div style="display:grid;grid-template-columns:{{ nwGrid }};gap:14px">
         <sc-for list="{{ recentNew }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" style="cursor:pointer;min-width:0">
@@ -592,8 +593,10 @@ select,input,button{font-family:inherit}
           </div>
         </sc-for>
       </div>
-      <div style="display:{{ nwMoreShow }};justify-content:center;margin-top:18px">
-        <button onClick="{{ nwMore }}" style="border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:13px;font-weight:800;padding:11px 26px;border-radius:999px;cursor:pointer" style-hover="border-color:var(--w5);background:var(--w3)">{{ nwMoreLabel }} ↓</button>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:120px;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--bg0));display:{{ nwMoreShow }}"></div>
+      </div>
+      <div style="display:{{ nwMoreShow }};justify-content:center;margin-top:-16px;position:relative;z-index:2">
+        <button onClick="{{ nwMore }}" style="display:inline-flex;align-items:center;gap:8px;border:0;background:var(--acc);color:#fff;font-size:14px;font-weight:800;padding:13px 32px;border-radius:999px;cursor:pointer;box-shadow:0 8px 22px rgba(230,0,18,.38)" style-hover="filter:brightness(1.08);transform:translateY(-1px)">{{ nwMoreLabel }} ↓</button>
       </div>
     </section>
 
@@ -1858,8 +1861,9 @@ class Component extends DCLogic {
     const inHome=V==='home';
     const _titles={new:'신작 화보',sub:'구독 화보',creators:'작가별 화보',models:'모델별 화보',search:'화보 찾아보기'};
     if(inHome){
-      /* 홈 = 원래 풀 페이지: 히어로+랭킹+나머지 섹션 전부 계산값 그대로 노출 */
+      /* 홈 = 풀 페이지: 단, '이번 주 공개된 신작'은 신작 페이지에서만 (홈 정보량↓) */
       base.heroShow='block';base.rankingShow='block';base.wcShow='block';base.searchShow='block';
+      base.recentNewShow='none';
       base.pageHeadShow='none';base.pageTitle='';
     }else{
       base.heroShow='none';base.rankingShow='none';if(base.ev)base.ev.show='none';

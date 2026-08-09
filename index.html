@@ -1773,9 +1773,14 @@ class Component extends DCLogic {
     const _mImg=m=>{if(MM[m]&&MM[m].img)return MM[m].img;const s=byM[m].slice().sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));return (W[s[0]]||{}).img||'';};
     const _mwa=new Date(today+'T00:00:00');_mwa.setDate(_mwa.getDate()-7);const _mp=n=>String(n).padStart(2,'0');
     const mWkAgo=_mwa.getFullYear()+'-'+_mp(_mwa.getMonth()+1)+'-'+_mp(_mwa.getDate());
-    if(ms.length){const sel=S.model&&byM[S.model]?S.model:ms[0];
+    if(!this._mdOrder2||this._mdOrderN!==ms.length){
+      const _top=ms.slice(0,30),_rest=ms.slice(30);
+      if(!this._admin)for(let i=_top.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_top[i];_top[i]=_top[j];_top[j]=t;}
+      this._mdOrder2=_top.concat(_rest);this._mdOrderN=ms.length;}
+    const msO=this._mdOrder2;
+    if(msO.length){const sel=S.model&&byM[S.model]?S.model:msO[0];
       base.mdShow='block';
-      const shown=ms.slice(0,S.mob?12:18);
+      const shown=msO.slice(0,S.mob?12:18);
       base.mdCards=shown.map(m=>{const on=m===sel;const meta=MM[m]||{};
         return {name:m,n:byM[m].length,img:_mImg(m),blur:'none',
           tag:meta.tag||'',tagShow:(meta.tag)?'inline-block':'none',

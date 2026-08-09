@@ -187,7 +187,7 @@ select,input,button{font-family:inherit}
               </div>
             </div>
             <div style="flex:0 0 auto;padding-bottom:{{ heroCardPB }};display:{{ s.cardShow }}">
-              <div style="position:relative;width:{{ heroCardW }};aspect-ratio:3/4;border-radius:10px;overflow:hidden;box-shadow:var(--heroCardSh);border:1px solid rgba(255,255,255,.14)">
+              <div style="position:relative;width:{{ heroCardW }};height:{{ heroCardH }};aspect-ratio:3/4;border-radius:10px;overflow:hidden;box-shadow:var(--heroCardSh);border:1px solid rgba(255,255,255,.14)">
                 <img src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ s.blur }}">
                 <div style="position:absolute;bottom:{{ heroVidB }};right:{{ heroVidB }};font-size:{{ heroVidFs }};font-weight:900;padding:4px 8px;border-radius:4px;background:rgba(8,8,11,.8);color:#fff;display:{{ s.vidShow }}">▶ 영상</div>
               </div>
@@ -1372,7 +1372,8 @@ class Component extends DCLogic {
       heroH:S.mob?'min(56vh,430px)':'min(58vh,600px)',
       heroPadB:S.mob?'30px':'40px',
       heroGap:S.mob?'14px':'38px',
-      heroCardW:S.mob?'112px':'236px',
+      heroCardW:S.mob?'112px':'auto',
+      heroCardH:S.mob?'auto':'min(315px, calc(max(440px, min(58vh, 600px)) - 182px))',
       heroCardPB:S.mob?'30px':'64px',
       heroVidB:S.mob?'6px':'10px',
       heroVidFs:S.mob?'8.5px':'10px',

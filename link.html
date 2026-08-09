@@ -34,6 +34,9 @@
   --mmC:#ffd76a; --mmBg:rgba(255,196,58,.13); --mmLine:rgba(255,196,58,.28);
   --gateBg:rgba(4,4,7,.94);
   --mailBg:#1f2a44; --mailC:#8fb4ff;
+  --phBg:rgba(255,255,255,.09);  --phC:#c8c8d2;
+  --vdBg:rgba(120,160,255,.16);  --vdC:#9db8ff;
+  --bothBg:rgba(255,196,58,.14); --bothC:#ffd76a;
   --kr:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 /* 기기 설정이 라이트일 때 */
@@ -58,6 +61,9 @@
     --mmC:#8a6a00; --mmBg:rgba(255,196,58,.18); --mmLine:rgba(180,140,20,.35);
     --gateBg:rgba(255,255,255,.94);
     --mailBg:#dbe6ff; --mailC:#28457f;
+    --phBg:rgba(0,0,0,.07);        --phC:#4a4a54;
+    --vdBg:rgba(40,90,200,.12);    --vdC:#2a4f9e;
+    --bothBg:rgba(200,150,20,.16); --bothC:#7a5c00;
   }
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -121,6 +127,9 @@ body{background:var(--bg);color:var(--txt);font-family:var(--kr);
   padding:2px 6px;border-radius:4px;letter-spacing:-.2px;flex:0 0 auto}
 .rk .bd{font-size:10px;font-weight:800;padding:3px 7px;border-radius:5px;
   background:var(--bdBg);color:var(--mut);flex:0 0 auto}
+.rk .bd.ph{background:var(--phBg);color:var(--phC)}
+.rk .bd.vd{background:var(--vdBg);color:var(--vdC)}
+.rk .bd.both{background:var(--bothBg);color:var(--bothC)}
 .rk .bd.up{background:rgba(230,0,18,.16);color:var(--acc2)}
 
 /* 신작 행 */
@@ -381,7 +390,7 @@ function renderModels(wi){
   }).join('');
   $('modelRank').innerHTML=rows+moreBtn('모델 랭킹 자세히 보기','model_rank',CONFIG.modelUrl);
 }
-/* 같은 촬영의 PHOTO/VIDEO 분리본을 한 줄로 묶기 */
+/* 제목 끝의 구성 표기를 떼고 배지로 분리 */
 function baseTitle(t){
   return String(t||'')
     .replace(/\(\s*(?:PHOTO\s*\+\s*VIDEO|PHOTO\s*ONLY|VIDEO\s*ONLY|PHOTO|VIDEO)\s*\)/gi,'')
@@ -389,45 +398,37 @@ function baseTitle(t){
     .replace(/^[\s\-\u00b7,]+|[\s\-\u00b7,]+$/g,'')
     .trim();
 }
-function kindsOf(t){
+/* 사진판 / 영상판 / 사진+영상 구분 */
+function kindOf(t){
   const s=String(t||'');
-  if(/PHOTO\s*\+\s*VIDEO/i.test(s))return ['사진','영상'];
-  if(/VIDEO\s*ONLY/i.test(s))return ['영상'];
-  if(/PHOTO\s*ONLY/i.test(s))return ['사진'];
-  if(/\(\s*VIDEO\s*\)/i.test(s))return ['영상'];
-  if(/\(\s*PHOTO\s*\)/i.test(s))return ['사진'];
-  return [];
+  if(/PHOTO\s*\+\s*VIDEO/i.test(s)) return {label:'사진+영상',cls:'both'};
+  if(/VIDEO\s*ONLY/i.test(s))       return {label:'영상',cls:'vd'};
+  if(/PHOTO\s*ONLY/i.test(s))       return {label:'사진',cls:'ph'};
+  if(/\(\s*VIDEO\s*\)/i.test(s))    return {label:'영상',cls:'vd'};
+  if(/\(\s*PHOTO\s*\)/i.test(s))    return {label:'사진',cls:'ph'};
+  return null;
 }
 function renderNews(){
   const today=new Date().toISOString().slice(0,10);
-  const rows=Object.entries(D.works||{})
+  const items=Object.entries(D.works||{})
     .filter(([id,w])=>w.pub&&w.pub<=today)
-    .sort((a,b)=>b[1].pub.localeCompare(a[1].pub));
-
-  const map=new Map();
-  for(const [id,w] of rows){
-    const key=w.pub+'|'+baseTitle(w.title)+'|'+(w.models||[]).join(',');
-    if(!map.has(key)){
-      map.set(key,{pub:w.pub,title:baseTitle(w.title),models:w.models||[],kinds:new Set()});
-    }
-    kindsOf(w.title).forEach(k=>map.get(key).kinds.add(k));
-    if(map.size>=CONFIG.newsCount&&!map.has(key))break;
-  }
-  const items=[...map.values()].slice(0,CONFIG.newsCount);
+    .sort((a,b)=>b[1].pub.localeCompare(a[1].pub))
+    .slice(0,CONFIG.newsCount);
   if(!items.length){$('news').innerHTML='<div class="load">표시할 신작이 없습니다.</div>';return}
 
-  const html=items.map(g=>{
-    const t=tidy(g.title)||'신작 화보';
-    const mm=g.models.some(n=>(((D.models||{})[n]||{}).tag||'').trim()==='미스맥심');
-    const sub=g.models.length
-      ? '<span class="m">'+(mm?'<span class="mm">미스맥심</span>':'')+esc(g.models.join(', '))+'</span>'
+  const html=items.map(([id,w])=>{
+    const t=tidy(baseTitle(w.title))||'신작 화보';
+    const ms=w.models||[];
+    const mm=ms.some(n=>(((D.models||{})[n]||{}).tag||'').trim()==='미스맥심');
+    const sub=ms.length
+      ? '<span class="m">'+(mm?'<span class="mm">미스맥심</span>':'')+esc(ms.join(', '))+'</span>'
       : '';
-    const kinds=[...g.kinds];
-    const kb=kinds.length?'<span class="bd">'+kinds.join(' · ')+'</span>':'<span class="bd up">NEW</span>';
+    const k=kindOf(w.title);
+    const badge=k?'<span class="bd '+k.cls+'">'+k.label+'</span>':'<span class="bd up">NEW</span>';
     return '<div class="rk nw">'
-      +'<span class="dt">'+fdate(g.pub)+'</span>'
+      +'<span class="dt">'+fdate(w.pub)+'</span>'
       +'<span class="tx"><span class="t">'+esc(t)+'</span>'+sub+'</span>'
-      +kb+'</div>';
+      +badge+'</div>';
   }).join('');
   $('news').innerHTML=html+moreBtn('신작 전체 보기','new',CONFIG.newUrl);
 }

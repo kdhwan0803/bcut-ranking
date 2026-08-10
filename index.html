@@ -123,6 +123,8 @@ select,input,button{font-family:inherit}
 @media(max-width:360px){.qLabel{font-size:9.5px}}
 @media(max-width:480px){.hdrTag{display:none!important}}
 /* 홈 추가 섹션: 급상승 TOP10 / 주간 캘린더 / 신작 선반 */
+.shelfRow{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.shelfRow::-webkit-scrollbar{display:none}
 .nwCard{flex:0 0 148px;width:148px}
 @media(max-width:680px){.nwCard{flex:0 0 120px;width:120px}}
 .t10grid{display:grid;grid-template-columns:1fr 1fr;gap:0 30px}
@@ -153,6 +155,31 @@ select,input,button{font-family:inherit}
 .secHead h2{font-size:19px;font-weight:900;letter-spacing:-.4px}
 .secHead .en{font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)}
 .secHead .more{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--mut);text-decoration:none;align-self:center}
+/* 실시간 인기(지금 보는 중) */
+.liveDot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--acc);animation:livePulse 1.6s infinite;margin-right:3px;vertical-align:1px}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(230,0,18,.5)}70%{box-shadow:0 0 0 7px rgba(230,0,18,0)}100%{box-shadow:0 0 0 0 rgba(230,0,18,0)}}
+.viewers{position:absolute;bottom:7px;left:7px;font-size:10.5px;font-weight:800;color:#fff;background:rgba(10,10,12,.72);border-radius:6px;padding:3px 7px;display:inline-flex;align-items:center;gap:5px}
+.viewers .vd{width:6px;height:6px;border-radius:50%;background:#25d366;box-shadow:0 0 6px #25d366;animation:livePulse 1.6s infinite}
+/* 월 캘린더 */
+.monthGrid{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg1)}
+.monthHead{display:grid;grid-template-columns:repeat(7,1fr);background:var(--w1)}
+.monthHead span{padding:9px 0;text-align:center;font-size:12px;font-weight:800;color:var(--t2)}
+.monthHead span.sun{color:var(--acc)}
+.monthBody{display:grid;grid-template-columns:repeat(7,1fr)}
+.mCell{min-height:92px;border-top:1px solid var(--line);border-left:1px solid var(--line);padding:6px;display:flex;flex-direction:column;gap:5px}
+.mCell:nth-child(7n+1){border-left:0}
+.mDay{font-size:12px;font-weight:700;color:var(--mut)}
+.mCell.mToday .mDay{color:#fff;background:var(--acc);width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.mTh{flex:1;border-radius:6px;overflow:hidden;min-height:0}
+.mTh img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.monthList{display:none}
+@media(max-width:680px){.monthGrid{display:none}.monthList{display:block}}
+.mLrow{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--w2);cursor:pointer}
+.mLdate{flex:0 0 96px;font-size:13.5px;font-weight:800;color:var(--txt)}
+.mLdate.mToday{color:var(--acc)}
+.mLthumbs{display:flex;gap:6px;align-items:center;overflow:hidden;flex:1}
+.mLthumbs img{width:42px;height:54px;border-radius:6px;object-fit:cover;object-position:center top;flex:0 0 auto}
+.mLmore{font-size:12px;font-weight:700;color:var(--mut);flex:0 0 auto}
 </style>
 </helmet>
 
@@ -606,15 +633,18 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
-    <section id="rising" style="display:{{ risingShow }}">
-      <div class="secHead"><h2>🔥 인기 급상승 TOP 10</h2><span class="en">THIS WEEK</span><a href="#/" class="more">전체 랭킹 ›</a></div>
-      <div class="t10grid">
-        <sc-for list="{{ rising }}" as="r" hint-placeholder-count="0">
-          <div class="t10it" onClick="{{ r.open }}">
-            <span class="t10rk {{ r.hotCls }}">{{ r.rank }}</span>
-            <span class="t10th"><img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top;filter:{{ r.blur }}"></span>
-            <span class="t10tt"><span class="t10n">{{ r.name }}</span><span class="t10s">{{ r.sub }}</span></span>
-            <span class="t10mv" style="color:{{ r.mvColor }}">{{ r.mv }}</span>
+    <section id="livenow" style="display:{{ liveShow }}">
+      <div class="secHead"><h2><span class="liveDot"></span>지금 보는 중</h2><span class="en">다른 분들이 지금 보고 있어요</span></div>
+      <div class="shelfRow" style="gap:14px">
+        <sc-for list="{{ liveWorks }}" as="l" hint-placeholder-count="0">
+          <div onClick="{{ l.open }}" class="nwCard" style="cursor:pointer">
+            <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
+              <img src="{{ l.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ l.blur }}">
+              <div style="position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(6,6,9,.55),transparent);pointer-events:none"></div>
+              <div class="viewers"><span class="vd"></span>{{ l.viewers }}명 보는 중</div>
+            </div>
+            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.title }}</div>
+            <div style="font-size:11px;color:var(--mut);margin-top:2px">{{ l.sub }}</div>
           </div>
         </sc-for>
       </div>
@@ -644,21 +674,6 @@ select,input,button{font-family:inherit}
       </div>
       <div style="display:{{ nwMoreShow }};justify-content:center;margin-top:-16px;position:relative;z-index:2">
         <button onClick="{{ nwMore }}" style="display:inline-flex;align-items:center;gap:8px;border:0;background:var(--acc);color:#fff;font-size:14px;font-weight:800;padding:13px 32px;border-radius:999px;cursor:pointer;box-shadow:0 8px 22px rgba(230,0,18,.38)" style-hover="filter:brightness(1.08);transform:translateY(-1px)">{{ nwMoreLabel }} ↓</button>
-      </div>
-    </section>
-
-    <section id="calweek" style="display:{{ calShow }}">
-      <div class="secHead"><h2>📅 이번 주 공개 캘린더</h2><span class="en">{{ calRange }}</span></div>
-      <div class="calGrid">
-        <sc-for list="{{ calWeek }}" as="c" hint-placeholder-count="7">
-          <a href="{{ c.href }}" class="calDay {{ c.todayCls }} {{ c.sunCls }}">
-            <span class="calDw">{{ c.dw }}</span>
-            <span class="calDd">{{ c.dd }}</span>
-            <span class="calPill {{ c.pillCls }}" style="display:{{ c.pillShow }}">{{ c.pill }}</span>
-            <span class="calTh" style="display:{{ c.thShow }}"><img src="{{ c.th }}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top"></span>
-            <span class="calNone" style="display:{{ c.noneShow }}">—</span>
-          </a>
-        </sc-for>
       </div>
     </section>
 
@@ -900,6 +915,33 @@ select,input,button{font-family:inherit}
           <div style="font-size:13.5px;color:var(--mut);margin-top:6px;line-height:1.5">B컷 신간 소식을 카카오톡으로 가장 빠르게 받아보세요.</div>
         </div>
         <a href="{{ kakaoUrl }}" target="_blank" rel="noopener" style="background:#fee500;color:#191600;font-weight:800;font-size:14.5px;padding:14px 26px;border-radius:9px;white-space:nowrap">카톡 채널 추가</a>
+      </div>
+    </section>
+
+    <section id="calmonth" style="display:{{ monthShow }}">
+      <div class="secHead"><h2>📅 이번 달 공개 캘린더</h2><span class="en">{{ monthLabel2 }}</span></div>
+      <div class="monthGrid">
+        <div class="monthHead"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span class="sun">일</span></div>
+        <div class="monthBody">
+          <sc-for list="{{ monthCells }}" as="m" hint-placeholder-count="0">
+            <div class="mCell {{ m.todayCls }}">
+              <span class="mDay" style="display:{{ m.dayShow }}">{{ m.day }}</span>
+              <span class="mTh" style="display:{{ m.thShow }}"><img src="{{ m.th }}" alt=""></span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div class="monthList">
+        <sc-for list="{{ monthList }}" as="l" hint-placeholder-count="0">
+          <div class="mLrow" onClick="{{ l.open }}">
+            <div class="mLdate {{ l.todayCls }}">{{ l.label }}</div>
+            <div class="mLthumbs">
+              <sc-for list="{{ l.works }}" as="w" hint-placeholder-count="0"><img src="{{ w.img }}" alt=""></sc-for>
+              <span class="mLmore" style="display:{{ l.moreShow }}">{{ l.more }}</span>
+            </div>
+          </div>
+        </sc-for>
+        <div style="display:{{ monthEmptyShow }};text-align:center;color:var(--mut);font-size:13px;padding:24px 0">이번 달 공개 예정 화보가 아직 없어요.</div>
       </div>
     </section>
   </main>
@@ -1485,7 +1527,7 @@ class Component extends DCLogic {
       nwGrid:S.mob?'repeat(3,1fr)':'repeat(auto-fill,minmax(150px,1fr))',
       mdCols:S.mob?'repeat(3,1fr)':'repeat(auto-fill,minmax(150px,1fr))',
       nwMoreShow:'none',nwMoreLabel:'',nwMore:()=>{},
-      risingShow:'none',rising:[],calShow:'none',calWeek:[],calRange:'',
+      liveShow:'none',liveWorks:[],monthShow:'none',monthCells:[],monthList:[],monthLabel2:'',monthEmptyShow:'none',
       secGap:S.mob?'46px':'64px',
       h2Size:S.mob?'17px':'19px',
       hdrBg:S.scrolled?(dark?'rgba(7,7,10,.92)':'rgba(255,255,255,.93)'):'var(--hdrTop)',
@@ -1770,31 +1812,39 @@ class Component extends DCLogic {
       }
     base.nwMoreShow='none'; /* 신작을 가로 선반으로 대체 → 그리드 더보기 숨김 */
 
-    /* 홈 추가: 인기 급상승 TOP 10 */
-    const _ww=this.weekWorks(wi);
-    base.rising=_ww.slice(0,10).map(x=>{const w=W[x.id]||{};const prev=this.workRankAt(x.id,wi-1);const mv=this.movement(x.rank,prev);
-      const lab=mv.k==='new'?'NEW':mv.k==='up'?('▲'+mv.n):mv.k==='down'?('▼'+mv.n):'—';
-      const col=mv.k==='new'?'#7c3aed':mv.k==='up'?'#12a150':mv.k==='down'?'#f04438':'var(--mut)';
-      return {rank:x.rank,hotCls:x.rank<=3?'hot':'',img:w.img||'',blur:this.blurOf(x.id),
-        name:this.splitTitle(w.title||x.id).name,sub:(w.models||[]).join(' & ')||'MAXIM B컷',mv:lab,mvColor:col,
-        open:()=>this.openWork(x.id)};});
-    base.risingShow=(V==='home'&&base.rising.length)?'block':'none';
+    /* 홈 추가: 지금 보는 중 (랜덤 화보 + 실시간 느낌) */
+    const _allIds=Object.keys(W);
+    if(_allIds.length&&(!this._liveIds||this._liveIds.length===0)){
+      const sd=this._liveSeed||(this._liveSeed=Math.floor(Math.random()*100000)+1);
+      const sh=_allIds.slice();
+      for(let i=sh.length-1;i>0;i--){const j=(sd*(i+7)+i*131)%(i+1);const t=sh[i];sh[i]=sh[j];sh[j]=t;}
+      this._liveIds=sh.slice(0,8);
+    }
+    base.liveWorks=(this._liveIds||[]).filter(id=>W[id]).map(id=>{const w=W[id];
+      const h=id.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+      return {img:w.img||'',blur:this.blurOf(id),title:this.splitTitle(w.title||id).name,
+        sub:(w.models||[]).join(' & ')||'MAXIM B컷',viewers:13+(h%77),open:()=>this.openWork(id)};});
+    base.liveShow=(V==='home'&&base.liveWorks.length)?'block':'none';
 
-    /* 홈 추가: 주간 공개 캘린더 (월=랭킹 · 목=신간 · 금·토·일=이벤트, 실제 공개일은 썸네일) */
-    const _td=new Date(today+'T00:00:00'),_dow=(_td.getDay()+6)%7,_mon=new Date(_td);_mon.setDate(_td.getDate()-_dow);
-    const _wn=['월','화','수','목','금','토','일'],_sched={0:['랭킹','pill-r','#/'],3:['신간','pill-n','#/new'],4:['이벤트','pill-e','#/sub'],5:['이벤트','pill-e','#/sub'],6:['이벤트','pill-e','#/sub']};
-    base.calWeek=[];
-    for(let i=0;i<7;i++){const d=new Date(_mon);d.setDate(_mon.getDate()+i);
-      const ymd=d.getFullYear()+'-'+_p2(d.getMonth()+1)+'-'+_p2(d.getDate());
-      const pubId=Object.keys(W).find(id=>W[id].pub===ymd);const sc=_sched[i];
-      base.calWeek.push({dw:_wn[i],dd:(d.getMonth()+1)+'.'+d.getDate(),
-        todayCls:ymd===today?'today':'',sunCls:i===6?'sun':'',
-        pill:sc?sc[0]:'',pillCls:sc?sc[1]:'',pillShow:sc?'inline-block':'none',
-        th:pubId?(W[pubId].img||''):'',thShow:pubId?'block':'none',
-        noneShow:(!sc&&!pubId)?'block':'none',href:sc?sc[2]:'#/new'});}
-    const _end=new Date(_mon);_end.setDate(_mon.getDate()+6);
-    base.calRange=(_mon.getMonth()+1)+'.'+_mon.getDate()+' ~ '+(_end.getMonth()+1)+'.'+_end.getDate();
-    base.calShow=(V==='home')?'block':'none';
+    /* 홈 추가: 이번 달 공개 캘린더 (PC 격자 / 모바일 리스트) */
+    const _td=new Date(today+'T00:00:00'),_y=_td.getFullYear(),_mo=_td.getMonth();
+    const _lead=(new Date(_y,_mo,1).getDay()+6)%7, _dim=new Date(_y,_mo+1,0).getDate();
+    const _pubOf=ymd=>Object.keys(W).filter(id=>W[id].pub===ymd);
+    base.monthLabel2=(_mo+1)+'월';
+    base.monthCells=[];
+    for(let i=0;i<_lead;i++)base.monthCells.push({todayCls:'',dayShow:'none',day:'',thShow:'none',th:''});
+    for(let d=1;d<=_dim;d++){const ymd=_y+'-'+_p2(_mo+1)+'-'+_p2(d);const rel=_pubOf(ymd);
+      base.monthCells.push({todayCls:ymd===today?'mToday':'',dayShow:'flex',day:String(d),
+        thShow:rel.length?'block':'none',th:rel.length?(W[rel[0]].img||''):''});}
+    base.monthList=[];const _wn=['일','월','화','수','목','금','토'];
+    for(let d=1;d<=_dim;d++){const ymd=_y+'-'+_p2(_mo+1)+'-'+_p2(d);const rel=_pubOf(ymd);
+      if(!rel.length)continue;const dd=new Date(_y,_mo,d);const firstId=rel[0];
+      base.monthList.push({label:(_mo+1)+'.'+d+' ('+_wn[dd.getDay()]+')',todayCls:ymd===today?'mToday':'',
+        works:rel.slice(0,6).map(id=>({img:W[id].img||''})),
+        moreShow:rel.length>6?'inline':'none',more:rel.length>6?('+'+(rel.length-6)):'',
+        open:()=>this.openWork(firstId)});}
+    base.monthEmptyShow=base.monthList.length?'none':'block';
+    base.monthShow=(V==='home')?'block':'none';
 
     /* 위시리스트 */
     const wl=wish.filter(id=>W[id]);

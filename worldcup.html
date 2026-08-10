@@ -255,7 +255,7 @@ button{font-family:inherit}
 <script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;테마&quot;}}">
 const WKEY='bcut_wc_v1';
 const SHEETDB_URL='https://sheetdb.io/api/v1/d4bc9pnsklz0n';
-const SEED_WINS={'1750':48,'1711':41,'1712':37,'1910':33,'1794':29,'1865':26,'1719':22,'1932':19,'1217':16,'1706':14};
+const SEED_WINS={}; /* 시드값 제거 — 순위는 실제 투표(구글시트)로만 집계 */
 
 class Component extends DCLogic {
   state={D:null,pool:[],size:32,bracket:[],winners:[],mi:0,champ:null,phase:'intro',theme:'light',age:null,stats:{wins:{},plays:0},counts:null,cardUrl:''};
@@ -283,7 +283,7 @@ class Component extends DCLogic {
   }
   async loadGlobal(){
     const c=Object.assign({},SEED_WINS);
-    try{const r=await fetch(SHEETDB_URL,{cache:'no-store'});const rows=await r.json();
+    try{const r=await fetch(SHEETDB_URL+(SHEETDB_URL.indexOf('?')>=0?'&':'?')+'_ts='+Date.now(),{cache:'no-store'});const rows=await r.json();
       (Array.isArray(rows)?rows:[]).forEach(row=>{const id=row&&(row.work_id||row.workId||row.id);if(id)c[id]=(c[id]||0)+1;});
     }catch(e){}
     this.setState({counts:c});

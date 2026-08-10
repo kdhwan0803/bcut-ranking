@@ -170,8 +170,9 @@ select,input,button{font-family:inherit}
 .mCell:nth-child(7n+1){border-left:0}
 .mDay{font-size:12px;font-weight:700;color:var(--mut)}
 .mCell.mToday .mDay{color:#fff;background:var(--acc);width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
-.mTh{flex:1;border-radius:6px;overflow:hidden;min-height:0}
-.mTh img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.mThs{flex:1;display:flex;flex-wrap:wrap;gap:3px;align-content:flex-start;min-height:0}
+.mThs img{width:calc(50% - 2px);aspect-ratio:3/4;object-fit:cover;object-position:center top;border-radius:5px;display:block}
+.mThs.one img{width:100%;height:100%;aspect-ratio:auto}
 .monthList{display:none}
 @media(max-width:680px){.monthGrid{display:none}.monthList{display:block}}
 .mLrow{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--w2);cursor:pointer}
@@ -641,7 +642,7 @@ select,input,button{font-family:inherit}
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
               <img src="{{ l.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ l.blur }}">
               <div style="position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(6,6,9,.55),transparent);pointer-events:none"></div>
-              <div class="viewers"><span class="vd"></span>{{ l.viewers }}명 보는 중</div>
+              <div class="viewers"><span class="vd"></span>{{ l.badge }}</div>
             </div>
             <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.title }}</div>
             <div style="font-size:11px;color:var(--mut);margin-top:2px">{{ l.sub }}</div>
@@ -926,7 +927,9 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ monthCells }}" as="m" hint-placeholder-count="0">
             <div class="mCell {{ m.todayCls }}">
               <span class="mDay" style="display:{{ m.dayShow }}">{{ m.day }}</span>
-              <span class="mTh" style="display:{{ m.thShow }}"><img src="{{ m.th }}" alt=""></span>
+              <div class="mThs {{ m.oneCls }}" style="display:{{ m.thShow }}">
+                <sc-for list="{{ m.thumbs }}" as="t" hint-placeholder-count="0"><img src="{{ t.img }}" alt=""></sc-for>
+              </div>
             </div>
           </sc-for>
         </div>
@@ -1820,10 +1823,11 @@ class Component extends DCLogic {
       for(let i=sh.length-1;i>0;i--){const j=(sd*(i+7)+i*131)%(i+1);const t=sh[i];sh[i]=sh[j];sh[j]=t;}
       this._liveIds=sh.slice(0,8);
     }
+    const _bset=['🔥 HOT','지금 인기','주목','많이 봐요'];
     base.liveWorks=(this._liveIds||[]).filter(id=>W[id]).map(id=>{const w=W[id];
       const h=id.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
       return {img:w.img||'',blur:this.blurOf(id),title:this.splitTitle(w.title||id).name,
-        sub:(w.models||[]).join(' & ')||'MAXIM B컷',viewers:13+(h%77),open:()=>this.openWork(id)};});
+        sub:(w.models||[]).join(' & ')||'MAXIM B컷',badge:_bset[h%_bset.length],open:()=>this.openWork(id)};});
     base.liveShow=(V==='home'&&base.liveWorks.length)?'block':'none';
 
     /* 홈 추가: 이번 달 공개 캘린더 (PC 격자 / 모바일 리스트) */
@@ -1832,10 +1836,11 @@ class Component extends DCLogic {
     const _pubOf=ymd=>Object.keys(W).filter(id=>W[id].pub===ymd);
     base.monthLabel2=(_mo+1)+'월';
     base.monthCells=[];
-    for(let i=0;i<_lead;i++)base.monthCells.push({todayCls:'',dayShow:'none',day:'',thShow:'none',th:''});
+    for(let i=0;i<_lead;i++)base.monthCells.push({todayCls:'',dayShow:'none',day:'',thShow:'none',oneCls:'',thumbs:[]});
     for(let d=1;d<=_dim;d++){const ymd=_y+'-'+_p2(_mo+1)+'-'+_p2(d);const rel=_pubOf(ymd);
       base.monthCells.push({todayCls:ymd===today?'mToday':'',dayShow:'flex',day:String(d),
-        thShow:rel.length?'block':'none',th:rel.length?(W[rel[0]].img||''):''});}
+        thShow:rel.length?'flex':'none',oneCls:rel.length===1?'one':'',
+        thumbs:rel.map(id=>({img:W[id].img||''}))});}
     base.monthList=[];const _wn=['일','월','화','수','목','금','토'];
     for(let d=1;d<=_dim;d++){const ymd=_y+'-'+_p2(_mo+1)+'-'+_p2(d);const rel=_pubOf(ymd);
       if(!rel.length)continue;const dd=new Date(_y,_mo,d);const firstId=rel[0];

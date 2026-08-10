@@ -114,16 +114,18 @@
 
     try{ if(window.gtag) wrap.addEventListener("click",function(){gtag("event","rank_badge_click",{work_id:String(id),rank:rank});}); }catch(e){}
 
-    // 배치: 제목을 찾으면 그 바로 아래로 올려붙이고, 못 찾으면 넣어둔 #bcut-rank 자리에 표시
-    var title = (D.works && D.works[id] && D.works[id].title) || "";
-    var titleEl = title ? findTitleEl(title) : null;
-    if(titleEl && titleEl.parentNode){
-      var box=el("div","margin:10px 0 4px");
-      box.appendChild(wrap);
-      titleEl.parentNode.insertBefore(box, titleEl.nextSibling);
-      if(mount) mount.innerHTML=""; // 본문에 넣어둔 자리 비우기(중복 방지)
-    } else if(mount){
+    // 배치: #bcut-rank 자리에 그대로 표시(권장 · 위치는 div를 둔 곳으로 결정).
+    //       #bcut-rank가 없을 때만 제목을 찾아 그 아래에 자동 배치(폴백).
+    if(mount){
       mount.innerHTML=""; mount.appendChild(wrap);
+    } else {
+      var title = (D.works && D.works[id] && D.works[id].title) || "";
+      var titleEl = title ? findTitleEl(title) : null;
+      if(titleEl && titleEl.parentNode){
+        var box=el("div","margin:10px 0 4px");
+        box.appendChild(wrap);
+        titleEl.parentNode.insertBefore(box, titleEl.nextSibling);
+      }
     }
   }
   function boot(){

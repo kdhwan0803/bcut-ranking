@@ -170,7 +170,7 @@ select,input,button{font-family:inherit}
     <div style="font-size:12px;color:var(--mut);font-weight:700;letter-spacing:1px">{{ loadingText }}</div>
   </div>
 
-  <section id="top" onTouchStart="{{ onTouchStart }}" onTouchEnd="{{ onTouchEnd }}" style="display:{{ heroShow }};padding:calc({{ stickyTop }} + 14px) 0 2px;background:var(--bg0)">
+  <section id="top" onTouchStart="{{ onTouchStart }}" onTouchEnd="{{ onTouchEnd }}" onMouseEnter="{{ onCaroEnter }}" onMouseLeave="{{ onCaroLeave }}" style="display:{{ heroShow }};padding:calc({{ stickyTop }} + 14px) 0 2px;background:var(--bg0)">
     <div class="caroClip" style="padding:0 {{ caroPad }}">
       <div class="caroTrack" style="transform:{{ trackX }};transition-duration:{{ trackDur }}">
         <sc-for list="{{ slides }}" as="s" hint-placeholder-count="0">
@@ -1024,9 +1024,13 @@ class Component extends DCLogic {
     window.addEventListener('popstate',this._pop);
   }
   tlScroll(dir){const el=document.getElementById('tlScroll');if(el)el.scrollLeft+=dir*260;}
-  onTouchStart(e){this._tx=e.touches&&e.touches[0]?e.touches[0].clientX:0;}
-  onTouchEnd(e){const t=e.changedTouches&&e.changedTouches[0];if(!t)return;
-    const dx=t.clientX-(this._tx||0);if(Math.abs(dx)>44){dx<0?this.nextSlide():this.prevSlide();}}
+  onTouchStart(e){this._tx=e.touches&&e.touches[0]?e.touches[0].clientX:0;this.pauseAuto();}
+  onTouchEnd(e){const t=e.changedTouches&&e.changedTouches[0];
+    if(t){const dx=t.clientX-(this._tx||0);if(Math.abs(dx)>44){dx<0?this.nextSlide():this.prevSlide();}}
+    this.scheduleResume();}
+  pauseAuto(){if(this._sp){clearInterval(this._sp);this._sp=null;}}
+  resumeAuto(){clearTimeout(this._rt);if(!this._sp&&!this._admin)this._sp=setInterval(()=>this.advance(),7000);}
+  scheduleResume(ms){clearTimeout(this._rt);this._rt=setTimeout(()=>this.resumeAuto(),ms||4500);}
   componentDidUpdate(pp){if(pp.theme!==this.props.theme&&this.props.theme)this.applyTheme(this.props.theme);}
 
   advance(){
@@ -1036,14 +1040,15 @@ class Component extends DCLogic {
       this._rs=setTimeout(()=>{this.setState({spot:0,edge:null,noAnim:true});
         requestAnimationFrame(()=>requestAnimationFrame(()=>this.setState({noAnim:false})));},760);}
   }
-  goSlide(i){clearTimeout(this._rs);this.setState({spot:i,edge:null,noAnim:false});}
-  nextSlide(){clearTimeout(this._rs);this.advance();}
+  goSlide(i){this.pauseAuto();clearTimeout(this._rs);this.setState({spot:i,edge:null,noAnim:false});this.scheduleResume();}
+  nextSlide(){this.pauseAuto();clearTimeout(this._rs);this.advance();this.scheduleResume();}
   prevSlide(){
-    const R=this._slideCount||0;if(R<2)return;clearTimeout(this._rs);
+    const R=this._slideCount||0;if(R<2)return;this.pauseAuto();clearTimeout(this._rs);
     if(this.state.spot>0){this.setState({spot:this.state.spot-1,edge:null,noAnim:false});}
     else{this.setState({edge:'left',noAnim:false});
       this._rs=setTimeout(()=>{this.setState({spot:R-1,edge:null,noAnim:true});
         requestAnimationFrame(()=>requestAnimationFrame(()=>this.setState({noAnim:false})));},760);}
+    this.scheduleResume();
   }
   applyTheme(k){const t=(k==='dark')?'dark':'light';
     document.documentElement.setAttribute('data-theme',t);
@@ -1385,6 +1390,7 @@ class Component extends DCLogic {
       loadingText:S.err||'랭킹 불러오는 중',
       noticeShow:'none',noticeText:'',noticeClose:()=>{},stickyTop:'64px',
       onTouchStart:e=>this.onTouchStart(e),onTouchEnd:e=>this.onTouchEnd(e),
+      onCaroEnter:()=>this.pauseAuto(),onCaroLeave:()=>this.resumeAuto(),
       tlPrev:()=>this.tlScroll(-1),tlNext:()=>this.tlScroll(1),tlNavShow:'none',tlPad:'0px',tlFadeR:'56px',
       toggleHelp:()=>this.setState({help:!S.help}),helpShow:S.help?'block':'none',
       kakaoUrl:'https://bcut.maximkorea.net',
@@ -1496,7 +1502,7 @@ class Component extends DCLogic {
       models:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>',
       creators:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
       search:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
-      wc:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5S3.5 15.5 3.5 9.2A4.7 4.7 0 0 1 12 6a4.7 4.7 0 0 1 8.5 3.2C20.5 15.5 12 20.5 12 20.5z"/></svg>'};
+      wc:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5v4h5M4 19v-4h5M9 9v6M9 12h4M13 12h5"/><circle cx="19.4" cy="12" r="1.7" fill="#000" stroke="none"/></svg>'};
     const _mask=s=>'url("data:image/svg+xml,'+encodeURIComponent(s)+'")';
     base.qmenu=[['#/','home','주간 랭킹'],['#/new','new','신작'],['#/sub','sub','구독'],['#/models','models','모델별'],['#/creators','creators','작가별'],['#/search','search','찾아보기'],['worldcup.html','wc','월드컵']]
       .map(c=>{const on=(V===c[1]);

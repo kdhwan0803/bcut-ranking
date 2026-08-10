@@ -112,6 +112,7 @@ select,input,button{font-family:inherit}
 .caroCard{position:relative;display:block;border-radius:16px;overflow:hidden;text-decoration:none}
 .caroCard:hover{filter:brightness(1.04)}
 .caroTitle2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media(max-width:680px){.caroBackdrop{display:none!important}}
 /* 퀵 아이콘 메뉴 */
 .qmenu{display:flex;gap:4px;justify-content:space-between}
 .qItem{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none}
@@ -175,10 +176,13 @@ select,input,button{font-family:inherit}
         <sc-for list="{{ slides }}" as="s" hint-placeholder-count="0">
           <div style="flex:0 0 {{ slideW }};min-width:0;padding:0 {{ slideGap }}">
             <a href="{{ s.link }}" target="_blank" class="caroCard" style="height:{{ caroH }};background-color:#14141a">
-              <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:{{ s.bgCss }};filter:{{ s.bgBlur }} saturate(1.05);transform:scale(1.12)"></div>
-              <img src="{{ s.img }}" alt="" style="position:absolute;right:0;top:0;height:100%;width:{{ s.thumbW }};object-fit:cover;object-position:center top;display:{{ s.thumbShow }}">
-              <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,7,10,.95) 0%,rgba(7,7,10,.82) 34%,rgba(7,7,10,.46) 62%,rgba(7,7,10,.12) 100%)"></div>
-              <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;gap:9px;padding:0 clamp(20px,4vw,44px);max-width:62%;color:#fff">
+              <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:{{ s.bgCss }};filter:blur(2px) saturate(1.05);transform:scale(1.06);display:{{ s.fullBgShow }}"></div>
+              <div class="caroBackdrop" style="position:absolute;right:0;top:0;bottom:0;width:58%;background-image:{{ s.imgCss }};background-size:cover;background-position:center;filter:blur(18px) brightness(.82) saturate(1.12);transform:scale(1.35);display:{{ s.thumbShow }}"></div>
+              <div style="position:absolute;inset:0;background:linear-gradient(90deg,#14141a 0%,rgba(20,20,26,.96) 30%,rgba(20,20,26,.58) 56%,rgba(20,20,26,.18) 100%)"></div>
+              <div style="position:absolute;right:{{ thumbRight }};top:50%;transform:translateY(-50%);height:{{ thumbH }};aspect-ratio:3/4;border-radius:12px;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.14);display:{{ s.thumbShow }}">
+                <img src="{{ s.img }}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top">
+              </div>
+              <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;gap:9px;padding:0 clamp(20px,4vw,44px);max-width:{{ caroTextMax }};color:#fff">
                 <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
                   <span style="display:{{ s.markShow }};font-size:11px;font-weight:900;letter-spacing:.6px;padding:4px 10px;border-radius:5px;background:{{ s.markBg }};color:#fff">{{ s.mark }}</span>
                   <span style="display:{{ s.b19Show }};font-size:10px;font-weight:900;padding:3px 7px;border-radius:5px;border:1px solid var(--acc);color:#ff6b74">19</span>
@@ -1357,7 +1361,7 @@ class Component extends DCLogic {
         setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
         openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),
         toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
-        slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',trackX:'translateX(0%)',trackDur:'.7s',spotNum:'01',spotTotal:'01',spotPct:'100%',
+        slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',thumbH:'206px',thumbRight:'36px',caroTextMax:'60%',trackX:'translateX(0%)',trackDur:'.7s',spotNum:'01',spotTotal:'01',spotPct:'100%',
         ev:{show:'none',items:[],clock:[]},
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
         creators:[],creatorWorks:[],mdChips:[],mdCards:[],mdWorks:[],mdSelName:'',mdSelCount:'',mdSelImg:'',mdAllHref:'#/models',mdAllLabel:'전체 모델 →',mdSearchShow:'none',mdSearchHint:'',mdCardMoreShow:'none',mdCardMoreLabel:'',mdSelWrapShow:'block',onMq:()=>{},mdCardMore:()=>{},hof:[],upcoming:[],periods:[],filters:[],sorts:[],
@@ -1434,7 +1438,7 @@ class Component extends DCLogic {
       bootRetry:()=>this.retry(),
       bootMsg:S.err?('랭킹 데이터를 불러오지 못했어요.\n('+S.err+')'):'랭킹을 불러오는 중…',
       chips:[],qmenu:[],rows:[],slides:[],trackX:'translateX(0%)',trackDur:'.7s',spotDots:[],recent:[],recentShow:'none',
-      slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',spotNum:'01',spotTotal:'01',spotPct:'100%',
+      slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',thumbH:'206px',thumbRight:'36px',caroTextMax:'60%',spotNum:'01',spotTotal:'01',spotPct:'100%',
       upcoming:[],upcomingShow:'none',tapHint:'none',subCount:0,wcThumbs:[],
       modelCards:[],timeline:[],wishes:[],wishShow:'none',hall:[],hallShow:'none',
       sorts:[],modelOpts:[],yearOpts:[],modelSel:'all',yearSel:'all',resultCount:'',
@@ -1461,8 +1465,8 @@ class Component extends DCLogic {
     base.slides=disp.map(x=>{const w=W[x.id]||{};
       return {bg:x.bg||BLANK,bgCss:x.bg?('url("'+x.bg+'")'):'none',img:x.img||BLANK,title:x.title||'',tag:x.tag||'',tagShow:x.tag?'block':'none',sub:x.sub||'',mark:x.mark||'',markBg:x.markBg||'var(--acc)',
         eyebrow:x.eyebrow||'',stats:x.stats||[],statsShow:(x.stats&&x.stats.length)?'flex':'none',link:x.link||'https://bcut.maximkorea.net',
-        blur:this.blurOf(x.id),bgBlur:(this.blurOf(x.id)!=='none')?'blur(22px)':'blur(8px)',
-        cardShow:(x.img)?'block':'none',thumbShow:(x.img&&!x.manual)?'block':'none',thumbW:_thumbW,
+        blur:this.blurOf(x.id),imgCss:x.img?('url("'+x.img+'")'):'none',
+        cardShow:(x.img)?'block':'none',thumbShow:(x.img&&!x.manual)?'block':'none',fullBgShow:x.manual?'block':'none',
         mobCardShow:'none',
         vidShow:w.vid?'inline-block':'none',b19Show:w.b19?'inline-block':'none',
         markShow:x.mark?'inline-block':'none',detailShow:x.id?'inline-flex':'none',
@@ -1474,6 +1478,7 @@ class Component extends DCLogic {
     base.slideW=_cw+'%'; base.slideGap='6px'; base.caroPad='0';
     base.caroH=S.mob?'190px':'260px';
     base.caroTitle=S.mob?'clamp(18px,5.2vw,23px)':'clamp(24px,2.5vw,36px)';
+    base.thumbH=S.mob?'150px':'206px'; base.thumbRight=S.mob?'14px':'36px'; base.caroTextMax=S.mob?'60%':'60%';
     let _d; if(R<=1)_d=0; else if(S.edge==='right')_d=R+1; else if(S.edge==='left')_d=0; else _d=(S.spot||0)+1;
     base.trackX='translateX(calc('+_cpk+'% - '+(_d*_cw)+'%))';
     base.trackDur=S.noAnim?'0s':'.7s';

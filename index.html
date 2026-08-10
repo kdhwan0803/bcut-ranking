@@ -1232,14 +1232,8 @@ class Component extends DCLogic {
       pitch=cfg.pitch||'';ctaLabel=cfg.ctaLabel||'';note=cfg.note||'';
       if(cfg.link)cta=cfg.link;
     }else{
-      /* 샘플: 이번 주 남은 기간에 공개되는 구독 화보 자동 수집 */
-      const now=new Date(today+'T00:00:00');
-      const dow=(now.getDay()+6)%7;                    /* 월=0 */
-      const sun=new Date(now);sun.setDate(sun.getDate()+(6-dow));
-      const iso=d=>d.getFullYear()+'-'+this.pad(d.getMonth()+1)+'-'+this.pad(d.getDate());
-      const b=iso(sun);
-      ids=Object.keys(W).filter(id=>W[id].buy==='구독'&&W[id].pub&&W[id].pub>=today&&W[id].pub<=b)
-        .sort((x,y)=>W[x].pub.localeCompare(W[y].pub)).slice(0,4);
+      /* data.json에 event 설정이 없으면 SPECIAL RELEASE 띠를 표시하지 않음(수동 설정 시에만 노출) */
+      return off;
     }
     if(!ids.length)return off;
 

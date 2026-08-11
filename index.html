@@ -627,8 +627,8 @@ select,input,button{font-family:inherit}
                     <div style="font-size:25px;font-weight:900;letter-spacing:-1px;line-height:1;color:#E60012">{{ p.dday }}</div>
                     <div style="font-size:11px;font-weight:800;color:#333;margin-top:3px">{{ p.date }} 공개</div>
                   </div>
-                  <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:900;padding:3px 9px;border-radius:5px;background:#E60012;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);white-space:nowrap;display:{{ p.coverShow }}">👑 표지모델</div>
-                  <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 7px;border-radius:3px;background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</div>
+                  <div style="position:absolute;top:8px;left:8px;font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;background:#E60012;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);white-space:nowrap;display:{{ p.coverShow }}">👑 표지모델</div>
+                  <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 7px;border-radius:3px;background:rgba(10,10,12,.82);color:#ffd400;display:{{ p.origShow }}">ORIGINAL</div>
                 </div>
               </div>
             </sc-for>
@@ -714,15 +714,14 @@ select,input,button{font-family:inherit}
 
     <section id="featured" style="display:{{ featShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">{{ feat.headTitle }}</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">{{ feat.eyebrow2 }}</span>
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">맥심의 추천 모델</h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MAXIM'S PICK</span>
       </div>
-      <div style="display:flex;gap:22px;align-items:center;border-radius:14px;padding:22px;background:linear-gradient(120deg,var(--bg1),rgba(58,20,26,.9));border:{{ feat.cardBd }};flex-wrap:wrap">
+      <div style="display:flex;gap:22px;align-items:center;border-radius:14px;padding:22px;background:linear-gradient(120deg,var(--bg1),rgba(58,20,26,.9));border:1px solid var(--line);flex-wrap:wrap">
         <div style="flex:0 0 158px;text-align:center">
           <img src="{{ feat.img }}" alt="" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--w5);background:var(--bg2);filter:{{ feat.blur }}">
-          <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--acc2);margin-top:12px">{{ feat.eyebrow2 }}</div>
+          <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--acc2);margin-top:12px">MAXIM'S PICK</div>
           <div style="font-size:19px;font-weight:900;margin-top:4px">{{ feat.name }}</div>
-          <div style="font-size:11.5px;color:var(--t2);font-weight:700;margin-top:5px;display:{{ feat.subShow }}">{{ feat.sub }}</div>
           <button onClick="{{ feat.open }}" style="margin-top:12px;background:var(--acc);color:#fff;border:0;font-size:12px;font-weight:800;padding:9px 17px;border-radius:6px;cursor:pointer">모델 보기 ›</button>
         </div>
         <div style="flex:1;min-width:0;display:flex;gap:12px;overflow-x:auto;padding-bottom:8px">
@@ -1802,7 +1801,7 @@ class Component extends DCLogic {
           windowShow:u?'block':'none',window:u?('D-'+left+' · ~'+this.fmt(u)):'',
           barW:pct+'%',barColor:col,line:'var(--w2)',open:()=>this.openWork(id)};});
       if(fut.length){base.upcomingShow='block';
-        base.upcoming=fut.slice(0,8).map(id=>({img:W[id].img||'',blur:this.blurOf(id),date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub),coverShow:(coverNm&&(W[id].models||[]).includes(coverNm))?'block':'none'}));}}
+        base.upcoming=fut.slice(0,8).map(id=>{const isCv=!!(coverNm&&(W[id].models||[]).includes(coverNm));return {img:W[id].img||'',blur:this.blurOf(id),date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub),coverShow:isCv?'block':'none',origShow:isCv?'none':'block'};});}}
 
     /* 신작 — 앞으로 공개(coming soon) : 오늘 이후 */
     const nx=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>today).sort((a,b)=>W[a].pub.localeCompare(W[b].pub)).slice(0,12);
@@ -1885,21 +1884,12 @@ class Component extends DCLogic {
     /* 추천 모델 */
     const nWorks=m=>Object.keys(W).filter(id=>(W[id].models||[]).includes(m)).length;
     const MIN_W=4;
-    let pool, isCoverFeat=false;
-    if(coverNm && nWorks(coverNm)>=1){ pool=[coverNm]; this._feat=coverNm; isCoverFeat=true; }  /* 표지모델 우선 노출(최소작품 조건 무시) */
-    else{
-      pool=(D.featuredModels||[]).filter(m=>nWorks(m)>=MIN_W);
-      if(!pool.length){const all=new Set();Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>all.add(m)));
-        pool=[...all].filter(m=>nWorks(m)>=MIN_W);}
-      if(pool.length && (!this._feat||!pool.includes(this._feat)))this._feat=this._admin?pool[0]:pool[Math.floor(Math.random()*pool.length)];
-    }
-    if(pool.length){const nm=this._feat;const fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);
-      base.featShow='block';base.feat={name:nm,cover:isCoverFeat,
-        headTitle:isCoverFeat?'이번 호 표지모델':'맥심의 추천 모델',
-        eyebrow2:isCoverFeat?'COVER MODEL':"MAXIM'S PICK",
-        sub:isCoverFeat?'8월호 MAXIM 표지 · 단독 화보':'',subShow:isCoverFeat?'block':'none',
-        cardBd:isCoverFeat?'1px solid rgba(230,0,18,.5)':'1px solid var(--line)',
-        img:this.modelImg(nm)||((W[fw[0]]||{}).img)||BLANK,blur:'none',open:()=>this.openModel(nm),
+    let pool=(D.featuredModels||[]).filter(m=>nWorks(m)>=MIN_W);
+    if(!pool.length){const all=new Set();Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>all.add(m)));
+      pool=[...all].filter(m=>nWorks(m)>=MIN_W);}
+    if(pool.length){if(!this._feat||!pool.includes(this._feat))this._feat=this._admin?pool[0]:pool[Math.floor(Math.random()*pool.length)];
+      const nm=this._feat;const fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);
+      base.featShow='block';base.feat={name:nm,img:this.modelImg(nm)||BLANK,blur:'none',open:()=>this.openModel(nm),
         works:fw.map(id=>({img:W[id].img||'',blur:this.blurOf(id),open:()=>this.openWork(id)}))};}
 
     /* 명예의 전당 */

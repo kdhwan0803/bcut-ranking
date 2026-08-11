@@ -1445,6 +1445,7 @@ class Component extends DCLogic {
                {v:mv.k==='up'?('▲ '+mv.n):mv.k==='new'?'NEW':'1위 유지',l:'지난주 대비',color:mv.k==='up'?'#12b76a':mv.k==='new'?'#a78bfa':'var(--txt)'},
                {v:strk+'주',l:'연속 TOP3'},{v:'#'+(best||1),l:'역대 최고'}],
         link:'https://bcut.maximkorea.net/work/'+top.id});}
+    const news=[];
     Object.keys(W).forEach(id=>{const w=W[id];if(!w||w.nb)return;const md=(w.models||[]).join(' & ');
       if(w.hl&&t<=w.hl&&w.pub&&w.pub<=t){const sp=this.splitTitle(w.title||id);out.push({id,img:w.img,bg:w.wide||w.img,title:sp.name,tag:sp.tag,sub:md||'MAXIM B컷',mark:'추천',markBg:'linear-gradient(120deg,#f5a623,#e5352b)',eyebrow:'EDITOR\u2019S PICK',stats:[],link:'https://bcut.maximkorea.net/work/'+id});return;}
       if(!w.pub)return;const d=diff(w.pub);
@@ -1452,13 +1453,18 @@ class Component extends DCLogic {
         if(d===0){mark='오늘 공개';bg='var(--acc)';dt='오늘 새로 공개';}
         else{mark='NEW';bg='#f0554a';dt=this.fmt(w.pub)+' 공개 · 신작';}
         const sp2=this.splitTitle(w.title||id);
-        out.push({id,img:w.img,bg:w.wide||w.img,title:sp2.name,tag:sp2.tag,sub:md||'MAXIM B컷',mark,markBg:bg,eyebrow:dt,stats:[],link:'https://bcut.maximkorea.net/work/'+id});}
+        news.push({id,_pub:w.pub,img:w.img,bg:w.wide||w.img,title:sp2.name,tag:sp2.tag,sub:md||'MAXIM B컷',mark,markBg:bg,eyebrow:dt,stats:[],link:'https://bcut.maximkorea.net/work/'+id});}
     });
-    if(this._admin)return manual.concat(out).slice(0,8);
-    const seed=this._shuffleSeed||(this._shuffleSeed=Math.random());
-    const sh=out.slice();
-    for(let i=sh.length-1;i>0;i--){const j=Math.floor((((seed*9301+i*49297)%233280)/233280)*(i+1));const t=sh[i];sh[i]=sh[j];sh[j]=t;}
-    return manual.concat(sh).slice(0,8);
+    news.sort((a,b)=>(b._pub||'').localeCompare(a._pub||''));
+    const _seen={};
+    let auto=news.concat(out).filter(o=>{if(!o.id)return true;if(_seen[o.id])return false;_seen[o.id]=1;return true;});
+    if(this._admin)return manual.concat(auto).slice(0,8);
+    const cap=Math.max(0,8-manual.length);
+    auto=auto.slice(0,cap);
+    let _s=(this._shuffleSeed||(this._shuffleSeed=(Math.floor(Math.random()*4294967296))>>>0))>>>0;
+    const rnd=()=>{_s=(_s+0x6D2B79F5)>>>0;let x=Math.imul(_s^(_s>>>15),1|_s);x=(x+Math.imul(x^(x>>>7),61|x))^x;return ((x^(x>>>14))>>>0)/4294967296;};
+    for(let i=auto.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));const tmp=auto[i];auto[i]=auto[j];auto[j]=tmp;}
+    return manual.concat(auto).slice(0,8);
   }
 
   renderVals(){

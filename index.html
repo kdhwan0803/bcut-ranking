@@ -621,11 +621,13 @@ select,input,button{font-family:inherit}
             <sc-for list="{{ upcoming }}" as="p" hint-placeholder-count="0">
               <div style="flex:0 0 auto;width:146px">
                 <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
-                  <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:blur(9px) brightness(.72);transform:scale(1.1)">
-                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px">
-                    <div style="font-size:26px;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 14px rgba(0,0,0,.7)">{{ p.dday }}</div>
-                    <div style="font-size:11px;font-weight:700;color:var(--t3)">{{ p.date }} 공개</div>
+                  <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
+                  <div style="position:absolute;left:0;right:0;bottom:0;height:56%;background:linear-gradient(to top,#fff 10%,rgba(255,255,255,.85) 42%,transparent);pointer-events:none"></div>
+                  <div style="position:absolute;left:0;right:0;bottom:11px;text-align:center">
+                    <div style="font-size:25px;font-weight:900;letter-spacing:-1px;line-height:1;color:#E60012">{{ p.dday }}</div>
+                    <div style="font-size:11px;font-weight:800;color:#333;margin-top:3px">{{ p.date }} 공개</div>
                   </div>
+                  <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:900;padding:3px 9px;border-radius:5px;background:#E60012;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);white-space:nowrap;display:{{ p.coverShow }}">👑 표지모델</div>
                   <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 7px;border-radius:3px;background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</div>
                 </div>
               </div>
@@ -665,6 +667,7 @@ select,input,button{font-family:inherit}
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
               <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
               <div style="position:absolute;top:0;left:0;right:0;height:46%;background:linear-gradient(to bottom,rgba(6,6,9,.7),rgba(6,6,9,.2) 55%,transparent);pointer-events:none"></div>
+              <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:900;padding:3px 9px;border-radius:5px;background:#E60012;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);white-space:nowrap;display:{{ p.coverShow }}">👑 표지모델</div>
               <div style="position:absolute;top:8px;left:8px;font-size:10px;font-weight:900;padding:3px 9px;border-radius:5px;background:var(--acc);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);text-shadow:0 1px 2px rgba(0,0,0,.3)">{{ p.cap }}</div>
               <div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.85);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.5);display:{{ p.vidShow }}">▶ 영상</div>
               <div style="position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:{{ p.subShow }};background:#ffd400;color:#111;font-size:10.5px;font-weight:900;padding:3px 11px;border-radius:4px">구독</div>
@@ -691,6 +694,7 @@ select,input,button{font-family:inherit}
             <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ nextW }}">
               <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
                 <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+                <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:900;padding:3px 9px;border-radius:5px;background:#E60012;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);white-space:nowrap;display:{{ p.coverShow }}">👑 표지모델</div>
                 <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.82);color:#fff;display:{{ p.vidShow }}">▶ 영상</div>
                 <button onClick="{{ p.wish }}" title="공개되면 알림" style="position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.2);cursor:pointer;font-size:14px;line-height:1;backdrop-filter:blur(6px);transition:transform .15s;background:{{ p.wishBg }};color:{{ p.wishFg }}" style-hover="transform:scale(1.12)">{{ p.wishIcon }}</button>
                 <div style="position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:{{ p.subShow }};background:#ffd400;color:#111;font-size:10.5px;font-weight:900;padding:3px 11px;border-radius:4px">구독</div>
@@ -710,14 +714,15 @@ select,input,button{font-family:inherit}
 
     <section id="featured" style="display:{{ featShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">맥심의 추천 모델</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MAXIM'S PICK</span>
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">{{ feat.headTitle }}</h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">{{ feat.eyebrow2 }}</span>
       </div>
-      <div style="display:flex;gap:22px;align-items:center;border-radius:14px;padding:22px;background:linear-gradient(120deg,var(--bg1),rgba(58,20,26,.9));border:1px solid var(--line);flex-wrap:wrap">
+      <div style="display:flex;gap:22px;align-items:center;border-radius:14px;padding:22px;background:linear-gradient(120deg,var(--bg1),rgba(58,20,26,.9));border:{{ feat.cardBd }};flex-wrap:wrap">
         <div style="flex:0 0 158px;text-align:center">
           <img src="{{ feat.img }}" alt="" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--w5);background:var(--bg2);filter:{{ feat.blur }}">
-          <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--acc2);margin-top:12px">MAXIM'S PICK</div>
+          <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--acc2);margin-top:12px">{{ feat.eyebrow2 }}</div>
           <div style="font-size:19px;font-weight:900;margin-top:4px">{{ feat.name }}</div>
+          <div style="font-size:11.5px;color:var(--t2);font-weight:700;margin-top:5px;display:{{ feat.subShow }}">{{ feat.sub }}</div>
           <button onClick="{{ feat.open }}" style="margin-top:12px;background:var(--acc);color:#fff;border:0;font-size:12px;font-weight:800;padding:9px 17px;border-radius:6px;cursor:pointer">모델 보기 ›</button>
         </div>
         <div style="flex:1;min-width:0;display:flex;gap:12px;overflow-x:auto;padding-bottom:8px">
@@ -1776,6 +1781,7 @@ class Component extends DCLogic {
 
     /* 구독 — 최신 4편만 열람 가능, 새 화보 공개 시 가장 오래된 편이 개별구매로 하차 */
     const today=this.today();
+    const coverNm=(D.coverModel||'').trim();   /* 이번 호 표지모델 이름 — 이 모델 화보는 목록에서 강조 */
     const SLOTS=4;
     const live=Object.keys(W).filter(id=>W[id].buy==='구독'&&W[id].pub&&W[id].pub<=today)
       .sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
@@ -1796,7 +1802,7 @@ class Component extends DCLogic {
           windowShow:u?'block':'none',window:u?('D-'+left+' · ~'+this.fmt(u)):'',
           barW:pct+'%',barColor:col,line:'var(--w2)',open:()=>this.openWork(id)};});
       if(fut.length){base.upcomingShow='block';
-        base.upcoming=fut.slice(0,8).map(id=>({img:W[id].img||'',date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub)}));}}
+        base.upcoming=fut.slice(0,8).map(id=>({img:W[id].img||'',blur:this.blurOf(id),date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub),coverShow:(coverNm&&(W[id].models||[]).includes(coverNm))?'block':'none'}));}}
 
     /* 신작 — 앞으로 공개(coming soon) : 오늘 이후 */
     const nx=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>today).sort((a,b)=>W[a].pub.localeCompare(W[b].pub)).slice(0,12);
@@ -1804,6 +1810,7 @@ class Component extends DCLogic {
     const wished=id=>wish.includes(id);
     if(nx.length){base.nextShow='block';base.nexts=nx.map(id=>({img:W[id].img||'',blur:this.blurOf(id),
       cap:W[id].pub===today?'오늘 공개':(this.fmt(W[id].pub)+' 공개 예정'),subShow:W[id].buy==='구독'?'block':'none',
+      coverShow:(coverNm&&(W[id].models||[]).includes(coverNm))?'block':'none',
       vidShow:W[id].vid?'block':'none',
       wish:e=>this.toggleWish(id,e),wishIcon:wished(id)?'♥':'♡',
       wishBg:wished(id)?'rgba(230,0,18,.9)':'rgba(10,10,14,.5)',wishFg:'#fff',
@@ -1818,6 +1825,7 @@ class Component extends DCLogic {
     if(rnShown.length){base.recentNewShow='block';base.recentNew=rnShown.map(id=>({img:W[id].img||'',blur:this.blurOf(id),
       cap:W[id].pub===today?'오늘 공개':(this.fmt(W[id].pub)+' 공개'),
       title:this.splitTitle(W[id].title||id).name,
+      coverShow:(coverNm&&(W[id].models||[]).includes(coverNm))?'block':'none',
       subShow:W[id].buy==='구독'?'block':'none',vidShow:W[id].vid?'block':'none',
       open:()=>this.openWork(id)}));
       }
@@ -1877,12 +1885,21 @@ class Component extends DCLogic {
     /* 추천 모델 */
     const nWorks=m=>Object.keys(W).filter(id=>(W[id].models||[]).includes(m)).length;
     const MIN_W=4;
-    let pool=(D.featuredModels||[]).filter(m=>nWorks(m)>=MIN_W);
-    if(!pool.length){const all=new Set();Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>all.add(m)));
-      pool=[...all].filter(m=>nWorks(m)>=MIN_W);}
-    if(pool.length){if(!this._feat||!pool.includes(this._feat))this._feat=this._admin?pool[0]:pool[Math.floor(Math.random()*pool.length)];
-      const nm=this._feat;const fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);
-      base.featShow='block';base.feat={name:nm,img:this.modelImg(nm)||BLANK,blur:'none',open:()=>this.openModel(nm),
+    let pool, isCoverFeat=false;
+    if(coverNm && nWorks(coverNm)>=1){ pool=[coverNm]; this._feat=coverNm; isCoverFeat=true; }  /* 표지모델 우선 노출(최소작품 조건 무시) */
+    else{
+      pool=(D.featuredModels||[]).filter(m=>nWorks(m)>=MIN_W);
+      if(!pool.length){const all=new Set();Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>all.add(m)));
+        pool=[...all].filter(m=>nWorks(m)>=MIN_W);}
+      if(pool.length && (!this._feat||!pool.includes(this._feat)))this._feat=this._admin?pool[0]:pool[Math.floor(Math.random()*pool.length)];
+    }
+    if(pool.length){const nm=this._feat;const fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);
+      base.featShow='block';base.feat={name:nm,cover:isCoverFeat,
+        headTitle:isCoverFeat?'이번 호 표지모델':'맥심의 추천 모델',
+        eyebrow2:isCoverFeat?'COVER MODEL':"MAXIM'S PICK",
+        sub:isCoverFeat?'8월호 MAXIM 표지 · 단독 화보':'',subShow:isCoverFeat?'block':'none',
+        cardBd:isCoverFeat?'1px solid rgba(230,0,18,.5)':'1px solid var(--line)',
+        img:this.modelImg(nm)||((W[fw[0]]||{}).img)||BLANK,blur:'none',open:()=>this.openModel(nm),
         works:fw.map(id=>({img:W[id].img||'',blur:this.blurOf(id),open:()=>this.openWork(id)}))};}
 
     /* 명예의 전당 */

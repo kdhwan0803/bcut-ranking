@@ -619,7 +619,7 @@ select,input,button{font-family:inherit}
         <div style="position:relative">
           <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:12px">
             <sc-for list="{{ upcoming }}" as="p" hint-placeholder-count="0">
-              <div style="flex:0 0 auto;width:146px">
+              <a href="{{ p.link }}" target="_blank" style="flex:0 0 auto;width:146px;text-decoration:none;color:inherit;cursor:pointer;transition:transform .2s" style-hover="transform:translateY(-3px)">
                 <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
                   <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
                   <div style="position:absolute;left:0;right:0;bottom:0;height:56%;background:linear-gradient(to top,#fff 10%,rgba(255,255,255,.85) 42%,transparent);pointer-events:none"></div>
@@ -630,8 +630,13 @@ select,input,button{font-family:inherit}
                   <div style="position:absolute;top:8px;left:8px;font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;background:#E60012;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);white-space:nowrap;display:{{ p.coverShow }}">👑 표지모델</div>
                   <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 7px;border-radius:3px;background:rgba(10,10,12,.82);color:#ffd400;display:{{ p.origShow }}">ORIGINAL</div>
                 </div>
-              </div>
+              </a>
             </sc-for>
+            <a href="https://bcut.maximkorea.net" target="_blank" style="flex:0 0 auto;width:146px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;aspect-ratio:2/3;border-radius:9px;border:1px dashed var(--w5);background:var(--w1);text-decoration:none;color:inherit;transition:background .25s,border-color .25s" style-hover="background:var(--w3);border-color:var(--acc)">
+              <div style="width:42px;height:42px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;line-height:1">+</div>
+              <div style="font-size:12.5px;font-weight:800">더 보러가기</div>
+              <div style="font-size:10.5px;color:var(--mut);font-weight:700">B컷에서 전체보기</div>
+            </a>
           </div>
           <div style="position:absolute;top:0;right:0;bottom:12px;width:110px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 90%)"></div>
         </div>
@@ -1801,7 +1806,7 @@ class Component extends DCLogic {
           windowShow:u?'block':'none',window:u?('D-'+left+' · ~'+this.fmt(u)):'',
           barW:pct+'%',barColor:col,line:'var(--w2)',open:()=>this.openWork(id)};});
       if(fut.length){base.upcomingShow='block';
-        base.upcoming=fut.slice(0,8).map(id=>{const isCv=!!(coverNm&&(W[id].models||[]).includes(coverNm));return {img:W[id].img||'',blur:this.blurOf(id),date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub),coverShow:isCv?'block':'none',origShow:isCv?'none':'block'};});}}
+        base.upcoming=fut.slice(0,8).map(id=>{const isCv=!!(coverNm&&(W[id].models||[]).includes(coverNm));return {img:W[id].img||'',blur:this.blurOf(id),date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub),coverShow:isCv?'block':'none',origShow:isCv?'none':'block',link:'https://bcut.maximkorea.net/work/'+id};});}}
 
     /* 신작 — 앞으로 공개(coming soon) : 오늘 이후 */
     const nx=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>today).sort((a,b)=>W[a].pub.localeCompare(W[b].pub)).slice(0,12);

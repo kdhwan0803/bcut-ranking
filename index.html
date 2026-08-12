@@ -457,19 +457,12 @@ select,input,button{font-family:inherit}
         </sc-for>
       </div>
 
-      <a href="{{ riser.link }}" target="_blank" style="display:{{ riserShow }};align-items:center;gap:12px;margin:4px 0 2px;padding:11px 15px;border-radius:12px;background:linear-gradient(90deg,rgba(18,183,106,.15),rgba(18,183,106,.02));border:1px solid rgba(18,183,106,.3);text-decoration:none;color:var(--txt)" style-hover="border-color:rgba(18,183,106,.55)">
-        <span style="flex:0 0 auto;font-size:11.5px;font-weight:900;color:#0e9f63;background:rgba(18,183,106,.16);padding:5px 10px;border-radius:8px">🔥 이번 주 급상승</span>
-        <img src="{{ riser.img }}" alt="" style="flex:0 0 auto;width:34px;height:45px;object-fit:cover;border-radius:5px;filter:{{ riser.blur }}">
-        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ riser.title }}</span>
-        <span style="flex:0 0 auto;font-size:15px;font-weight:900;color:#12b76a">▲{{ riser.n }}</span>
-        <span style="flex:0 0 auto;font-size:12px;font-weight:800;color:var(--acc);white-space:nowrap">B컷에서 →</span>
-      </a>
       <div style="display:{{ wRankShow }};padding:16px 0 26px">
         <div class="rkBig">
           <sc-for list="{{ bigRows }}" as="r" hint-placeholder-count="0">
             <div onClick="{{ r.open }}" class="cvCard" style="position:relative;cursor:pointer;border-radius:12px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
               <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
-              <span class="cvCta">원본은 B컷에서 →</span>
+              <span class="cvCta">자세히 보기 →</span>
               <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,9,.94) 0%,rgba(6,6,9,.55) 24%,rgba(6,6,9,.05) 50%,transparent 68%)"></div>
               <div class="rkRing" style="position:absolute;inset:0;border-radius:12px;pointer-events:none;display:{{ r.goldRingShow }}"></div>
               <div style="position:absolute;top:9px;left:11px;font-size:16px;display:{{ r.crownShow }};filter:drop-shadow(0 2px 5px rgba(0,0,0,.6))">👑</div>
@@ -489,7 +482,7 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ smallRows }}" as="r" hint-placeholder-count="0">
             <div onClick="{{ r.open }}" class="cvCard" style="position:relative;cursor:pointer;border-radius:10px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:1px solid var(--line);box-shadow:0 3px 9px rgba(0,0,0,.12);transition:transform .2s" style-hover="transform:translateY(-3px)">
               <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
-              <span class="cvCta sm">B컷에서 →</span>
+              <span class="cvCta sm">자세히 →</span>
               <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,9,.92) 0%,rgba(6,6,9,.45) 26%,transparent 54%)"></div>
               <div style="position:absolute;top:6px;right:6px;font-size:8.5px;font-weight:900;padding:2px 5px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
               <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:900;letter-spacing:.3px;padding:3px 7px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+</div>
@@ -503,6 +496,13 @@ select,input,button{font-family:inherit}
           </sc-for>
         </div>
       </div>
+      <a href="{{ riser.link }}" target="_blank" style="display:{{ riserShow }};align-items:center;gap:12px;margin:2px 0 4px;padding:11px 15px;border-radius:12px;background:linear-gradient(90deg,rgba(18,183,106,.15),rgba(18,183,106,.02));border:1px solid rgba(18,183,106,.3);text-decoration:none;color:var(--txt)" style-hover="border-color:rgba(18,183,106,.55)">
+        <span style="flex:0 0 auto;font-size:11.5px;font-weight:900;color:#0e9f63;background:rgba(18,183,106,.16);padding:5px 10px;border-radius:8px">🔥 이번 주 급상승</span>
+        <img src="{{ riser.img }}" alt="" style="flex:0 0 auto;width:34px;height:45px;object-fit:cover;border-radius:5px;filter:{{ riser.blur }}">
+        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ riser.title }}</span>
+        <span style="flex:0 0 auto;font-size:15px;font-weight:900;color:#12b76a">▲{{ riser.n }}</span>
+        <span style="flex:0 0 auto;font-size:12px;font-weight:800;color:var(--acc);white-space:nowrap">보러가기 →</span>
+      </a>
     </section>
 
     <section id="hall" style="display:{{ hallShow }}">
@@ -666,7 +666,7 @@ select,input,button{font-family:inherit}
               <img src="{{ l.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ l.blur }}">
               <div style="position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(6,6,9,.55),transparent);pointer-events:none"></div>
               <span class="livePin" title="다른 분들이 지금 보고 있어요"></span>
-              <span class="cvCta sm">B컷에서 →</span>
+              <span class="cvCta sm">자세히 →</span>
             </div>
             <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.title }}</div>
             <div style="font-size:11px;color:var(--mut);margin-top:2px">{{ l.sub }}</div>

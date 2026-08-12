@@ -849,7 +849,7 @@ select,input,button{font-family:inherit}
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">모델별로 보기</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">BY MODEL</span>
-        <a href="{{ mdAllHref }}" style="margin-left:auto;font-size:12.5px;font-weight:800;color:var(--acc2);white-space:nowrap">{{ mdAllLabel }}</a>
+        <a onClick="{{ mdAll }}" style="margin-left:auto;font-size:12.5px;font-weight:800;color:var(--acc2);white-space:nowrap;cursor:pointer">{{ mdAllLabel }}</a>
       </div>
       <div style="margin:-4px 0 18px;display:{{ mdSearchShow }}">
         <input type="text" onInput="{{ onMq }}" placeholder="모델 이름으로 검색" style="width:100%;max-width:320px;padding:11px 15px;border-radius:9px;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:13.5px;font-weight:600;outline:none">
@@ -1521,7 +1521,7 @@ class Component extends DCLogic {
         slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',thumbH:'206px',thumbRight:'36px',caroTextMax:'60%',trackX:'translateX(0%)',trackDur:'.7s',spotNum:'01',spotTotal:'01',spotPct:'100%',
         ev:{show:'none',items:[],clock:[]},
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
-        creators:[],creatorWorks:[],mdChips:[],mdCards:[],mdWorks:[],mdSelName:'',mdSelCount:'',mdSelImg:'',mdAllHref:'#/models',mdAllLabel:'전체 모델 →',mdSearchShow:'none',mdSearchHint:'',mdCardMoreShow:'none',mdCardMoreLabel:'',mdSelWrapShow:'block',onMq:()=>{},mdCardMore:()=>{},hof:[],upcoming:[],periods:[],filters:[],sorts:[],
+        creators:[],creatorWorks:[],mdChips:[],mdCards:[],mdWorks:[],mdSelName:'',mdSelCount:'',mdSelImg:'',mdAllHref:'#/models',mdAllLabel:'전체 모델 →',mdAll:()=>{},mdSearchShow:'none',mdSearchHint:'',mdCardMoreShow:'none',mdCardMoreLabel:'',mdSelWrapShow:'block',onMq:()=>{},mdCardMore:()=>{},hof:[],upcoming:[],periods:[],filters:[],sorts:[],
         feat:{works:[]},modal:null,popup:null,
         recentShow:'none',wishShow:'none',tsShow:'none',pkgShow:'none',promoShow:'none',subShow:'none',
         nextShow:'none',recentNewShow:'none',recentNew:[],featShow:'none',crShow:'none',mdShow:'none',kakaoShow:'none',hofShow:'none',
@@ -2010,15 +2010,15 @@ class Component extends DCLogic {
     /* 모델별 */
     const MM=D.models||{};
     const byM={};Object.keys(W).forEach(id=>{(W[id].models||[]).forEach(m=>{m=(m||'').trim();if(!m)return;(byM[m]=byM[m]||[]).push(id);});});
-    let ms=Object.keys(byM).filter(m=>byM[m].length>=3).sort((a,b)=>byM[b].length-byM[a].length||a.localeCompare(b));
+    let ms=Object.keys(byM).filter(m=>byM[m].length>=1).sort((a,b)=>byM[b].length-byM[a].length||a.localeCompare(b));
     const _mLatest=m=>byM[m].reduce((x,id)=>{const p=W[id].pub||'';return p>x?p:x;},'');
     const _mImg=m=>{if(MM[m]&&MM[m].img)return MM[m].img;const s=byM[m].slice().sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));return (W[s[0]]||{}).img||'';};
     const _mwa=new Date(today+'T00:00:00');_mwa.setDate(_mwa.getDate()-7);const _mp=n=>String(n).padStart(2,'0');
     const mWkAgo=_mwa.getFullYear()+'-'+_mp(_mwa.getMonth()+1)+'-'+_mp(_mwa.getDate());
     if(!this._mdOrder2||this._mdOrderN!==ms.length){
-      const _top=ms.slice(0,30),_rest=ms.slice(30);
-      if(!this._admin)for(let i=_top.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_top[i];_top[i]=_top[j];_top[j]=t;}
-      this._mdOrder2=_top.concat(_rest);this._mdOrderN=ms.length;}
+      const _all=ms.slice();
+      if(!this._admin)for(let i=_all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_all[i];_all[i]=_all[j];_all[j]=t;}
+      this._mdOrder2=_all;this._mdOrderN=ms.length;}
     const msO=this._mdOrder2;
     const _homeMd=(V==='home');
     if(msO.length){
@@ -2037,7 +2037,8 @@ class Component extends DCLogic {
           newShow:(_mLatest(m)>=mWkAgo)?'inline-block':'none',
           ring:on?'3px solid var(--acc)':'0',pinShow:on?'flex':'none',
           go:()=>{this.setState({model:m,mshow:10});setTimeout(()=>{try{var el=document.getElementById('mdSelBar');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}},90);}};});
-      base.mdAllHref='models/models.html';base.mdAllLabel='전체 모델 페이지 →';
+      base.mdAllLabel=_homeMd?'전체 모델 보기 →':'전체 모델 펼치기 →';
+      base.mdAll=_homeMd?(()=>this.goView('models')):(()=>this.setState({mdcn:99999}));
       base.mdSearchShow='block';
       base.onMq=e=>this.setState({mq:e.target.value,mdcn:0});
       base.mdSearchHint=_mq?(_pool.length+'명'):'';

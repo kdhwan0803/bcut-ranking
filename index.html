@@ -160,6 +160,11 @@ select,input,button{font-family:inherit}
 @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(230,0,18,.5)}70%{box-shadow:0 0 0 7px rgba(230,0,18,0)}100%{box-shadow:0 0 0 0 rgba(230,0,18,0)}}
 .livePin{position:absolute;top:10px;right:10px;width:16px;height:16px;border-radius:50%;background:#25d366;border:2.5px solid rgba(255,255,255,.92);box-shadow:0 0 10px rgba(37,211,102,.95);animation:pinBlink 1.3s ease-in-out infinite;z-index:2}
 .livePin::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid rgba(37,211,102,.65);animation:pinRing 1.7s ease-out infinite}
+/* B컷 전환 유도: 카드 hover 시 나타나는 CTA 알약 */
+.cvCta{position:absolute;top:9px;left:50%;transform:translateX(-50%) translateY(-7px);display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.96);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:-.2px;box-shadow:0 5px 15px rgba(230,0,18,.5);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:5}
+.cvCard:hover .cvCta{opacity:1;transform:translateX(-50%) translateY(0)}
+.cvCta.sm{font-size:9px;padding:3px 8px;top:6px}
+@media(hover:none){.cvCta{display:none}}
 @keyframes pinBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 @keyframes pinRing{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
 /* 월 캘린더 */
@@ -452,11 +457,19 @@ select,input,button{font-family:inherit}
         </sc-for>
       </div>
 
+      <a href="{{ riser.link }}" target="_blank" style="display:{{ riserShow }};align-items:center;gap:12px;margin:4px 0 2px;padding:11px 15px;border-radius:12px;background:linear-gradient(90deg,rgba(18,183,106,.15),rgba(18,183,106,.02));border:1px solid rgba(18,183,106,.3);text-decoration:none;color:var(--txt)" style-hover="border-color:rgba(18,183,106,.55)">
+        <span style="flex:0 0 auto;font-size:11.5px;font-weight:900;color:#0e9f63;background:rgba(18,183,106,.16);padding:5px 10px;border-radius:8px">🔥 이번 주 급상승</span>
+        <img src="{{ riser.img }}" alt="" style="flex:0 0 auto;width:34px;height:45px;object-fit:cover;border-radius:5px;filter:{{ riser.blur }}">
+        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ riser.title }}</span>
+        <span style="flex:0 0 auto;font-size:15px;font-weight:900;color:#12b76a">▲{{ riser.n }}</span>
+        <span style="flex:0 0 auto;font-size:12px;font-weight:800;color:var(--acc);white-space:nowrap">B컷에서 →</span>
+      </a>
       <div style="display:{{ wRankShow }};padding:16px 0 26px">
         <div class="rkBig">
           <sc-for list="{{ bigRows }}" as="r" hint-placeholder-count="0">
-            <div onClick="{{ r.open }}" style="position:relative;cursor:pointer;border-radius:12px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
+            <div onClick="{{ r.open }}" class="cvCard" style="position:relative;cursor:pointer;border-radius:12px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
               <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
+              <span class="cvCta">원본은 B컷에서 →</span>
               <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,9,.94) 0%,rgba(6,6,9,.55) 24%,rgba(6,6,9,.05) 50%,transparent 68%)"></div>
               <div class="rkRing" style="position:absolute;inset:0;border-radius:12px;pointer-events:none;display:{{ r.goldRingShow }}"></div>
               <div style="position:absolute;top:9px;left:11px;font-size:16px;display:{{ r.crownShow }};filter:drop-shadow(0 2px 5px rgba(0,0,0,.6))">👑</div>
@@ -474,8 +487,9 @@ select,input,button{font-family:inherit}
         </div>
         <div class="rkSmall">
           <sc-for list="{{ smallRows }}" as="r" hint-placeholder-count="0">
-            <div onClick="{{ r.open }}" style="position:relative;cursor:pointer;border-radius:10px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:1px solid var(--line);box-shadow:0 3px 9px rgba(0,0,0,.12);transition:transform .2s" style-hover="transform:translateY(-3px)">
+            <div onClick="{{ r.open }}" class="cvCard" style="position:relative;cursor:pointer;border-radius:10px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:1px solid var(--line);box-shadow:0 3px 9px rgba(0,0,0,.12);transition:transform .2s" style-hover="transform:translateY(-3px)">
               <img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ r.blur }}"/>
+              <span class="cvCta sm">B컷에서 →</span>
               <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,9,.92) 0%,rgba(6,6,9,.45) 26%,transparent 54%)"></div>
               <div style="position:absolute;top:6px;right:6px;font-size:8.5px;font-weight:900;padding:2px 5px;border-radius:4px;background:{{ r.mvBg }};color:{{ r.mvFg }}">{{ r.mvLabel }}</div>
               <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:900;letter-spacing:.3px;padding:3px 7px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ r.lockShow }}">19+</div>
@@ -648,10 +662,11 @@ select,input,button{font-family:inherit}
       <div class="shelfRow" style="gap:14px">
         <sc-for list="{{ liveWorks }}" as="l" hint-placeholder-count="0">
           <div onClick="{{ l.open }}" class="nwCard" style="cursor:pointer">
-            <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
+            <div class="cvCard" style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
               <img src="{{ l.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ l.blur }}">
               <div style="position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(6,6,9,.55),transparent);pointer-events:none"></div>
               <span class="livePin" title="다른 분들이 지금 보고 있어요"></span>
+              <span class="cvCta sm">B컷에서 →</span>
             </div>
             <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.title }}</div>
             <div style="font-size:11px;color:var(--mut);margin-top:2px">{{ l.sub }}</div>
@@ -1028,6 +1043,7 @@ select,input,button{font-family:inherit}
             </sc-for>
           </div>
           <a href="{{ modal.cta }}" target="_blank" style="display:block;text-align:center;background:var(--acc);color:#fff;font-weight:800;font-size:14.5px;padding:15px;border-radius:8px;margin-top:22px">{{ modal.ctaLabel }}</a>
+          <div style="text-align:center;font-size:11.5px;font-weight:700;color:var(--mut);margin-top:9px;display:{{ modal.origHintShow }}">무삭제 원본 · 전체 컷은 B컷에서 볼 수 있어요</div>
           <div style="display:flex;gap:8px;margin-top:10px">
             <button onClick="{{ modal.copy }}" style="flex:1;background:var(--w2);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13px;padding:13px;border-radius:8px;cursor:pointer" style-hover="background:var(--w4)">{{ modal.copyLabel }}</button>
             <button onClick="{{ modal.share }}" style="flex:1;background:var(--w2);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13px;padding:13px;border-radius:8px;cursor:pointer" style-hover="background:var(--w4)">공유하기</button>
@@ -1711,10 +1727,12 @@ class Component extends DCLogic {
       2:{ring:'#cfd6dd',rb:'2위',rbg:'linear-gradient(90deg,#eef2f6,#c2cbd4)',rfg:'#2a2f36',glow:'0 12px 32px rgba(0,0,0,.5)'},
       3:{ring:'#e0a173',rb:'3위',rbg:'linear-gradient(90deg,#eabf95,#c07c48)',rfg:'#2e1c0e',glow:'0 12px 32px rgba(0,0,0,.5)'}};
     const totalN=S.mob?11:12,bigN=S.mob?2:5;
+    const risers=[];
     const rowsAll=isM?[]:list.slice(0,totalN).map(row=>{
       const prev=isMonth?(isM?this.monthModelRankAt(row.id,this.prevMonthRef(wi)):this.monthWorkRankAt(row.id,this.prevMonthRef(wi)))
                         :(isM?this.modelRankAt(row.id,wi-1):this.workRankAt(row.id,wi-1));
       const mv=this.movement(row.rank,prev);const c=MVC[mv.k];
+      if(!isMonth&&mv.k==='up')risers.push({id:row.id,rank:row.rank,n:mv.n});
       const form=[];for(let i=Math.max(0,wi-5);i<=wi;i++){const r=isM?this.modelRankAt(row.id,i):this.workRankAt(row.id,i);
         form.push({label:r?String(r):'–',lc:r&&r<=3?'var(--acc2)':'var(--t1)',
           h:r?Math.max(8,Math.round((11-Math.min(10,r))/10*100))+'%':'6%',
@@ -1760,6 +1778,11 @@ class Component extends DCLogic {
     });
     base.bigRows=rowsAll.slice(0,bigN);
     base.smallRows=rowsAll.slice(bigN);
+    /* 🔥 이번 주 급상승: 지난주 대비 가장 많이 오른 화보(주간 화보 모드에서만) */
+    base.riserShow='none';base.riser={n:'',rank:'',img:'',blur:'none',title:'',link:'https://bcut.maximkorea.net'};
+    if(!isM&&!isMonth&&risers.length){const tp=risers.slice().sort((a,b)=>b.n-a.n)[0];const rw=W[tp.id]||{};
+      base.riserShow='flex';base.riser={n:tp.n,rank:tp.rank,img:rw.img||'',blur:this.blurOf(tp.id),
+        title:this.splitTitle(rw.title||tp.id).name,link:'https://bcut.maximkorea.net/work/'+tp.id};}
     base.mRankShow=isM?'grid':'none';
     base.wRankShow=isM?'none':'block';
     if(!isM)base.rankHeading=(isMonth?'이번 달':'이번 주')+' 화보 랭킹';
@@ -2066,7 +2089,7 @@ class Component extends DCLogic {
           simShow:'none',simLabel:'이 화보와 비슷한',similar:[],
           gridShow:others.length?'block':'none',gridLabel:'이 모델의 다른 화보',
           others:others.map(x=>({img:W[x].img||'',blur:this.blurOf(x),open:()=>this.openWork(x)})),
-          cta:'https://bcut.maximkorea.net/work/'+id,ctaLabel:'B컷에서 화보 보기 ›',
+          cta:'https://bcut.maximkorea.net/work/'+id,ctaLabel:'B컷에서 화보 보기 ›',origHintShow:'block',
           copy:()=>this.copyLink(id),copyLabel:S.copied?'복사됨 ✓':'링크 복사',
           share:()=>this.shareWork(id,w.title)};
         /* 비슷한 화보: 같은 작가 → 같은 태그 → 같은 구매방식 */
@@ -2099,7 +2122,7 @@ class Component extends DCLogic {
           simShow:'none',simLabel:'',similar:[],
           gridShow:works.length?'block':'none',gridLabel:'이 모델의 화보',
           others:works.slice(0,8).map(x=>({img:W[x].img||'',blur:this.blurOf(x),open:()=>this.openWork(x)})),
-          cta:md.creatorId?('https://bcut.maximkorea.net/creator/'+md.creatorId):'https://bcut.maximkorea.net',ctaLabel:'B컷 모델 페이지 ›',
+          cta:md.creatorId?('https://bcut.maximkorea.net/creator/'+md.creatorId):'https://bcut.maximkorea.net',ctaLabel:'B컷 모델 페이지 ›',origHintShow:'none',
           copy:()=>{try{navigator.clipboard.writeText(location.href);this.setState({copied:true});clearTimeout(this._cp);this._cp=setTimeout(()=>this.setState({copied:false}),1600);}catch(e){}},
           copyLabel:S.copied?'복사됨 ✓':'링크 복사',
           share:()=>{const u=md.creatorId?('https://bcut.maximkorea.net/creator/'+md.creatorId):'https://bcut.maximkorea.net';

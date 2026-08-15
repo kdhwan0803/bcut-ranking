@@ -1936,8 +1936,11 @@ class Component extends DCLogic {
       }
       const _rid=(this._risingIds||[]).filter(id=>W[id]);
       const _seenM=new Set();const _ring=[];
+      const _7=new Date(today+'T00:00:00');_7.setDate(_7.getDate()-7);
+      const _7s=_7.getFullYear()+'-'+_p2(_7.getMonth()+1)+'-'+_p2(_7.getDate());
       _rid.forEach(id=>{const w=W[id];const m=((w.models||[]).map(x=>(x||'').trim()).find(x=>MSM.has(x))||'').trim();if(!m||_seenM.has(m))return;_seenM.add(m);
-        _ring.push({img:w.img||'',blur:this.blurOf(id),model:m,tag:(w.pub===today?'NEW':'🚀 급상승'),open:()=>this.openRising(m)});});
+        const _tg=(w.pub===today)?'🏆 NEW':((w.pub&&w.pub>=_7s)?'🔥 이번주 신작':'🚀 급상승');
+        _ring.push({img:w.img||'',blur:this.blurOf(id),model:m,tag:_tg,open:()=>this.openRising(m)});});
       if(_ring.length>=4){
         base.risingShow=(V==='home')?'block':'none';
         base.rising=_ring.slice(0,12);

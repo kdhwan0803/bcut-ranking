@@ -1932,11 +1932,11 @@ class Component extends DCLogic {
         const _6s=_6.getFullYear()+'-'+_p2(_6.getMonth()+1)+'-'+_p2(_6.getDate());
         let _rz=Object.keys(W).filter(id=>{const w=W[id];return w&&w.img&&isMSM(w)&&w.pub&&w.pub>=_6s&&w.pub<=today&&!_top3.has(id);});
         for(let i=_rz.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_rz[i];_rz[i]=_rz[j];_rz[j]=t;}
-        this._risingIds=_rz.slice(0,8);
+        this._risingIds=_rz.slice(0,30);
       }
       const _rid=(this._risingIds||[]).filter(id=>W[id]);
       const _seenM=new Set();const _ring=[];
-      _rid.forEach(id=>{const w=W[id];const m=((w.models||[])[0]||'').trim();if(!m||_seenM.has(m))return;_seenM.add(m);
+      _rid.forEach(id=>{const w=W[id];const m=((w.models||[]).map(x=>(x||'').trim()).find(x=>MSM.has(x))||'').trim();if(!m||_seenM.has(m))return;_seenM.add(m);
         _ring.push({img:w.img||'',blur:this.blurOf(id),model:m,tag:(w.pub===today?'NEW':'🚀 급상승'),open:()=>this.openRising(m)});});
       if(_ring.length>=4){
         base.risingShow=(V==='home')?'block':'none';

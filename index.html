@@ -528,7 +528,7 @@ select,input,button{font-family:inherit}
           <div onClick="{{ p.open }}" class="ringItem">
             <div class="ringImg"><img src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"></div>
             <div class="ringName">{{ p.model }}</div>
-            <div class="ringTag">{{ p.tag }}</div>
+            <div class="ringTag" style="color:{{ p.tagColor }}">{{ p.tag }}</div>
           </div>
         </sc-for>
       </div>
@@ -1936,11 +1936,27 @@ class Component extends DCLogic {
       }
       const _rid=(this._risingIds||[]).filter(id=>W[id]);
       const _seenM=new Set();const _ring=[];
-      const _7=new Date(today+'T00:00:00');_7.setDate(_7.getDate()-7);
-      const _7s=_7.getFullYear()+'-'+_p2(_7.getMonth()+1)+'-'+_p2(_7.getDate());
+      /* ── 큐레이션 뱃지 판정용 사전 계산 (모델 단위) ── */
+      const _mo=today.slice(0,7);
+      const _90=new Date(today+'T00:00:00');_90.setDate(_90.getDate()-90);
+      const _90s=_90.getFullYear()+'-'+_p2(_90.getMonth()+1)+'-'+_p2(_90.getDate());
+      const _60=new Date(today+'T00:00:00');_60.setDate(_60.getDate()-60);
+      const _60s=_60.getFullYear()+'-'+_p2(_60.getMonth()+1)+'-'+_p2(_60.getDate());
+      const _mcount={},_first={},_todayM=new Set();
+      Object.keys(W).forEach(id=>{const w=W[id];if(!w||!w.pub)return;(w.models||[]).forEach(mm=>{mm=(mm||'').trim();if(!MSM.has(mm))return;if(w.pub.slice(0,7)===_mo)_mcount[mm]=(_mcount[mm]||0)+1;if(!_first[mm]||w.pub<_first[mm])_first[mm]=w.pub;if(w.pub===today)_todayM.add(mm);});});
+      /* 역주행: 이번주 랭킹에 든 60일+ 구작이 신규진입/순위상승 → 그 모델 */
+      const _wi=this.state.wi;const _retro=new Set();
+      try{this.weekWorks(_wi).forEach(x=>{const w=W[x.id];if(!w||!w.pub||w.pub>_60s)return;const _pr=this.workRankAt(x.id,_wi-1);if(!_pr||x.rank<=_pr){(w.models||[]).forEach(mm=>{mm=(mm||'').trim();if(MSM.has(mm))_retro.add(mm);});}});}catch(e){}
+      const _badge=(m)=>{
+        if(_todayM.has(m))return{t:'🏆 NEW',c:'#f5a623'};
+        if(_first[m]&&_first[m]>=_90s)return{t:'⚡ 신예',c:'#8b5cf6'};
+        if(_retro.has(m))return{t:'🔥 이번 주 역주행',c:'#E60012'};
+        if((_mcount[m]||0)>=2)return{t:'📚 이번 달 '+_mcount[m]+'편',c:'#12b886'};
+        return{t:'🚀 급상승',c:'#ff7a3d'};
+      };
       _rid.forEach(id=>{const w=W[id];const m=((w.models||[]).map(x=>(x||'').trim()).find(x=>MSM.has(x))||'').trim();if(!m||_seenM.has(m))return;_seenM.add(m);
-        const _tg=(w.pub===today)?'🏆 NEW':((w.pub&&w.pub>=_7s)?'🔥 이번주 신작':'🚀 급상승');
-        _ring.push({img:w.img||'',blur:this.blurOf(id),model:m,tag:_tg,open:()=>this.openRising(m)});});
+        const _b=_badge(m);
+        _ring.push({img:w.img||'',blur:this.blurOf(id),model:m,tag:_b.t,tagColor:_b.c,open:()=>this.openRising(m)});});
       if(_ring.length>=4){
         base.risingShow=(V==='home')?'block':'none';
         base.rising=_ring.slice(0,12);

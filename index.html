@@ -125,6 +125,9 @@ select,input,button{font-family:inherit}
 /* 홈 추가 섹션: 급상승 TOP10 / 주간 캘린더 / 신작 선반 */
 .shelfRow{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
 .shelfRow::-webkit-scrollbar{display:none}
+.gachaFab{transition:transform .12s ease,box-shadow .12s ease;-webkit-tap-highlight-color:transparent}
+.gachaFab:hover{transform:translateY(-1px);filter:brightness(1.05)}
+.gachaFab:active{transform:scale(.9);box-shadow:0 2px 8px rgba(230,0,18,.4)}
 .nwCard{flex:0 0 148px;width:148px}
 @media(max-width:680px){.nwCard{flex:0 0 120px;width:120px}}
 .t10grid{display:grid;grid-template-columns:1fr 1fr;gap:0 30px}
@@ -1022,7 +1025,7 @@ select,input,button{font-family:inherit}
   </footer>
 
   <button onClick="{{ toTop }}" style="position:fixed;right:20px;bottom:20px;z-index:80;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-size:19px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:{{ topOpacity }}">↑</button>
-  <button onClick="{{ gacha }}" title="오늘의 랜덤 B컷" style="position:fixed;right:20px;bottom:74px;z-index:80;align-items:center;gap:5px;height:46px;padding:0 15px;border-radius:23px;border:1px solid rgba(230,0,18,.5);background:var(--acc);color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(230,0,18,.34);display:{{ gachaShow }}">🎲 랜덤</button>
+  <button onClick="{{ gacha }}" title="오늘의 랜덤 B컷" class="gachaFab" style="position:fixed;right:20px;bottom:74px;z-index:80;align-items:center;gap:5px;height:46px;padding:0 15px;border-radius:23px;border:1px solid rgba(230,0,18,.5);background:var(--acc);color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(230,0,18,.34);display:{{ gachaShow }}">🎲 랜덤</button>
 
   <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:200;background:rgba(4,4,6,.82);backdrop-filter:blur(6px);padding:22px;overflow-y:auto;display:flex;align-items:center;justify-content:center">
@@ -1919,17 +1922,20 @@ class Component extends DCLogic {
       }
     base.nwMoreShow='none'; /* 신작을 가로 선반으로 대체 → 그리드 더보기 숨김 */
 
-    /* 라이징 미스맥심: 소속모델 & 최근 6개월 & 이번주 상위3 제외 · 랜덤 최대 8 */
+    /* 라이징 미스맥심: 소속모델 & 최근 6개월 & 이번주 상위3 제외 · 세션당 1회 고정(리렌더에도 안 섞임) */
     try{
-      const _top3=new Set(this.weekWorks(this.state.wi).slice(0,3).map(x=>x.id));
-      const _6=new Date(today+'T00:00:00');_6.setMonth(_6.getMonth()-6);
-      const _6s=_6.getFullYear()+'-'+_p2(_6.getMonth()+1)+'-'+_p2(_6.getDate());
-      let _rz=Object.keys(W).filter(id=>{const w=W[id];return w&&w.img&&isMSM(w)&&w.pub&&w.pub>=_6s&&w.pub<=today&&!_top3.has(id);});
-      for(let i=_rz.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_rz[i];_rz[i]=_rz[j];_rz[j]=t;}
-      _rz=_rz.slice(0,8);
-      if(_rz.length>=4){
+      if(Object.keys(W).length&&(!this._risingIds||!this._risingIds.length)){
+        const _top3=new Set(this.weekWorks(this.state.wi).slice(0,3).map(x=>x.id));
+        const _6=new Date(today+'T00:00:00');_6.setMonth(_6.getMonth()-6);
+        const _6s=_6.getFullYear()+'-'+_p2(_6.getMonth()+1)+'-'+_p2(_6.getDate());
+        let _rz=Object.keys(W).filter(id=>{const w=W[id];return w&&w.img&&isMSM(w)&&w.pub&&w.pub>=_6s&&w.pub<=today&&!_top3.has(id);});
+        for(let i=_rz.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_rz[i];_rz[i]=_rz[j];_rz[j]=t;}
+        this._risingIds=_rz.slice(0,8);
+      }
+      const _rid=(this._risingIds||[]).filter(id=>W[id]);
+      if(_rid.length>=4){
         base.risingShow=(V==='home')?'block':'none';
-        base.rising=_rz.map(id=>{const w=W[id];return {img:w.img||'',blur:this.blurOf(id),
+        base.rising=_rid.map(id=>{const w=W[id];return {img:w.img||'',blur:this.blurOf(id),
           title:this.splitTitle(w.title||id).name,sub:(w.models||[]).join(' & ')||'MAXIM B컷',
           vidShow:w.vid?'block':'none',subShow:w.buy==='구독'?'block':'none',open:()=>this.openWork(id)};});
       }

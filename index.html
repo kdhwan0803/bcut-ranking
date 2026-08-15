@@ -132,7 +132,7 @@ select,input,button{font-family:inherit}
 .ringImg{width:88px;height:88px;border-radius:50%;padding:3px;background:linear-gradient(135deg,#7c5af8,#E60012,#ff8a3d);box-shadow:0 4px 14px rgba(230,0,18,.2);transition:transform .15s}
 .ringItem:hover .ringImg{transform:scale(1.05)}
 .ringItem:active .ringImg{transform:scale(.93)}
-.ringImg img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg0);display:block}
+.ringImg img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg0);display:block;background-image:linear-gradient(100deg,var(--bg2) 40%,var(--w3) 50%,var(--bg2) 60%);background-size:220% 100%;animation:skelShim 1.2s ease-in-out infinite}
 .ringName{font-size:13px;font-weight:800;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ringTag{font-size:10.5px;color:var(--acc);font-weight:800;margin-top:1px}
 @media(min-width:681px){
@@ -532,7 +532,7 @@ select,input,button{font-family:inherit}
       <div class="shelfRow" style="gap:18px;padding:6px 2px 6px">
         <sc-for list="{{ rising }}" as="p" hint-placeholder-count="0">
           <div onClick="{{ p.open }}" class="ringItem">
-            <div class="ringImg"><img src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"></div>
+            <div class="ringImg"><img src="{{ p.img }}" alt="" decoding="async" style="filter:{{ p.blur }}"></div>
             <div class="ringName">{{ p.model }}</div>
             <div class="ringTag" style="color:{{ p.tagColor }}">{{ p.tag }}</div>
           </div>
@@ -1933,12 +1933,18 @@ class Component extends DCLogic {
     /* 라이징 미스맥심: 소속모델 & 최근 6개월 & 이번주 상위3 제외 · 세션당 1회 고정(리렌더에도 안 섞임) */
     try{
       if(Object.keys(W).length&&(!this._risingIds||!this._risingIds.length)){
-        const _top3=new Set(this.weekWorks(this.state.wi).slice(0,3).map(x=>x.id));
-        const _6=new Date(today+'T00:00:00');_6.setMonth(_6.getMonth()-6);
-        const _6s=_6.getFullYear()+'-'+_p2(_6.getMonth()+1)+'-'+_p2(_6.getDate());
-        let _rz=Object.keys(W).filter(id=>{const w=W[id];return w&&w.img&&isMSM(w)&&w.pub&&w.pub>=_6s&&w.pub<=today&&!_top3.has(id);});
-        for(let i=_rz.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_rz[i];_rz[i]=_rz[j];_rz[j]=t;}
-        this._risingIds=_rz.slice(0,30);
+        const _rk='bcut_rising_'+today;let _cached=null;
+        try{const _raw=localStorage.getItem(_rk);if(_raw){const _a=JSON.parse(_raw);if(Array.isArray(_a)&&_a.length&&_a.every(id=>W[id]))_cached=_a;}}catch(e){}
+        if(_cached){this._risingIds=_cached;}
+        else{
+          const _top3=new Set(this.weekWorks(this.state.wi).slice(0,3).map(x=>x.id));
+          const _6=new Date(today+'T00:00:00');_6.setMonth(_6.getMonth()-6);
+          const _6s=_6.getFullYear()+'-'+_p2(_6.getMonth()+1)+'-'+_p2(_6.getDate());
+          let _rz=Object.keys(W).filter(id=>{const w=W[id];return w&&w.img&&isMSM(w)&&w.pub&&w.pub>=_6s&&w.pub<=today&&!_top3.has(id);});
+          for(let i=_rz.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_rz[i];_rz[i]=_rz[j];_rz[j]=t;}
+          this._risingIds=_rz.slice(0,30);
+          try{localStorage.setItem(_rk,JSON.stringify(this._risingIds));Object.keys(localStorage).forEach(k=>{if(k.indexOf('bcut_rising_')===0&&k!==_rk)localStorage.removeItem(k);});}catch(e){}
+        }
       }
       const _rid=(this._risingIds||[]).filter(id=>W[id]);
       const _seenM=new Set();const _ring=[];

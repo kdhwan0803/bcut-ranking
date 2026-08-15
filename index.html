@@ -1970,8 +1970,19 @@ class Component extends DCLogic {
         const _b=_badge(m);
         _ring.push({img:w.img||'',blur:this.blurOf(id),model:m,tag:_b.t,tagColor:_b.c,open:()=>this.openRising(m)});});
       if(_ring.length>=4){
+        /* ① 노출할 12명 세트는 하루 고정(캐시 순서 그대로) → 매 접속 같은 이미지 = 캐시로 빠름
+           ② 그 12명의 화면 순서만 접속(세션)당 1회 셔플 · 방문 중엔 고정(재렌더 안 흔들림) */
+        const _pool=_ring.slice(0,12);
+        if(!this._ringOrder||!this._ringOrder.length){
+          const _ix=_pool.map((_,i)=>i);
+          for(let i=_ix.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_ix[i];_ix[i]=_ix[j];_ix[j]=t;}
+          this._ringOrder=_ix.map(i=>_pool[i].model);
+        }
+        const _om={};_pool.forEach(r=>{_om[r.model]=r;});
+        const _ordered=this._ringOrder.map(m=>_om[m]).filter(Boolean);
+        _pool.forEach(r=>{if(this._ringOrder.indexOf(r.model)<0)_ordered.push(r);});
         base.risingShow=(V==='home')?'block':'none';
-        base.rising=_ring.slice(0,12);
+        base.rising=_ordered;
       }
     }catch(e){}
 

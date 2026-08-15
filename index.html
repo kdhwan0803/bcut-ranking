@@ -508,6 +508,29 @@ select,input,button{font-family:inherit}
       </a>
     </section>
 
+    <section id="rising" style="display:{{ risingShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">요즘 폼 미친 라이징 <span style="color:var(--acc)">미스맥심</span></h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">RISING · MISS MAXIM</span>
+      </div>
+      <div class="shelfRow" style="gap:14px">
+        <sc-for list="{{ rising }}" as="p" hint-placeholder-count="0">
+          <div onClick="{{ p.open }}" class="nwCard" style="cursor:pointer">
+            <div class="cvCard" style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
+              <img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+              <div style="position:absolute;top:0;left:0;right:0;height:44%;background:linear-gradient(to bottom,rgba(6,6,9,.6),transparent);pointer-events:none"></div>
+              <div style="position:absolute;top:8px;left:8px;font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;background:linear-gradient(90deg,#7c5af8,#e60012);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.5)">🚀 라이징</div>
+              <div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.85);color:#fff;display:{{ p.vidShow }}">▶ 영상</div>
+              <span class="cvCta sm">자세히 →</span>
+              <div style="position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:{{ p.subShow }};background:#ffd400;color:#111;font-size:10.5px;font-weight:900;padding:3px 11px;border-radius:4px">구독</div>
+            </div>
+            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
+            <div style="font-size:11px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.sub }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
     <section id="hall" style="display:{{ hallShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">명예의 전당</h2>
@@ -999,15 +1022,17 @@ select,input,button{font-family:inherit}
   </footer>
 
   <button onClick="{{ toTop }}" style="position:fixed;right:20px;bottom:20px;z-index:80;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-size:19px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:{{ topOpacity }}">↑</button>
+  <button onClick="{{ gacha }}" title="오늘의 랜덤 B컷" style="position:fixed;right:20px;bottom:74px;z-index:80;align-items:center;gap:5px;height:46px;padding:0 15px;border-radius:23px;border:1px solid rgba(230,0,18,.5);background:var(--acc);color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(230,0,18,.34);display:{{ gachaShow }}">🎲 랜덤</button>
 
   <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:200;background:rgba(4,4,6,.82);backdrop-filter:blur(6px);padding:22px;overflow-y:auto;display:flex;align-items:center;justify-content:center">
       <div onClick="{{ stop }}" style="position:relative;width:100%;max-width:540px;max-height:92vh;margin:auto;display:flex;flex-direction:column;background:var(--bg1);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.7);animation:fadeUp .22s ease">
         <button onClick="{{ closeModal }}" style="position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:0;font-size:14px;cursor:pointer">✕</button>
         <div style="flex:1 1 auto;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch">
-        <div style="position:relative;width:100%;aspect-ratio:3/4;max-height:340px;overflow:hidden;background:#000;display:{{ modal.coverShow }}">
-          <div style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(34px) brightness(.6);transform:scale(1.3);background-image:{{ modal.bgImg }}"></div>
-          <img src="{{ modal.img }}" alt="" style="position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;object-fit:contain;display:block;z-index:1;filter:{{ modal.blur }}">
+        <div style="position:relative;width:100%;aspect-ratio:3/4;max-height:340px;overflow:hidden;background:#0a0a0d;display:{{ modal.coverShow }}">
+          <div style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(46px) brightness(.5) saturate(1.15);transform:scale(1.45);background-image:{{ modal.bgImg }}"></div>
+          <div style="position:absolute;inset:0;box-shadow:inset 0 0 130px 24px rgba(0,0,0,.5);pointer-events:none"></div>
+          <img src="{{ modal.img }}" alt="" style="position:absolute;inset:0;margin:auto;max-width:92%;max-height:90%;object-fit:contain;display:block;z-index:1;border-radius:8px;box-shadow:0 16px 44px rgba(0,0,0,.6);filter:{{ modal.blur }}">
         </div>
         <div style="padding:24px 26px 28px">
           <div style="font-size:11.5px;font-weight:800;letter-spacing:1.2px;color:var(--mut);text-align:center;margin-bottom:6px;display:{{ modal.tagShow }}">{{ modal.tag }}</div>
@@ -1128,6 +1153,9 @@ select,input,button{font-family:inherit}
 <script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;테마&quot;}}">
 const BLANK='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 const MVC={up:['#12b76a','rgba(18,183,106,.16)'],down:['#f04438','rgba(240,68,56,.16)'],new:['#fff','#7a5af8'],same:['#b0b0b8','var(--w3)']};
+/* MISS MAXIM 소속 모델 88명 (미스맥심 판별용) */
+const MSM=new Set('강선혜 강하빈 고아라 그린 김갑주 김나정 김서아 김설화 김세화 김소희 김수아 김은지 김주연 김지연 김지예 김효연 꾸뿌 노지혜 도유리 리리 려니 뮤아 바비앙 박근나 박별 박서이 박수민 박지연 박청아 보라 빛베리 새하 섹밍 손예은 순수 소은 신새롬 썬비키 아승연 애순이 양혜원 엄상미 여나비 연수 에일리 예리 옐랑 오은담 유디 유진 윤영서 은유화 은지 이규영 이나 이시현 이아영 이아윤 이연우 이예린 이유진 이채하 이하니 장예나 장혜선 전지은 정은 정주희 제아 조아 조이온 주은 쥬 지니 청아 채솔 채아 첼설아 최세희 최혜연 퓨리 하리 하윤아 한나나 한지나 혜린 희야 E다연'.split(' '));
+function isMSM(w){return !!(w&&(w.models||[]).some(m=>MSM.has((m||'').trim())));}
 
 class Component extends DCLogic {
   state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9};
@@ -1173,6 +1201,14 @@ class Component extends DCLogic {
     var map={'':'home','home':'home','top':'home','ranking':'home','new':'new','next':'new','sub':'sub','creators':'creators','models':'models','search':'search'};
     return map[h]||'home';}
   goView(v){try{location.hash=(v&&v!=='home')?('#/'+v):'';}catch(e){}this.setState({view:v});try{window.scrollTo(0,0);}catch(e){}}
+  /* 오늘의 랜덤 B컷(가챠): 미스맥심·최근작 위주 반가중 랜덤 → 모달 오픈 */
+  gacha(){try{const D=this.state.D;if(!D||!D.works)return;const W=D.works,today=this.today();
+    const rec=Object.keys(W).filter(id=>{const w=W[id];return w&&w.img&&(!w.pub||w.pub<=today);});
+    if(!rec.length)return;
+    const msm=rec.filter(id=>isMSM(W[id]));
+    const src=(msm.length>=8)?msm:rec;
+    const id=src[Math.floor(Math.random()*src.length)];
+    if(id)this.openWork(id);}catch(e){}}
 
   bindGlobal(){
     this._key=e=>{if(e.key==='Escape'){if(this.state.modal)this.close();else if(this.state.help)this.setState({help:false});}};
@@ -1883,6 +1919,22 @@ class Component extends DCLogic {
       }
     base.nwMoreShow='none'; /* 신작을 가로 선반으로 대체 → 그리드 더보기 숨김 */
 
+    /* 라이징 미스맥심: 소속모델 & 최근 6개월 & 이번주 상위3 제외 · 랜덤 최대 8 */
+    try{
+      const _top3=new Set(this.weekWorks(this.state.wi).slice(0,3).map(x=>x.id));
+      const _6=new Date(today+'T00:00:00');_6.setMonth(_6.getMonth()-6);
+      const _6s=_6.getFullYear()+'-'+_p2(_6.getMonth()+1)+'-'+_p2(_6.getDate());
+      let _rz=Object.keys(W).filter(id=>{const w=W[id];return w&&w.img&&isMSM(w)&&w.pub&&w.pub>=_6s&&w.pub<=today&&!_top3.has(id);});
+      for(let i=_rz.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=_rz[i];_rz[i]=_rz[j];_rz[j]=t;}
+      _rz=_rz.slice(0,8);
+      if(_rz.length>=4){
+        base.risingShow=(V==='home')?'block':'none';
+        base.rising=_rz.map(id=>{const w=W[id];return {img:w.img||'',blur:this.blurOf(id),
+          title:this.splitTitle(w.title||id).name,sub:(w.models||[]).join(' & ')||'MAXIM B컷',
+          vidShow:w.vid?'block':'none',subShow:w.buy==='구독'?'block':'none',open:()=>this.openWork(id)};});
+      }
+    }catch(e){}
+
     /* 홈 추가: 지금 보는 중 (랜덤 화보 + 실시간 느낌) */
     const _allIds=Object.keys(W);
     if(_allIds.length&&(!this._liveIds||this._liveIds.length===0)){
@@ -2179,6 +2231,9 @@ class Component extends DCLogic {
       base.pageHeadShow='flex';base.pageTitle=_titles[V]||'';
     }
     base.goHome=()=>this.goView('home');
+    base.gacha=()=>this.gacha();
+    base.gachaShow=(this.state.view==='home'||!this.state.view)?'inline-flex':'none';
+    base.risingShow=base.risingShow||'none';base.rising=base.rising||[];
     return Object.assign(base,themeVals);
   }
 }

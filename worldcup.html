@@ -252,7 +252,10 @@ button{font-family:inherit}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;테마&quot;}}">
 const WKEY='bcut_wc_v1';
-const SHEETDB_URL='https://sheetdb.io/api/v1/d4bc9pnsklz0n';
+/* 투표 집계 백엔드: 구글 Apps Script /exec URL (비밀 아님).
+   읽기(집계)=JSONP, 쓰기(1표)=이미지 비콘 → CORS/용량 제한 없음(SheetDB 대체).
+   아래 상수에 직접 박아둠 → data.json 안 건드려도 됨. (없으면 data.json 의 worldcupUrl→counterUrl 순으로 대체) */
+const WORLDCUP_URL='https://script.google.com/macros/s/AKfycbyfR9_c35SZEhwfVUorGWCZ3Ga7QK-j4oF_ro8CJLctsPhy_XTzaXFa8CX39VLe4TSyBw/exec';
 const SEED_WINS={}; /* 시드값 제거 — 순위는 실제 투표(구글시트)로만 집계 */
 
 class Component extends DCLogic {
@@ -279,12 +282,21 @@ class Component extends DCLogic {
       }catch(e){}
     }
   }
-  async loadGlobal(){
-    const c=Object.assign({},SEED_WINS);
-    try{const r=await fetch(SHEETDB_URL+(SHEETDB_URL.indexOf('?')>=0?'&':'?')+'_ts='+Date.now(),{cache:'no-store'});const rows=await r.json();
-      (Array.isArray(rows)?rows:[]).forEach(row=>{const id=row&&(row.work_id||row.workId||row.id);if(id)c[id]=(c[id]||0)+1;});
-    }catch(e){}
-    this.setState({counts:c});
+  wcUrl(){const D=this.state.D||{};return (typeof WORLDCUP_URL!=='undefined'&&WORLDCUP_URL)||D.worldcupUrl||D.counterUrl||'';}
+  loadGlobal(){
+    const base=this.wcUrl();
+    if(!base){this.setState({counts:Object.assign({},SEED_WINS)});return;}
+    try{
+      const cb='__wc_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+      const s=document.createElement('script');
+      const done=(rows)=>{const c=Object.assign({},SEED_WINS);
+        (Array.isArray(rows)?rows:[]).forEach(r=>{const id=r&&(r.id||r.work_id||r.workId);const n=Number(r&&r.c);if(id)c[id]=(c[id]||0)+(isNaN(n)?1:n);});
+        this.setState({counts:c});try{delete window[cb];}catch(e){}try{s.remove();}catch(e){}};
+      window[cb]=done;
+      s.onerror=()=>{this.setState({counts:Object.assign({},SEED_WINS)});try{delete window[cb];}catch(e){}try{s.remove();}catch(e){}};
+      s.src=base+(base.indexOf('?')>=0?'&':'?')+'wctop=1&callback='+cb+'&_ts='+Date.now();
+      document.head.appendChild(s);
+    }catch(e){this.setState({counts:Object.assign({},SEED_WINS)});}
   }
   pow2(n){let p=2;while(p*2<=n)p*=2;return Math.max(2,p);}
   shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -304,7 +316,7 @@ class Component extends DCLogic {
     const st={wins:Object.assign({},this.state.stats.wins),plays:(this.state.stats.plays||0)+1};
     st.wins[id]=(st.wins[id]||0)+1;
     try{localStorage.setItem(WKEY,JSON.stringify(st));}catch(e){}
-    try{const w=this.w(id);fetch(SHEETDB_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:[{work_id:id,title:w.title||id,ts:new Date().toISOString()}]})}).catch(()=>{});}catch(e){}
+    try{const base=this.wcUrl();if(base){const img=new Image();img.referrerPolicy='no-referrer';img.src=base+(base.indexOf('?')>=0?'&':'?')+'wc='+encodeURIComponent(id)+'&t='+Date.now();}}catch(e){}
     try{if(window.gtag)window.gtag('event','worldcup_finish',{winner:id});}catch(e){}
     this.setState({champ:id,phase:'champ',stats:st,cardUrl:''});window.scrollTo({top:0,behavior:'smooth'});
     setTimeout(()=>{this.loadGlobal();this.makeCard();},400);

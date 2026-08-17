@@ -16,6 +16,18 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0M1DPCT33G"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0M1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
 <script src="./support.js"></script>
+<!-- OneSignal 웹푸시 -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+window.OneSignalDeferred=window.OneSignalDeferred||[];
+OneSignalDeferred.push(async function(OneSignal){
+  try{
+    await OneSignal.init({appId:"984bf306-96e9-4162-8845-a63ac1b30869",allowLocalhostAsSecureOrigin:true});
+    /* 관심 없던 신규 방문자에게도 한 번은 알림 동의 슬라이드 노출(브라우저당 1회) */
+    setTimeout(function(){try{if(!localStorage.getItem('bcut_os_asked')){localStorage.setItem('bcut_os_asked','1');OneSignal.Slidedown.promptPush();}}catch(e){}},12000);
+  }catch(e){}
+});
+</script>
 </head>
 <body>
 <x-dc>
@@ -1888,6 +1900,9 @@ class Component extends DCLogic {
       if(_seen.size){
         const _likeModels=[],_lm=new Set();
         [...(S.recent||[]),...(S.wish||[])].forEach(id=>{const w=W[id];if(!w)return;(w.models||[]).forEach(m=>{m=(m||'').trim();if(m&&!_lm.has(m)){_lm.add(m);_likeModels.push(m);}});});
+        /* 웹푸시 개인화: 관심 모델을 OneSignal 태그로 1회 저장 → 모델별 타겟 푸시 */
+        if(!this._osTagged&&_likeModels.length){this._osTagged=true;
+          try{window.OneSignalDeferred=window.OneSignalDeferred||[];window.OneSignalDeferred.push(function(OneSignal){try{const t={};_likeModels.slice(0,20).forEach(m=>{t['model_'+m]='1';});OneSignal.User.addTags(t);}catch(e){}});}catch(e){}}
         const _pick=[],_ps=new Set();
         const _cap=(_likeModels.length<=2)?6:(_likeModels.length<=4?3:2);
         _likeModels.forEach(m=>{

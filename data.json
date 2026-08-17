@@ -1,6 +1,6 @@
 {
   "counterUrl": "https://script.google.com/macros/s/AKfycbzRTBgBsi33zicn1jD6DhM64l--fG9FJv1q2Jl1S8zn-i3-vph5oIQKCAHQBuyRrDSr/exec",
-  "coverModel": "서여진",
+  "coverModel": "",
   "points": [
     100,
     90,
@@ -14,22 +14,274 @@
     10
   ],
   "works": {
+    "25": {
+      "title": "[MX-SM01] White is not Pure",
+      "models": [
+        "박수민"
+      ],
+      "img": "https://i.ibb.co/rGRXR3Qw/25-C-20220609040013-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-05-31",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "28": {
+      "title": "[MX-SY01] Black Tinker bell",
+      "models": [
+        "이소윤"
+      ],
+      "img": "https://i.ibb.co/zVR80G0L/28-C-20220608093200-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-03",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "31": {
+      "title": "[MX-HN01] G-Wagen option",
+      "models": [
+        "이하니"
+      ],
+      "img": "https://i.ibb.co/chjPhKBn/31-C-20220608113538-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-06",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
     "33": {
       "title": "[MX-NJ01] 나정이 긴장한 날",
       "models": [
         "김나정"
       ],
-      "img": "https://i.ibb.co/gbpS5qVB/33-C-20220608093635-opt.webp",
-      "buy": "코인",
+      "img": "https://i.ibb.co/LDk1tcWm/33-C-20220608093635-14-opt.webp",
+      "buy": "구독",
       "b19": 0,
       "vid": 0,
-      "pub": "2022-06-08",
+      "pub": "2022-06-09",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "35": {
+      "title": "[MX-MA01] T-Maid",
+      "models": [
+        "뮤아"
+      ],
+      "img": "https://i.ibb.co/cKd03hgw/35-C-20220608113456-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-12",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "37": {
+      "title": "[MX-YH01] 처음, 은유화",
+      "models": [
+        "은유화"
+      ],
+      "img": "https://i.ibb.co/kVmsQQfm/37-C-20220608094214-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-15",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "39": {
+      "title": "[MX-JN01] 부산여자 Vol.1",
+      "models": [
+        "한지나"
+      ],
+      "img": "https://i.ibb.co/rR8xNWzF/39-C-20220608094736-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-18",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "41": {
+      "title": "[MX-JN02] 부산여자 Vol.2",
+      "models": [
+        "한지나"
+      ],
+      "img": "https://i.ibb.co/svtGQn9t/41-C-20220608113352-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-21",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "43": {
+      "title": "[MX-ES01] 화보는 처음입니다만",
+      "models": [
+        "은수"
+      ],
+      "img": "https://i.ibb.co/mVkJq7j1/43-C-20220608114420-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-24",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "45": {
+      "title": "[MX-VV01] Dirty English Chapter.1",
+      "models": [
+        "벨벳"
+      ],
+      "img": "https://i.ibb.co/21gN1GPf/45-C-20220608113154-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-05",
       "desc": "",
       "tags": [],
       "wide": "",
       "hl": "",
       "nb": 0,
       "photo": "",
+      "photoId": ""
+    },
+    "47": {
+      "title": "[MX-EJ01] 이 수영복 때문에 떨어질 뻔 했어",
+      "models": [
+        "김은지"
+      ],
+      "img": "https://i.ibb.co/mjkJ57s/47-C-20220608102432-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-08",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "49": {
+      "title": "[MX-SNW01] Pool Blue",
+      "models": [
+        "김설화"
+      ],
+      "img": "https://i.ibb.co/R4J0yPGy/49-C-20250131090723-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-23",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "51": {
+      "title": "[MX-GN01] 신부수업",
+      "models": [
+        "박근나"
+      ],
+      "img": "https://i.ibb.co/gMZwRStK/51-C-20220608112938-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-26",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "57": {
+      "title": "[MX-QN01] Santa Office Part.1",
+      "models": [
+        "김소희"
+      ],
+      "img": "https://i.ibb.co/BVmJdMqw/57-C-20220608104258-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-29",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "59": {
+      "title": "[MX-QN02] Santa Office Part.2",
+      "models": [
+        "김소희"
+      ],
+      "img": "https://i.ibb.co/CpN1hWSk/59-C-20220608112833-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-08-01",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
       "photoId": ""
     },
     "85": {
@@ -48,6 +300,204 @@
       "hl": "",
       "nb": 0,
       "photo": "",
+      "photoId": ""
+    },
+    "149": {
+      "title": "[2022MMC-03] 미맥콘 TOP25 부동산 회사원 김지연",
+      "models": [
+        "김지연"
+      ],
+      "img": "https://i.ibb.co/Q7wSG7WP/149-C-20220621172140-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-26",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "156": {
+      "title": "[2022MMC-10] 미맥콘 TOP25 아프리카TV BJ바비앙",
+      "models": [
+        "바비앙"
+      ],
+      "img": "https://i.ibb.co/B2rDzVg6/156-C-20220621172621-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-29",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "157": {
+      "title": "[2022MMC-11] 미맥콘 TOP25 아프리카TV BJ여나비",
+      "models": [
+        "여나비"
+      ],
+      "img": "https://i.ibb.co/kV0kWmZv/157-C-20220621172657-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-29",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "162": {
+      "title": "[2022MMC-16] 미맥콘 TOP25 아프리카TV BJ란",
+      "models": [
+        "동그란"
+      ],
+      "img": "https://i.ibb.co/yFwzvx8m/162-C-20220621173013-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-30",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "163": {
+      "title": "[2022MMC-17] 미맥콘 TOP25 트위치 스트리머 겨우디",
+      "models": [
+        "겨우디"
+      ],
+      "img": "https://i.ibb.co/Q34mvNnP/163-C-20220621173047-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-06-30",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "164": {
+      "title": "[2022MMC-18] 미맥콘 TOP25 트위치 스트리머 이규영",
+      "models": [
+        "이규영"
+      ],
+      "img": "https://i.ibb.co/zHTyb51W/164-C-20220621173119-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-01",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "166": {
+      "title": "[2022MMC-20] 미맥콘 TOP25 아프리카TV BJ연수",
+      "models": [
+        "연수"
+      ],
+      "img": "https://i.ibb.co/0R6JD6S7/166-C-20220621173226-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-01",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "167": {
+      "title": "[2022MMC-21] 미맥콘 TOP25 웹화보 모델 손예은",
+      "models": [
+        "손예은"
+      ],
+      "img": "https://i.ibb.co/392Rgbxx/167-C-20220621173303-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-01",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "169": {
+      "title": "[2022MMC-23] 미맥콘 TOP25 병원 상담실장 양혜원",
+      "models": [
+        "양혜원"
+      ],
+      "img": "https://i.ibb.co/ns1BQdWG/169-C-20220621173431-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-02",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "170": {
+      "title": "[2022MMC-24] 미맥콘 TOP25 홈트 유튜버 청아",
+      "models": [
+        "청아"
+      ],
+      "img": "https://i.ibb.co/zVJLwbmK/170-C-20220621173523-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2022-07-02",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "박율",
+      "photoId": ""
+    },
+    "171": {
+      "title": "[2022MMC-25] 미맥콘 TOP25 아프리카TV BJ박별",
+      "models": [
+        "박별"
+      ],
+      "img": "https://i.ibb.co/sMJG47y/171-C-20220621173608-14-opt.webp",
+      "buy": "구독",
+      "b19": 1,
+      "vid": 0,
+      "pub": "2022-07-02",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "ZINHO",
       "photoId": ""
     },
     "302": {
@@ -9636,8 +10086,8 @@
         "1910",
         "2020",
         "2019",
-        "2017",
         "2027",
+        "2017",
         "2037",
         "1954",
         "1964",
@@ -9649,6 +10099,32 @@
         "1999",
         "1217",
         "2160"
+      ]
+    },
+    {
+      "label": "8월 3주차",
+      "date": "2026-08-17",
+      "ranking": [
+        "2098",
+        "1664",
+        "2088",
+        "2160",
+        "2158",
+        "2099",
+        "1788",
+        "1932",
+        "2021",
+        "2092",
+        "1877",
+        "1876",
+        "2027",
+        "2106",
+        "978",
+        "302",
+        "2067",
+        "2154",
+        "2142",
+        "2094"
       ]
     }
   ],

@@ -524,6 +524,24 @@ select,input,button{font-family:inherit}
       </a>
     </section>
 
+    <section id="picks" style="display:{{ pickShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">관심 모델 <span style="color:var(--acc)">신작</span></h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">FOR YOU · 최근 본 모델의 새 화보</span>
+      </div>
+      <div class="shelfRow" style="gap:14px;padding:2px 2px 6px">
+        <sc-for list="{{ picks }}" as="p" hint-placeholder-count="0">
+          <div onClick="{{ p.open }}" class="nwCard" style="cursor:pointer">
+            <div class="imgSkel" style="width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2)">
+              <img src="{{ p.img }}" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
+            </div>
+            <div style="font-size:11px;font-weight:800;color:var(--acc2);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.model }}</div>
+            <div style="font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">{{ p.title }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
     <section id="rising" style="display:{{ risingShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">요즘 폼 미친 라이징 <span style="color:var(--acc)">미스맥심</span></h2>
@@ -1862,6 +1880,29 @@ class Component extends DCLogic {
     /* 최근 본 */
     const rec=S.recent.filter(id=>W[id]);
     if(rec.length){base.recentShow='block';base.recent=rec.map(id=>({img:W[id].img||'',blur:this.blurOf(id),open:()=>this.openWork(id)}));}
+
+    /* 관심 모델 신작: 최근 본/찜한 화보의 모델 → 그 모델의 안 본 신작 (온사이트 개인화) */
+    try{
+      const _pt=this.today();
+      const _seen=new Set([...(S.recent||[]),...(S.wish||[])].filter(id=>W[id]));
+      if(_seen.size){
+        const _likeModels=[],_lm=new Set();
+        [...(S.recent||[]),...(S.wish||[])].forEach(id=>{const w=W[id];if(!w)return;(w.models||[]).forEach(m=>{m=(m||'').trim();if(m&&!_lm.has(m)){_lm.add(m);_likeModels.push(m);}});});
+        const _pick=[],_ps=new Set();
+        const _cap=(_likeModels.length<=2)?6:(_likeModels.length<=4?3:2);
+        _likeModels.forEach(m=>{
+          const cand=Object.keys(W).filter(id=>W[id]&&W[id].img&&!_seen.has(id)&&!_ps.has(id)&&(W[id].models||[]).map(x=>(x||'').trim()).includes(m)&&(!W[id].pub||W[id].pub<=_pt))
+            .sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
+          cand.slice(0,_cap).forEach(id=>{_ps.add(id);_pick.push({id,model:m});});
+        });
+        if(_pick.length>=3){
+          base.pickShow=(V==='home')?'block':'none';
+          base.picks=_pick.slice(0,12).map(o=>({img:W[o.id].img||'',blur:this.blurOf(o.id),
+            title:this.splitTitle(W[o.id].title||o.id).name,model:o.model,open:()=>this.openWork(o.id)}));
+        }
+      }
+    }catch(e){}
+    base.pickShow=base.pickShow||'none';base.picks=base.picks||[];
 
     /* 타임세일 */
     const ts=(D.timesales||[]).filter(t=>t&&t.id&&W[t.id]&&t.end&&new Date(t.end).getTime()-S.now>0).sort((a,b)=>new Date(a.end)-new Date(b.end));

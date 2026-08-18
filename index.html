@@ -2358,6 +2358,9 @@ class Component extends DCLogic {
       return out;};
     if(S.modal){
       if(S.modal.kind==='work'){const id=S.modal.id,w=W[id]||{};
+        /* 구독 화보는 최신 4편(active)만 구독 열람 가능 · 미래 공개분 포함. 그 밖은 기간이 밀려 코인(개별구매)으로 전환 */
+        const _subActive=(w.buy==='구독')&&(((w.pub||'')>today)||active.indexOf(id)>=0);
+        const _buyLabel=(w.buy==='구독'&&!_subActive)?'코인':(w.buy||'');
         const wr=this.workRankAt(id,wi),best=this.bestMap().w[id],st=this.streak(id,wi,3,false);
         const mp=(this.monthWorks(wi).find(x=>x.id===id)||{}).pts||0;
         const others=Object.keys(W).filter(x=>x!==id&&(W[x].models||[]).some(m=>(w.models||[]).includes(m))).slice(0,8);
@@ -2365,15 +2368,15 @@ class Component extends DCLogic {
           title:this.splitTitle(w.title||id).name,tag:this.splitTitle(w.title||id).tag,
           tagShow:this.splitTitle(w.title||id).tag?'block':'none',
           model:(w.models||[]).join(' & ')||'—',
-          meta:[w.pub?this.fmt(w.pub)+' 공개':'',w.buy,w.photo?('작가 '+w.photo):''].filter(Boolean).join(' · '),
+          meta:[w.pub?this.fmt(w.pub)+' 공개':'',_buyLabel,w.photo?('작가 '+w.photo):''].filter(Boolean).join(' · '),
           desc:w.desc||'',descShow:w.desc?'block':'none',
           stats:[{v:wr?'#'+wr:'-',l:'이번 주'},{v:best?'#'+best:'-',l:'역대 최고'},{v:st+'주',l:'연속 TOP3'},{v:mp,l:'이번 달 pt'}],
           trendShow:'block',trend:trendOf(id,false),lineShow:'none',lineImg:BLANK,
           simShow:'none',simLabel:'이 화보와 비슷한',similar:[],
           gridShow:others.length?'block':'none',gridLabel:'이 모델의 다른 화보',
           others:others.map(x=>({img:W[x].img||'',blur:this.blurOf(x),open:()=>this.openWork(x)})),
-          cta:'https://bcut.maximkorea.net/work/'+id,ctaLabel:(w.buy==='구독')?'구독하고 보기 ›':'코인으로 바로 보기 ›',origHintShow:'block',
-          buyRowShow:'flex',buyTagShow:'inline-block',buyTag:(w.buy==='구독')?'구독 전용 · 월 ₩19,900':'개별 구매',
+          cta:'https://bcut.maximkorea.net/work/'+id,ctaLabel:_subActive?'구독하고 보기 ›':'코인으로 바로 보기 ›',origHintShow:'block',
+          buyRowShow:'flex',buyTagShow:'inline-block',buyTag:_subActive?'구독 전용 · 월 ₩19,900':'개별 구매',
           hypeShow:(wr&&wr<=10)?'inline-flex':'none',hypeColor:(wr&&wr<=3)?'var(--acc)':'var(--mut)',hypeText:(wr&&wr<=3)?('🔥 이번 주 #'+wr+' · 지금 인기'):((wr&&wr<=10)?('이번 주 랭킹 #'+wr):''),
           copy:()=>this.copyLink(id),copyLabel:S.copied?'복사됨 ✓':'링크 복사',
           share:()=>this.shareWork(id,w.title)};

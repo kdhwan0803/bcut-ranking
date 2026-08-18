@@ -1243,6 +1243,8 @@ class Component extends DCLogic {
   state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9};
 
   componentDidMount(){
+    try{this._admin=/[?&](admin|preview)=1/.test(location.search)||!!window.IS_ADMIN;}catch(e){this._admin=!!window.IS_ADMIN;}
+    if(this._admin){window.IS_ADMIN=true;this._shuffleSeed=0.5;}
     this._t=setInterval(()=>this.setState({now:Date.now()}),1000);
     this._sp=setInterval(()=>this.advance(),7000);
     try{this._touch=window.matchMedia('(hover:none)').matches;}catch(e){this._touch=false;}
@@ -1255,7 +1257,7 @@ class Component extends DCLogic {
     let age=null,rec=[],wish=[];
     try{age=localStorage.getItem('bcut_age');rec=JSON.parse(localStorage.getItem('bcut_recent')||'[]');
       wish=JSON.parse(localStorage.getItem('bcut_wish')||'[]');}catch(e){}
-    this.setState({age:age||'',recent:Array.isArray(rec)?rec:[],wish:Array.isArray(wish)?wish:[]});
+    this.setState({age:this._admin?'adult':(age||''),recent:Array.isArray(rec)?rec:[],wish:Array.isArray(wish)?wish:[]});
     let th=null;try{th=localStorage.getItem('bcut_theme');}catch(e){}
     this.applyTheme(th||this.props.theme||'light');
     this.bindGlobal();
@@ -1270,9 +1272,8 @@ class Component extends DCLogic {
       if(q.get('year'))st.yearSel=q.get('year');
       this._qWeek=q.get('week')?+q.get('week'):null;
       if(Object.keys(st).length)this.setState(st);
-      const nd=localStorage.getItem('bcut_notice_hide');this._noticeHide=nd||'';
-      this._admin=q.get('admin')==='1'||q.get('preview')==='1'||!!window.IS_ADMIN;
-      if(this._admin){window.IS_ADMIN=true;this._shuffleSeed=0.5;this.setState({age:'adult'});}
+      try{const nd=localStorage.getItem('bcut_notice_hide');this._noticeHide=nd||'';}catch(e){this._noticeHide='';}
+      if(this._admin){this.setState({age:'adult'});}
     }catch(e){}
     this.load();
   }

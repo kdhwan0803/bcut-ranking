@@ -1243,7 +1243,6 @@ class Component extends DCLogic {
   state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9};
 
   componentDidMount(){
-    this.load();
     this._t=setInterval(()=>this.setState({now:Date.now()}),1000);
     this._sp=setInterval(()=>this.advance(),7000);
     try{this._touch=window.matchMedia('(hover:none)').matches;}catch(e){this._touch=false;}
@@ -1273,8 +1272,9 @@ class Component extends DCLogic {
       if(Object.keys(st).length)this.setState(st);
       const nd=localStorage.getItem('bcut_notice_hide');this._noticeHide=nd||'';
       this._admin=q.get('admin')==='1'||q.get('preview')==='1'||!!window.IS_ADMIN;
-      if(this._admin){window.IS_ADMIN=true;this._shuffleSeed=0.5;}
+      if(this._admin){window.IS_ADMIN=true;this._shuffleSeed=0.5;this.setState({age:'adult'});}
     }catch(e){}
+    this.load();
   }
   componentWillUnmount(){clearInterval(this._t);clearInterval(this._sp);window.removeEventListener('scroll',this._sc);
     document.removeEventListener('keydown',this._key);window.removeEventListener('popstate',this._pop);
@@ -1333,6 +1333,12 @@ class Component extends DCLogic {
 
   async load(){
     if(window.BCUT_DATA){this.apply(window.BCUT_DATA);return;}
+    let _inFrame=false;try{_inFrame=window.parent&&window.parent!==window;}catch(e){_inFrame=false;}
+    if(this._admin&&_inFrame){
+      window.addEventListener('message',(e)=>{const m=e&&e.data;if(m&&m.__bcutPreview&&m.data){try{this.apply(m.data);}catch(_){}}});
+      try{window.parent.postMessage({__bcutPreviewReady:1},'*');}catch(e){}
+      return;
+    }
     let why='';
     for(const p of ['data.json','./data.json','/data.json','uploads/data-2c882565.json','data-2c882565.json','uploads/data.json','./uploads/data.json']){
       try{

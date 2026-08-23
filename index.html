@@ -43,7 +43,8 @@ OneSignalDeferred.push(async function(OneSignal){
   --hf0:rgba(7,7,10,0);--hfA:rgba(7,7,10,.88);--hfB:rgba(7,7,10,.35);--hfC:rgba(7,7,10,.55);--hfD:rgba(7,7,10,.74);
   --heroShadow:0 4px 30px rgba(0,0,0,.6);--heroImg:.62;--heroCardSh:0 24px 55px rgba(0,0,0,.6);--hdrTop:linear-gradient(to bottom,rgba(0,0,0,.72),transparent);
   --logoFilter:invert(1) hue-rotate(180deg);--logoBlend:screen;
-  --posterFade:rgba(0,0,0,.92);--logoShadow:0 0 14px rgba(255,255,255,.5)}
+  --posterFade:rgba(0,0,0,.92);--logoShadow:0 0 14px rgba(255,255,255,.5);
+  --rankBandBg:linear-gradient(180deg,rgba(230,0,18,.07),transparent);--rankBandLine:rgba(230,0,18,.22);--rankBandSh:0 10px 30px rgba(230,0,18,.05);--rankHotBg:rgba(230,0,18,.12);--rankHotLine:rgba(230,0,18,.3);--goldLine:rgba(232,178,58,.55);--goldText:#e8b23a}
 html[data-theme="light"]{
   --bg0:#ffffff;--bg1:#f6f6f8;--bg2:#e9e9ee;--txt:#111114;--mut:#6c6c76;--line:rgba(0,0,0,.1);--acc2:#c9000f;
   --w1:rgba(0,0,0,.035);--w2:rgba(0,0,0,.055);--w3:rgba(0,0,0,.09);--w4:rgba(0,0,0,.13);--w5:rgba(0,0,0,.22);
@@ -51,7 +52,8 @@ html[data-theme="light"]{
   --hf0:rgba(255,255,255,0);--hfA:rgba(255,255,255,.94);--hfB:rgba(255,255,255,.42);--hfC:rgba(255,255,255,.6);--hfD:rgba(255,255,255,.86);
   --heroShadow:0 2px 22px rgba(255,255,255,.75);--heroImg:.9;--heroCardSh:0 16px 38px rgba(0,0,0,.2);--hdrTop:linear-gradient(to bottom,rgba(255,255,255,.85),transparent);
   --logoFilter:none;--logoBlend:multiply;
-  --posterFade:rgba(255,255,255,.96);--logoShadow:0 2px 10px rgba(0,0,0,.32)}
+  --posterFade:rgba(255,255,255,.96);--logoShadow:0 2px 10px rgba(0,0,0,.32);
+  --rankBandBg:linear-gradient(180deg,#fff5f5,transparent);--rankBandLine:rgba(230,0,18,.14);--rankBandSh:0 10px 30px rgba(230,0,18,.06);--rankHotBg:rgba(230,0,18,.08);--rankHotLine:rgba(230,0,18,.2);--goldLine:rgba(232,178,58,.6);--goldText:#c8912b}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg0);color:var(--txt);font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
@@ -404,14 +406,18 @@ select,input,button{font-family:inherit}
     </section>
 
     <section id="ranking" style="display:{{ rankingShow }}">
+     <div style="background:var(--rankBandBg);border:1px solid var(--rankBandLine);border-radius:20px;padding:22px 18px 24px;box-shadow:var(--rankBandSh)">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
-        <div>
+        <div style="display:flex;align-items:flex-start;gap:13px">
+          <div style="width:5px;align-self:stretch;min-height:56px;border-radius:3px;background:linear-gradient(var(--acc),#ff5a63);flex:0 0 auto"></div>
+          <div>
           <div style="font-size:10.5px;font-weight:800;letter-spacing:2.4px;color:var(--acc2);margin-bottom:7px">WEEKLY RANKING</div>
           <div style="display:flex;align-items:center;gap:10px">
-            <h2 style="font-size:27px;font-weight:900;letter-spacing:-1px">{{ rankHeading }}</h2>
+            <h2 style="font-size:27px;font-weight:900;letter-spacing:-1px">🏆 {{ rankHeading }}</h2>
             <button onClick="{{ toggleHelp }}" aria-label="점수 안내" style="width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--w2);color:var(--mut);font-size:12px;font-weight:800;cursor:pointer;flex:0 0 auto" style-hover="color:var(--txt);border-color:var(--w5)">?</button>
           </div>
           <div style="font-size:12.5px;color:var(--mut);margin-top:6px">{{ rankSubline }}</div>
+          <div style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:900;color:var(--acc);background:var(--rankHotBg);border:1px solid var(--rankHotLine);padding:4px 11px;border-radius:999px;margin-top:11px">🔥 지금 가장 뜨거운 화보</div>
           <div style="display:{{ helpShow }};margin-top:14px;max-width:520px;border-radius:12px;border:1px solid var(--line);background:var(--bg1);padding:16px 18px">
             <div style="font-size:13px;font-weight:900;margin-bottom:10px">순위는 이렇게 정해져요</div>
             <div style="font-size:12.5px;color:var(--mut);line-height:1.8">
@@ -421,6 +427,7 @@ select,input,button{font-family:inherit}
               <b style="color:var(--txt)">월간 랭킹</b>은 해당 월 각 주차 포인트의 합계예요.
             </div>
           </div>
+        </div>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <div style="display:inline-flex;background:var(--w2);border:1px solid var(--line);border-radius:8px;padding:3px">
@@ -534,6 +541,7 @@ select,input,button{font-family:inherit}
         <span style="flex:0 0 auto;font-size:15px;font-weight:900;color:#12b76a">▲{{ riser.n }}</span>
         <span style="flex:0 0 auto;font-size:12px;font-weight:800;color:var(--acc);white-space:nowrap">보러가기 →</span>
       </a>
+     </div>
     </section>
 
     <section id="picks" style="display:{{ pickShow }}">
@@ -571,19 +579,28 @@ select,input,button{font-family:inherit}
     </section>
 
     <section id="spot" style="display:{{ spotShow }}">
-      <div onClick="{{ spot.open }}" style="position:relative;border-radius:18px;overflow:hidden;cursor:pointer;background:#0a0a0d;aspect-ratio:16/10;max-height:520px">
-        <div style="position:absolute;inset:0;background-size:cover;background-position:center 18%;background-image:{{ spot.bg }};filter:{{ spot.blur }}"></div>
-        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.05) 0%,rgba(8,8,11,.45) 52%,rgba(8,8,11,.97) 100%)"></div>
-        <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:28px 26px 26px">
-          <div style="font-size:11px;font-weight:900;letter-spacing:2.5px;color:var(--acc2)">⭐ 이 주의 픽 · EDITOR'S PICK</div>
-          <div style="font-size:clamp(26px,6vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.08;margin-top:10px;color:#fff">{{ spot.title }}</div>
-          <div style="display:flex;align-items:center;gap:9px;margin-top:11px;flex-wrap:wrap">
-            <span style="display:{{ spot.b19Show }};background:var(--acc);color:#fff;font-size:11px;font-weight:900;padding:2px 7px;border-radius:4px">19</span>
-            <span style="font-size:14px;font-weight:800;color:var(--acc2)">{{ spot.model }}</span>
-          </div>
-          <div style="font-size:13.5px;color:rgba(255,255,255,.82);margin-top:11px;line-height:1.6;max-width:520px">{{ spot.tag }}</div>
-          <span style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#111;font-weight:900;font-size:15px;padding:13px 26px;border-radius:999px;margin-top:18px">보러가기 →</span>
+      <div style="position:relative;border-radius:18px;overflow:hidden;background:#0a0a0d" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
+        <div style="display:flex;transition:transform .5s ease;transform:{{ champX }}">
+          <sc-for list="{{ champs }}" as="c" hint-placeholder-count="1">
+            <div onClick="{{ c.open }}" style="flex:0 0 100%;position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:16/10;max-height:520px">
+              <div style="position:absolute;inset:0;background-size:cover;background-position:center 18%;background-image:{{ c.bg }};filter:{{ c.blur }}"></div>
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.05) 0%,rgba(8,8,11,.45) 52%,rgba(8,8,11,.97) 100%)"></div>
+              <div style="position:absolute;top:18px;left:18px;z-index:3;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(6px);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:900;{{ c.badgeStyle }}">{{ c.badge }}</div>
+              <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:28px 26px 26px">
+                <div style="font-size:11px;font-weight:900;letter-spacing:2.5px;color:{{ c.eyebrowColor }}">{{ c.eyebrow }}</div>
+                <div style="font-size:clamp(26px,6vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.08;margin-top:10px;color:#fff">{{ c.title }}</div>
+                <div style="display:flex;align-items:center;gap:9px;margin-top:11px;flex-wrap:wrap">
+                  <span style="display:{{ c.b19Show }};background:var(--acc);color:#fff;font-size:11px;font-weight:900;padding:2px 7px;border-radius:4px">19</span>
+                  <span style="font-size:14px;font-weight:800;color:var(--acc2)">{{ c.model }}</span>
+                </div>
+                <div style="font-size:13.5px;color:rgba(255,255,255,.82);margin-top:11px;line-height:1.6;max-width:520px">{{ c.tag }}</div>
+                <span style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#111;font-weight:900;font-size:15px;padding:13px 26px;border-radius:999px;margin-top:18px">보러가기 →</span>
+              </div>
+            </div>
+          </sc-for>
         </div>
+        <button onClick="{{ champPrev }}" aria-label="이전 1위" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:5;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);backdrop-filter:blur(6px);color:#fff;font-size:18px;cursor:pointer;display:{{ champPrevShow }};align-items:center;justify-content:center">‹</button>
+        <button onClick="{{ champNext }}" aria-label="다음 1위" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:5;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);backdrop-filter:blur(6px);color:#fff;font-size:18px;cursor:pointer;display:{{ champNextShow }};align-items:center;justify-content:center">›</button>
       </div>
     </section>
 
@@ -592,18 +609,21 @@ select,input,button{font-family:inherit}
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">명예의 전당</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">HALL OF FAME</span>
       </div>
-      <div style="font-size:12.5px;color:var(--mut);margin-bottom:18px">올해 정상에 올랐던 화보들</div>
+      <div style="font-size:12.5px;color:var(--mut);margin-bottom:18px">정상에 올랐던 화보들 · 최신순</div>
       <div style="position:relative">
-        <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:12px">
+        <div style="display:flex;gap:14px;overflow-x:auto;padding:16px 0 12px;align-items:flex-end">
           <sc-for list="{{ hall }}" as="p" hint-placeholder-count="0">
-            <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ hallW }}">
-              <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
+            <div onClick="{{ p.open }}" style="position:relative;flex:0 0 auto;cursor:pointer;width:{{ p.w }}">
+              <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);z-index:5;font-size:19px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));display:{{ p.crownShow }}">👑</div>
+              <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2);border:{{ p.line }}">
                 <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+                <div style="position:absolute;top:7px;left:7px;z-index:2;font-size:10px;font-weight:900;padding:3px 8px;border-radius:6px;{{ p.badgeStyle }}">{{ p.badge }}</div>
                 <div style="position:absolute;left:0;right:0;bottom:0;padding:30px 10px 10px;background:linear-gradient(transparent,var(--posterFade))">
                   <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
                   <div style="font-size:11px;color:var(--t1);margin-top:3px">{{ p.note }}</div>
                 </div>
               </div>
+              <div style="text-align:center;font-size:10px;font-weight:900;letter-spacing:1px;color:var(--goldText);margin-top:6px;display:{{ p.mlabelShow }}">{{ p.mlabel }}</div>
             </div>
           </sc-for>
         </div>
@@ -1245,7 +1265,7 @@ const MSM=new Set('강선혜 강하빈 고아라 그린 김갑주 김나정 김�
 function isMSM(w){return !!(w&&(w.models||[]).some(m=>MSM.has((m||'').trim())));}
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0};
 
   componentDidMount(){
     try{this._admin=/[?&](admin|preview)=1/.test(location.search)||!!window.IS_ADMIN;}catch(e){this._admin=!!window.IS_ADMIN;}
@@ -1331,6 +1351,9 @@ class Component extends DCLogic {
         requestAnimationFrame(()=>requestAnimationFrame(()=>this.setState({noAnim:false})));},760);}
     this.scheduleResume();
   }
+  champGo(n){const R=this._champCount||0;if(R<1)return;let i=(this.state.champIdx||0)+n;if(i<0)i=0;if(i>R-1)i=R-1;this.setState({champIdx:i});}
+  champTS(e){try{this._cx=e.touches[0].clientX;}catch(_){}}
+  champTE(e){try{const dx=e.changedTouches[0].clientX-(this._cx||0);if(Math.abs(dx)>40)this.champGo(dx<0?1:-1);}catch(_){}}
   applyTheme(k){const t=(k==='dark')?'dark':'light';
     document.documentElement.setAttribute('data-theme',t);
     try{localStorage.setItem('bcut_theme',t);}catch(e){}
@@ -1660,7 +1683,7 @@ class Component extends DCLogic {
         setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
         setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
         openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),
-        toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],
+        toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],spotShow:'none',champs:[],champX:'translateX(0%)',champPrevShow:'none',champNextShow:'none',champPrev:()=>{},champNext:()=>{},champTS:()=>{},champTE:()=>{},
         slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',thumbH:'206px',thumbRight:'36px',caroTextMax:'60%',trackX:'translateX(0%)',trackDur:'.7s',spotNum:'01',spotTotal:'01',spotPct:'100%',
         ev:{show:'none',items:[],clock:[]},
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
@@ -1753,6 +1776,7 @@ class Component extends DCLogic {
       ddayShow:'none',moreShow:'none',crMoreShow:'none',mdMoreShow:'none',q:S.q,
       rankHeading:S.err||'랭킹 불러오는 중…',rankSubline:''
     });
+    base.spotShow='none';base.champs=[];base.champX='translateX(0%)';base.champPrevShow='none';base.champNextShow='none';base.champPrev=()=>{};base.champNext=()=>{};base.champTS=()=>{};base.champTE=()=>{};
     if(!D)return base;
 
     const wi=S.wi,isM=S.tab==='models',isMonth=S.mode==='month',W=D.works||{};
@@ -1974,28 +1998,45 @@ class Component extends DCLogic {
     }catch(e){}
     base.pickShow=base.pickShow||'none';base.picks=base.picks||[];
 
-    /* 이 주의 픽 (히어로 스포트라이트) — admin에서 지정한 화보 1개, 중간에 크게 */
+    /* 이번 주 1위 히어로 캐러셀 — 주간 1위 자동, 최신→과거 수동 롤링(자동넘김X). 월간 1위는 골드. (현재주 깨끗한 이미지는 D.heroImg) */
     try{
-      const _sp=D.spotlight;
-      const _spArr=(Array.isArray(_sp)?_sp:(_sp&&_sp.id?[_sp]:[])).filter(x=>x&&x.id&&W[x.id]&&W[x.id].img);
-      if(_spArr.length){
-        if(!this._spotId||!_spArr.some(x=>x.id===this._spotId)){
-          this._spotId=_spArr[Math.floor(Math.random()*_spArr.length)].id;
+      const _wks=D.weeks||[]; const _NC=_wks.length;
+      if(_NC>0 && V==='home'){
+        const _curMo=this.wkMonth(_NC-1); const _mChamp={}, _sMo={};
+        _wks.forEach((_,i)=>{const mo=this.wkMonth(i); if(_sMo[mo])return; _sMo[mo]=1; if(mo===_curMo)return; const mw=this.monthWorks(this.lastWeekOfMonth(mo))[0]; if(mw)_mChamp[mo]=mw.id;});
+        const _goldWi={};
+        Object.keys(_mChamp).forEach(mo=>{const mid=_mChamp[mo]; let l=-1; _wks.forEach((_,i)=>{if(this.wkMonth(i)!==mo)return; const t=this.weekWorks(i)[0]; if(t&&t.id===mid)l=i;}); if(l>=0)_goldWi[l]=mo;});
+        const _champs=[];
+        for(let i=_NC-1;i>=0 && _champs.length<24;i--){
+          const t=this.weekWorks(i)[0]; if(!t||!W[t.id])continue;
+          const id=t.id, w=W[id], gold=(_goldWi[i]!=null), isCur=(i===_NC-1);
+          const _hi=(isCur&&D.heroImg&&String(D.heroImg).trim())||'';
+          const _img=_hi||w.img||'';
+          const _wkLabel=(_wks[i]||{}).label||'';
+          _champs.push({
+            bg:'url('+_img+')', blur:(_hi?'none':this.blurOf(id)),
+            eyebrow:gold?('👑 '+this.monthLabel(_goldWi[i])+' 월간 1위 · MONTHLY BEST'):(isCur?'🥇 이번 주 1위 · THIS WEEK’S #1':'🥇 역대 1위 · HALL OF FAME'),
+            eyebrowColor:gold?'var(--goldText)':'var(--acc2)',
+            badge:gold?('👑 '+this.monthLabel(_goldWi[i])+' · 월간 1위'):('🥇 '+_wkLabel+' · 주간 1위'),
+            badgeStyle:gold?'background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600':'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
+            title:this.splitTitle(w.title||id).name,
+            model:(w.models||[]).join(' & ')||'MAXIM B컷',
+            b19Show:w.b19?'inline-block':'none',
+            tag:isCur?'이번 주 판매·조회·평점 종합 1위. 지금 B컷에서 만나보세요.':(_wkLabel+' 주간 1위에 오른 화보.'),
+            open:()=>this.openWork(id)});
         }
-        const sp=_spArr.find(x=>x.id===this._spotId)||_spArr[0];
-        const sw=W[sp.id];
-        const _cImg=(sp.img&&String(sp.img).trim())||'';
-        const _spImg=_cImg||sw.img||'';
-        base.spotShow=(V==='home')?'block':'none';
-        base.spot={img:_spImg,bg:'url('+_spImg+')',blur:(_cImg?'none':this.blurOf(sp.id)),
-          title:this.splitTitle(sw.title||sp.id).name,
-          model:(sw.models||[]).join(' & ')||'MAXIM B컷',
-          b19Show:sw.b19?'inline-block':'none',
-          tag:(sp.tagline||'').trim()||'이번 주 에디터가 고른 화보 — 지금 B컷에서 만나보세요.',
-          open:()=>this.openWork(sp.id)};
+        if(_champs.length){
+          this._champCount=_champs.length;
+          let _ci=this.state.champIdx||0; if(_ci>_champs.length-1)_ci=_champs.length-1; if(_ci<0)_ci=0;
+          base.spotShow='block'; base.champs=_champs;
+          base.champX='translateX(-'+(_ci*100)+'%)';
+          base.champPrev=()=>this.champGo(-1); base.champNext=()=>this.champGo(1);
+          base.champTS=e=>this.champTS(e); base.champTE=e=>this.champTE(e);
+          base.champPrevShow=_ci>0?'flex':'none';
+          base.champNextShow=_ci<_champs.length-1?'flex':'none';
+        }
       }
     }catch(e){}
-    base.spotShow=base.spotShow||'none';base.spot=base.spot||{};
 
     /* 타임세일 */
     const ts=(D.timesales||[]).filter(t=>t&&t.id&&W[t.id]&&t.end&&new Date(t.end).getTime()-S.now>0).sort((a,b)=>new Date(a.end)-new Date(b.end));
@@ -2182,17 +2223,8 @@ class Component extends DCLogic {
       base.featShow='block';base.feat={name:nm,img:this.modelImg(nm)||BLANK,blur:'none',open:()=>this.openModel(nm),
         works:fw.map(id=>({img:W[id].img||'',blur:this.blurOf(id),open:()=>this.openWork(id)}))};}
 
-    /* 명예의 전당 */
-    const bw=this.bestMap().w;
-    const yr=this.today().slice(0,4);
-    const champ={};(D.weeks||[]).forEach((wk,i)=>{if(((wk.date||'').slice(0,4))!==yr)return;
-      const top=this.weekWorks(i)[0];if(top&&W[top.id])champ[top.id]=(champ[top.id]||0)+1;});
-    const hallIds=Object.keys(champ).sort((a,b)=>champ[b]-champ[a]||(W[b].pub||'').localeCompare(W[a].pub||'')).slice(0,14);
-    if(hallIds.length){base.hallShow='block';
-      base.hall=hallIds.map(id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),
-        line:champ[id]>1?'rgba(230,0,18,.4)':'var(--w3)',
-        note:champ[id]>1?(champ[id]+'주 1위'):((W[id].models||[]).join(' & ')||'MAXIM B컷'),
-        open:()=>this.openWork(id)}));}
+    /* 명예의 전당 셸프는 이번 주 1위 히어로 캐러셀(#spot)로 통합됨 — 셸프(#hall)는 숨김 유지 */
+    base.hallShow='none';
 
   /* 검색 */
     base.filters=[['all','전체'],['19','19'],['영상','영상'],['오리지널','맥심 오리지널'],['프리미엄','프리미엄']].map(f=>({

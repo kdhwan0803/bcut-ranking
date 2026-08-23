@@ -582,7 +582,7 @@ select,input,button{font-family:inherit}
       <div style="position:relative;border-radius:18px;overflow:hidden;background:var(--bg0)" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
         <div style="display:flex;gap:{{ champGap }};transition:transform .5s ease;transform:{{ champX }}">
           <sc-for list="{{ champs }}" as="c" hint-placeholder-count="1">
-            <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:{{ champAspect }};max-height:540px;border-radius:16px;overflow:hidden">
+            <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:{{ champAspect }};max-height:540px;border:{{ c.cardBorder }};border-radius:16px;overflow:hidden">
               <div style="position:absolute;inset:0;background-size:cover;background-position:center 18%;background-image:{{ c.bg }};filter:{{ c.blur }}"></div>
               <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.02) 0%,rgba(8,8,11,.35) 46%,rgba(8,8,11,.96) 100%)"></div>
               <div style="position:absolute;top:16px;left:16px;z-index:3;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(6px);border-radius:999px;padding:7px 13px;font-size:12px;font-weight:900;{{ c.badgeStyle }}">{{ c.badge }}</div>
@@ -2013,14 +2013,15 @@ class Component extends DCLogic {
         const _latest=_done[0];
         const _mkWeekly=(i)=>{const t=this.weekWorks(i)[0]; if(!t||!W[t.id])return null; const id=t.id,w=W[id],isCur=(i===_latest);
           const _hi=(isCur&&D.heroImg&&String(D.heroImg).trim())||''; const _img=_hi||w.img||''; const wl=(_wks[i]||{}).label||'';
-          return {bg:'url('+_img+')',blur:(_hi?'none':this.blurOf(id)),
+          return {bg:'url('+_img+')',blur:(_hi?'none':this.blurOf(id)),cardBorder:'0',
             eyebrow:isCur?'LATEST CHAMPION':'HALL OF FAME',eyebrowColor:'var(--acc2)',
             badge:'🥇 '+wl+' 1위',badgeStyle:'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
             title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
             tag:isCur?'판매·조회·평점 종합 1위 🔥':(wl+' 주간 1위'),
             open:()=>this.openWork(id)};};
         const _mkMonthly=(mo,id)=>{const w=W[id],ml=this.monthLabel(mo);
-          return {bg:'url('+(w.img||'')+')',blur:this.blurOf(id),
+          const _mi=(D.monthImg&&D.monthImg[mo]&&String(D.monthImg[mo]).trim())||''; const _mimg=_mi||w.img||'';
+          return {bg:'url('+_mimg+')',blur:(_mi?'none':this.blurOf(id)),cardBorder:'3px solid #e6b545',
             eyebrow:'MONTHLY BEST',eyebrowColor:'var(--goldText)',
             badge:'👑 '+ml+' 월간 1위',badgeStyle:'background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600',
             title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
@@ -2033,7 +2034,7 @@ class Component extends DCLogic {
         if(_champs.length){
           this._champCount=_champs.length;
           let _ci=this.state.champIdx||0; if(_ci>_champs.length-1)_ci=_champs.length-1; if(_ci<0)_ci=0;
-          const _sw=S.mob?'100%':'89%', _gap=S.mob?'0px':'14px';
+          const _sw=S.mob?'90%':'89%', _gap=S.mob?'12px':'14px';
           base.spotShow='block'; base.champs=_champs;
           base.champSlideW=_sw; base.champGap=_gap; base.champAspect=S.mob?'4/5':'16/10';
           base.champX='translateX(calc(-'+_ci+' * ('+_sw+' + '+_gap+')))';

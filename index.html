@@ -579,7 +579,7 @@ select,input,button{font-family:inherit}
     </section>
 
     <section id="spot" style="display:{{ spotShow }}">
-      <div style="position:relative;border-radius:18px;overflow:hidden;background:#0a0a0d" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
+      <div style="position:relative;border-radius:18px;overflow:hidden;background:var(--bg0)" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
         <div style="display:flex;gap:{{ champGap }};transition:transform .5s ease;transform:{{ champX }}">
           <sc-for list="{{ champs }}" as="c" hint-placeholder-count="1">
             <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:16/10;max-height:520px;border-radius:16px;overflow:hidden">
@@ -2004,29 +2004,32 @@ class Component extends DCLogic {
       // 종료(산정완료)된 주차만: 그 주 끝일이 오늘보다 과거
       const _done=[]; for(let i=_NC-1;i>=0;i--){const e=this.weekEnd(i); if(e&&e<_tday)_done.push(i);}
       if(_done.length && V==='home'){
-        const _curMo=this.wkMonth(_NC-1); const _mChamp={}, _sMo={};
-        _wks.forEach((_,i)=>{const mo=this.wkMonth(i); if(_sMo[mo])return; _sMo[mo]=1; if(mo===_curMo)return; const mw=this.monthWorks(this.lastWeekOfMonth(mo))[0]; if(mw)_mChamp[mo]=mw.id;});
-        const _goldWi={};
-        Object.keys(_mChamp).forEach(mo=>{const mid=_mChamp[mo]; let l=-1; _wks.forEach((_,i)=>{if(this.wkMonth(i)!==mo)return; if(_done.indexOf(i)<0)return; const t=this.weekWorks(i)[0]; if(t&&t.id===mid)l=i;}); if(l>=0)_goldWi[l]=mo;});
-        const _latest=_done[0]; const _champs=[];
-        _done.forEach(i=>{ if(_champs.length>=24)return;
-          const t=this.weekWorks(i)[0]; if(!t||!W[t.id])return;
-          const id=t.id, w=W[id], gold=(_goldWi[i]!=null), isCur=(i===_latest);
-          const _hi=(isCur&&D.heroImg&&String(D.heroImg).trim())||'';
-          const _img=_hi||w.img||'';
-          const _wkLabel=(_wks[i]||{}).label||'';
-          _champs.push({
-            bg:'url('+_img+')', blur:(_hi?'none':this.blurOf(id)),
-            eyebrow:gold?('👑 '+this.monthLabel(_goldWi[i])+' 월간 1위 · MONTHLY BEST'):(isCur?'🥇 최신 주간 1위 · LATEST CHAMPION':'🥇 역대 1위 · HALL OF FAME'),
-            eyebrowColor:gold?'var(--goldText)':'var(--acc2)',
-            badge:gold?('👑 '+this.monthLabel(_goldWi[i])+' · 월간 1위'):('🥇 '+_wkLabel+' · 주간 1위'),
-            badgeStyle:gold?'background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600':'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
-            title:this.splitTitle(w.title||id).name,
-            model:(w.models||[]).join(' & ')||'MAXIM B컷',
-            b19Show:w.b19?'inline-block':'none',
-            tag:isCur?(_wkLabel+' 판매·조회·평점 종합 1위. 지금 B컷에서 만나보세요.'):(_wkLabel+' 주간 1위에 오른 화보.'),
-            open:()=>this.openWork(id)});
-        });
+        const _curMo=this.wkMonth(_NC-1);
+        // 완료된 달의 "월간 1위" (그 달 마지막 주차까지 산정 끝난 경우만) — 별도 카드로, 마지막 주차보다 최신 위치에 삽입
+        const _monthCard={}; const _sMo={};
+        _done.forEach(i=>{const mo=this.wkMonth(i); if(_sMo[mo])return; _sMo[mo]=1;
+          if(mo===_curMo)return; const lw=this.lastWeekOfMonth(mo); if(_done.indexOf(lw)<0)return;
+          const mw=this.monthWorks(lw)[0]; if(mw&&W[mw.id])_monthCard[mo]=mw.id;});
+        const _latest=_done[0];
+        const _mkWeekly=(i)=>{const t=this.weekWorks(i)[0]; if(!t||!W[t.id])return null; const id=t.id,w=W[id],isCur=(i===_latest);
+          const _hi=(isCur&&D.heroImg&&String(D.heroImg).trim())||''; const _img=_hi||w.img||''; const wl=(_wks[i]||{}).label||'';
+          return {bg:'url('+_img+')',blur:(_hi?'none':this.blurOf(id)),
+            eyebrow:isCur?'🥇 최신 주간 1위 · LATEST CHAMPION':'🥇 역대 주간 1위 · HALL OF FAME',eyebrowColor:'var(--acc2)',
+            badge:'🥇 '+wl+' · 주간 1위',badgeStyle:'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
+            title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
+            tag:isCur?(wl+' 판매·조회·평점 종합 1위. 지금 B컷에서 만나보세요.'):(wl+' 주간 1위에 오른 화보.'),
+            open:()=>this.openWork(id)};};
+        const _mkMonthly=(mo,id)=>{const w=W[id],ml=this.monthLabel(mo);
+          return {bg:'url('+(w.img||'')+')',blur:this.blurOf(id),
+            eyebrow:'👑 '+ml+' 월간 1위 · MONTHLY BEST',eyebrowColor:'var(--goldText)',
+            badge:'👑 '+ml+' · 월간 1위',badgeStyle:'background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600',
+            title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
+            tag:ml+' 한 달 종합 1위에 오른 화보.',open:()=>this.openWork(id)};};
+        const _champs=[]; let _pm=null;
+        for(let k=0;k<_done.length && _champs.length<30;k++){const i=_done[k]; const mo=this.wkMonth(i);
+          if(mo!==_pm){ if(_monthCard[mo])_champs.push(_mkMonthly(mo,_monthCard[mo])); _pm=mo; }
+          const c=_mkWeekly(i); if(c)_champs.push(c);
+        }
         if(_champs.length){
           this._champCount=_champs.length;
           let _ci=this.state.champIdx||0; if(_ci>_champs.length-1)_ci=_champs.length-1; if(_ci<0)_ci=0;

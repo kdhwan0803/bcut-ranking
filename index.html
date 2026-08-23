@@ -582,19 +582,19 @@ select,input,button{font-family:inherit}
       <div style="position:relative;border-radius:18px;overflow:hidden;background:var(--bg0)" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
         <div style="display:flex;gap:{{ champGap }};transition:transform .5s ease;transform:{{ champX }}">
           <sc-for list="{{ champs }}" as="c" hint-placeholder-count="1">
-            <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:16/10;max-height:520px;border-radius:16px;overflow:hidden">
+            <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:{{ champAspect }};max-height:540px;border-radius:16px;overflow:hidden">
               <div style="position:absolute;inset:0;background-size:cover;background-position:center 18%;background-image:{{ c.bg }};filter:{{ c.blur }}"></div>
-              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.05) 0%,rgba(8,8,11,.45) 52%,rgba(8,8,11,.97) 100%)"></div>
-              <div style="position:absolute;top:18px;left:18px;z-index:3;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(6px);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:900;{{ c.badgeStyle }}">{{ c.badge }}</div>
-              <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:28px 26px 26px">
-                <div style="font-size:11px;font-weight:900;letter-spacing:2.5px;color:{{ c.eyebrowColor }}">{{ c.eyebrow }}</div>
-                <div style="font-size:clamp(26px,6vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.08;margin-top:10px;color:#fff">{{ c.title }}</div>
-                <div style="display:flex;align-items:center;gap:9px;margin-top:11px;flex-wrap:wrap">
-                  <span style="display:{{ c.b19Show }};background:var(--acc);color:#fff;font-size:11px;font-weight:900;padding:2px 7px;border-radius:4px">19</span>
-                  <span style="font-size:14px;font-weight:800;color:var(--acc2)">{{ c.model }}</span>
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.02) 0%,rgba(8,8,11,.35) 46%,rgba(8,8,11,.96) 100%)"></div>
+              <div style="position:absolute;top:16px;left:16px;z-index:3;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(6px);border-radius:999px;padding:7px 13px;font-size:12px;font-weight:900;{{ c.badgeStyle }}">{{ c.badge }}</div>
+              <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:22px 22px 22px">
+                <div style="font-size:10.5px;font-weight:900;letter-spacing:2px;color:{{ c.eyebrowColor }}">{{ c.eyebrow }}</div>
+                <div style="font-size:clamp(21px,4.8vw,42px);font-weight:900;letter-spacing:-.6px;line-height:1.14;margin-top:7px;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.title }}</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap">
+                  <span style="display:{{ c.b19Show }};background:var(--acc);color:#fff;font-size:10.5px;font-weight:900;padding:2px 6px;border-radius:4px">19</span>
+                  <span style="font-size:13.5px;font-weight:800;color:var(--acc2)">{{ c.model }}</span>
                 </div>
-                <div style="font-size:13.5px;color:rgba(255,255,255,.82);margin-top:11px;line-height:1.6;max-width:520px">{{ c.tag }}</div>
-                <span style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#111;font-weight:900;font-size:15px;padding:13px 26px;border-radius:999px;margin-top:18px">보러가기 →</span>
+                <div style="font-size:12.5px;color:rgba(255,255,255,.8);margin-top:8px;line-height:1.45;max-width:520px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.tag }}</div>
+                <span style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#111;font-weight:900;font-size:14px;padding:11px 22px;border-radius:999px;margin-top:14px">보러가기 →</span>
               </div>
             </div>
           </sc-for>
@@ -1683,7 +1683,7 @@ class Component extends DCLogic {
         setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
         setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
         openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),
-        toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],spotShow:'none',champs:[],champX:'translateX(0%)',champSlideW:'100%',champGap:'0px',champPrevShow:'none',champNextShow:'none',champPrev:()=>{},champNext:()=>{},champTS:()=>{},champTE:()=>{},
+        toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],spotShow:'none',champs:[],champX:'translateX(0%)',champSlideW:'100%',champGap:'0px',champAspect:'16/10',champPrevShow:'none',champNextShow:'none',champPrev:()=>{},champNext:()=>{},champTS:()=>{},champTE:()=>{},
         slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',thumbH:'206px',thumbRight:'36px',caroTextMax:'60%',trackX:'translateX(0%)',trackDur:'.7s',spotNum:'01',spotTotal:'01',spotPct:'100%',
         ev:{show:'none',items:[],clock:[]},
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
@@ -1776,7 +1776,7 @@ class Component extends DCLogic {
       ddayShow:'none',moreShow:'none',crMoreShow:'none',mdMoreShow:'none',q:S.q,
       rankHeading:S.err||'랭킹 불러오는 중…',rankSubline:''
     });
-    base.spotShow='none';base.champs=[];base.champX='translateX(0%)';base.champSlideW='100%';base.champGap='0px';base.champPrevShow='none';base.champNextShow='none';base.champPrev=()=>{};base.champNext=()=>{};base.champTS=()=>{};base.champTE=()=>{};
+    base.spotShow='none';base.champs=[];base.champX='translateX(0%)';base.champSlideW='100%';base.champGap='0px';base.champAspect='16/10';base.champPrevShow='none';base.champNextShow='none';base.champPrev=()=>{};base.champNext=()=>{};base.champTS=()=>{};base.champTE=()=>{};
     if(!D)return base;
 
     const wi=S.wi,isM=S.tab==='models',isMonth=S.mode==='month',W=D.works||{};
@@ -2014,17 +2014,17 @@ class Component extends DCLogic {
         const _mkWeekly=(i)=>{const t=this.weekWorks(i)[0]; if(!t||!W[t.id])return null; const id=t.id,w=W[id],isCur=(i===_latest);
           const _hi=(isCur&&D.heroImg&&String(D.heroImg).trim())||''; const _img=_hi||w.img||''; const wl=(_wks[i]||{}).label||'';
           return {bg:'url('+_img+')',blur:(_hi?'none':this.blurOf(id)),
-            eyebrow:isCur?'🥇 최신 주간 1위 · LATEST CHAMPION':'🥇 역대 주간 1위 · HALL OF FAME',eyebrowColor:'var(--acc2)',
-            badge:'🥇 '+wl+' · 주간 1위',badgeStyle:'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
+            eyebrow:isCur?'LATEST CHAMPION':'HALL OF FAME',eyebrowColor:'var(--acc2)',
+            badge:'🥇 '+wl+' 1위',badgeStyle:'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
             title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
-            tag:isCur?(wl+' 판매·조회·평점 종합 1위. 지금 B컷에서 만나보세요.'):(wl+' 주간 1위에 오른 화보.'),
+            tag:isCur?'판매·조회·평점 종합 1위 🔥':(wl+' 주간 1위'),
             open:()=>this.openWork(id)};};
         const _mkMonthly=(mo,id)=>{const w=W[id],ml=this.monthLabel(mo);
           return {bg:'url('+(w.img||'')+')',blur:this.blurOf(id),
-            eyebrow:'👑 '+ml+' 월간 1위 · MONTHLY BEST',eyebrowColor:'var(--goldText)',
-            badge:'👑 '+ml+' · 월간 1위',badgeStyle:'background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600',
+            eyebrow:'MONTHLY BEST',eyebrowColor:'var(--goldText)',
+            badge:'👑 '+ml+' 월간 1위',badgeStyle:'background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600',
             title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
-            tag:ml+' 한 달 종합 1위에 오른 화보.',open:()=>this.openWork(id)};};
+            tag:ml+' 한 달 종합 1위',open:()=>this.openWork(id)};};
         const _champs=[]; let _pm=null;
         for(let k=0;k<_done.length && _champs.length<30;k++){const i=_done[k]; const mo=this.wkMonth(i);
           if(mo!==_pm){ if(_monthCard[mo])_champs.push(_mkMonthly(mo,_monthCard[mo])); _pm=mo; }
@@ -2035,7 +2035,7 @@ class Component extends DCLogic {
           let _ci=this.state.champIdx||0; if(_ci>_champs.length-1)_ci=_champs.length-1; if(_ci<0)_ci=0;
           const _sw=S.mob?'100%':'89%', _gap=S.mob?'0px':'14px';
           base.spotShow='block'; base.champs=_champs;
-          base.champSlideW=_sw; base.champGap=_gap;
+          base.champSlideW=_sw; base.champGap=_gap; base.champAspect=S.mob?'4/5':'16/10';
           base.champX='translateX(calc(-'+_ci+' * ('+_sw+' + '+_gap+')))';
           base.champPrev=()=>this.champGo(-1); base.champNext=()=>this.champGo(1);
           base.champTS=e=>this.champTS(e); base.champTE=e=>this.champTE(e);

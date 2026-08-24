@@ -110,7 +110,7 @@ body{background:var(--bg);color:var(--txt);font-family:var(--kr);
 /* 랭킹 행 */
 .rk{display:flex;align-items:center;gap:14px;padding:15px 16px;
   border-bottom:1px solid var(--line);text-decoration:none;color:var(--txt);
-  cursor:default;transition:background .2s}
+  cursor:pointer;transition:background .2s}
 .rk:last-of-type{border-bottom:1px solid var(--line)}
 .rk:hover{background:var(--blkH)}
 .rk .no{font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1;
@@ -358,6 +358,11 @@ function moreBtn(label,camp,url){
   return '<a class="more" href="'+utm(url||CONFIG.rankUrl,camp)+'" target="_blank" rel="noopener">'
        + label+' <span class="ar">→</span></a>';
 }
+/* 각 행 → 랭킹 사이트(bcutrank)로. 커머스가 아니라 랭킹 페이지의 해당 모델 필터로 착지 */
+function rankModelUrl(name,camp){
+  return name ? utm(CONFIG.rankUrl+'?model='+encodeURIComponent(name),camp)
+              : utm(CONFIG.rankUrl,camp);
+}
 function renderWorks(wi){
   const rows=weekWorks(wi).slice(0,CONFIG.rankCount).map(r=>{
     const w=D.works[r.id]||{};
@@ -370,10 +375,10 @@ function renderWorks(wi){
       sub='<span class="m">'+(mm?'<span class="mm">미스맥심</span>':'')
         +esc(ms.join(', '))+'</span>';
     }
-    return '<div class="rk">'
+    return '<a class="rk" href="'+rankModelUrl(ms[0],'work_rank_item')+'" target="_blank" rel="noopener">'
       +'<span class="no">'+r.rank+'</span>'
       +'<span class="tx"><span class="t">'+esc(t)+'</span>'+sub+'</span>'
-      +delta(r.rank,prev)+'</div>';
+      +delta(r.rank,prev)+'</a>';
   }).join('');
   $('workRank').innerHTML=rows+moreBtn('화보 랭킹 자세히 보기','work_rank');
 }
@@ -383,10 +388,10 @@ function renderModels(wi){
     const prev=wi>0?modelRankAt(r.id,wi-1):0;
     const tag=(md.tag||'').trim();
     const sub=tag?'<span class="m"><span class="mm">'+esc(tag)+'</span></span>':'';
-    return '<div class="rk">'
+    return '<a class="rk" href="'+rankModelUrl(r.id,'model_rank_item')+'" target="_blank" rel="noopener">'
       +'<span class="no">'+r.rank+'</span>'
       +'<span class="tx"><span class="t">'+esc(r.id)+'</span>'+sub+'</span>'
-      +delta(r.rank,prev)+'</div>';
+      +delta(r.rank,prev)+'</a>';
   }).join('');
   $('modelRank').innerHTML=rows+moreBtn('모델 랭킹 자세히 보기','model_rank',CONFIG.modelUrl);
 }
@@ -425,10 +430,10 @@ function renderNews(){
       : '';
     const k=kindOf(w.title);
     const badge=k?'<span class="bd '+k.cls+'">'+k.label+'</span>':'<span class="bd up">NEW</span>';
-    return '<div class="rk nw">'
+    return '<a class="rk nw" href="'+utm(CONFIG.newUrl,'new_item')+'" target="_blank" rel="noopener">'
       +'<span class="dt">'+fdate(w.pub)+'</span>'
       +'<span class="tx"><span class="t">'+esc(t)+'</span>'+sub+'</span>'
-      +badge+'</div>';
+      +badge+'</a>';
   }).join('');
   $('news').innerHTML=html+moreBtn('신작 전체 보기','new',CONFIG.newUrl);
 }

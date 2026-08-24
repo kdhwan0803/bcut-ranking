@@ -2012,7 +2012,7 @@ class Component extends DCLogic {
           const mw=this.monthWorks(lw)[0]; if(mw&&W[mw.id])_monthCard[mo]=mw.id;});
         const _latest=_done[0];
         const _mkWeekly=(i)=>{const t=this.weekWorks(i)[0]; if(!t||!W[t.id])return null; const id=t.id,w=W[id],isCur=(i===_latest);
-          const _hi=(isCur&&D.heroImg&&String(D.heroImg).trim())||''; const _img=_hi||w.img||''; const wl=(_wks[i]||{}).label||'';
+          const _hi=((D.heroImgById&&D.heroImgById[id]&&String(D.heroImgById[id]).trim())||(isCur&&D.heroImg&&String(D.heroImg).trim()))||''; const _img=_hi||w.img||''; const wl=(_wks[i]||{}).label||'';
           return {bg:'url('+_img+')',blur:(_hi?'none':this.blurOf(id)),cardBorder:'0',
             eyebrow:isCur?'LATEST CHAMPION':'HALL OF FAME',eyebrowColor:'var(--acc2)',
             badge:'🥇 '+wl+' 1위',badgeStyle:'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',

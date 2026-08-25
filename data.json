@@ -2989,7 +2989,7 @@
       "models": [
         "링고lyn"
       ],
-      "img": "https://i.ibb.co/HDGtrQqK/602-C-20240218163809-14-opt.webp",
+      "img": "https://i.ibb.co/jkjfy2ZV/602-C-20240218163809-14-opt.webp",
       "buy": "구독",
       "b19": 0,
       "vid": 0,
@@ -3025,7 +3025,7 @@
       "models": [
         "모모리나"
       ],
-      "img": "https://i.ibb.co/HTqBCn4v/607-C-20240129234326-14-opt.webp",
+      "img": "https://i.ibb.co/21zZ9kY3/607-C-20240129234326-14-opt.webp",
       "buy": "코인",
       "b19": 0,
       "vid": 0,
@@ -3043,7 +3043,7 @@
       "models": [
         "은유화"
       ],
-      "img": "https://i.ibb.co/0pQPcnnf/616-C-20260216231439-14-opt.webp",
+      "img": "https://i.ibb.co/rK8qCwjd/616-C-20260216231439-14-opt.webp",
       "buy": "구독",
       "b19": 0,
       "vid": 0,
@@ -3277,7 +3277,7 @@
       "models": [
         "모모리나"
       ],
-      "img": "https://i.ibb.co/tMkK0WwS/687-C-20240316005646-14-opt.webp",
+      "img": "https://i.ibb.co/84QSwCdf/687-C-20240316005646-14-opt.webp",
       "buy": "코인",
       "b19": 0,
       "vid": 0,
@@ -12485,7 +12485,7 @@
       "models": [
         "초연"
       ],
-      "img": "https://i.ibb.co/x8gmFMYS/2176-C-20260824171022-14-opt.webp",
+      "img": "https://i.ibb.co/60m0jJ85/2176-C-20260824171022-14-opt.webp",
       "buy": "코인",
       "b19": 1,
       "vid": 0,
@@ -13285,26 +13285,26 @@
       "label": "8월 4주차",
       "date": "2026-08-24",
       "ranking": [
-        "1794",
+        "2151",
         "1217",
+        "1794",
+        "2160",
+        "1817",
         "1910",
         "1932",
+        "2120",
+        "2117",
         "1761",
         "2090",
+        "1968",
         "1347",
+        "2121",
+        "2069",
+        "2037",
         "1460",
         "1461",
         "1531",
-        "2106",
-        "976",
-        "1773",
-        "1821",
-        "81",
-        "457",
-        "169",
-        "2103",
-        "2094",
-        "2160"
+        "2008"
       ]
     }
   ],
@@ -13369,6 +13369,7 @@
   "featuredBg": "linear-gradient(120deg,#16161a,#5a0a12)",
   "kakaoUrl": "",
   "heroImg": "",
+  "heroImgById": {},
   "monthImg": {},
   "spotlight": null
 }

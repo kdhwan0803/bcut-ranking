@@ -1070,11 +1070,20 @@ select,input,button{font-family:inherit}
         <h2 style="font-size:15px;font-weight:900;letter-spacing:-.3px;color:var(--t3)">맥심 매거진</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MAGAZINE</span>
       </div>
-      <sc-for list="{{ promos }}" as="b" hint-placeholder-count="0">
-        <a href="{{ b.link }}" target="_blank" style="display:block;border-radius:12px;overflow:hidden;border:1px solid var(--line)">
-          <img loading="lazy" src="{{ b.img }}" alt="" style="width:100%;aspect-ratio:1080/300;object-fit:cover;display:block;background:var(--bg2);opacity:.9;transition:opacity .3s" style-hover="opacity:1">
-        </a>
-      </sc-for>
+      <div style="position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line)" onTouchStart="{{ promoTS }}" onTouchEnd="{{ promoTE }}">
+        <div style="display:flex;transition:transform .5s ease;transform:{{ promoX }}">
+          <sc-for list="{{ promos }}" as="b" hint-placeholder-count="0">
+            <a href="{{ b.link }}" target="_blank" style="flex:0 0 100%;display:block">
+              <img loading="lazy" src="{{ b.img }}" alt="" style="width:100%;aspect-ratio:1080/300;object-fit:cover;display:block;background:var(--bg2)">
+            </a>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:{{ promoDotsShow }};justify-content:center;gap:7px;margin-top:2px">
+        <sc-for list="{{ promoDots }}" as="d" hint-placeholder-count="0">
+          <button onClick="{{ d.go }}" aria-label="배너 이동" style="width:7px;height:7px;border-radius:50%;border:0;padding:0;cursor:pointer;background:{{ d.dotBg }}"></button>
+        </sc-for>
+      </div>
     </section>
 
     <section id="katalk" style="display:{{ kakaoShow }}">
@@ -1265,13 +1274,14 @@ const MSM=new Set('강선혜 강하빈 고아라 그린 김갑주 김나정 김�
 function isMSM(w){return !!(w&&(w.models||[]).some(m=>MSM.has((m||'').trim())));}
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0};
 
   componentDidMount(){
     try{this._admin=/[?&](admin|preview)=1/.test(location.search)||!!window.IS_ADMIN;}catch(e){this._admin=!!window.IS_ADMIN;}
     if(this._admin){window.IS_ADMIN=true;this._shuffleSeed=0.5;}
     this._t=setInterval(()=>this.setState({now:Date.now()}),1000);
     this._sp=setInterval(()=>this.advance(),7000);
+    this._pb=setInterval(()=>this.advancePromo(),5000);
     try{this._touch=window.matchMedia('(hover:none)').matches;}catch(e){this._touch=false;}
     try{this._mq=window.matchMedia('(max-width:680px)');
       this._onMq=e=>this.setState({mob:e.matches});
@@ -1302,7 +1312,7 @@ class Component extends DCLogic {
     }catch(e){}
     this.load();
   }
-  componentWillUnmount(){clearInterval(this._t);clearInterval(this._sp);window.removeEventListener('scroll',this._sc);
+  componentWillUnmount(){clearInterval(this._t);clearInterval(this._sp);clearInterval(this._pb);window.removeEventListener('scroll',this._sc);
     document.removeEventListener('keydown',this._key);window.removeEventListener('popstate',this._pop);
     if(this._hashV)window.removeEventListener('hashchange',this._hashV);}
   viewFromHash(){var h=(location.hash||'').replace(/^#\/?/,'').split('?')[0].toLowerCase();
@@ -1341,6 +1351,9 @@ class Component extends DCLogic {
       this._rs=setTimeout(()=>{this.setState({spot:0,edge:null,noAnim:true});
         requestAnimationFrame(()=>requestAnimationFrame(()=>this.setState({noAnim:false})));},760);}
   }
+  advancePromo(){const R=this._promoCount||0;if(R<2||this._admin)return;let i=(this.state.promoIdx||0)+1;if(i>R-1)i=0;this.setState({promoIdx:i});}
+  promoTS(e){try{this._px=e.touches[0].clientX;}catch(_){}}
+  promoTE(e){try{const R=this._promoCount||0;if(R<2)return;const dx=e.changedTouches[0].clientX-(this._px||0);if(Math.abs(dx)>40){let i=(this.state.promoIdx||0)+(dx<0?1:-1);if(i<0)i=R-1;if(i>R-1)i=0;this.setState({promoIdx:i});}}catch(_){}}
   goSlide(i){this.pauseAuto();clearTimeout(this._rs);this.setState({spot:i,edge:null,noAnim:false});this.scheduleResume();}
   nextSlide(){this.pauseAuto();clearTimeout(this._rs);this.advance();this.scheduleResume();}
   prevSlide(){
@@ -1361,6 +1374,7 @@ class Component extends DCLogic {
   toggleTheme(){this.applyTheme(this.state.theme==='dark'?'light':'dark');}
 
   async load(){
+    this._promoOrder=null;
     if(window.BCUT_DATA){this.apply(window.BCUT_DATA);return;}
     let _inFrame=false;try{_inFrame=window.parent&&window.parent!==window;}catch(e){_inFrame=false;}
     if(this._admin&&_inFrame){
@@ -1683,7 +1697,7 @@ class Component extends DCLogic {
         setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
         setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
         openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),
-        toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],spotShow:'none',champs:[],champX:'translateX(0%)',champSlideW:'100%',champGap:'0px',champAspect:'16/10',champPrevShow:'none',champNextShow:'none',champPrev:()=>{},champNext:()=>{},champTS:()=>{},champTE:()=>{},
+        toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],spotShow:'none',champs:[],champX:'translateX(0%)',champSlideW:'100%',champGap:'0px',champAspect:'16/10',champPrevShow:'none',champNextShow:'none',champPrev:()=>{},champNext:()=>{},champTS:()=>{},champTE:()=>{},promoX:'translateX(0%)',promoDots:[],promoDotsShow:'none',promoTS:()=>{},promoTE:()=>{},
         slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',thumbH:'206px',thumbRight:'36px',caroTextMax:'60%',trackX:'translateX(0%)',trackDur:'.7s',spotNum:'01',spotTotal:'01',spotPct:'100%',
         ev:{show:'none',items:[],clock:[]},
         recent:[],wishes:[],timesales:[],packages:[],promos:[],subs:[],nexts:[],results:[],
@@ -1777,6 +1791,7 @@ class Component extends DCLogic {
       rankHeading:S.err||'랭킹 불러오는 중…',rankSubline:''
     });
     base.spotShow='none';base.champs=[];base.champX='translateX(0%)';base.champSlideW='100%';base.champGap='0px';base.champAspect='16/10';base.champPrevShow='none';base.champNextShow='none';base.champPrev=()=>{};base.champNext=()=>{};base.champTS=()=>{};base.champTE=()=>{};
+    base.promoX='translateX(0%)';base.promoDots=[];base.promoDotsShow='none';base.promoTS=()=>{};base.promoTE=()=>{};
     if(!D)return base;
 
     const wi=S.wi,isM=S.tab==='models',isMonth=S.mode==='month',W=D.works||{};
@@ -2059,7 +2074,22 @@ class Component extends DCLogic {
 
     /* 배너 */
     const pr=(D.midBanners||[]).filter(b=>b&&b.img).concat((D.bottomBanners||[]).filter(b=>b&&b.img));
-    if(pr.length){base.promoShow='flex';base.promos=pr.map(b=>({img:b.img,link:b.link||'https://bcut.maximkorea.net'}));}
+    if(pr.length){base.promoShow='flex';
+      const pinOf=b=>!!b.pin;
+      let ord=this._promoOrder;
+      if(!ord||ord.length!==pr.length){
+        const pinned=pr.filter(pinOf), rest=pr.filter(b=>!pinOf(b));
+        if(!this._admin){for(let i=rest.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=rest[i];rest[i]=rest[j];rest[j]=t;}}
+        ord=pinned.concat(rest); this._promoOrder=ord;
+      }
+      base.promos=ord.map(b=>({img:b.img,link:b.link||'https://bcut.maximkorea.net'}));
+      this._promoCount=ord.length;
+      let _pi=this.state.promoIdx||0; if(_pi>ord.length-1)_pi=0;
+      base.promoX='translateX(-'+(_pi*100)+'%)';
+      base.promoDotsShow=(ord.length>1)?'flex':'none';
+      base.promoDots=ord.map((b,i)=>({dotBg:(i===_pi)?'var(--acc)':'var(--w4)',go:()=>this.setState({promoIdx:i})}));
+      base.promoTS=e=>this.promoTS(e); base.promoTE=e=>this.promoTE(e);
+    } else { this._promoCount=0; }
 
     /* 구독 — 최신 4편만 열람 가능, 새 화보 공개 시 가장 오래된 편이 개별구매로 하차 */
     const today=this.today();

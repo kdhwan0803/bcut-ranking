@@ -1386,7 +1386,7 @@ class Component extends DCLogic {
     for(const p of ['data.json','./data.json','/data.json','uploads/data-2c882565.json','data-2c882565.json','uploads/data.json','./uploads/data.json']){
       try{
         let r=null;
-        try{r=await fetch(p+'?v='+Date.now(),{cache:'no-store'});}catch(e1){try{r=await fetch(p);}catch(e2){why=e2&&e2.message||'네트워크 오류';}}
+        try{r=await fetch(p,{cache:'no-cache'});}catch(e1){try{r=await fetch(p);}catch(e2){why=e2&&e2.message||'네트워크 오류';}}
         if(!r){continue;}
         if(!r.ok){why='HTTP '+r.status;continue;}
         const d=await r.json();this.apply(d);return;

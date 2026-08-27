@@ -12503,10 +12503,10 @@
       "models": [
         "미루"
       ],
-      "img": "https://i.ibb.co/VWKkS6b0/2180-C-20260824165203-14-opt.webp",
+      "img": "https://i.ibb.co/bjZYKLsV/2180-C-20260824165203-14-opt.webp",
       "buy": "코인",
       "b19": 1,
-      "vid": 0,
+      "vid": 1,
       "pub": "2026-09-07",
       "desc": "",
       "tags": [],
@@ -12514,6 +12514,132 @@
       "hl": "",
       "nb": 0,
       "photo": "마노",
+      "photoId": ""
+    },
+    "2183": {
+      "title": "(19) [YOPPI] Gray (VIDEO)",
+      "models": [
+        "박서이"
+      ],
+      "img": "https://i.ibb.co/yzYRw55/2183-C-20260825145306-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-09-06",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "요피YOPPI",
+      "photoId": ""
+    },
+    "2184": {
+      "title": "(19) [YOPPI] Gray (PHOTO)",
+      "models": [
+        "박서이"
+      ],
+      "img": "https://i.ibb.co/MDwnkcWb/2184-C-20260825103243-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 0,
+      "pub": "2026-09-06",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "요피YOPPI",
+      "photoId": ""
+    },
+    "2186": {
+      "title": "[YOPPI] Mechanic's Secret (PHOTO+VIDEO)",
+      "models": [
+        "E거니"
+      ],
+      "img": "https://i.ibb.co/FLghVm9N/2186-C-20260825144519-14-opt.webp",
+      "buy": "코인",
+      "b19": 0,
+      "vid": 1,
+      "pub": "2026-08-29",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "요피YOPPI",
+      "photoId": ""
+    },
+    "2187": {
+      "title": "[YOPPI] Mechanic's secret(PHOTO)",
+      "models": [
+        "E거니"
+      ],
+      "img": "https://i.ibb.co/S4zDptH7/2187-C-20260825125645-14-opt.webp",
+      "buy": "코인",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2026-08-29",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "요피YOPPI",
+      "photoId": ""
+    },
+    "2188": {
+      "title": "(19) [YOPPI] HER (PHOTO+VIDEO)",
+      "models": [
+        "E거니"
+      ],
+      "img": "https://i.ibb.co/84sV3v38/2188-C-20260825143529-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-09-05",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "요피YOPPI",
+      "photoId": ""
+    },
+    "2189": {
+      "title": "(19) [YOPPI] HER(PHOTO)",
+      "models": [
+        "E거니"
+      ],
+      "img": "https://i.ibb.co/CpVMKGHt/2189-C-20260825131836-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 0,
+      "pub": "2026-09-05",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "요피YOPPI",
+      "photoId": ""
+    },
+    "2199": {
+      "title": "Checkout Time",
+      "models": [
+        "이나"
+      ],
+      "img": "https://i.ibb.co/qLcSvsR6/2199-C-20260827093634-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-08-28",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "photo": "랑P",
       "photoId": ""
     }
   },
@@ -13287,24 +13413,24 @@
       "ranking": [
         "2151",
         "1217",
+        "2117",
         "2093",
         "1794",
-        "2117",
+        "2103",
         "1719",
         "2090",
         "1968",
         "1966",
+        "1956",
         "2156",
         "1383",
+        "1770",
         "1679",
         "2160",
         "1817",
         "1518",
         "1910",
-        "2120",
-        "1932",
-        "2103",
-        "1986"
+        "2120"
       ]
     }
   ],

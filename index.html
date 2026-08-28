@@ -1714,7 +1714,12 @@ class Component extends DCLogic {
         setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
         setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
         openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),trackRankCta:()=>{try{track('rank_cta_click',{location:'after_ranking'});}catch(e){}},
-        promptPush:()=>{try{track('push_subscribe_click',{loc:'weekly_hook'});}catch(e){}try{window.OneSignalDeferred=window.OneSignalDeferred||[];window.OneSignalDeferred.push(function(OS){try{if(OS&&OS.Slidedown&&OS.Slidedown.promptPush){OS.Slidedown.promptPush();}else if(OS&&OS.Notifications&&OS.Notifications.requestPermission){OS.Notifications.requestPermission();}}catch(e){}});}catch(e){}},
+        promptPush:()=>{try{track('push_subscribe_click',{loc:'weekly_hook'});}catch(e){}
+          var _toast=function(msg){try{var t=document.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:9999;background:rgba(20,20,24,.96);color:#fff;font-size:13.5px;font-weight:700;padding:13px 20px;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.45);max-width:88%;text-align:center;line-height:1.5;opacity:0;transition:opacity .25s';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';});setTimeout(function(){t.style.opacity='0';setTimeout(function(){try{t.remove();}catch(e){}},320);},3400);}catch(e){}};
+          var perm='default';try{perm=(window.Notification&&Notification.permission)||'default';}catch(e){}
+          if(perm==='granted'){_toast('이미 알림을 받고 있어요 ✓ 매주 새 랭킹을 보내드릴게요');return;}
+          if(perm==='denied'){_toast('브라우저에서 알림이 차단돼 있어요. 주소창 자물쇠 🔒 → 알림 → 허용으로 바꿔주세요');return;}
+          try{window.OneSignalDeferred=window.OneSignalDeferred||[];window.OneSignalDeferred.push(function(OS){try{if(OS&&OS.Slidedown&&OS.Slidedown.promptPush){OS.Slidedown.promptPush();}else if(OS&&OS.Notifications&&OS.Notifications.requestPermission){OS.Notifications.requestPermission();}}catch(e){}});}catch(e){}},
         trackKakao:()=>{try{track('kakao_subscribe_click',{loc:'weekly_hook'});}catch(e){}},
         toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],spotShow:'none',champs:[],champX:'translateX(0%)',champSlideW:'100%',champGap:'0px',champAspect:'16/10',champPrevShow:'none',champNextShow:'none',champPrev:()=>{},champNext:()=>{},champTS:()=>{},champTE:()=>{},promoX:'translateX(0%)',promoDots:[],promoDotsShow:'none',promoTS:()=>{},promoTE:()=>{},
         slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',thumbH:'206px',thumbRight:'36px',caroTextMax:'60%',trackX:'translateX(0%)',trackDur:'.7s',spotNum:'01',spotTotal:'01',spotPct:'100%',
@@ -1787,7 +1792,16 @@ class Component extends DCLogic {
       openGate:()=>this.setState({age:''}),
       setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
       setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
-      stop:e=>e.stopPropagation(),closeModal:()=>this.close(),modal:null,
+      stop:e=>e.stopPropagation(),
+      trackRankCta:()=>{try{track('rank_cta_click',{location:'after_ranking'});}catch(e){}},
+      trackKakao:()=>{try{track('kakao_subscribe_click',{loc:'weekly_hook'});}catch(e){}},
+      promptPush:()=>{try{track('push_subscribe_click',{loc:'weekly_hook'});}catch(e){}
+        var _toast=function(msg){try{var t=document.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:9999;background:rgba(20,20,24,.96);color:#fff;font-size:13.5px;font-weight:700;padding:13px 20px;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.45);max-width:88%;text-align:center;line-height:1.5;opacity:0;transition:opacity .25s';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';});setTimeout(function(){t.style.opacity='0';setTimeout(function(){try{t.remove();}catch(e){}},320);},3400);}catch(e){}};
+        var perm='default';try{perm=(window.Notification&&Notification.permission)||'default';}catch(e){}
+        if(perm==='granted'){_toast('이미 알림을 받고 있어요 ✓ 매주 새 랭킹을 보내드릴게요');return;}
+        if(perm==='denied'){_toast('브라우저에서 알림이 차단돼 있어요. 주소창 자물쇠 🔒 → 알림 → 허용으로 바꿔주세요');return;}
+        try{window.OneSignalDeferred=window.OneSignalDeferred||[];window.OneSignalDeferred.push(function(OS){try{if(OS&&OS.Slidedown&&OS.Slidedown.promptPush){OS.Slidedown.promptPush();}else if(OS&&OS.Notifications&&OS.Notifications.requestPermission){OS.Notifications.requestPermission();}}catch(e){}});}catch(e){}},
+      closeModal:()=>this.close(),modal:null,
       popup:null,popupClose:()=>{},popupToday:()=>{},
       ev:{show:'none',items:[],clock:[]},
       bootShow:!D&&S.age!=='',

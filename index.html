@@ -839,12 +839,6 @@ select,input,button{font-family:inherit}
           <div style="position:absolute;top:0;right:0;bottom:12px;width:110px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 90%)"></div>
         </div>
       </div>
-
-      <a href="https://www.maximkorea.net/webtoon/pay" target="_blank" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:24px;padding:13px 18px;border-radius:12px;background:var(--w1);border:1px solid var(--line);text-decoration:none;color:var(--txt)" style-hover="border-color:var(--w5)">
-        <span style="flex:0 0 auto;font-size:16px">💰</span>
-        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;line-height:1.5">충전하면 <span style="color:var(--acc)">최대 +27% 적립 혜택</span> — 오래 볼수록 이득이에요</span>
-        <span style="flex:0 0 auto;font-size:12.5px;font-weight:800;color:var(--acc);white-space:nowrap">혜택 보기 →</span>
-      </a>
     </section>
 
     <section id="livenow" style="display:{{ liveShow }}">
@@ -921,6 +915,14 @@ select,input,button{font-family:inherit}
         <div style="position:absolute;top:0;right:0;bottom:12px;width:92px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
       </div>
     </section>
+
+    <div style="display:{{ rankingShow }}">
+      <a href="https://www.maximkorea.net/webtoon/pay" target="_blank" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:13px 18px;border-radius:12px;background:var(--w1);border:1px solid var(--line);text-decoration:none;color:var(--txt)" style-hover="border-color:var(--w5)">
+        <span style="flex:0 0 auto;font-size:16px">💰</span>
+        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;line-height:1.5">충전하면 <span style="color:var(--acc)">최대 +27% 적립 혜택</span> — 오래 볼수록 이득이에요</span>
+        <span style="flex:0 0 auto;font-size:12.5px;font-weight:800;color:var(--acc);white-space:nowrap">혜택 보기 →</span>
+      </a>
+    </div>
 
     <section id="featured" style="display:{{ featShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">

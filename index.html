@@ -1099,13 +1099,17 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
-    <section id="katalk" style="display:{{ kakaoShow }}">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border-radius:14px;padding:24px 26px;background:var(--bg1);border:1px solid var(--line)">
-        <div>
-          <div style="font-size:18px;font-weight:900">새 화보, 가장 먼저 만나기</div>
-          <div style="font-size:13.5px;color:var(--mut);margin-top:6px;line-height:1.5">B컷 신간 소식을 카카오톡으로 가장 빠르게 받아보세요.</div>
+    <section id="katalk" style="display:{{ rankingShow }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border-radius:14px;padding:24px 26px;background:linear-gradient(120deg,rgba(230,0,18,.06),var(--bg1));border:1px solid var(--line)">
+        <div style="min-width:0;flex:1 1 300px">
+          <div style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--acc2);margin-bottom:7px">WEEKLY ALERT</div>
+          <div style="font-size:18px;font-weight:900;letter-spacing:-.3px">매주 새 랭킹, 놓치지 마세요</div>
+          <div style="font-size:13.5px;color:var(--mut);margin-top:6px;line-height:1.55">월요일마다 새 주간 랭킹과 신작 화보를 가장 먼저. 알림으로 받아보세요.</div>
         </div>
-        <a href="{{ kakaoUrl }}" target="_blank" rel="noopener" style="background:#fee500;color:#191600;font-weight:800;font-size:14.5px;padding:14px 26px;border-radius:9px;white-space:nowrap">카톡 채널 추가</a>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;flex:0 0 auto">
+          <button onClick="{{ promptPush }}" style="display:inline-flex;align-items:center;gap:7px;background:var(--acc);color:#fff;border:0;font-weight:800;font-size:14.5px;padding:14px 22px;border-radius:9px;cursor:pointer;white-space:nowrap;box-shadow:0 8px 20px rgba(230,0,18,.26)" style-hover="filter:brightness(1.08)">🔔 알림 받기</button>
+          <span style="display:{{ kakaoShow }}"><a href="{{ kakaoUrl }}" target="_blank" rel="noopener" onClick="{{ trackKakao }}" style="display:inline-flex;align-items:center;background:#fee500;color:#191600;font-weight:800;font-size:14.5px;padding:14px 22px;border-radius:9px;white-space:nowrap">카톡으로 받기</a></span>
+        </div>
       </div>
     </section>
 
@@ -1710,6 +1714,8 @@ class Component extends DCLogic {
         setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
         setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
         openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),trackRankCta:()=>{try{track('rank_cta_click',{location:'after_ranking'});}catch(e){}},
+        promptPush:()=>{try{track('push_subscribe_click',{loc:'weekly_hook'});}catch(e){}try{window.OneSignalDeferred=window.OneSignalDeferred||[];window.OneSignalDeferred.push(function(OS){try{if(OS&&OS.Slidedown&&OS.Slidedown.promptPush){OS.Slidedown.promptPush();}else if(OS&&OS.Notifications&&OS.Notifications.requestPermission){OS.Notifications.requestPermission();}}catch(e){}});}catch(e){}},
+        trackKakao:()=>{try{track('kakao_subscribe_click',{loc:'weekly_hook'});}catch(e){}},
         toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],spotShow:'none',champs:[],champX:'translateX(0%)',champSlideW:'100%',champGap:'0px',champAspect:'16/10',champPrevShow:'none',champNextShow:'none',champPrev:()=>{},champNext:()=>{},champTS:()=>{},champTE:()=>{},promoX:'translateX(0%)',promoDots:[],promoDotsShow:'none',promoTS:()=>{},promoTE:()=>{},
         slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',thumbH:'206px',thumbRight:'36px',caroTextMax:'60%',trackX:'translateX(0%)',trackDur:'.7s',spotNum:'01',spotTotal:'01',spotPct:'100%',
         ev:{show:'none',items:[],clock:[]},

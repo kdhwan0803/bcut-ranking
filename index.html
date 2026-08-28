@@ -544,6 +544,17 @@ select,input,button{font-family:inherit}
      </div>
     </section>
 
+    <a href="https://bcut.maximkorea.net/?utm_source=bcutrank&utm_medium=rank_cta&utm_campaign=weekly_rank" target="_blank" style="display:{{ rankingShow }};text-decoration:none" onClick="{{ trackRankCta }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:linear-gradient(135deg,var(--acc),#ff5a63);border-radius:20px;padding:24px 26px;box-shadow:0 14px 34px rgba(230,0,18,.28)">
+        <div style="min-width:0;flex:1 1 320px">
+          <div style="font-size:10.5px;font-weight:800;letter-spacing:2.4px;color:rgba(255,255,255,.82);margin-bottom:8px">MAXIM B컷</div>
+          <div style="font-size:21px;font-weight:900;letter-spacing:-.5px;color:#fff;line-height:1.32">이번 주 랭킹, 전체 화보는 B컷에서 만나요</div>
+          <div style="font-size:13.5px;font-weight:600;color:rgba(255,255,255,.86);margin-top:8px;line-height:1.6">방금 본 순위 그대로 — 풀버전 화보와 이번 주 신작까지 한 곳에서.</div>
+        </div>
+        <span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--acc);font-weight:900;font-size:14px;padding:13px 24px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px rgba(0,0,0,.16)" style-hover="transform:translateY(-1px)">B컷에서 전체 보기 →</span>
+      </div>
+    </a>
+
     <section id="picks" style="display:{{ pickShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">관심 모델 <span style="color:var(--acc)">신작</span></h2>
@@ -1696,7 +1707,7 @@ class Component extends DCLogic {
         gate:S.age==='',
         setAdult:()=>{try{localStorage.setItem('bcut_age','adult');}catch(e){}this.setState({age:'adult'});},
         setMinor:()=>{try{localStorage.setItem('bcut_age','minor');}catch(e){}this.setState({age:'minor'});},
-        openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),
+        openGate:()=>this.setState({age:''}),stop:e=>e.stopPropagation(),trackRankCta:()=>{try{track('rank_cta_click',{location:'after_ranking'});}catch(e){}},
         toggleTheme:()=>this.toggleTheme(),themeIcon:'☾',themeName:'다크',themeLabel:'다크 모드로 바꾸기',chips:[],qmenu:[],rows:[],modelCards:[],timeline:[],spot:{stats:[]},slides:[],spotDots:[],spotShow:'none',champs:[],champX:'translateX(0%)',champSlideW:'100%',champGap:'0px',champAspect:'16/10',champPrevShow:'none',champNextShow:'none',champPrev:()=>{},champNext:()=>{},champTS:()=>{},champTE:()=>{},promoX:'translateX(0%)',promoDots:[],promoDotsShow:'none',promoTS:()=>{},promoTE:()=>{},
         slideW:'86%',slideGap:'6px',caroPad:'0',caroH:'250px',caroTitle:'32px',thumbH:'206px',thumbRight:'36px',caroTextMax:'60%',trackX:'translateX(0%)',trackDur:'.7s',spotNum:'01',spotTotal:'01',spotPct:'100%',
         ev:{show:'none',items:[],clock:[]},

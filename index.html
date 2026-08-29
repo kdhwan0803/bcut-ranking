@@ -590,7 +590,11 @@ select,input,button{font-family:inherit}
     </section>
 
     <section id="spot" style="display:{{ spotShow }}">
-      <div style="position:relative;border-radius:18px;overflow:hidden;background:var(--bg0);max-width:980px;margin:0 auto" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">이번 주 <span style="color:var(--acc)">1위</span></h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">CHAMPION</span>
+      </div>
+      <div style="position:relative;border-radius:18px;overflow:hidden;background:var(--bg0);max-width:1080px;margin:0 auto" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
         <div style="display:flex;gap:{{ champGap }};transition:transform .5s ease;transform:{{ champX }}">
           <sc-for list="{{ champs }}" as="c" hint-placeholder-count="1">
             <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:{{ champAspect }};border:{{ c.cardBorder }};border-radius:16px;overflow:hidden">
@@ -2082,10 +2086,10 @@ class Component extends DCLogic {
         if(_champs.length){
           this._champCount=_champs.length;
           let _ci=this.state.champIdx||0; if(_ci>_champs.length-1)_ci=_champs.length-1; if(_ci<0)_ci=0;
-          const _sw=S.mob?'90%':'89%', _gap=S.mob?'12px':'14px';
+          const _sw=S.mob?'86%':'80%', _gap=S.mob?'12px':'14px';
           base.spotShow='block'; base.champs=_champs;
           base.champSlideW=_sw; base.champGap=_gap; base.champAspect='16/10';
-          base.champX='translateX(calc(-'+_ci+' * ('+_sw+' + '+_gap+')))';
+          base.champX='translateX(calc((100% - '+_sw+')/2 - '+_ci+' * ('+_sw+' + '+_gap+')))';
           base.champPrev=()=>this.champGo(-1); base.champNext=()=>this.champGo(1);
           base.champTS=e=>this.champTS(e); base.champTE=e=>this.champTE(e);
           base.champPrevShow=_ci>0?'flex':'none';

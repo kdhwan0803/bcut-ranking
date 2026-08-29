@@ -590,7 +590,7 @@ select,input,button{font-family:inherit}
     </section>
 
     <section id="spot" style="display:{{ spotShow }}">
-      <div style="position:relative;border-radius:18px;overflow:hidden;background:var(--bg0)" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
+      <div style="position:relative;border-radius:18px;overflow:hidden;background:var(--bg0);max-width:980px;margin:0 auto" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
         <div style="display:flex;gap:{{ champGap }};transition:transform .5s ease;transform:{{ champX }}">
           <sc-for list="{{ champs }}" as="c" hint-placeholder-count="1">
             <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:{{ champAspect }};border:{{ c.cardBorder }};border-radius:16px;overflow:hidden">

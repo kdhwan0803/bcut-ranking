@@ -593,19 +593,19 @@ select,input,button{font-family:inherit}
       <div style="position:relative;border-radius:18px;overflow:hidden;background:var(--bg0)" onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
         <div style="display:flex;gap:{{ champGap }};transition:transform .5s ease;transform:{{ champX }}">
           <sc-for list="{{ champs }}" as="c" hint-placeholder-count="1">
-            <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:{{ champAspect }};max-height:540px;border:{{ c.cardBorder }};border-radius:16px;overflow:hidden">
+            <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:{{ champAspect }};border:{{ c.cardBorder }};border-radius:16px;overflow:hidden">
               <div style="position:absolute;inset:0;background-size:cover;background-position:center 18%;background-image:{{ c.bg }};filter:{{ c.blur }}"></div>
-              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.02) 0%,rgba(8,8,11,.35) 46%,rgba(8,8,11,.96) 100%)"></div>
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,0) 0%,rgba(8,8,11,.1) 56%,rgba(8,8,11,.9) 100%)"></div>
               <div style="position:absolute;top:16px;left:16px;z-index:3;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(6px);border-radius:999px;padding:7px 13px;font-size:12px;font-weight:900;{{ c.badgeStyle }}">{{ c.badge }}</div>
-              <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:22px 22px 22px">
-                <div style="font-size:10.5px;font-weight:900;letter-spacing:2px;color:{{ c.eyebrowColor }}">{{ c.eyebrow }}</div>
-                <div style="font-size:clamp(21px,4.8vw,42px);font-weight:900;letter-spacing:-.6px;line-height:1.14;margin-top:7px;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.title }}</div>
-                <div style="display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap">
+              <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:14px 22px 18px">
+                <div style="font-size:10px;font-weight:900;letter-spacing:2px;color:{{ c.eyebrowColor }}">{{ c.eyebrow }}</div>
+                <div style="font-size:clamp(19px,3.7vw,31px);font-weight:900;letter-spacing:-.5px;line-height:1.12;margin-top:4px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.5);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.title }}</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap">
                   <span style="display:{{ c.b19Show }};background:var(--acc);color:#fff;font-size:10.5px;font-weight:900;padding:2px 6px;border-radius:4px">19</span>
                   <span style="font-size:13.5px;font-weight:800;color:var(--acc2)">{{ c.model }}</span>
                 </div>
-                <div style="font-size:12.5px;color:rgba(255,255,255,.8);margin-top:8px;line-height:1.45;max-width:520px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.tag }}</div>
-                <span style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#111;font-weight:900;font-size:14px;padding:11px 22px;border-radius:999px;margin-top:14px">보러가기 →</span>
+                <div style="font-size:12px;color:rgba(255,255,255,.82);margin-top:5px;line-height:1.4;max-width:520px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden">{{ c.tag }}</div>
+                <span style="display:inline-flex;align-items:center;gap:7px;background:#fff;color:#111;font-weight:900;font-size:13px;padding:9px 17px;border-radius:999px;margin-top:11px">보러가기 →</span>
               </div>
             </div>
           </sc-for>

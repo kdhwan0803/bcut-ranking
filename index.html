@@ -2084,7 +2084,7 @@ class Component extends DCLogic {
           let _ci=this.state.champIdx||0; if(_ci>_champs.length-1)_ci=_champs.length-1; if(_ci<0)_ci=0;
           const _sw=S.mob?'90%':'89%', _gap=S.mob?'12px':'14px';
           base.spotShow='block'; base.champs=_champs;
-          base.champSlideW=_sw; base.champGap=_gap; base.champAspect=S.mob?'4/5':'16/10';
+          base.champSlideW=_sw; base.champGap=_gap; base.champAspect='16/10';
           base.champX='translateX(calc(-'+_ci+' * ('+_sw+' + '+_gap+')))';
           base.champPrev=()=>this.champGo(-1); base.champNext=()=>this.champGo(1);
           base.champTS=e=>this.champTS(e); base.champTE=e=>this.champTE(e);

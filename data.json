@@ -14008,7 +14008,9 @@
   "featuredBg": "linear-gradient(120deg,#16161a,#5a0a12)",
   "kakaoUrl": "",
   "heroImg": "",
-  "heroImgById": {},
+  "heroImgById": {
+    "2103": "https://i.ibb.co/kVBxSmSj/bcut-1-1600x1000-opt.webp"
+  },
   "monthImg": {},
   "spotlight": null
 }

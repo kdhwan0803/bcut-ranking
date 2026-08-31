@@ -1118,7 +1118,14 @@ select,input,button{font-family:inherit}
     </section>
 
     <section id="calmonth" style="display:{{ monthShow }}">
-      <div class="secHead"><h2>📅 이번 달 공개 캘린더</h2><span class="en">{{ monthLabel2 }}</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px;margin:0">📅 공개 캘린더</h2>
+        <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
+          <button onClick="{{ calPrev }}" aria-label="이전 달" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:17px;line-height:1;cursor:pointer;display:{{ calPrevShow }};align-items:center;justify-content:center">‹</button>
+          <span style="min-width:98px;text-align:center;font-weight:800;font-size:14px">{{ monthLabel2 }}</span>
+          <button onClick="{{ calNext }}" aria-label="다음 달" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:17px;line-height:1;cursor:pointer;display:{{ calNextShow }};align-items:center;justify-content:center">›</button>
+        </div>
+      </div>
       <div class="monthGrid">
         <div class="monthHead"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span class="sun">일</span></div>
         <div class="monthBody">
@@ -1295,7 +1302,7 @@ const MSM=new Set('강선혜 강하빈 고아라 그린 김갑주 김나정 김�
 function isMSM(w){return !!(w&&(w.models||[]).some(m=>MSM.has((m||'').trim())));}
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0,calMoff:0};
 
   componentDidMount(){
     try{this._admin=/[?&](admin|preview)=1/.test(location.search)||!!window.IS_ADMIN;}catch(e){this._admin=!!window.IS_ADMIN;}
@@ -1785,7 +1792,7 @@ class Component extends DCLogic {
       nwGrid:S.mob?'repeat(3,1fr)':'repeat(auto-fill,minmax(150px,1fr))',
       mdCols:S.mob?'repeat(3,1fr)':'repeat(auto-fill,minmax(150px,1fr))',
       nwMoreShow:'none',nwMoreLabel:'',nwMore:()=>{},
-      liveShow:'none',liveWorks:[],monthShow:'none',monthCells:[],monthList:[],monthLabel2:'',monthEmptyShow:'none',
+      liveShow:'none',liveWorks:[],monthShow:'none',monthCells:[],monthList:[],monthLabel2:'',monthEmptyShow:'none',calPrevShow:'none',calNextShow:'none',calPrev:()=>{},calNext:()=>{},
       secGap:S.mob?'46px':'64px',
       h2Size:S.mob?'17px':'19px',
       hdrBg:S.scrolled?(dark?'rgba(7,7,10,.92)':'rgba(255,255,255,.93)'):'var(--hdrTop)',
@@ -2251,11 +2258,22 @@ class Component extends DCLogic {
         sub:(w.models||[]).join(' & ')||'MAXIM B컷',badge:_bset[h%_bset.length],open:()=>this.openWork(id)};});
     base.liveShow=(V==='home'&&base.liveWorks.length)?'block':'none';
 
-    /* 홈 추가: 이번 달 공개 캘린더 (PC 격자 / 모바일 리스트) */
-    const _td=new Date(today+'T00:00:00'),_y=_td.getFullYear(),_mo=_td.getMonth();
+    /* 홈 추가: 공개 캘린더 (월 이동 가능 · PC 격자 / 모바일 리스트) */
+    const _cbase=new Date(today+'T00:00:00');
+    const _monthsWith=new Set();
+    Object.keys(W).forEach(id=>{const p=W[id]&&W[id].pub;if(p&&/^\d{4}-\d{2}/.test(p)){const pp=p.split('-');_monthsWith.add((+pp[0])*12+(+pp[1]-1));}});
+    const _curM=_cbase.getFullYear()*12+_cbase.getMonth();
+    const _allM=[..._monthsWith,_curM];
+    const _minOff=Math.min(..._allM)-_curM, _maxOff=Math.max(..._allM)-_curM;
+    const _off=Math.max(_minOff,Math.min(_maxOff,this.state.calMoff||0));
+    const _td=new Date(_cbase.getFullYear(),_cbase.getMonth()+_off,1),_y=_td.getFullYear(),_mo=_td.getMonth();
     const _lead=(new Date(_y,_mo,1).getDay()+6)%7, _dim=new Date(_y,_mo+1,0).getDate();
     const _pubOf=ymd=>Object.keys(W).filter(id=>W[id].pub===ymd);
-    base.monthLabel2=(_mo+1)+'월';
+    base.monthLabel2=_y+'년 '+(_mo+1)+'월';
+    base.calPrevShow=_off>_minOff?'flex':'none';
+    base.calNextShow=_off<_maxOff?'flex':'none';
+    base.calPrev=()=>this.setState({calMoff:Math.max(_minOff,(this.state.calMoff||0)-1)});
+    base.calNext=()=>this.setState({calMoff:Math.min(_maxOff,(this.state.calMoff||0)+1)});
     base.monthCells=[];
     for(let i=0;i<_lead;i++)base.monthCells.push({todayCls:'',dayShow:'none',day:'',thShow:'none',oneCls:'',thumbs:[]});
     for(let d=1;d<=_dim;d++){const ymd=_y+'-'+_p2(_mo+1)+'-'+_p2(d);const rel=_pubOf(ymd);

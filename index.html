@@ -1338,6 +1338,7 @@ class Component extends DCLogic {
       if(q.get('model'))st.modelSel=q.get('model');
       if(q.get('year'))st.yearSel=q.get('year');
       this._qWeek=q.get('week')?+q.get('week'):null;
+      this._qWork=q.get('w')||q.get('work')||null;
       if(Object.keys(st).length)this.setState(st);
       try{const nd=localStorage.getItem('bcut_notice_hide');this._noticeHide=nd||'';}catch(e){this._noticeHide='';}
       if(this._admin){this.setState({age:'adult'});}
@@ -1437,6 +1438,7 @@ class Component extends DCLogic {
     const last=Math.max(0,d.weeks.length-1);
     const qw=(this._qWeek!=null&&this._qWeek>=0&&this._qWeek<=last)?this._qWeek:last;
     this.setState({D:d,wi:qw,err:''});
+    if(this._qWork&&d.works&&d.works[this._qWork]){const _wid=this._qWork;this._qWork=null;setTimeout(()=>{try{this.openWork(_wid);}catch(e){}},80);}
   }
   retry(){this.setState({err:''});this.load();}
 

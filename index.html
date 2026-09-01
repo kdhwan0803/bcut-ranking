@@ -533,6 +533,9 @@ select,input,button{font-family:inherit}
             </div>
           </sc-for>
         </div>
+        <div style="text-align:center;margin-top:18px;display:{{ rkMoreShow }}">
+          <button onClick="{{ rkMore }}" style="display:inline-flex;align-items:center;gap:7px;background:var(--w1);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:12px 26px;border-radius:999px;cursor:pointer" style-hover="border-color:var(--w5);transform:translateY(-1px)">{{ rkMoreLabel }} ▾</button>
+        </div>
       </div>
       <a href="{{ riser.link }}" target="_blank" style="display:{{ riserShow }};align-items:center;gap:12px;margin:2px 0 4px;padding:11px 15px;border-radius:12px;background:linear-gradient(90deg,rgba(18,183,106,.15),rgba(18,183,106,.02));border:1px solid rgba(18,183,106,.3);text-decoration:none;color:var(--txt)" style-hover="border-color:rgba(18,183,106,.55)">
         <span style="flex:0 0 auto;font-size:11.5px;font-weight:900;color:#0e9f63;background:rgba(18,183,106,.16);padding:5px 10px;border-radius:8px">🔥 이번 주 급상승</span>
@@ -1302,7 +1305,7 @@ const MSM=new Set('강선혜 강하빈 고아라 그린 김갑주 김나정 김�
 function isMSM(w){return !!(w&&(w.models||[]).some(m=>MSM.has((m||'').trim())));}
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0,calMoff:0};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0,calMoff:0,rkAll:false};
 
   componentDidMount(){
     try{this._admin=/[?&](admin|preview)=1/.test(location.search)||!!window.IS_ADMIN;}catch(e){this._admin=!!window.IS_ADMIN;}
@@ -1782,7 +1785,7 @@ class Component extends DCLogic {
       rankGap:S.mob?'14px 10px':'22px 16px',
       rankNumSize:S.mob?'42px':'54px',
       restNumSize:S.mob?'30px':'34px',
-      bigRows:[],smallRows:[],mRankShow:'none',wRankShow:'block',
+      bigRows:[],smallRows:[],mRankShow:'none',wRankShow:'block',rkMoreShow:'none',rkMoreLabel:'',rkMore:()=>{},
       heroShow:'block',rankingShow:'block',searchShow:'none',wcShow:'none',pageHeadShow:'none',pageTitle:'',goHome:()=>{},
       mCardW:S.mob?'196px':'224px',
       subW:S.mob?'168px':'212px',
@@ -1966,7 +1969,7 @@ class Component extends DCLogic {
     const RK={1:{ring:'#ffd24a',rb:'👑 1위',rbg:'linear-gradient(90deg,#ffcf46,#ff8a00)',rfg:'#3a2600',glow:'0 0 0 2px #ffd24a,0 18px 46px rgba(255,180,40,.32)'},
       2:{ring:'#cfd6dd',rb:'2위',rbg:'linear-gradient(90deg,#eef2f6,#c2cbd4)',rfg:'#2a2f36',glow:'0 12px 32px rgba(0,0,0,.5)'},
       3:{ring:'#e0a173',rb:'3위',rbg:'linear-gradient(90deg,#eabf95,#c07c48)',rfg:'#2e1c0e',glow:'0 12px 32px rgba(0,0,0,.5)'}};
-    const totalN=S.mob?11:12,bigN=S.mob?2:5;
+    const bigN=S.mob?2:5, _rkInit=S.mob?5:10, totalN=Math.min(20,list.length);
     const risers=[];
     const rowsAll=isM?[]:list.slice(0,totalN).map(row=>{
       const prev=isMonth?(isM?this.monthModelRankAt(row.id,this.prevMonthRef(wi)):this.monthWorkRankAt(row.id,this.prevMonthRef(wi)))
@@ -2016,8 +2019,12 @@ class Component extends DCLogic {
         leave:()=>{if(!this._touch)this.setState({hover:null});},
         open:()=>{ isM?this.openModel(row.id):this.openWork(row.id); }};
     });
+    const _rkShown=S.rkAll?rowsAll.length:Math.min(_rkInit,rowsAll.length);
     base.bigRows=rowsAll.slice(0,bigN);
-    base.smallRows=rowsAll.slice(bigN);
+    base.smallRows=rowsAll.slice(bigN,_rkShown);
+    base.rkMoreShow=(!isM&&rowsAll.length>_rkShown)?'block':'none';
+    base.rkMoreLabel='랭킹 더 보기 · 남은 '+(rowsAll.length-_rkShown)+'개';
+    base.rkMore=()=>this.setState({rkAll:true});
     /* 🔥 이번 주 급상승: 지난주 대비 가장 많이 오른 화보(주간 화보 모드에서만) */
     base.riserShow='none';base.riser={n:'',rank:'',img:'',blur:'none',title:'',link:'https://bcut.maximkorea.net'};
     if(!isM&&!isMonth&&risers.length){const tp=risers.slice().sort((a,b)=>b.n-a.n)[0];const rw=W[tp.id]||{};

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이은경국어 · 국모닝 신청</title>
+
+<!-- 카톡·문자로 링크를 보낼 때 보이는 카드 정보.
+     주소를 바꾸면 og:url 과 og:image 를 반드시 같이 바꾸세요. -->
+<meta name="description" content="수능 1교시에 맞춰 아침 8시 30분, 실전처럼 국어 모의고사를 풉니다. 올 날짜를 신청하세요.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="이은경국어">
+<meta property="og:url" content="https://kdhwan0803.github.io/korean-feedback/gukmorning.html">
+<meta property="og:title" content="국모닝 — 아침 실전 국어">
+<meta property="og:description" content="수능 1교시에 맞춰 아침 8시 30분, 실전처럼 국어 모의고사를 풉니다.">
+<meta property="og:image" content="https://kdhwan0803.github.io/korean-feedback/gukmorning-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root {
+    --ink: #1A1A2E;          /* 새벽 남색 계열 잉크 */
+    --night: #26365E;        /* 딥 인디고 */
+    --sun: #F5A623;          /* 떠오르는 해 - 앰버 */
+    --sun-deep: #E8811C;     /* 진한 해넘이 오렌지 */
+    --sun-bg: #FFF3E0;       /* 옅은 아침빛 배경 */
+    --cream: #FDFBF6;        /* 따뜻한 아이보리 */
+    --surface: #FFFFFF;
+    --border: #ECE6DA;       /* 크림톤 경계선 */
+    --text-muted: #7A7568;
+    --danger: #C0392B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Pretendard Variable", Pretendard, -apple-system, sans-serif; background: var(--cream); color: var(--ink); line-height: 1.5; padding-bottom: 110px; }
+  .wrap { max-width: 520px; margin: 0 auto; min-height: 100vh; }
+
+  /* 헤더 — 새벽에서 아침으로 넘어가는 그라데이션에 해가 뜬다 */
+  .hero { background: linear-gradient(160deg, var(--night) 0%, #3B4D7A 55%, var(--sun-deep) 130%); color: #fff; padding: 30px 24px 26px; position: relative; overflow: hidden; }
+  .hero::after { content: ""; position: absolute; right: -40px; top: -40px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(245,166,35,.9), rgba(245,166,35,0) 70%); }
+  .hero .brand { font-size: 12.5px; font-weight: 600; letter-spacing: .04em; opacity: .82; margin-bottom: 8px; }
+  .hero h1 { font-size: 30px; font-weight: 800; letter-spacing: -.02em; position: relative; z-index: 1; }
+  .hero .tag { font-size: 13.5px; margin-top: 8px; opacity: .9; position: relative; z-index: 1; line-height: 1.55; }
+
+  .notice { background: var(--surface); margin: 14px 16px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .notice-body { padding: 4px 20px 16px; }
+  .nblock { padding: 15px 0; border-bottom: 1px dashed var(--border); }
+  .nblock:last-child { border-bottom: none; }
+  .nblock .k { font-size: 12.5px; font-weight: 800; color: var(--sun-deep); margin-bottom: 8px; }
+  .nblock .v { font-size: 14px; color: var(--ink); line-height: 1.65; }
+  .big-time { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .big-time .t { font-size: 24px; font-weight: 800; color: var(--night); letter-spacing: -.01em; }
+  .big-time .u { font-size: 13px; color: var(--text-muted); }
+  .cautions { list-style: none; }
+  .cautions li { position: relative; padding-left: 18px; font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 9px; }
+  .cautions li:last-child { margin-bottom: 0; }
+  .cautions li::before { content: "•"; position: absolute; left: 3px; color: var(--sun-deep); font-weight: 800; }
+  .cautions li b { color: var(--danger); font-weight: 700; }
+  .cautions li em { font-style: normal; color: var(--ink); font-weight: 600; }
+
+  .section { background: var(--surface); margin: 14px 16px; padding: 24px 20px; border-radius: 16px; border: 1px solid var(--border); display: none; }
+  .section.active { display: block; }
+  .sec-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .sec-title .step { background: var(--sun); color: var(--night); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 7px; font-size: 13px; font-weight: 800; flex: none; }
+  .sec-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+
+  .input-group label { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 8px; }
+  .input-group input { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 16px; font-family: inherit; background: var(--cream); color: var(--ink); }
+  .input-group input:focus { outline: none; border-color: var(--sun); background: #fff; }
+  .hint { font-size: 12px; color: var(--text-muted); margin-top: 8px; line-height: 1.5; }
+
+  .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-weight: 800; font-size: 16px; color: var(--night); }
+  .cal-header button { background: none; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; color: var(--text-muted); cursor: pointer; padding: 6px 14px; }
+  .cal-header button:disabled { color: #D8D2C6; cursor: not-allowed; }
+  .cal-dow-row { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
+  .cal-dow { font-size: 12px; font-weight: 600; color: var(--text-muted); padding-bottom: 8px; }
+  .cal-dow.sat { color: #2C6BB3; }
+  .cal-dow.sun { color: #C0392B; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day { aspect-ratio: 1/1.05; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 10px; border: 1px solid transparent; background: none; font-family: inherit; padding: 0; }
+  .cal-day .n { font-size: 15px; color: #CFC9BD; font-weight: 500; }
+  .cal-day .s { font-size: 9px; font-weight: 700; color: transparent; line-height: 1; }
+  .cal-day.open { background: var(--cream); border-color: var(--border); cursor: pointer; }
+  .cal-day.open .n { color: var(--ink); font-weight: 700; }
+  .cal-day.open .s { color: var(--sun-deep); }
+  .cal-day.selected { background: var(--sun); border-color: var(--sun-deep); }
+  .cal-day.selected .n, .cal-day.selected .s { color: var(--night); }
+  .cal-note { font-size: 12.5px; color: var(--text-muted); margin-top: 16px; text-align: center; line-height: 1.6; }
+
+  .picked-banner { background: var(--sun-bg); border: 1px solid #F3D9A8; border-radius: 12px; padding: 14px 16px; margin-bottom: 4px; }
+  .picked-banner .pl { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; color: var(--sun-deep); margin-bottom: 4px; }
+  .picked-banner .pv { font-size: 17px; font-weight: 800; color: var(--night); }
+
+  .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); padding: 14px 20px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); display: none; justify-content: center; }
+  .bottom-bar.active { display: flex; }
+  .bottom-bar-inner { width: 100%; max-width: 520px; }
+  .btn-submit { width: 100%; padding: 16px; border: none; border-radius: 12px; background: var(--night); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .btn-submit:disabled { background: #C9C3B6; cursor: not-allowed; }
+  .btn-outline { width: 100%; padding: 14px; border: 1px solid var(--night); border-radius: 10px; background: #fff; color: var(--night); font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 12px; font-family: inherit; }
+  .btn-ghost { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: var(--text-muted); font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+  .screen { display: none; text-align: center; padding: 36px 24px; }
+  .screen.active { display: block; }
+  .sun-badge { width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, var(--sun) 0%, var(--sun-deep) 100%); box-shadow: 0 8px 24px rgba(232,129,28,.35); }
+  .screen h2 { font-size: 21px; font-weight: 800; margin-bottom: 8px; }
+  .screen .who { font-size: 15px; color: var(--text-muted); margin-bottom: 22px; }
+  .ticket { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 4px 22px; text-align: left; margin-bottom: 20px; }
+  .ticket-row { display: flex; justify-content: space-between; gap: 12px; padding: 15px 0; border-bottom: 1px dashed var(--border); font-size: 15px; }
+  .ticket-row:last-child { border-bottom: none; }
+  .ticket-row span:first-child { color: var(--text-muted); flex: none; }
+  .ticket-row span:last-child { font-weight: 800; text-align: right; color: var(--night); }
+
+  .alert { padding: 12px 14px; border-radius: 10px; font-size: 13.5px; font-weight: 600; margin-bottom: 14px; display: none; text-align: left; background: #FDECEA; color: var(--danger); border: 1px solid #F5C6C0; }
+  .loading { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="brand">이은경국어</div>
+    <h1>국모닝</h1>
+    <div class="tag">수능 1교시 그 시간, 아침 8시 30분.<br>실전처럼 국어 모의고사를 풉니다.</div>
+  </header>
+
+  <div class="loading" id="boot">불러오는 중…</div>
+
+  <!-- 이미 신청함 -->
+  <div class="screen" id="screenMy">
+    <div class="sun-badge"></div>
+    <h2>신청 완료</h2>
+    <div class="who"><span id="myName"></span> 학생, 이 날 뵙겠습니다.</div>
+    <div class="ticket">
+      <div class="ticket-row"><span>날짜</span><span id="myDate">-</span></div>
+      <div class="ticket-row"><span>시간</span><span>오전 8:30 입실</span></div>
+    </div>
+    <div class="alert" id="myErr"></div>
+    <button type="button" class="btn-outline" id="btnChange">다른 날로 바꾸기</button>
+    <button type="button" class="btn-ghost" id="btnReload">새로고침</button>
+  </div>
+
+  <!-- 완료 -->
+  <div class="screen" id="screenDone">
+    <div class="sun-badge"></div>
+    <h2>신청되었습니다</h2>
+    <div class="who">늦지 않게, 아침에 만나요.</div>
+    <div class="ticket" id="doneTicket"></div>
+    <button type="button" class="btn-outline" id="btnCopy">신청 내용 복사</button>
+    <button type="button" class="btn-ghost" id="btnDoneOk">확인</button>
+  </div>
+
+  <!-- 신청 폼 -->
+  <div id="screenForm" style="display:none">
+    <div class="notice">
+      <div class="notice-body">
+        <div class="nblock">
+          <div class="k">입실 시간</div>
+          <div class="v big-time"><span class="t">오전 8:30</span><span class="u">까지 등원 · 10:30 종료 (모의고사 + 1:1 상담)</span></div>
+        </div>
+        <div class="nblock">
+          <div class="k">진행 요일</div>
+          <div class="v">매주 <b>토요일 · 일요일</b> 중 원하는 하루<span style="color:var(--text-muted)"> — 수능 전 주말까지</span></div>
+        </div>
+        <div class="nblock">
+          <div class="k">꼭 지켜주세요</div>
+          <div class="v">
+            <ul class="cautions">
+              <li><b>지각은 절대 안 됩니다.</b> 실제 수능은 입실 후 문을 닫습니다. 8시 30분 <em>전에</em> 도착하세요.</li>
+              <li>연습이 아니라 <em>실전입니다.</em> 그날 아침 진짜 수능장에 들어선다는 마음으로 오세요.</li>
+              <li>매주 신청은 <em>하루</em>만 됩니다. 못 오게 되면 미리 다른 날로 바꿔주세요.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section active" id="step1">
+      <div class="sec-title"><span class="step">1</span> 이름을 입력해주세요</div>
+      <div class="sec-desc">신청과 변경 때 본인 확인에 쓰입니다. 실명으로 적어주세요.</div>
+      <div class="alert" id="err1"></div>
+      <div class="input-group">
+        <label for="fName">학생 이름</label>
+        <input type="text" id="fName" placeholder="예: 홍길동" autocomplete="name">
+      </div>
+    </div>
+
+    <div class="section" id="step2">
+      <div class="sec-title"><span class="step">2</span> 올 날짜를 선택해주세요</div>
+      <div class="sec-desc" id="defaultHint">토요일과 일요일만 열려 있습니다.</div>
+      <div class="cal-header">
+        <button type="button" id="btnPrev">◀</button>
+        <span id="monthLabel">-</span>
+        <button type="button" id="btnNextM">▶</button>
+      </div>
+      <div class="cal-dow-row">
+        <div class="cal-dow sun">일</div><div class="cal-dow">월</div><div class="cal-dow">화</div>
+        <div class="cal-dow">수</div><div class="cal-dow">목</div><div class="cal-dow">금</div><div class="cal-dow sat">토</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <p class="cal-note">토·일만 선택할 수 있어요. 수능(11/19) 전 마지막 주말까지 열립니다.</p>
+    </div>
+
+    <div class="section" id="step3">
+      <div class="picked-banner" id="pickedBanner"></div>
+    </div>
+
+    <div class="bottom-bar" id="bottomBar">
+      <div class="bottom-bar-inner">
+        <div class="alert" id="errSubmit"></div>
+        <button type="button" class="btn-submit" id="btnSubmit" disabled>이름을 먼저 입력해주세요</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════ 설정 ═══════════════ */
+// Apps Script 웹앱 주소(/exec). 국모닝 전용으로 새로 배포한 주소를 넣으세요.
+const API_URL = "https://script.google.com/macros/s/AKfycbwUYZ1J5xgTcVFjg1A5lAng35OZ6CM5qY_ww8ewQzbjW9_sEwDXUTLz4yG2iL1hlVcI/exec";
+const SHEET_TAB = "국모닝";        // 신청이 쌓일 시트 탭 이름
+
+const ENTER_TIME = "08:30";        // 입실 시간
+const OPEN_DOWS  = [6, 0];         // 열리는 요일: 토(6), 일(0)
+const LAST_DAY   = "2026-11-15";   // 신청 가능한 마지막 날짜(이 날까지 포함). 수능 11/19 직전 주말.
+const CUTOFF_HOURS = 10;           // 당일 몇 시간 전까지 신청/변경 허용 (전날 밤 대비 넉넉히)
+
+/* ═══════════════ 유틸 ═══════════════ */
+const $ = s => document.querySelector(s);
+const DOW = ["일","월","화","수","목","금","토"];
+const pad = n => String(n).padStart(2, "0");
+const ymd = d => d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
+const parseYmd = s => { const p = String(s).split("-"); return new Date(+p[0], +p[1]-1, +p[2]); };
+const addDays = (d, n) => { const x = new Date(d.getTime()); x.setDate(x.getDate()+n); return x; };
+const esc = s => String(s||"").replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+const dateLabel = d => (d.getMonth()+1) + "월 " + d.getDate() + "일 (" + DOW[d.getDay()] + ")";
+const enterAt = dateStr => { const d = parseYmd(dateStr), t = ENTER_TIME.split(":"); d.setHours(+t[0], +t[1], 0, 0); return d; };
+function showErr(el, msg) { el.textContent = msg || ""; el.style.display = msg ? "block" : "none"; }
+
+/* ═══════════════ API (Apps Script, SheetDB 호환) ═══════════════ */
+async function apiGetAll() {
+  const res = await fetch(API_URL + "?sheet=" + encodeURIComponent(SHEET_TAB), { cache: "no-store" });
+  if (!res.ok) throw new Error("조회 실패");
+  const j = await res.json();
+  return Array.isArray(j) ? j : [];
+}
+async function apiAdd(row) {
+  const res = await fetch(API_URL, {
+    method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ action: "add", sheet: SHEET_TAB, row: row })
+  });
+  if (!res.ok) throw new Error("저장 실패");
+  const j = await res.json(); if (j.error) throw new Error("저장 실패"); return j;
+}
+async function apiDelete(id) {
+  const res = await fetch(API_URL, {
+    method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ action: "delete", sheet: SHEET_TAB, id: id })
+  });
+  if (!res.ok) throw new Error("삭제 실패");
+  const j = await res.json(); if (j.error) throw new Error("삭제 실패"); return j;
+}
+
+/* ═══════════════ 상태 ═══════════════ */
+let rows = [];
+let viewMonth = null;
+let selDate = null;
+let myBooking = null;
+let submitting = false;
+let ready = null;
+let lastPickedDow = null;   // 지난 신청의 요일 기억 (6=토, 0=일)
+
+const me = () => ({ name: $("#fName").value.trim() });
+const sameAs = (r, p) => String(r["이름"] || "").trim() === p.name;
+
+/* 날짜가 열려 있는지: 토/일 + 범위 안 + 마감시간 전 */
+function dayOpen(dateStr) {
+  const d = parseYmd(dateStr);
+  if (OPEN_DOWS.indexOf(d.getDay()) < 0) return false;
+  if (dateStr > LAST_DAY) return false;
+  if (Date.now() > enterAt(dateStr).getTime() - CUTOFF_HOURS*3600000) return false;
+  return true;
+}
+
+/* ═══════════════ 달력 ═══════════════ */
+const monthNum = d => d.getFullYear()*12 + d.getMonth();
+let rangeFromM, rangeToM;
+const canNav = delta => {
+  const t = monthNum(viewMonth) + delta;
+  return t >= rangeFromM && t <= rangeToM;
+};
+function renderCalendar() {
+  $("#monthLabel").textContent = viewMonth.getFullYear() + ". " + pad(viewMonth.getMonth()+1);
+  $("#btnPrev").disabled  = !canNav(-1);
+  $("#btnNextM").disabled = !canNav(1);
+
+  const y = viewMonth.getFullYear(), m = viewMonth.getMonth();
+  const lead = new Date(y, m, 1).getDay();
+  const last = new Date(y, m+1, 0).getDate();
+  let h = "";
+  for (let i = 0; i < lead; i++) h += '<div class="cal-day"></div>';
+  for (let i = 1; i <= last; i++) {
+    const ds = ymd(new Date(y, m, i));
+    const open = dayOpen(ds);
+    let cls = "cal-day", label = "";
+    if (open) { cls += " open"; label = DOW[parseYmd(ds).getDay()] + "요일"; }
+    if (ds === selDate) cls += " selected";
+    h += '<button type="button" class="' + cls + '"' + (open ? "" : " disabled") + ' data-date="' + ds + '">'
+       + '<span class="n">' + i + '</span><span class="s">' + label + '</span></button>';
+  }
+  $("#calGrid").innerHTML = h;
+}
+
+/* 다음에 열리는 같은 요일 날짜를 기본 추천 */
+function suggestDate() {
+  if (lastPickedDow === null) return null;
+  let d = new Date(); d.setHours(0,0,0,0);
+  for (let i = 0; i < 120; i++) {
+    const ds = ymd(d);
+    if (parseYmd(ds).getDay() === lastPickedDow && dayOpen(ds)) return ds;
+    d = addDays(d, 1);
+  }
+  return null;
+}
+
+function updateSubmit() {
+  const btn = $("#btnSubmit");
+  const nameOk = me().name.length >= 2;
+  if (!nameOk) { btn.textContent = "이름을 먼저 입력해주세요"; btn.disabled = true; return; }
+  if (!selDate) { btn.textContent = "올 날짜를 선택해주세요"; btn.disabled = true; return; }
+  btn.textContent = dateLabel(parseYmd(selDate)) + " 신청하기";
+  btn.disabled = submitting;
+}
+
+function revealPicked() {
+  if (!selDate) { $("#step3").classList.remove("active"); return; }
+  $("#pickedBanner").innerHTML = '<div class="pl">선택한 날짜</div><div class="pv">'
+    + dateLabel(parseYmd(selDate)) + ' · 오전 8:30 입실</div>';
+  $("#step3").classList.add("active");
+}
+
+/* ═══════════════ 화면 ═══════════════ */
+function show(which) {
+  $("#boot").style.display = "none";
+  $("#screenMy").classList.toggle("active", which === "my");
+  $("#screenDone").classList.toggle("active", which === "done");
+  $("#screenForm").style.display = which === "form" ? "block" : "none";
+  if (which !== "form") $("#bottomBar").classList.remove("active");
+  window.scrollTo(0, 0);
+}
+function showMy(r) {
+  myBooking = r;
+  $("#myName").textContent = r["이름"];
+  $("#myDate").textContent = dateLabel(parseYmd(r["날짜"]));
+  showErr($("#myErr"), "");
+  show("my");
+}
+
+/* ═══════════════ 데이터 ═══════════════ */
+async function load() { rows = await apiGetAll(); }
+
+/* 이 학생의 '앞으로 올 신청' 중 가장 가까운 것 */
+function myFuture(p) {
+  const list = rows.filter(r => sameAs(r, p)).filter(r => {
+    return enterAt(r["날짜"]).getTime() > Date.now() - 3*3600000;
+  }).sort((a, b) => a["날짜"] < b["날짜"] ? -1 : 1);
+  return list.length ? list[0] : null;
+}
+/* 이 학생이 과거에 주로 온 요일 → 기본 추천용 */
+function rememberDow(p) {
+  const mine = rows.filter(r => sameAs(r, p));
+  if (!mine.length) return null;
+  const latest = mine.sort((a,b) => a["날짜"] < b["날짜"] ? 1 : -1)[0];
+  return parseYmd(latest["날짜"]).getDay();
+}
+
+/* ═══════════════ 이벤트 ═══════════════ */
+$("#fName").addEventListener("input", () => {
+  updateSubmit();
+  $("#bottomBar").classList.add("active");
+  $("#step2").classList.add("active");
+  renderCalendar();   // 달력이 비어 보이지 않도록 확실히 그립니다
+});
+
+$("#btnPrev").addEventListener("click", () => {
+  if (!canNav(-1)) return;
+  viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() - 1, 1);
+  renderCalendar();
+});
+$("#btnNextM").addEventListener("click", () => {
+  if (!canNav(1)) return;
+  viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 1);
+  renderCalendar();
+});
+
+$("#calGrid").addEventListener("click", e => {
+  const b = e.target.closest("[data-date]");
+  if (!b || b.disabled) return;
+  selDate = b.getAttribute("data-date");
+  renderCalendar();
+  revealPicked();
+  updateSubmit();
+  setTimeout(() => $("#step3").scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+});
+
+$("#btnSubmit").addEventListener("click", async () => {
+  if (submitting) return;
+  const p = me();
+  if (p.name.length < 2) { showErr($("#err1"), "이름을 입력해주세요."); $("#step1").scrollIntoView({behavior:"smooth"}); return; }
+  if (!selDate) { showErr($("#errSubmit"), "올 날짜를 선택해주세요."); return; }
+
+  submitting = true;
+  const btn = $("#btnSubmit");
+  btn.disabled = true; btn.textContent = "신청 처리 중…";
+  showErr($("#errSubmit"), ""); showErr($("#err1"), "");
+
+  try {
+    await load();  // 최신 상태로 중복 확인
+
+    const dup = myFuture(p);
+    if (dup) { submitting = false; showMy(dup); return; }
+
+    const row = {
+      "id": "G" + Date.now().toString(36) + Math.floor(Math.random()*900+100),
+      "주차": ymd(mondayOf(parseYmd(selDate))),
+      "날짜": selDate,
+      "요일": DOW[parseYmd(selDate).getDay()],
+      "이름": p.name,
+      "신청시각": new Date().toLocaleString("ko-KR")
+    };
+    await apiAdd(row);
+    rows.push(row);
+    localStorage.setItem("gm_name", p.name);
+
+    $("#doneTicket").innerHTML =
+      '<div class="ticket-row"><span>학생</span><span>' + esc(p.name) + '</span></div>'
+      + '<div class="ticket-row"><span>날짜</span><span>' + dateLabel(parseYmd(selDate)) + '</span></div>'
+      + '<div class="ticket-row"><span>입실</span><span>오전 8:30</span></div>';
+    $("#btnCopy").onclick = () => {
+      const t = "[국모닝 신청]\n· " + p.name + "\n· " + dateLabel(parseYmd(selDate)) + " 오전 8:30 입실";
+      navigator.clipboard && navigator.clipboard.writeText(t).then(() => { $("#btnCopy").textContent = "복사되었습니다"; });
+    };
+    show("done");
+  } catch (err) {
+    await load().catch(()=>{});
+    renderCalendar();
+    showErr($("#errSubmit"), err.message || "신청하지 못했습니다. 잠시 후 다시 시도해주세요.");
+  } finally {
+    submitting = false;
+    updateSubmit();
+  }
+});
+
+$("#btnDoneOk").addEventListener("click", () => location.reload());
+$("#btnReload").addEventListener("click", () => location.reload());
+
+$("#btnChange").addEventListener("click", async () => {
+  if (!myBooking) return;
+  if (!confirm("이 신청을 취소하고 다른 날로 바꾸시겠어요?")) return;
+  const btn = $("#btnChange");
+  btn.disabled = true; btn.textContent = "취소 중…";
+  try {
+    await apiDelete(myBooking["id"]);
+    await load();
+    lastPickedDow = parseYmd(myBooking["날짜"]).getDay();  // 원래 요일 기억
+    myBooking = null; selDate = null;
+    show("form");
+    $("#step1").classList.add("active");
+    $("#step2").classList.add("active");
+    $("#bottomBar").classList.add("active");
+    applySuggestion();
+    renderCalendar();
+    updateSubmit();
+  } catch (e) {
+    showErr($("#myErr"), "취소하지 못했습니다. 잠시 후 다시 시도해주세요.");
+  } finally {
+    btn.disabled = false; btn.textContent = "다른 날로 바꾸기";
+  }
+});
+
+function mondayOf(d) {
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const w = x.getDay();
+  return addDays(x, w === 0 ? -6 : 1 - w);
+}
+
+/* 지난 요일 기반 기본 날짜 추천 적용 */
+function applySuggestion() {
+  const sug = suggestDate();
+  if (sug) {
+    selDate = sug;
+    viewMonth = new Date(parseYmd(sug).getFullYear(), parseYmd(sug).getMonth(), 1);
+    revealPicked();
+    const dowName = DOW[lastPickedDow];
+    $("#defaultHint").innerHTML = '지난번처럼 <b style="color:var(--sun-deep)">' + dowName + '요일</b>로 맞춰뒀어요. 바꾸려면 다른 날을 누르세요.';
+  }
+}
+
+/* ═══════════════ 시작 ═══════════════ */
+(function init() {
+  const now = new Date();
+  viewMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  rangeFromM = monthNum(now);
+  rangeToM   = monthNum(parseYmd(LAST_DAY));
+
+  let savedName = "";
+  try { savedName = localStorage.getItem("gm_name") || ""; } catch(e) {}
+  if (savedName) $("#fName").value = savedName;
+
+  show("form");
+  $("#step1").classList.add("active");
+  renderCalendar();   // 데이터 로딩과 무관하게 달력을 먼저 그립니다
+  updateSubmit();
+
+  ready = load().then(() => {
+    renderCalendar();
+    if (savedName) {
+      const p = { name: savedName };
+      const mine = myFuture(p);
+      if (mine) { showMy(mine); return; }
+      lastPickedDow = rememberDow(p);
+      $("#step2").classList.add("active");
+      $("#bottomBar").classList.add("active");
+      applySuggestion();
+      renderCalendar();
+      updateSubmit();
+    }
+  }).catch(() => {
+    renderCalendar();   // 실패해도 달력 날짜는 보이도록
+    showErr($("#err1"), "신청 현황을 불러오지 못했습니다. 새로고침 해주세요.");
+  });
+})();
+</script>
+</body>
+</html>

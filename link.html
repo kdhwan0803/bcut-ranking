@@ -97,6 +97,42 @@ body{background:var(--bg);color:var(--txt);font-family:var(--kr);
 .social a:hover{transform:translateY(-4px);background:var(--blkH);border-color:var(--lineH)}
 .social svg{width:19px;height:19px;fill:currentColor}
 
+/* 오늘의 화보 슬롯 */
+#todayPick{margin:0 0 30px}
+#todayPick .tp{display:block;text-decoration:none;color:var(--txt);border-radius:18px;
+  overflow:hidden;background:var(--blk);border:1px solid var(--line);cursor:pointer;
+  position:relative;box-shadow:var(--shadow);
+  transition:transform .26s cubic-bezier(.2,.9,.3,1.2),border-color .26s}
+#todayPick .tp::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 22%,var(--sheen) 50%,transparent 78%);
+  transform:translateX(-115%);transition:transform .65s ease}
+#todayPick .tp:hover{transform:translateY(-3px);border-color:var(--lineH)}
+#todayPick .tp:hover::before{transform:translateX(115%)}
+#todayPick .lb{display:flex;align-items:center;gap:7px;padding:13px 16px 0;
+  font-size:10.5px;font-weight:800;letter-spacing:.09em;color:var(--acc2)}
+#todayPick .lb i{width:6px;height:6px;border-radius:50%;background:var(--acc);
+  display:inline-block;animation:tpB 1.9s ease-in-out infinite}
+@keyframes tpB{0%,100%{opacity:1}50%{opacity:.22}}
+#todayPick .row{display:flex;gap:14px;padding:11px 16px 16px;align-items:center}
+#todayPick .th{width:66px;height:88px;flex:0 0 66px;border-radius:11px;object-fit:cover;
+  background:var(--deep);border:1px solid var(--line)}
+#todayPick .tx{flex:1;min-width:0}
+#todayPick .tx .t{font-size:15.5px;font-weight:800;letter-spacing:-.3px;line-height:1.35;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#todayPick .tx .m{font-size:12.5px;color:var(--sub);font-weight:600;margin-top:6px;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+#todayPick .tx .m .mm{font-size:9.5px;font-weight:800;color:var(--mmC);
+  background:var(--mmBg);border:1px solid var(--mmLine);padding:2px 6px;border-radius:4px}
+#todayPick .tx .go{font-size:11.5px;color:var(--mut);font-weight:700;margin-top:9px;
+  display:flex;align-items:center;gap:5px}
+#todayPick .tx .go .ar{transition:transform .24s}
+#todayPick .tp:hover .go .ar{transform:translateX(4px)}
+#todayPick .tx .go .bd{font-size:10px;font-weight:800;padding:3px 7px;border-radius:5px;
+  background:var(--bdBg);color:var(--mut)}
+#todayPick .tx .go .bd.ph{background:var(--phBg);color:var(--phC)}
+#todayPick .tx .go .bd.vd{background:var(--vdBg);color:var(--vdC)}
+#todayPick .tx .go .bd.both{background:var(--bothBg);color:var(--bothC)}
+
 /* 섹션 */
 .sec{margin-bottom:32px}
 .st{text-align:center;margin-bottom:15px}
@@ -217,6 +253,9 @@ body{background:var(--bg);color:var(--txt);font-family:var(--kr);
   </div>
   <div class="social" id="social"></div>
 
+  <!-- 오늘의 화보 (인스타 유입 착지) -->
+  <div id="todayPick"></div>
+
   <!-- 화보 랭킹 -->
   <div class="sec">
     <div class="st"><h2>이번 주 <em>화보 랭킹</em></h2><p id="wkSub">주간 화보 순위</p></div>
@@ -286,12 +325,20 @@ const CONFIG = {
   modelUrl  : 'https://bcutrank.com/?tab=models',      // 모델 랭킹
   newUrl    : 'https://bcutrank.com/#/new',            // 신작 전체
   bcutUrl   : 'https://bcut.maximkorea.net',
+  workUrl   : 'https://bcut.maximkorea.net/work/',     // 화보 상세 = workUrl + data.json의 works 키
   instagram : 'https://www.instagram.com/maximbcut/',  // 실제 계정으로 수정
   x         : 'https://x.com/maximbcut',
   newsletter: '',   // 스티비 구독 폼 — 비우면 버튼 숨김
   kakao     : '',   // 카카오톡 채널 — 비우면 버튼 숨김
   rankCount : 3,
-  newsCount : 6
+  newsCount : 6,
+
+  /* 각 행을 화보 상세로 직행시킬지 (false면 예전처럼 랭킹 사이트로) */
+  direct    : { rank:true, news:true },
+
+  /* 오늘 인스타에 올린 화보 id를 여기 넣으면 최상단 슬롯이 그걸로 고정.
+     비워두면 '오늘 공개분'을 자동으로 하나 고름 */
+  todayId   : ''
 };
 /* =============================================== */
 
@@ -363,6 +410,12 @@ function rankModelUrl(name,camp){
   return name ? utm(CONFIG.rankUrl+'?model='+encodeURIComponent(name),camp)
               : utm(CONFIG.rankUrl,camp);
 }
+/* 화보 상세 직행 URL — data.json의 works 키가 그대로 화보 id */
+function workUrl(id,camp){ return utm(CONFIG.workUrl+encodeURIComponent(id),camp); }
+/* 화보 상세는 성인 인증 게이트를 통과시킨다 */
+function gateAttr(id,camp){
+  return ' href="#" data-gate="1" data-url="'+esc(workUrl(id,camp))+'"';
+}
 function renderWorks(wi){
   const rows=weekWorks(wi).slice(0,CONFIG.rankCount).map(r=>{
     const w=D.works[r.id]||{};
@@ -375,7 +428,10 @@ function renderWorks(wi){
       sub='<span class="m">'+(mm?'<span class="mm">미스맥심</span>':'')
         +esc(ms.join(', '))+'</span>';
     }
-    return '<a class="rk" href="'+rankModelUrl(ms[0],'work_rank_item')+'" target="_blank" rel="noopener">'
+    const link = CONFIG.direct.rank
+      ? gateAttr(r.id,'rank'+r.rank+'_'+r.id)
+      : ' href="'+rankModelUrl(ms[0],'work_rank_item')+'" target="_blank" rel="noopener"';
+    return '<a class="rk"'+link+'>'
       +'<span class="no">'+r.rank+'</span>'
       +'<span class="tx"><span class="t">'+esc(t)+'</span>'+sub+'</span>'
       +delta(r.rank,prev)+'</a>';
@@ -430,12 +486,62 @@ function renderNews(){
       : '';
     const k=kindOf(w.title);
     const badge=k?'<span class="bd '+k.cls+'">'+k.label+'</span>':'<span class="bd up">NEW</span>';
-    return '<a class="rk nw" href="'+utm(CONFIG.newUrl,'new_item')+'" target="_blank" rel="noopener">'
+    const link = CONFIG.direct.news
+      ? gateAttr(id,'new_'+id)
+      : ' href="'+utm(CONFIG.newUrl,'new_item')+'" target="_blank" rel="noopener"';
+    return '<a class="rk nw"'+link+'>'
       +'<span class="dt">'+fdate(w.pub)+'</span>'
       +'<span class="tx"><span class="t">'+esc(t)+'</span>'+sub+'</span>'
       +badge+'</a>';
   }).join('');
   $('news').innerHTML=html+moreBtn('신작 전체 보기','new',CONFIG.newUrl);
+}
+
+/* ===== 오늘의 화보 (인스타 유입 착지 슬롯) ===== */
+function renderToday(){
+  const host=$('todayPick'); if(!host) return;
+  const works=D.works||{};
+  const today=new Date().toISOString().slice(0,10);
+  let id='';
+
+  if(CONFIG.todayId && works[CONFIG.todayId]) id=String(CONFIG.todayId);
+  if(!id){
+    let pool=Object.entries(works).filter(([,w])=>w.pub===today);
+    if(!pool.length){
+      const past=Object.entries(works)
+        .filter(([,w])=>w.pub&&w.pub<=today)
+        .sort((a,b)=>String(b[1].pub).localeCompare(String(a[1].pub)));
+      if(!past.length){host.remove();return}
+      const newest=past[0][1].pub;
+      pool=past.filter(([,w])=>w.pub===newest);
+    }
+    /* 같은 날 여러 편이면 — 일반 등급 우선, 그 다음 영상 있는 쪽 */
+    pool.sort((a,b)=>((a[1].b19?1:0)-(b[1].b19?1:0))||((b[1].vid?1:0)-(a[1].vid?1:0)));
+    id=pool[0][0];
+  }
+
+  const w=works[id]||{};
+  /* 오늘 공개분이 없으면 라벨을 바꿔 거짓말이 되지 않게 */
+  const label=(w.pub===today)?'오늘 오픈 화보':'가장 최근 오픈 화보';
+  const t=tidy(baseTitle(w.title))||'오늘의 화보';
+  const ms=w.models||[];
+  const mm=ms.some(n=>(((D.models||{})[n]||{}).tag||'').trim()==='미스맥심');
+  const k=kindOf(w.title);
+  const badge=k?'<span class="bd '+k.cls+'">'+k.label+'</span>':'';
+  const thumb=w.img?'<img class="th" src="'+esc(w.img)+'" alt="" loading="lazy">':'';
+  const sub=ms.length
+    ? '<span class="m">'+(mm?'<span class="mm">미스맥심</span>':'')+esc(ms.join(', '))+'</span>'
+    : '';
+
+  host.innerHTML=
+    '<a class="tp"'+gateAttr(id,'today_'+id)+'>'
+    + '<span class="lb"><i></i>'+label+'</span>'
+    + '<span class="row">'+thumb
+    +   '<span class="tx">'
+    +     '<span class="t">'+esc(t)+'</span>'+sub
+    +     '<span class="go">'+badge+'화보 보러 가기 <span class="ar">→</span></span>'
+    +   '</span>'
+    + '</span></a>';
 }
 
 /* ===== 소셜 ===== */
@@ -459,7 +565,8 @@ function bindGate(){
     if(el.__b)return; el.__b=1;
     el.addEventListener('click',ev=>{
       ev.preventDefault();
-      const url=utm(CONFIG.bcutUrl,'bcut');
+      /* data-url이 있으면 그 화보로, 없으면 B컷 홈으로 */
+      const url=el.getAttribute('data-url')||utm(CONFIG.bcutUrl,'bcut');
       if(localStorage.getItem('bcut_age')==='1'){window.open(url,'_blank','noopener');return}
       pending=url;$('gate').classList.add('on');
     });
@@ -495,9 +602,10 @@ async function boot(){
     const wk=D.weeks[wi];
     $('wkSub').textContent=wk.label+' 기준';
     if($('mdSub'))$('mdSub').textContent=wk.label+' 기준';
-    renderWorks(wi); renderModels(wi); renderNews();
+    renderToday(); renderWorks(wi); renderModels(wi); renderNews();
     bindGate();
   }catch(e){
+    const tp=$('todayPick'); if(tp)tp.remove();
     ['workRank','modelRank','news'].forEach(id=>{
       $(id).innerHTML='<div class="load">정보를 불러오지 못했습니다.</div>'
         +'<a class="more" href="'+utm(CONFIG.rankUrl,'fallback')+'" target="_blank" rel="noopener">랭킹 사이트로 이동 <span class="ar">→</span></a>';

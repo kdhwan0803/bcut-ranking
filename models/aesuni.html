@@ -55,6 +55,14 @@ h1{font-family:"Black Han Sans",sans-serif;font-size:clamp(30px,7vw,46px);letter
 footer.ft{border-top:1px solid var(--line);margin-top:40px;padding:22px 0;text-align:center;color:var(--muted);font-size:12px;line-height:1.9}
 footer.ft a{color:var(--ink2)}
 .empty{padding:40px;text-align:center;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:14px}
+.card.up{cursor:default;opacity:.96}
+.card.up:hover{transform:none;border-color:var(--line);box-shadow:none}
+.card.up .thumb img{filter:blur(3px) brightness(.62)}
+.card.up.b19 .thumb img{filter:blur(13px) brightness(.6)}
+.bd.up{background:var(--accent);color:#fff}
+.upsoon{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px;pointer-events:none}
+.upsoon span{background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:800;padding:6px 12px;border-radius:999px}
+.seclbl.soon{color:var(--accent2)}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "name": "애순이 화보 8편 · MAXIM B컷 랭킹", "description": "애순이 화보 8편을 한눈에. 애순이의 인기 화보와 신작을 MAXIM B컷 주간 랭킹에서 확인하세요. 지금 바로 최신 화보를 감상하세요.", "url": "https://bcutrank.com/models/aesuni.html"}</script>
 </head><body>
@@ -69,6 +77,7 @@ footer.ft a{color:var(--ink2)}
 <a class="btn sec" href="https://bcutrank.com/?model=%EC%95%A0%EC%88%9C%EC%9D%B4">애순이 화보 전체 보기 →</a>
 </div>
 </section>
+<div id="upwrap" hidden><div class="seclbl soon">곧 공개 예정 <small id="upcnt">0편</small></div><div class="grid" id="upgrid"></div></div>
 <div class="seclbl">애순이 화보 목록 <small id="cnt2">8편</small></div>
 <div class="grid" id="grid" data-model="애순이" data-count="8"><a class="card b19" href="https://bcutrank.com/?w=1637" rel="nofollow"><div class="thumb"><img loading="lazy" src="https://i.ibb.co/xtqQFFz0/1637-C-20260325094334-14-opt.webp" alt="교감"><div class="lock">🔞</div><div class="badges"><span class="bd b19">19</span></div></div><div class="meta"><div class="mt">교감</div><div class="mp">2026-04-04</div></div></a>
 <a class="card" href="https://bcutrank.com/?w=1470" rel="nofollow"><div class="thumb"><img loading="lazy" src="https://i.ibb.co/2wRGFQg/1470-C-20260121153931-14-opt.webp" alt="애순이 Costume"><div class="badges"></div></div><div class="meta"><div class="mt">애순이 Costume</div><div class="mp">2026-02-16</div></div></a>
@@ -107,6 +116,23 @@ footer.ft a{color:var(--ink2)}
     document.querySelectorAll('#cnt').forEach&&document.querySelectorAll('#cnt').forEach(function(e){e.textContent=ids.length;});
     var c1=document.getElementById('cnt');if(c1)c1.textContent=ids.length;
     var c2=document.getElementById('cnt2');if(c2)c2.textContent=ids.length+'편';
+  }).catch(function(){});
+  // 곧 공개 예정(미래 발행) 화보 자동 갱신
+  fetch('../data.json',{cache:'no-cache'}).then(function(r){return r.json();}).then(function(d){
+    var W=d.works||{};var up=[];
+    for(var k in W){var m=W[k].models;try{m=typeof m==='string'?JSON.parse(m.replace(/'/g,'"')):m;}catch(e){m=[];}
+      if(Array.isArray(m)&&m.indexOf(MODEL)>=0&&W[k].pub&&W[k].pub>TODAY)up.push(k);}
+    up.sort(function(a,b){return (W[a].pub||'').localeCompare(W[b].pub||'')|| (parseInt(a)-parseInt(b));});
+    var wrap=document.getElementById('upwrap'), ug=document.getElementById('upgrid');
+    if(!wrap||!ug)return;
+    if(!up.length){wrap.hidden=true;return;}
+    function md(p){return p.length>=10?(parseInt(p.slice(5,7))+'/'+parseInt(p.slice(8,10))):p;}
+    ug.innerHTML=up.map(function(k){var w=W[k];var b=String(w.b19)==='1',v=String(w.vid)==='1';
+      var nm=clean(w.title);var bd='<span class="bd up">🗓 예정</span>'+(v?'<span class="bd vid">▶ 영상</span>':'');
+      return '<div class="card up'+(b?' b19':'')+'"><div class="thumb"><img loading="lazy" src="'+(w.img||'')+'" alt="'+nm.replace(/"/g,'')+'"><div class="badges">'+bd+'</div><div class="upsoon"><span>🗓 '+md(w.pub||'')+' 공개 예정</span></div></div><div class="meta"><div class="mt">'+nm+'</div><div class="mp">'+md(w.pub||'')+' 공개 예정</div></div></div>';
+    }).join('');
+    var uc=document.getElementById('upcnt');if(uc)uc.textContent=up.length+'편';
+    wrap.hidden=false;
   }).catch(function(){});
 })();
 </script>

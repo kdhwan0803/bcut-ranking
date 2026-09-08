@@ -47,22 +47,31 @@
     var RECS=a[0]||{}, W=(a[1]&&a[1].works)||{};
     var cur=W[id]||{}, moA=modelOf(cur), paA=(cur.photo||'').toString().trim();
     function ok(k){ return k&&k!==id&&W[k]&&pub(W[k])&&modelOf(W[k])!==moA; }  // 같은 모델 제외
-    var picked=[], seen={}; seen[id]=1;
+    var POOL=12; var picked=[], seen={}; seen[id]=1;
     function add(k){ if(!ok(k)||seen[k]) return; seen[k]=1; picked.push(k); }
-    (RECS[id]||[]).forEach(function(k){ if(picked.length<COUNT) add(k); });     // 1) recs.json(다른 모델만)
+    (RECS[id]||[]).forEach(function(k){ if(picked.length<POOL) add(k); });     // 1) recs.json(다른 모델만)
     var keys=Object.keys(W);
     if(picked.length<COUNT && paA){                                            // 2) 같은 작가(다른 모델) 최신
       keys.filter(function(k){return (W[k].photo||'').toString().trim()===paA&&ok(k)&&!seen[k];})
         .sort(function(x,y){return (W[y].pub||'').localeCompare(W[x].pub||'');})
-        .forEach(function(k){ if(picked.length<COUNT) add(k); });
+        .forEach(function(k){ if(picked.length<POOL) add(k); });
     }
     if(picked.length<COUNT){                                                   // 3) 같은 유형+등급 다른 모델 최신(회전)
       var pool=keys.filter(function(k){return ok(k)&&!seen[k]&&W[k].buy===cur.buy&&String(W[k].b19)===String(cur.b19);})
         .sort(function(x,y){return (W[y].pub||'').localeCompare(W[x].pub||'');});
       var off=pool.length?(parseInt(id,10)%pool.length):0;
-      pool.slice(off).concat(pool.slice(0,off)).forEach(function(k){ if(picked.length<COUNT) add(k); });
+      pool.slice(off).concat(pool.slice(0,off)).forEach(function(k){ if(picked.length<POOL) add(k); });
     }
-    var ids=picked.slice(0,COUNT);
+    var ordered;
+    if(picked.length<=COUNT){ ordered=picked.slice(); }
+    else {
+      var head=picked.slice(0,1), rest=picked.slice(1);           // 1순위 고정
+      for(var ri=rest.length-1;ri>0;ri--){ var rj=Math.floor(Math.random()*(ri+1)); var tmp=rest[ri]; rest[ri]=rest[rj]; rest[rj]=tmp; }
+      ordered=head.concat(rest);                                  // 나머지 랜덤
+    }
+    var ids=[], usedM={};                                         // 표시 4개는 모델 중복 없이
+    for(var oi=0;oi<ordered.length&&ids.length<COUNT;oi++){ var mm=modelOf(W[ordered[oi]]); if(usedM[mm])continue; usedM[mm]=1; ids.push(ordered[oi]); }
+    for(var oj=0;oj<ordered.length&&ids.length<COUNT;oj++){ if(ids.indexOf(ordered[oj])<0) ids.push(ordered[oj]); }
     if(!ids.length){ box.remove(); return; }
     var cards=ids.map(function(k){var w=W[k];
       return '<a class="bctg-c" href="'+SITE+k+'" data-to="'+k+'">'+

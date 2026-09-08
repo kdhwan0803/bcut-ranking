@@ -40,32 +40,29 @@
     return t.replace(/\s{2,}/g,' ').replace(/^[\s·-]+|[\s·-]+$/g,'').trim()||String(t||'');}
   var TODAY=(new Date(Date.now()+324e5)).toISOString().slice(0,10);
   function pub(w){return w&&w.pub&&w.pub<=TODAY;}
-  // recs.json에 없으면 data.json만으로 즉석 추천 (같은 모델→같은 작가→같은 유형 최신)
-  function fallback(W){
-    var cur=W[id]; if(!cur) return [];
-    var moA=modelOf(cur), paA=(cur.photo||'').toString().trim();
-    var seen={}; seen[id]=1; var picked=[];
-    function add(k){ if(seen[k]||!W[k]||!pub(W[k])) return false; seen[k]=1; picked.push(k); return true; }
-    var keys=Object.keys(W);
-    var same=keys.filter(function(k){return k!==id&&modelOf(W[k])===moA&&pub(W[k]);})
-      .sort(function(a,b){return (W[b].pub||'').localeCompare(W[a].pub||'');});
-    for(var i=0,sc=0;i<same.length&&sc<2;i++){ if(add(same[i])) sc++; }
-    if(paA){ var art=keys.filter(function(k){return (W[k].photo||'').toString().trim()===paA&&modelOf(W[k])!==moA&&pub(W[k])&&!seen[k];})
-      .sort(function(a,b){return (W[b].pub||'').localeCompare(W[a].pub||'');}); if(art.length) add(art[0]); }
-    var pool=keys.filter(function(k){return !seen[k]&&pub(W[k])&&modelOf(W[k])!==moA&&W[k].buy===cur.buy&&String(W[k].b19)===String(cur.b19);})
-      .sort(function(a,b){return (W[b].pub||'').localeCompare(W[a].pub||'');});
-    var off=pool.length?(parseInt(id,10)%pool.length):0;
-    var rot=pool.slice(off).concat(pool.slice(0,off));
-    for(var j=0;j<rot.length&&picked.length<COUNT;j++) add(rot[j]);
-    return picked.slice(0,COUNT);
-  }
   Promise.all([
     fetch(BASE+'/recs.json',{cache:'no-cache'}).then(function(r){return r.json();}).catch(function(){return {};}),
     fetch(BASE+'/data.json',{cache:'no-cache'}).then(function(r){return r.json();})
   ]).then(function(a){
     var RECS=a[0]||{}, W=(a[1]&&a[1].works)||{};
-    var ids=(RECS[id]||[]).filter(function(x){return W[x]&&pub(W[x]);}).slice(0,COUNT);
-    if(!ids.length) ids=fallback(W);        // ← 신작 자동추천
+    var cur=W[id]||{}, moA=modelOf(cur), paA=(cur.photo||'').toString().trim();
+    function ok(k){ return k&&k!==id&&W[k]&&pub(W[k])&&modelOf(W[k])!==moA; }  // 같은 모델 제외
+    var picked=[], seen={}; seen[id]=1;
+    function add(k){ if(!ok(k)||seen[k]) return; seen[k]=1; picked.push(k); }
+    (RECS[id]||[]).forEach(function(k){ if(picked.length<COUNT) add(k); });     // 1) recs.json(다른 모델만)
+    var keys=Object.keys(W);
+    if(picked.length<COUNT && paA){                                            // 2) 같은 작가(다른 모델) 최신
+      keys.filter(function(k){return (W[k].photo||'').toString().trim()===paA&&ok(k)&&!seen[k];})
+        .sort(function(x,y){return (W[y].pub||'').localeCompare(W[x].pub||'');})
+        .forEach(function(k){ if(picked.length<COUNT) add(k); });
+    }
+    if(picked.length<COUNT){                                                   // 3) 같은 유형+등급 다른 모델 최신(회전)
+      var pool=keys.filter(function(k){return ok(k)&&!seen[k]&&W[k].buy===cur.buy&&String(W[k].b19)===String(cur.b19);})
+        .sort(function(x,y){return (W[y].pub||'').localeCompare(W[x].pub||'');});
+      var off=pool.length?(parseInt(id,10)%pool.length):0;
+      pool.slice(off).concat(pool.slice(0,off)).forEach(function(k){ if(picked.length<COUNT) add(k); });
+    }
+    var ids=picked.slice(0,COUNT);
     if(!ids.length){ box.remove(); return; }
     var cards=ids.map(function(k){var w=W[k];
       return '<a class="bctg-c" href="'+SITE+k+'" data-to="'+k+'">'+

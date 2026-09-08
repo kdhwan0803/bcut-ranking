@@ -629,7 +629,7 @@ select,input,button{font-family:inherit}
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">ALL-TIME BEST</span>
       </div>
       <div style="font-size:12.5px;color:var(--mut);margin-bottom:16px">누적 판매 기준 · 지금 봐도 후회 없는 명작</div>
-      <div style="display:grid;grid-template-columns:{{ classicsCols }};gap:13px;max-width:1080px;margin:0 auto">
+      <div style="display:grid;grid-template-columns:{{ classicsCols }};gap:13px">
         <sc-for list="{{ classics }}" as="c" hint-placeholder-count="0">
           <div onClick="{{ c.open }}" style="position:relative;cursor:pointer;border-radius:14px;overflow:hidden;background:var(--bg2);grid-row:{{ c.gr }};grid-column:{{ c.gc }};aspect-ratio:{{ c.ar }};outline:{{ c.ring }};outline-offset:-2px">
             <div style="position:absolute;inset:0;background-size:cover;background-position:center 15%;background-image:{{ c.imgCss }};filter:{{ c.blur }}"></div>

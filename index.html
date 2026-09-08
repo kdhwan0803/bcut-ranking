@@ -593,6 +593,26 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
+    <section id="weeklypick" style="display:{{ wpShow }}">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 2px 4px;flex-wrap:wrap">
+        <div>
+          <span style="display:block;font-size:11px;font-weight:900;letter-spacing:2.5px;color:var(--goldText);margin-bottom:6px">THIS WEEK'S PICK</span>
+          <h2 style="font-size:20px;font-weight:900;letter-spacing:-.5px;margin:0;line-height:1.2">{{ wpTag }}</h2>
+        </div>
+        <span onClick="{{ wpOpen }}" style="flex:0 0 auto;cursor:pointer;font-size:12px;font-weight:900;color:#0a0a0a;background:#fff;border-radius:999px;padding:8px 15px">바로 보기 →</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--mut);margin:8px 2px 14px">에디터가 이번 주 강력 추천 · 컷별로 보고 결정하세요</div>
+      <div style="display:flex;gap:12px;overflow-x:auto;padding:2px 2px 12px">
+        <sc-for list="{{ wpCuts }}" as="c" hint-placeholder-count="0">
+          <div onClick="{{ c.open }}" style="position:relative;flex:0 0 auto;cursor:pointer;width:{{ c.w }};aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:var(--bg2)">
+            <div style="position:absolute;inset:0;background-size:cover;background-position:center 12%;background-image:{{ c.imgCss }}"></div>
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,7,10,0) 60%,rgba(7,7,10,.85) 100%)"></div>
+            <span style="position:absolute;bottom:10px;right:10px;font-size:10px;font-weight:900;border-radius:6px;padding:3px 7px;background:rgba(7,7,10,.78);color:#fff;border:1px solid rgba(255,255,255,.18)">{{ c.coin }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
     <section id="spot" style="display:{{ spotShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">이번 주 <span style="color:var(--acc)">1위</span></h2>
@@ -1866,6 +1886,7 @@ class Component extends DCLogic {
       ddayShow:'none',moreShow:'none',crMoreShow:'none',mdMoreShow:'none',q:S.q,
       rankHeading:S.err||'랭킹 불러오는 중…',rankSubline:''
     });
+    base.wpShow='none';base.wpCuts=[];base.wpTag='';base.wpOpen=()=>{};
     base.classicsShow='none';base.classics=[];base.classicsCols='1.6fr 1fr 1fr';
     base.spotShow='none';base.champs=[];base.champX='translateX(0%)';base.champSlideW='100%';base.champGap='0px';base.champAspect='16/10';base.champPrevShow='none';base.champNextShow='none';base.champPrev=()=>{};base.champNext=()=>{};base.champTS=()=>{};base.champTE=()=>{};
     base.promoX='translateX(0%)';base.promoDots=[];base.promoDotsShow='none';base.promoTS=()=>{};base.promoTE=()=>{};
@@ -2167,6 +2188,24 @@ class Component extends DCLogic {
             model:(w.models||[]).join(' & ')||'MAXIM B컷', mFs:isH?'20px':'15px',
             title:this.splitTitle(w.title||id).name,
             coin:(w.buy==='구독'?'구독':'코인')};});
+      }
+    }catch(e){}
+
+    /* 이번 주 PICK — 밀 화보 1개의 컷 스트립 (data.json: weeklyPick={id, tag, imgs:[...]}) */
+    try{
+      const wp=D.weeklyPick;
+      if(wp && wp.id && W[wp.id] && V==='home'){
+        const id=wp.id, w=W[id];
+        let imgs=(wp.imgs&&wp.imgs.length)?wp.imgs.slice():[];
+        if(!imgs.length){ const _hi=(D.heroImgById&&D.heroImgById[id])||w.img||''; if(_hi)imgs=[_hi]; }
+        imgs=imgs.filter(Boolean);
+        if(imgs.length){
+          const _w=S.mob?'150px':'220px', _coin=(w.buy==='구독'?'구독':'코인');
+          base.wpShow='block';
+          base.wpTag=wp.tag||('이번 주, 이 화보 — '+((w.models||[]).join(' & ')||''));
+          base.wpOpen=()=>this.openWork(id);
+          base.wpCuts=imgs.map(function(u){return {imgCss:'url("'+u+'")', w:_w, coin:_coin, open:()=>this.openWork(id)};}.bind(this));
+        }
       }
     }catch(e){}
 

@@ -20,8 +20,18 @@
    +'@media(max-width:640px){.bctg{padding:16px 14px 14px;border-radius:12px}.bctg-g{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bctg-ti{font-size:15.5px}.bctg-m{font-size:13px}}';
   var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
   var box=document.createElement('div'); box.id='bcut-recs';
-  var wrap=document.getElementById('wrap'), f=document.querySelector('footer');
-  if(wrap) wrap.appendChild(box); else if(f) f.parentNode.insertBefore(box,f); else document.body.appendChild(box);
+  // '모델의 다른 화보'(MORE MODEL) 섹션 바로 위에 삽입
+  var anchor=null, ts=document.querySelectorAll('.section-title');
+  for(var ai=0;ai<ts.length;ai++){ var tx=ts[ai].textContent||''; if(tx.indexOf('MORE MODEL')>=0||tx.indexOf('모델의 다른')>=0){ anchor=ts[ai]; break; } }
+  if(anchor&&anchor.parentNode){ anchor.parentNode.insertBefore(box, anchor); }
+  else {
+    var wt=document.getElementById('work-top');
+    var wrap=document.getElementById('wrap'), f=document.querySelector('footer');
+    if(wt&&wt.parentNode){ wt.parentNode.insertBefore(box, wt.nextSibling); }
+    else if(wrap){ wrap.appendChild(box); }
+    else if(f){ f.parentNode.insertBefore(box,f); }
+    else { document.body.appendChild(box); }
+  }
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function series(t){var mm=/^\s*(?:\(19\)\s*)?\[([^\]]+)\]/.exec(t||'');return mm?mm[1].trim():'';}
   function modelOf(w){return (w&&w.models&&w.models[0])||series(w&&w.title)||'';}

@@ -1,6 +1,6 @@
 /* MAXIM B컷 · 함께 보면 좋은 화보 임베드 (외부 로더용) */
 (function(){
-  window.__bcutVer='ROT-FINAL-3';
+  window.__bcutVer='ROT-FINAL-4';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';
@@ -24,6 +24,7 @@
   // '모델의 다른 화보'(MORE MODEL) 섹션 바로 위에 삽입
   var anchor=null, ts=document.querySelectorAll('.section-title');
   for(var ai=0;ai<ts.length;ai++){ var tx=ts[ai].textContent||''; if(tx.indexOf('MORE MODEL')>=0||tx.indexOf('모델의 다른')>=0){ anchor=ts[ai]; break; } }
+  if(!anchor && ts.length){ anchor=ts[0]; }   // 모델 섹션 없으면 첫 MORE 섹션(회사/작가 등) 위
   if(anchor&&anchor.parentNode){ anchor.parentNode.insertBefore(box, anchor); }
   else {
     var wt=document.getElementById('work-top');

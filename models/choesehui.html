@@ -103,7 +103,8 @@ footer.ft a{color:var(--ink2)}
 <footer class="ft">© MAXIM KOREA · B컷 · <a href="https://bcutrank.com/">전체 랭킹 보기</a> · <a href="https://bcutrank.com/models/models.html">모델 전체</a><br>본 페이지는 성인(19+) 콘텐츠를 포함할 수 있습니다.</footer>
 <script>
 (function(){
-  var MODEL="최세희", BASE="https://bcutrank.com", TODAY="2026-09-05";
+  var MODEL="최세희", BASE="https://bcutrank.com";
+  var TODAY=(new Date(Date.now()+324e5)).toISOString().slice(0,10); // 항상 실시간 오늘(KST)로 필터 → 새 화보 자동 반영
   function clean(t){t=String(t||'').replace(/^\(19\)\s*/,'').replace(/^🔞\s*/,'');
     t=t.replace(/\[[^\]]*\]/g,function(m){var i=m.slice(1,-1).trim();return /[가-힣ぁ-んァ-ヴー一-龥]/.test(i)?' '+i+' ':' ';});
     return t.replace(/\s{2,}/g,' ').replace(/^[\s·-]+|[\s·-]+$/g,'').trim()||String(t||'');}

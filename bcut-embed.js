@@ -1,5 +1,6 @@
 /* MAXIM B컷 · 함께 보면 좋은 화보 임베드 (외부 로더용) */
 (function(){
+  window.__bcutVer='ROT-FINAL-2';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';

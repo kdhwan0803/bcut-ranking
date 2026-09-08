@@ -1,6 +1,6 @@
 /* MAXIM B컷 · 함께 보면 좋은 화보 임베드 (외부 로더용) */
 (function(){
-  window.__bcutVer='ROT-FINAL-2';
+  window.__bcutVer='ROT-FINAL-3';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';
@@ -52,12 +52,12 @@
     function add(k){ if(!ok(k)||seen[k]) return; seen[k]=1; picked.push(k); }
     (RECS[id]||[]).forEach(function(k){ if(picked.length<POOL) add(k); });     // 1) recs.json(다른 모델만)
     var keys=Object.keys(W);
-    if(picked.length<COUNT && paA){                                            // 2) 같은 작가(다른 모델) 최신
+    if(picked.length<POOL && paA){                                            // 2) 같은 작가(다른 모델) 최신
       keys.filter(function(k){return (W[k].photo||'').toString().trim()===paA&&ok(k)&&!seen[k];})
         .sort(function(x,y){return (W[y].pub||'').localeCompare(W[x].pub||'');})
         .forEach(function(k){ if(picked.length<POOL) add(k); });
     }
-    if(picked.length<COUNT){                                                   // 3) 같은 유형+등급 다른 모델 최신(회전)
+    if(picked.length<POOL){                                                   // 3) 같은 유형+등급 다른 모델 최신(회전)
       var pool=keys.filter(function(k){return ok(k)&&!seen[k]&&W[k].buy===cur.buy&&String(W[k].b19)===String(cur.b19);})
         .sort(function(x,y){return (W[y].pub||'').localeCompare(W[x].pub||'');});
       var off=pool.length?(parseInt(id,10)%pool.length):0;

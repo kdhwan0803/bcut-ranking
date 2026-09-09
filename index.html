@@ -639,59 +639,6 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
-    <section id="classics" style="display:{{ classicsShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">역대 <span style="color:var(--goldText)">명작</span></h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">ALL-TIME BEST</span>
-      </div>
-      <div style="font-size:12.5px;color:var(--mut);margin-bottom:16px">누적 판매 기준 · 지금 봐도 후회 없는 명작</div>
-      <div style="display:grid;grid-template-columns:{{ classicsCols }};gap:13px">
-        <sc-for list="{{ classics }}" as="c" hint-placeholder-count="0">
-          <div onClick="{{ c.open }}" style="position:relative;cursor:pointer;border-radius:14px;overflow:hidden;background:var(--bg2);grid-row:{{ c.gr }};grid-column:{{ c.gc }};aspect-ratio:{{ c.ar }};outline:{{ c.ring }};outline-offset:-2px">
-            <div style="position:absolute;inset:0;background-size:cover;background-position:center 15%;background-image:{{ c.imgCss }};filter:{{ c.blur }}"></div>
-            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,0) 42%,rgba(8,8,11,.92) 100%)"></div>
-            <div style="position:absolute;top:10px;left:10px;z-index:3;min-width:{{ c.rankSz }};height:{{ c.rankSz }};display:inline-flex;align-items:center;justify-content:center;font-size:{{ c.rankFs }};font-weight:900;border-radius:9px;background:rgba(8,8,11,.72);border:1px solid rgba(255,255,255,.18);color:#fff;padding:0 6px">{{ c.rank }}</div>
-            <div style="position:absolute;top:10px;right:10px;z-index:3;display:{{ c.revShow }};font-size:11px;font-weight:900;border-radius:7px;padding:4px 8px;background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600">{{ c.rev }}</div>
-            <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:26px 13px 12px">
-              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-                <span style="display:{{ c.b19Show }};background:var(--acc);color:#fff;font-size:9.5px;font-weight:900;padding:1px 5px;border-radius:4px">19</span>
-                <span style="font-size:{{ c.mFs }};font-weight:900;color:#fff">{{ c.model }}</span>
-              </div>
-              <div style="font-size:11.5px;font-weight:600;color:#c9c9d2;margin-top:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.title }}</div>
-            </div>
-            <span style="position:absolute;bottom:11px;right:11px;z-index:3;font-size:10px;font-weight:900;border-radius:6px;padding:3px 7px;background:rgba(8,8,11,.78);color:#fff;border:1px solid rgba(255,255,255,.18)">{{ c.coin }}</span>
-          </div>
-        </sc-for>
-      </div>
-    </section>
-
-    <section id="hall" style="display:{{ hallShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">명예의 전당</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">HALL OF FAME</span>
-      </div>
-      <div style="font-size:12.5px;color:var(--mut);margin-bottom:18px">정상에 올랐던 화보들 · 최신순</div>
-      <div style="position:relative">
-        <div style="display:flex;gap:14px;overflow-x:auto;padding:16px 0 12px;align-items:flex-end">
-          <sc-for list="{{ hall }}" as="p" hint-placeholder-count="0">
-            <div onClick="{{ p.open }}" style="position:relative;flex:0 0 auto;cursor:pointer;width:{{ p.w }}">
-              <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);z-index:5;font-size:19px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));display:{{ p.crownShow }}">👑</div>
-              <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2);border:{{ p.line }}">
-                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
-                <div style="position:absolute;top:7px;left:7px;z-index:2;font-size:10px;font-weight:900;padding:3px 8px;border-radius:6px;{{ p.badgeStyle }}">{{ p.badge }}</div>
-                <div style="position:absolute;left:0;right:0;bottom:0;padding:30px 10px 10px;background:linear-gradient(transparent,var(--posterFade))">
-                  <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
-                  <div style="font-size:11px;color:var(--t1);margin-top:3px">{{ p.note }}</div>
-                </div>
-              </div>
-              <div style="text-align:center;font-size:10px;font-weight:900;letter-spacing:1px;color:var(--goldText);margin-top:6px;display:{{ p.mlabelShow }}">{{ p.mlabel }}</div>
-            </div>
-          </sc-for>
-        </div>
-        <div style="position:absolute;top:0;right:0;bottom:12px;width:92px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
-      </div>
-    </section>
-
     <section id="creators" style="display:{{ crShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">작가별로 보기</h2>
@@ -754,6 +701,59 @@ select,input,button{font-family:inherit}
         </div>
       </div>
     </section>
+    <section id="classics" style="display:{{ classicsShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">역대 <span style="color:var(--goldText)">명작</span></h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">ALL-TIME BEST</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--mut);margin-bottom:16px">누적 판매 기준 · 지금 봐도 후회 없는 명작</div>
+      <div style="display:grid;grid-template-columns:{{ classicsCols }};gap:13px">
+        <sc-for list="{{ classics }}" as="c" hint-placeholder-count="0">
+          <div onClick="{{ c.open }}" style="position:relative;cursor:pointer;border-radius:14px;overflow:hidden;background:var(--bg2);grid-row:{{ c.gr }};grid-column:{{ c.gc }};aspect-ratio:{{ c.ar }};outline:{{ c.ring }};outline-offset:-2px">
+            <div style="position:absolute;inset:0;background-size:cover;background-position:center 15%;background-image:{{ c.imgCss }};filter:{{ c.blur }}"></div>
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,0) 42%,rgba(8,8,11,.92) 100%)"></div>
+            <div style="position:absolute;top:10px;left:10px;z-index:3;min-width:{{ c.rankSz }};height:{{ c.rankSz }};display:inline-flex;align-items:center;justify-content:center;font-size:{{ c.rankFs }};font-weight:900;border-radius:9px;background:rgba(8,8,11,.72);border:1px solid rgba(255,255,255,.18);color:#fff;padding:0 6px">{{ c.rank }}</div>
+            <div style="position:absolute;top:10px;right:10px;z-index:3;display:{{ c.revShow }};font-size:11px;font-weight:900;border-radius:7px;padding:4px 8px;background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600">{{ c.rev }}</div>
+            <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:26px 13px 12px">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <span style="display:{{ c.b19Show }};background:var(--acc);color:#fff;font-size:9.5px;font-weight:900;padding:1px 5px;border-radius:4px">19</span>
+                <span style="font-size:{{ c.mFs }};font-weight:900;color:#fff">{{ c.model }}</span>
+              </div>
+              <div style="font-size:11.5px;font-weight:600;color:#c9c9d2;margin-top:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.title }}</div>
+            </div>
+            <span style="position:absolute;bottom:11px;right:11px;z-index:3;font-size:10px;font-weight:900;border-radius:6px;padding:3px 7px;background:rgba(8,8,11,.78);color:#fff;border:1px solid rgba(255,255,255,.18)">{{ c.coin }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="hall" style="display:{{ hallShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">명예의 전당</h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">HALL OF FAME</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--mut);margin-bottom:18px">정상에 올랐던 화보들 · 최신순</div>
+      <div style="position:relative">
+        <div style="display:flex;gap:14px;overflow-x:auto;padding:16px 0 12px;align-items:flex-end">
+          <sc-for list="{{ hall }}" as="p" hint-placeholder-count="0">
+            <div onClick="{{ p.open }}" style="position:relative;flex:0 0 auto;cursor:pointer;width:{{ p.w }}">
+              <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);z-index:5;font-size:19px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));display:{{ p.crownShow }}">👑</div>
+              <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2);border:{{ p.line }}">
+                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+                <div style="position:absolute;top:7px;left:7px;z-index:2;font-size:10px;font-weight:900;padding:3px 8px;border-radius:6px;{{ p.badgeStyle }}">{{ p.badge }}</div>
+                <div style="position:absolute;left:0;right:0;bottom:0;padding:30px 10px 10px;background:linear-gradient(transparent,var(--posterFade))">
+                  <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
+                  <div style="font-size:11px;color:var(--t1);margin-top:3px">{{ p.note }}</div>
+                </div>
+              </div>
+              <div style="text-align:center;font-size:10px;font-weight:900;letter-spacing:1px;color:var(--goldText);margin-top:6px;display:{{ p.mlabelShow }}">{{ p.mlabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="position:absolute;top:0;right:0;bottom:12px;width:92px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
+      </div>
+    </section>
+
     <section id="picks" style="display:{{ pickShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">관심 모델 <span style="color:var(--acc)">신작</span></h2>
@@ -2591,6 +2591,8 @@ class Component extends DCLogic {
           localStorage.setItem('bcut_popup_hide_'+(p.id||''),String(e.getTime()));}catch(err){}
           this.setState({popupClosed:true});};}
     }
+
+    base.nextShow='none';  /* (A) '앞으로 공개될 신작'은 하단 공개 캘린더와 정보 중복 → 숨김. 되살리려면 이 줄 삭제 */
 
     this.syncUrl();
 

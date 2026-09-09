@@ -227,7 +227,9 @@ select,input,button{font-family:inherit}
 .wp-cut{position:relative;flex:0 0 auto;aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:var(--bg2);cursor:pointer}
 .wp-im{position:absolute;inset:0;background-size:cover;background-position:center 12%;transition:transform .35s ease}
 .wp-cut:hover .wp-im{transform:scale(1.06)}
-.wp-arrow{position:absolute;top:0;bottom:4px;right:0;width:72px;display:none;align-items:center;justify-content:flex-end;padding-right:12px;font-size:36px;line-height:1;color:#fff;cursor:pointer;opacity:0;transition:opacity .2s;background:linear-gradient(to right,rgba(7,7,10,0),rgba(7,7,10,.78));border-radius:0 12px 12px 0;pointer-events:none;user-select:none}
+.wp-arrow{position:absolute;top:0;bottom:4px;width:72px;display:none;align-items:center;font-size:36px;line-height:1;color:#fff;cursor:pointer;opacity:0;transition:opacity .2s;pointer-events:none;user-select:none;z-index:4}
+.wp-arrow-r{right:0;justify-content:flex-end;padding-right:12px;background:linear-gradient(to right,rgba(7,7,10,0),rgba(7,7,10,.78));border-radius:0 12px 12px 0}
+.wp-arrow-l{left:0;justify-content:flex-start;padding-left:12px;background:linear-gradient(to left,rgba(7,7,10,0),rgba(7,7,10,.78));border-radius:12px 0 0 12px}
 #weeklypick:hover .wp-arrow{opacity:1;pointer-events:auto}
 @media(hover:none){.wp-arrow{display:none!important}}
 </style>
@@ -602,7 +604,8 @@ select,input,button{font-family:inherit}
             </div>
           </sc-for>
         </div>
-        <div id="wp-arrow" class="wp-arrow" aria-label="더 보기">›</div>
+        <div id="wp-arrow-l" class="wp-arrow wp-arrow-l" aria-label="이전">‹</div>
+        <div id="wp-arrow" class="wp-arrow wp-arrow-r" aria-label="더 보기">›</div>
       </div>
     </section>
 
@@ -2714,12 +2717,13 @@ class Component extends DCLogic {
 /* 이번 주 PICK — 오른쪽에 더 있으면 hover 시 화살표, 클릭 시 우측 스크롤 */
 (function(){
   function strip(){return document.getElementById('wp-strip');}
-  function arrow(){return document.getElementById('wp-arrow');}
-  function upd(){var s=strip(),a=arrow();if(!s||!a)return;var more=(s.scrollWidth-s.clientWidth-s.scrollLeft)>4;a.style.display=more?'flex':'none';}
+  function upd(){var s=strip();if(!s)return;var aR=document.getElementById('wp-arrow'),aL=document.getElementById('wp-arrow-l');
+    if(aR){aR.style.display=((s.scrollWidth-s.clientWidth-s.scrollLeft)>4)?'flex':'none';}
+    if(aL){aL.style.display=(s.scrollLeft>4)?'flex':'none';}}
   document.addEventListener('mouseover',function(e){if(e.target.closest&&e.target.closest('#weeklypick'))upd();},true);
   document.addEventListener('scroll',function(e){if(e.target&&e.target.id==='wp-strip')upd();},true);
   window.addEventListener('resize',upd);
-  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('#wp-arrow');if(!a)return;var s=strip();if(s)s.scrollBy({left:Math.round(s.clientWidth*0.85),behavior:'smooth'});});
+  document.addEventListener('click',function(e){var t=e.target.closest?e.target.closest('#wp-arrow,#wp-arrow-l'):null;if(!t)return;var s=strip();if(!s)return;var d=(t.id==='wp-arrow-l')?-1:1;s.scrollBy({left:d*Math.round(s.clientWidth*0.85),behavior:'smooth'});});
   var n=0,iv=setInterval(function(){upd();if(++n>20)clearInterval(iv);},500);
 })();
 </script>

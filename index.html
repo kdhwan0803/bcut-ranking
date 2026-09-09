@@ -221,6 +221,15 @@ select,input,button{font-family:inherit}
 .mLthumbs{display:flex;gap:6px;align-items:center;overflow:hidden;flex:1}
 .mLthumbs img{width:42px;height:54px;border-radius:6px;object-fit:cover;object-position:center top;flex:0 0 auto}
 .mLmore{font-size:12px;font-weight:700;color:var(--mut);flex:0 0 auto}
+/* 이번 주 PICK 스트립 */
+.wp-strip{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:smooth}
+.wp-strip::-webkit-scrollbar{display:none}
+.wp-cut{position:relative;flex:0 0 auto;aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:var(--bg2);cursor:pointer}
+.wp-im{position:absolute;inset:0;background-size:cover;background-position:center 12%;transition:transform .35s ease}
+.wp-cut:hover .wp-im{transform:scale(1.06)}
+.wp-arrow{position:absolute;top:0;bottom:4px;right:0;width:72px;display:none;align-items:center;justify-content:flex-end;padding-right:12px;font-size:36px;line-height:1;color:#fff;cursor:pointer;opacity:0;transition:opacity .2s;background:linear-gradient(to right,rgba(7,7,10,0),rgba(7,7,10,.78));border-radius:0 12px 12px 0;pointer-events:none;user-select:none}
+#weeklypick:hover .wp-arrow{opacity:1;pointer-events:auto}
+@media(hover:none){.wp-arrow{display:none!important}}
 </style>
 </helmet>
 
@@ -559,23 +568,6 @@ select,input,button{font-family:inherit}
       </div>
     </a>
 
-    <section id="picks" style="display:{{ pickShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">관심 모델 <span style="color:var(--acc)">신작</span></h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">FOR YOU · 최근 본 모델의 새 화보</span>
-      </div>
-      <div class="shelfRow" style="gap:14px;padding:2px 2px 6px">
-        <sc-for list="{{ picks }}" as="p" hint-placeholder-count="0">
-          <div onClick="{{ p.open }}" class="nwCard" style="cursor:pointer">
-            <div class="imgSkel" style="width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2)">
-              <img src="{{ p.img }}" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
-            </div>
-            <div style="font-size:11px;font-weight:800;color:var(--acc2);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.model }}</div>
-            <div style="font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">{{ p.title }}</div>
-          </div>
-        </sc-for>
-      </div>
-    </section>
 
     <section id="rising" style="display:{{ risingShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
@@ -602,13 +594,15 @@ select,input,button{font-family:inherit}
         <span onClick="{{ wpOpen }}" style="flex:0 0 auto;cursor:pointer;font-size:12px;font-weight:900;color:#0a0a0a;background:#fff;border-radius:999px;padding:8px 15px">바로 보기 →</span>
       </div>
       <div style="font-size:12.5px;color:var(--mut);margin:8px 2px 14px">에디터가 이번 주 강력 추천 · 컷별로 보고 결정하세요</div>
-      <div style="display:flex;gap:12px;overflow-x:auto;padding:2px 2px 12px">
-        <sc-for list="{{ wpCuts }}" as="c" hint-placeholder-count="0">
-          <div onClick="{{ c.open }}" style="position:relative;flex:0 0 auto;cursor:pointer;width:{{ c.w }};aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:var(--bg2)">
-            <div style="position:absolute;inset:0;background-size:cover;background-position:center 12%;background-image:{{ c.imgCss }}"></div>
-            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,7,10,0) 60%,rgba(7,7,10,.85) 100%)"></div>
-          </div>
-        </sc-for>
+      <div style="position:relative">
+        <div id="wp-strip" class="wp-strip">
+          <sc-for list="{{ wpCuts }}" as="c" hint-placeholder-count="0">
+            <div onClick="{{ c.open }}" class="wp-cut" style="width:{{ c.w }}">
+              <div class="wp-im" style="background-image:{{ c.imgCss }}"></div>
+            </div>
+          </sc-for>
+        </div>
+        <div id="wp-arrow" class="wp-arrow" aria-label="더 보기">›</div>
       </div>
     </section>
 
@@ -755,6 +749,23 @@ select,input,button{font-family:inherit}
             </div>
           </sc-for>
         </div>
+      </div>
+    </section>
+    <section id="picks" style="display:{{ pickShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">관심 모델 <span style="color:var(--acc)">신작</span></h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">FOR YOU · 최근 본 모델의 새 화보</span>
+      </div>
+      <div class="shelfRow" style="gap:14px;padding:2px 2px 6px">
+        <sc-for list="{{ picks }}" as="p" hint-placeholder-count="0">
+          <div onClick="{{ p.open }}" class="nwCard" style="cursor:pointer">
+            <div class="imgSkel" style="width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2)">
+              <img src="{{ p.img }}" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
+            </div>
+            <div style="font-size:11px;font-weight:800;color:var(--acc2);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.model }}</div>
+            <div style="font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">{{ p.title }}</div>
+          </div>
+        </sc-for>
       </div>
     </section>
 
@@ -2698,6 +2709,19 @@ class Component extends DCLogic {
     return Object.assign(base,themeVals);
   }
 }
+</script>
+<script>
+/* 이번 주 PICK — 오른쪽에 더 있으면 hover 시 화살표, 클릭 시 우측 스크롤 */
+(function(){
+  function strip(){return document.getElementById('wp-strip');}
+  function arrow(){return document.getElementById('wp-arrow');}
+  function upd(){var s=strip(),a=arrow();if(!s||!a)return;var more=(s.scrollWidth-s.clientWidth-s.scrollLeft)>4;a.style.display=more?'flex':'none';}
+  document.addEventListener('mouseover',function(e){if(e.target.closest&&e.target.closest('#weeklypick'))upd();},true);
+  document.addEventListener('scroll',function(e){if(e.target&&e.target.id==='wp-strip')upd();},true);
+  window.addEventListener('resize',upd);
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('#wp-arrow');if(!a)return;var s=strip();if(s)s.scrollBy({left:Math.round(s.clientWidth*0.85),behavior:'smooth'});});
+  var n=0,iv=setInterval(function(){upd();if(++n>20)clearInterval(iv);},500);
+})();
 </script>
 </body>
 </html>

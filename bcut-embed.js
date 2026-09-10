@@ -1,6 +1,6 @@
 /* MAXIM B컷 · 함께 보면 좋은 화보 임베드 (외부 로더용) */
 (function(){
-  window.__bcutVer='ROT-FINAL-4';
+  window.__bcutVer='ROT-FINAL-5';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';
@@ -79,7 +79,7 @@
       return '<a class="bctg-c" href="'+SITE+k+'" data-to="'+k+'">'+
         '<span class="bctg-img" style="background-image:url(\''+esc(w.img)+'\')"></span>'+
         '<span class="bctg-i"><span class="bctg-m">'+esc(modelOf(w))+'</span><span class="bctg-t">'+esc(clean(w.title))+'</span></span>'+
-        '<span class="bctg-b">'+(w.buy==='구독'?'구독':'코인')+'</span></a>';
+        '</a>';
     }).join('');
     box.className='bctg';
     box.innerHTML='<div class="bctg-h"><div><span class="bctg-eye">MAXIM B컷 · 추천</span>'+

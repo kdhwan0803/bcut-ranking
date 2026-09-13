@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MAXIM B컷 · 주간 랭킹</title>
-<meta name="description" content="이번 주 인기 화보 랭킹 · 신작 · 구독 화보를 한눈에. MAXIM B컷.">
+<title>맥심 B컷 주간 랭킹 | 이번 주 1위 · 모델별 화보 도감 · 역대 명작</title>
+<meta name="description" content="맥심 B컷 화보 주간 랭킹. 이번 주 1위 화보, 매일 자정 공개되는 신작, 모델별 화보 도감과 역대 명작을 한 곳에서. 매주 월요일 업데이트.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="MAXIM B컷 주간 랭킹">
-<meta property="og:description" content="이번 주 인기 화보 랭킹 · 신작 · 구독 화보를 한눈에. MAXIM B컷.">
+<meta property="og:title" content="맥심 B컷 주간 랭킹 | 이번 주 1위 · 모델별 화보 도감 · 역대 명작">
+<meta property="og:description" content="맥심 B컷 화보 주간 랭킹. 이번 주 1위 화보, 매일 자정 공개되는 신작, 모델별 화보 도감과 역대 명작을 한 곳에서. 매주 월요일 업데이트.">
 <meta property="og:image" content="https://i.ibb.co/WpB1gcLw/opt.webp">
 <meta property="og:url" content="https://bcutrank.com/">
 <meta name="twitter:card" content="summary_large_image">
@@ -33,7 +33,7 @@ OneSignalDeferred.push(async function(OneSignal){
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MAXIM B컷 · RANKING</title>
+<title>맥심 B컷 주간 랭킹 | 이번 주 1위 · 모델별 화보 도감 · 역대 명작</title>
 
 <style>
 :root{--acc:#E60012;--acc2:#ff5a63;
@@ -227,9 +227,7 @@ select,input,button{font-family:inherit}
 .wp-cut{position:relative;flex:0 0 auto;aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:var(--bg2);cursor:pointer}
 .wp-im{position:absolute;inset:0;background-size:cover;background-position:center 12%;transition:transform .35s ease}
 .wp-cut:hover .wp-im{transform:scale(1.06)}
-.wp-arrow{position:absolute;top:0;bottom:4px;width:72px;display:none;align-items:center;font-size:36px;line-height:1;color:#fff;cursor:pointer;opacity:0;transition:opacity .2s;pointer-events:none;user-select:none;z-index:4}
-.wp-arrow-r{right:0;justify-content:flex-end;padding-right:12px;background:linear-gradient(to right,rgba(7,7,10,0),rgba(7,7,10,.78));border-radius:0 12px 12px 0}
-.wp-arrow-l{left:0;justify-content:flex-start;padding-left:12px;background:linear-gradient(to left,rgba(7,7,10,0),rgba(7,7,10,.78));border-radius:12px 0 0 12px}
+.wp-arrow{position:absolute;top:0;bottom:4px;right:0;width:72px;display:none;align-items:center;justify-content:flex-end;padding-right:12px;font-size:36px;line-height:1;color:#fff;cursor:pointer;opacity:0;transition:opacity .2s;background:linear-gradient(to right,rgba(7,7,10,0),rgba(7,7,10,.78));border-radius:0 12px 12px 0;pointer-events:none;user-select:none}
 #weeklypick:hover .wp-arrow{opacity:1;pointer-events:auto}
 @media(hover:none){.wp-arrow{display:none!important}}
 </style>
@@ -604,8 +602,7 @@ select,input,button{font-family:inherit}
             </div>
           </sc-for>
         </div>
-        <div id="wp-arrow-l" class="wp-arrow wp-arrow-l" aria-label="이전">‹</div>
-        <div id="wp-arrow" class="wp-arrow wp-arrow-r" aria-label="더 보기">›</div>
+        <div id="wp-arrow" class="wp-arrow" aria-label="더 보기">›</div>
       </div>
     </section>
 
@@ -636,6 +633,59 @@ select,input,button{font-family:inherit}
         </div>
         <button onClick="{{ champPrev }}" aria-label="이전 1위" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:5;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);backdrop-filter:blur(6px);color:#fff;font-size:18px;cursor:pointer;display:{{ champPrevShow }};align-items:center;justify-content:center">‹</button>
         <button onClick="{{ champNext }}" aria-label="다음 1위" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:5;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);backdrop-filter:blur(6px);color:#fff;font-size:18px;cursor:pointer;display:{{ champNextShow }};align-items:center;justify-content:center">›</button>
+      </div>
+    </section>
+
+    <section id="classics" style="display:{{ classicsShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">역대 <span style="color:var(--goldText)">명작</span></h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">ALL-TIME BEST</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--mut);margin-bottom:16px">누적 판매 기준 · 지금 봐도 후회 없는 명작</div>
+      <div style="display:grid;grid-template-columns:{{ classicsCols }};gap:13px">
+        <sc-for list="{{ classics }}" as="c" hint-placeholder-count="0">
+          <div onClick="{{ c.open }}" style="position:relative;cursor:pointer;border-radius:14px;overflow:hidden;background:var(--bg2);grid-row:{{ c.gr }};grid-column:{{ c.gc }};aspect-ratio:{{ c.ar }};outline:{{ c.ring }};outline-offset:-2px">
+            <div style="position:absolute;inset:0;background-size:cover;background-position:center 15%;background-image:{{ c.imgCss }};filter:{{ c.blur }}"></div>
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,0) 42%,rgba(8,8,11,.92) 100%)"></div>
+            <div style="position:absolute;top:10px;left:10px;z-index:3;min-width:{{ c.rankSz }};height:{{ c.rankSz }};display:inline-flex;align-items:center;justify-content:center;font-size:{{ c.rankFs }};font-weight:900;border-radius:9px;background:rgba(8,8,11,.72);border:1px solid rgba(255,255,255,.18);color:#fff;padding:0 6px">{{ c.rank }}</div>
+            <div style="position:absolute;top:10px;right:10px;z-index:3;display:{{ c.revShow }};font-size:11px;font-weight:900;border-radius:7px;padding:4px 8px;background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600">{{ c.rev }}</div>
+            <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:26px 13px 12px">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <span style="display:{{ c.b19Show }};background:var(--acc);color:#fff;font-size:9.5px;font-weight:900;padding:1px 5px;border-radius:4px">19</span>
+                <span style="font-size:{{ c.mFs }};font-weight:900;color:#fff">{{ c.model }}</span>
+              </div>
+              <div style="font-size:11.5px;font-weight:600;color:#c9c9d2;margin-top:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.title }}</div>
+            </div>
+            <span style="position:absolute;bottom:11px;right:11px;z-index:3;font-size:10px;font-weight:900;border-radius:6px;padding:3px 7px;background:rgba(8,8,11,.78);color:#fff;border:1px solid rgba(255,255,255,.18)">{{ c.coin }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="hall" style="display:{{ hallShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">명예의 전당</h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">HALL OF FAME</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--mut);margin-bottom:18px">정상에 올랐던 화보들 · 최신순</div>
+      <div style="position:relative">
+        <div style="display:flex;gap:14px;overflow-x:auto;padding:16px 0 12px;align-items:flex-end">
+          <sc-for list="{{ hall }}" as="p" hint-placeholder-count="0">
+            <div onClick="{{ p.open }}" style="position:relative;flex:0 0 auto;cursor:pointer;width:{{ p.w }}">
+              <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);z-index:5;font-size:19px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));display:{{ p.crownShow }}">👑</div>
+              <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2);border:{{ p.line }}">
+                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
+                <div style="position:absolute;top:7px;left:7px;z-index:2;font-size:10px;font-weight:900;padding:3px 8px;border-radius:6px;{{ p.badgeStyle }}">{{ p.badge }}</div>
+                <div style="position:absolute;left:0;right:0;bottom:0;padding:30px 10px 10px;background:linear-gradient(transparent,var(--posterFade))">
+                  <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
+                  <div style="font-size:11px;color:var(--t1);margin-top:3px">{{ p.note }}</div>
+                </div>
+              </div>
+              <div style="text-align:center;font-size:10px;font-weight:900;letter-spacing:1px;color:var(--goldText);margin-top:6px;display:{{ p.mlabelShow }}">{{ p.mlabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="position:absolute;top:0;right:0;bottom:12px;width:92px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
       </div>
     </section>
 
@@ -701,59 +751,6 @@ select,input,button{font-family:inherit}
         </div>
       </div>
     </section>
-    <section id="classics" style="display:{{ classicsShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">역대 <span style="color:var(--goldText)">명작</span></h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">ALL-TIME BEST</span>
-      </div>
-      <div style="font-size:12.5px;color:var(--mut);margin-bottom:16px">누적 판매 기준 · 지금 봐도 후회 없는 명작</div>
-      <div style="display:grid;grid-template-columns:{{ classicsCols }};gap:13px">
-        <sc-for list="{{ classics }}" as="c" hint-placeholder-count="0">
-          <div onClick="{{ c.open }}" style="position:relative;cursor:pointer;border-radius:14px;overflow:hidden;background:var(--bg2);grid-row:{{ c.gr }};grid-column:{{ c.gc }};aspect-ratio:{{ c.ar }};outline:{{ c.ring }};outline-offset:-2px">
-            <div style="position:absolute;inset:0;background-size:cover;background-position:center 15%;background-image:{{ c.imgCss }};filter:{{ c.blur }}"></div>
-            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,0) 42%,rgba(8,8,11,.92) 100%)"></div>
-            <div style="position:absolute;top:10px;left:10px;z-index:3;min-width:{{ c.rankSz }};height:{{ c.rankSz }};display:inline-flex;align-items:center;justify-content:center;font-size:{{ c.rankFs }};font-weight:900;border-radius:9px;background:rgba(8,8,11,.72);border:1px solid rgba(255,255,255,.18);color:#fff;padding:0 6px">{{ c.rank }}</div>
-            <div style="position:absolute;top:10px;right:10px;z-index:3;display:{{ c.revShow }};font-size:11px;font-weight:900;border-radius:7px;padding:4px 8px;background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600">{{ c.rev }}</div>
-            <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:26px 13px 12px">
-              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-                <span style="display:{{ c.b19Show }};background:var(--acc);color:#fff;font-size:9.5px;font-weight:900;padding:1px 5px;border-radius:4px">19</span>
-                <span style="font-size:{{ c.mFs }};font-weight:900;color:#fff">{{ c.model }}</span>
-              </div>
-              <div style="font-size:11.5px;font-weight:600;color:#c9c9d2;margin-top:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.title }}</div>
-            </div>
-            <span style="position:absolute;bottom:11px;right:11px;z-index:3;font-size:10px;font-weight:900;border-radius:6px;padding:3px 7px;background:rgba(8,8,11,.78);color:#fff;border:1px solid rgba(255,255,255,.18)">{{ c.coin }}</span>
-          </div>
-        </sc-for>
-      </div>
-    </section>
-
-    <section id="hall" style="display:{{ hallShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">명예의 전당</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">HALL OF FAME</span>
-      </div>
-      <div style="font-size:12.5px;color:var(--mut);margin-bottom:18px">정상에 올랐던 화보들 · 최신순</div>
-      <div style="position:relative">
-        <div style="display:flex;gap:14px;overflow-x:auto;padding:16px 0 12px;align-items:flex-end">
-          <sc-for list="{{ hall }}" as="p" hint-placeholder-count="0">
-            <div onClick="{{ p.open }}" style="position:relative;flex:0 0 auto;cursor:pointer;width:{{ p.w }}">
-              <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);z-index:5;font-size:19px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));display:{{ p.crownShow }}">👑</div>
-              <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2);border:{{ p.line }}">
-                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
-                <div style="position:absolute;top:7px;left:7px;z-index:2;font-size:10px;font-weight:900;padding:3px 8px;border-radius:6px;{{ p.badgeStyle }}">{{ p.badge }}</div>
-                <div style="position:absolute;left:0;right:0;bottom:0;padding:30px 10px 10px;background:linear-gradient(transparent,var(--posterFade))">
-                  <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
-                  <div style="font-size:11px;color:var(--t1);margin-top:3px">{{ p.note }}</div>
-                </div>
-              </div>
-              <div style="text-align:center;font-size:10px;font-weight:900;letter-spacing:1px;color:var(--goldText);margin-top:6px;display:{{ p.mlabelShow }}">{{ p.mlabel }}</div>
-            </div>
-          </sc-for>
-        </div>
-        <div style="position:absolute;top:0;right:0;bottom:12px;width:92px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
-      </div>
-    </section>
-
     <section id="picks" style="display:{{ pickShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">관심 모델 <span style="color:var(--acc)">신작</span></h2>
@@ -2592,8 +2589,6 @@ class Component extends DCLogic {
           this.setState({popupClosed:true});};}
     }
 
-    base.nextShow='none';  /* (A) '앞으로 공개될 신작'은 하단 공개 캘린더와 정보 중복 → 숨김. 되살리려면 이 줄 삭제 */
-
     this.syncUrl();
 
     /* 모달 */
@@ -2719,13 +2714,12 @@ class Component extends DCLogic {
 /* 이번 주 PICK — 오른쪽에 더 있으면 hover 시 화살표, 클릭 시 우측 스크롤 */
 (function(){
   function strip(){return document.getElementById('wp-strip');}
-  function upd(){var s=strip();if(!s)return;var aR=document.getElementById('wp-arrow'),aL=document.getElementById('wp-arrow-l');
-    if(aR){aR.style.display=((s.scrollWidth-s.clientWidth-s.scrollLeft)>4)?'flex':'none';}
-    if(aL){aL.style.display=(s.scrollLeft>4)?'flex':'none';}}
+  function arrow(){return document.getElementById('wp-arrow');}
+  function upd(){var s=strip(),a=arrow();if(!s||!a)return;var more=(s.scrollWidth-s.clientWidth-s.scrollLeft)>4;a.style.display=more?'flex':'none';}
   document.addEventListener('mouseover',function(e){if(e.target.closest&&e.target.closest('#weeklypick'))upd();},true);
   document.addEventListener('scroll',function(e){if(e.target&&e.target.id==='wp-strip')upd();},true);
   window.addEventListener('resize',upd);
-  document.addEventListener('click',function(e){var t=e.target.closest?e.target.closest('#wp-arrow,#wp-arrow-l'):null;if(!t)return;var s=strip();if(!s)return;var d=(t.id==='wp-arrow-l')?-1:1;s.scrollBy({left:d*Math.round(s.clientWidth*0.85),behavior:'smooth'});});
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('#wp-arrow');if(!a)return;var s=strip();if(s)s.scrollBy({left:Math.round(s.clientWidth*0.85),behavior:'smooth'});});
   var n=0,iv=setInterval(function(){upd();if(++n>20)clearInterval(iv);},500);
 })();
 </script>

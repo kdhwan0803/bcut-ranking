@@ -1,6 +1,6 @@
-/* MAXIM B컷 · 함께 보면 좋은 화보 임베드 (외부 로더용) */
+/* MAXIM B컷 · 함께 산 화보 / 함께 보면 좋은 화보 임베드 (외부 로더용) · ROT-FINAL-8: recs.json(동시구매) 있으면 '함께 산 화보'로 표시 */
 (function(){
-  window.__bcutVer='ROT-FINAL-7';
+  window.__bcutVer='ROT-FINAL-8';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';
@@ -110,7 +110,8 @@
     function ok(k){ return k&&k!==id&&W[k]&&pub(W[k])&&modelOf(W[k])!==moA; }  // 같은 모델 제외
     var POOL=12; var picked=[], seen={}; seen[id]=1;
     function add(k){ if(!ok(k)||seen[k]) return; seen[k]=1; picked.push(k); }
-    (RECS[id]||[]).forEach(function(k){ if(picked.length<POOL) add(k); });     // 1) recs.json(다른 모델만)
+    var fromRecs={}; (RECS[id]||[]).forEach(function(k){ k=String(k); if(picked.length<POOL&&!seen[k]&&ok(k)){ fromRecs[k]=1; } add(k); });     // 1) recs.json(동시구매, 다른 모델만)
+    var nRecs=Object.keys(fromRecs).length;
     var keys=Object.keys(W);
     if(picked.length<POOL && paA){                                            // 2) 같은 작가(다른 모델) 최신
       keys.filter(function(k){return (W[k].photo||'').toString().trim()===paA&&ok(k)&&!seen[k];})
@@ -124,7 +125,8 @@
       pool.slice(off).concat(pool.slice(0,off)).forEach(function(k){ if(picked.length<POOL) add(k); });
     }
     var ordered;
-    if(picked.length<=COUNT){ ordered=picked.slice(); }
+    if(nRecs>=COUNT){ ordered=picked.slice(); }                 // 동시구매 추천이 4개 이상이면 순서 고정(데이터 순)
+    else if(picked.length<=COUNT){ ordered=picked.slice(); }
     else {
       var head=picked.slice(0,1), rest=picked.slice(1);           // 1순위 고정
       for(var ri=rest.length-1;ri>0;ri--){ var rj=Math.floor(Math.random()*(ri+1)); var tmp=rest[ri]; rest[ri]=rest[rj]; rest[rj]=tmp; }
@@ -134,6 +136,10 @@
     for(var oi=0;oi<ordered.length&&ids.length<COUNT;oi++){ var mm=modelOf(W[ordered[oi]]); if(usedM[mm])continue; usedM[mm]=1; ids.push(ordered[oi]); }
     for(var oj=0;oj<ordered.length&&ids.length<COUNT;oj++){ if(ids.indexOf(ordered[oj])<0) ids.push(ordered[oj]); }
     if(!ids.length){ box.remove(); return; }
+    var bought=ids.every(function(k){return fromRecs[k];});      // 표시 4개 전부 동시구매 데이터면 '함께 산 화보'
+    var _eye=bought?'MAXIM B컷 · TOGETHER':'MAXIM B컷 · 추천';
+    var _ttl=bought?'이 화보를 본 분들이 <b>함께 산 화보</b>':'함께 보면 <b>좋은 화보</b>';
+    var _sub=bought?'실제 구매 데이터 기준':'취향·모델·작가로 고른 추천';
     var cards=ids.map(function(k){var w=W[k];
       return '<a class="bctg-c" href="'+SITE+k+'" data-to="'+k+'">'+
         '<span class="bctg-img" style="background-image:url(\''+esc(w.img)+'\')"></span>'+
@@ -141,11 +147,11 @@
         '</a>';
     }).join('');
     box.className='bctg';
-    box.innerHTML='<div class="bctg-h"><div><span class="bctg-eye">MAXIM B컷 · 추천</span>'+
-      '<span class="bctg-ti">함께 보면 <b>좋은 화보</b></span></div>'+
-      '<span class="bctg-su">취향·모델·작가로 고른 추천</span></div>'+
+    box.innerHTML='<div class="bctg-h"><div><span class="bctg-eye">'+_eye+'</span>'+
+      '<span class="bctg-ti">'+_ttl+'</span></div>'+
+      '<span class="bctg-su">'+_sub+'</span></div>'+
       '<div class="bctg-g">'+cards+'</div>';
     box.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('.bctg-c'); if(!t)return;
-      try{gtag('event','together_click',{from_id:id,to_id:t.getAttribute('data-to')});}catch(x){}});
+      try{gtag('event','together_click',{from_id:id,to_id:t.getAttribute('data-to'),kind:bought?'bought':'similar'});}catch(x){}});
   }).catch(function(){ box.remove(); });
 })();

@@ -1,6 +1,6 @@
-/* MAXIM B컷 · 함께 산 화보 / 함께 보면 좋은 화보 임베드 (외부 로더용) · ROT-FINAL-8: recs.json(동시구매) 있으면 '함께 산 화보'로 표시 */
+/* MAXIM B컷 · 함께 산 화보 / 함께 보면 좋은 화보 임베드 (외부 로더용) · ROT-FINAL-8: recs.json(동시구매) 있으면 '함께 산 화보'로 표시 · ROT-FINAL-9: data.json에 없는 화보(공개 전)에서도 최근작으로 채움 */
 (function(){
-  window.__bcutVer='ROT-FINAL-8';
+  window.__bcutVer='ROT-FINAL-9';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';
@@ -123,6 +123,11 @@
         .sort(function(x,y){return (W[y].pub||'').localeCompare(W[x].pub||'');});
       var off=pool.length?(parseInt(id,10)%pool.length):0;
       pool.slice(off).concat(pool.slice(0,off)).forEach(function(k){ if(picked.length<POOL) add(k); });
+    }
+    if(picked.length<COUNT){                                                  // 4) 현재 화보가 data.json에 없거나 후보 부족 → 최근 공개작(다른 모델)으로 채움
+      keys.filter(function(k){return ok(k)&&!seen[k];})
+        .sort(function(x,y){return (W[y].pub||'').localeCompare(W[x].pub||'')||(parseInt(y,10)-parseInt(x,10));})
+        .forEach(function(k){ if(picked.length<POOL) add(k); });
     }
     var ordered;
     if(nRecs>=COUNT){ ordered=picked.slice(); }                 // 동시구매 추천이 4개 이상이면 순서 고정(데이터 순)

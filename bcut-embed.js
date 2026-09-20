@@ -1,6 +1,6 @@
-/* MAXIM B컷 · 함께 산 화보 / 함께 보면 좋은 화보 임베드 (외부 로더용) · ROT-FINAL-8: recs.json(동시구매) 있으면 '함께 산 화보'로 표시 · ROT-FINAL-9: data.json에 없는 화보(공개 전)에서도 최근작으로 채움 */
+/* MAXIM B컷 · 함께 산 화보 / 함께 보면 좋은 화보 임베드 (외부 로더용) · ROT-FINAL-8: recs.json(동시구매) 있으면 '함께 산 화보'로 표시 · ROT-FINAL-9: data.json에 없는 화보(공개 전)에서도 최근작으로 채움 · ROT-FINAL-10: MORE 섹션이 없는 화보에서 블록이 상단으로 튀던 문제 수정(로더 스니펫 위치에 삽입) */
 (function(){
-  window.__bcutVer='ROT-FINAL-9';
+  window.__bcutVer='ROT-FINAL-10';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';
@@ -34,8 +34,13 @@
   // '모델의 다른 화보'(MORE MODEL) 섹션 바로 위에 삽입
   var anchor=null, ts=document.querySelectorAll('.section-title');
   for(var ai=0;ai<ts.length;ai++){ var tx=ts[ai].textContent||''; if(tx.indexOf('MORE MODEL')>=0||tx.indexOf('모델의 다른')>=0){ anchor=ts[ai]; break; } }
-  if(!anchor && ts.length){ anchor=ts[0]; }   // 모델 섹션 없으면 첫 MORE 섹션(회사/작가 등) 위
+  // ROT-FINAL-10: MORE 섹션이 없는 화보(모델·작가의 다른 화보가 없는 경우)에서
+  // 예전에는 ts[0] 또는 #work-top 뒤로 밀려 블록이 '작품 정보' 탭 위에 떴다.
+  // 이제는 CONTENT 안에 박아둔 로더 스니펫(img[onerror*="__bcutRecs"]) 바로 뒤에 넣어
+  // 항상 본문 끝에 오도록 한다.
+  var ldr=document.querySelector('img[onerror*="__bcutRecs"]');
   if(anchor&&anchor.parentNode){ anchor.parentNode.insertBefore(box, anchor); }
+  else if(ldr&&ldr.parentNode){ ldr.parentNode.insertBefore(box, ldr.nextSibling); }
   else {
     var wt=document.getElementById('work-top');
     var wrap=document.getElementById('wrap'), f=document.querySelector('footer');

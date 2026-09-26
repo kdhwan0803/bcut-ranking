@@ -1557,7 +1557,7 @@ class Component extends DCLogic {
     const m=s.match(/^([\[(（【][^\]\)）】]{1,24}[\]\)）】])\s*(.+)$/);
     return (m&&m[2].trim())?{tag:m[1],name:m[2].trim()}:{tag:'',name:s};
   }
-  blurOf(id){const w=(this.state.D.works||{})[id];return (this.state.age==='minor'&&w&&w.b19)?'blur(16px)':'none';}
+  blurOf(id){const w=(this.state.D.works||{})[id];return (this.state.age==='minor'&&w&&w.b19&&!w.safe)?'blur(16px)':'none';}
   pad(n){return String(n).padStart(2,'0');}
   seg(ms){if(ms<0)ms=0;let s=Math.floor(ms/1000);const h=Math.floor(s/3600);s-=h*3600;const m=Math.floor(s/60);s-=m*60;return{hh:this.pad(h),mm:this.pad(m),ss:this.pad(s)};}
 
@@ -2074,7 +2074,7 @@ class Component extends DCLogic {
         lift:hov?'translateY(-10px)':'none',z:hov?'6':'1',ovOpacity:hov?'1':'0',
         origShow:(!isM&&w&&w.buy==='구독')?'inline-block':'none',
         vidShow:(!isM&&w&&w.vid)?'inline-block':'none',
-        lockShow:(!isM&&S.age==='minor'&&w&&w.b19)?'block':'none',
+        lockShow:(!isM&&S.age==='minor'&&w&&w.b19&&!w.safe)?'block':'none',
         blur:isM?'none':this.blurOf(row.id),
         enter:()=>{if(!this._touch)this.setState({hover:row.id});},
         leave:()=>{if(!this._touch)this.setState({hover:null});},
@@ -2469,7 +2469,7 @@ class Component extends DCLogic {
       if(q){const p=ti.toLowerCase().indexOf(q);if(p>=0){t1=ti.slice(0,p);t2=ti.slice(p,p+q.length);t3=ti.slice(p+q.length);}}
       return {img:W[id].img||'',title:ti,t1,t2,t3,blur:this.blurOf(id),
         origShow:W[id].buy==='구독'?'block':'none',
-        lockShow:(S.age==='minor'&&W[id].b19)?'block':'none',open:()=>this.openWork(id)};});
+        lockShow:(S.age==='minor'&&W[id].b19&&!W[id].safe)?'block':'none',open:()=>this.openWork(id)};});
     if(ids.length>S.show){base.moreShow='block';base.moreLabel='화보 '+Math.min(12,ids.length-S.show)+'개 더 보기 · 남은 '+(ids.length-S.show)+'개';base.more=()=>this.setState({show:S.show+12});}
 
     /* 작가별 */

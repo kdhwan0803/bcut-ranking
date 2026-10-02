@@ -1,6 +1,6 @@
 /* MAXIM B컷 · 함께 산 화보 / 함께 보면 좋은 화보 임베드 (외부 로더용) · ROT-FINAL-8: recs.json(동시구매) 있으면 '함께 산 화보'로 표시 · ROT-FINAL-9: data.json에 없는 화보(공개 전)에서도 최근작으로 채움 · ROT-FINAL-10: MORE 섹션이 없는 화보에서 블록이 상단으로 튀던 문제 수정(로더 스니펫 위치에 삽입) */
 (function(){
-  window.__bcutVer='ROT-FINAL-11-PAIR-AUTO-1';
+  window.__bcutVer='ROT-FINAL-12-PAIR-COMING-1';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';
@@ -68,7 +68,7 @@
     return t.replace(/\s{2,}/g,' ').replace(/^[\s·-]+|[\s·-]+$/g,'').trim()||String(t||'');}
   var TODAY=(new Date(Date.now()+324e5)).toISOString().slice(0,10);
 
-  // PAIR-AUTO-1: conservative matching for separate PHOTO / VIDEO works.
+  // PAIR-COMING-1: match separate PHOTO / VIDEO editions, including scheduled works.
   // Same base title, full model list, creator and release date. Bundles excluded.
   function pairNorm(s){
     s=String(s==null?'':s);
@@ -98,10 +98,10 @@
        !/^\d{4}-\d{2}-\d{2}$/.test(String(w.pub||''))) return null;
     return {type:type,key:JSON.stringify([base,models,creator,String(w.pub)])};
   }
-  function pairedWork(works,currentId,today){
+  function pairedWork(works,currentId){
     currentId=String(currentId);
     var current=works&&works[currentId], meta=pairMeta(current);
-    if(!meta||String(current.pub)>today) return null;
+    if(!meta) return null;
     var group=[];
     Object.keys(works).forEach(function(k){
       var w=works[k], p=pairMeta(w);
@@ -110,19 +110,24 @@
     // Do not guess when there are duplicates or multiple candidate editions.
     if(group.length!==2) return null;
     var other=group[0].id===currentId?group[1]:group[0];
-    if(other.id===currentId||other.type===meta.type||String(other.work.pub)>today||
+    if(other.id===currentId||other.type===meta.type||
        !/^\d{2,6}$/.test(other.id)) return null;
     return other;
   }
   function addPairedVersion(works){
     if(document.getElementById('bcut-paired-version')) return;
-    var other=pairedWork(works,id,TODAY);
+    var other=pairedWork(works,id);
     if(!other) return;
     var target=document.getElementById('bcut-rankbanner')||box;
     if(!target||!target.parentNode) return;
     var type=other.type==='video'?'VIDEO':'PHOTO';
     var title=other.type==='video'?'사진 속 순간을, 영상으로.':'영상의 순간을, 사진으로.';
+    var upcoming=String(other.work.pub)>TODAY;
     var desc=other.type==='video'?'같은 촬영의 영상 버전도 만나보세요.':'같은 촬영의 사진 버전도 만나보세요.';
+    if(upcoming) desc=other.type==='video'?'같은 촬영의 영상 버전도 공개 예정입니다.':'같은 촬영의 사진 버전도 공개 예정입니다.';
+    var dateParts=String(other.work.pub).split('-');
+    var upcomingLabel=upcoming?' · '+Number(dateParts[1])+'월 '+Number(dateParts[2])+'일 공개 예정':'';
+    var linkLabel=type+(upcoming?' 상세 보기':' 버전 보기');
     var section=document.createElement('section');
     section.id='bcut-paired-version';section.className='bcvp';
     section.setAttribute('aria-label','이 화보의 다른 버전');
@@ -131,9 +136,9 @@
       '<img class="bcvp-img" src="'+esc(image)+'" alt="'+esc(modelOf(other.work)+' '+type+' 버전 표지')+'" width="60" height="82" loading="lazy" decoding="async">':
       '<span class="bcvp-img bcvp-img-empty" aria-hidden="true">'+type+'</span>';
     section.innerHTML='<div class="bcvp-row">'+thumb+
-      '<div class="bcvp-text"><span class="bcvp-meta">'+esc(modelOf(other.work))+' · '+type+'</span>'+
+      '<div class="bcvp-text"><span class="bcvp-meta">'+esc(modelOf(other.work))+' · '+type+upcomingLabel+'</span>'+
       '<strong class="bcvp-title">'+title+'</strong><span class="bcvp-desc">'+desc+'</span></div>'+
-      '<a class="bcvp-link" href="'+SITE+other.id+'" data-to="'+other.id+'" aria-label="'+esc(other.work.title+' 상세페이지로 이동')+'">'+type+' 버전 보기 <span aria-hidden="true">›</span></a></div>'+
+      '<a class="bcvp-link" href="'+SITE+other.id+'" data-to="'+other.id+'" aria-label="'+esc(other.work.title+' 상세페이지로 이동')+'">'+linkLabel+' <span aria-hidden="true">›</span></a></div>'+
       '<div class="bcvp-foot">PHOTO / VIDEO는 각각 별도 작품으로 제공됩니다.</div>';
     section.addEventListener('click',function(e){
       var link=e.target.closest&&e.target.closest('.bcvp-link');if(!link)return;

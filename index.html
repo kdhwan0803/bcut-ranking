@@ -13,8 +13,132 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://i.ibb.co" crossorigin><link rel="dns-prefetch" href="https://i.ibb.co"><link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 <script>(function(){try{var t=localStorage.getItem('bcut_theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-0M1DPCT33G"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0M1DPCT33G');function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}</script>
+<script>
+window.BCUT_ANALYTICS_DISABLED=!/^https?:$/.test(location.protocol)||!['bcutrank.com','www.bcutrank.com','kdhwan0803.github.io'].includes(location.hostname)||/[?&](admin|preview|measure)=1(?:&|$)/.test(location.search)||!!window.IS_ADMIN;
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+function track(n,p){try{if(!window.BCUT_ANALYTICS_DISABLED&&!window.IS_ADMIN)gtag('event',n,p||{});}catch(e){}}
+if(!window.BCUT_ANALYTICS_DISABLED){
+  gtag('js',new Date());gtag('config','G-0M1DPCT33G');
+  var ga=document.createElement('script');ga.async=true;ga.src='https://www.googletagmanager.com/gtag/js?id=G-0M1DPCT33G';document.head.appendChild(ga);
+}
+</script>
+<script>
+/* BCUT experiment measurement v1. Public catalogue IDs only; no buyer or revenue data. */
+(function () {
+  'use strict';
+  const dryRun = new URLSearchParams(location.search).get('measure') === '1';
+  const seen = new Set(), dwelling = new Map(), observed = new Map();
+  let blocked = true, panel;
+  const names = {
+    paid_picks: {impression:'bcut_exp_impression',open:'bcut_exp_card_open',outbound:'bcut_exp_outbound'},
+    rediscovery: {impression:'bcut_rediscovery_impression',open:'bcut_rediscovery_open',outbound:'bcut_rediscovery_outbound'}
+  };
+  function context(raw) {
+    if (!raw) return null;
+    const module = raw.module === 'rediscovery' ? 'rediscovery' : 'paid_picks';
+    const list = raw.experiment_id || raw.shelf_id;
+    const group = raw.selection_group || raw.shelf_group;
+    if (!/^\d+$/.test(String(raw.work_id)) || !/^[a-z0-9-]{1,80}$/.test(list || '') ||
+        !/^[a-z0-9_-]{1,40}$/.test(group || '') || !Number.isInteger(raw.card_position) || raw.card_position < 1) return null;
+    const p = {module_id:module,list_id:list,group_id:group,work_id:String(raw.work_id),card_position:raw.card_position};
+    if (module === 'paid_picks') Object.assign(p,{experiment_id:list,selection_group:group});
+    else {
+      Object.assign(p,{shelf_id:list,shelf_group:group});
+      if (Number.isInteger(raw.shelf_page)) p.shelf_page = raw.shelf_page;
+      if (Number.isInteger(raw.days_since_release)) p.days_since_release = raw.days_since_release;
+    }
+    return p;
+  }
+  const key = p => [p.module_id,p.list_id,p.group_id,p.work_id].join('|');
+  function log(name, p) {
+    if (!dryRun) return;
+    if (!panel) {
+      panel = document.createElement('details');
+      panel.id = 'bcut-measure-log'; panel.open = true;
+      panel.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:600;width:min(420px,90vw);max-height:220px;overflow:auto;background:#152032;color:#fff;padding:12px;border-radius:10px;font:12px/1.5 monospace;box-shadow:0 4px 20px #0006';
+      const title = document.createElement('summary');
+      title.textContent = '측정 확인 · GA4 전송 안 함'; panel.appendChild(title);
+      document.body.appendChild(panel);
+    }
+    const row = document.createElement('div');
+    row.textContent = name + ' ' + JSON.stringify(p); panel.appendChild(row);
+    while (panel.children.length > 61) panel.children[1].remove();
+  }
+  function emit(action, p, origin) {
+    const event = names[p.module_id][action], id = action + '|' + key(p);
+    if (seen.has(id)) return;
+    seen.add(id);
+    const params = {...p,link_origin:origin,measurement_version:'1',transport_type:'beacon'};
+    log(event,params);
+    if (!window.BCUT_ANALYTICS_DISABLED && !window.IS_ADMIN && typeof window.track === 'function') window.track(event,params);
+  }
+  function click(event, raw, origin) {
+    const p = context(raw);
+    if (!p || document.visibilityState !== 'visible') return;
+    const action = event === names[p.module_id].open ? 'open' : event === names[p.module_id].outbound ? 'outbound' : null;
+    if (!action) return;
+    // An intentional click qualifies as exposure even before the one-second dwell threshold.
+    emit('impression',p,'interaction');
+    emit(action,p,origin === 'modal' ? 'modal' : origin === 'poster' ? 'poster' : 'card');
+  }
+  const observer = typeof IntersectionObserver === 'function' ? new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      const item = observed.get(entry.target);
+      if (item) {
+        item.ratio = entry.isIntersecting ? entry.intersectionRatio : 0;
+        if (item.ratio < .5) dwelling.delete(item.key);
+      }
+    }
+  },{threshold:[0,.5,1]}) : null;
+  function exposed(el, item) {
+    if (item.ratio < .5) return false;
+    const img = el.querySelector('img');
+    if (!img || !img.complete || !img.naturalWidth) return false;
+    const r = el.getBoundingClientRect();
+    const l = Math.max(0,r.left), t = Math.max(0,r.top), right = Math.min(innerWidth,r.right), bottom = Math.min(innerHeight,r.bottom);
+    if (right <= l || bottom <= t || r.width <= 0 || r.height <= 0) return false;
+    // Hit tests also exclude sticky headers and overlays, which IntersectionObserver alone cannot detect.
+    let visible = 0;
+    for (const [x,y] of [[.5,.5],[.2,.2],[.8,.2],[.2,.8],[.8,.8]]) {
+      const hit = document.elementFromPoint(l+(right-l)*x,t+(bottom-t)*y);
+      if (hit && el.contains(hit)) visible++;
+    }
+    return visible >= 3;
+  }
+  function tick() {
+    if (!observer || document.visibilityState !== 'visible' || blocked) { dwelling.clear(); return; }
+    const current = new Set(), active = new Set(), now = performance.now();
+    for (const card of document.querySelectorAll('[data-bcut-context]')) {
+      let p;
+      try { p = context(JSON.parse(card.getAttribute('data-bcut-context'))); } catch (_) { continue; }
+      const el = card.querySelector('.paid-pick-poster,.rediscovery-poster');
+      if (!p || !el) continue;
+      const id = key(p); current.add(el);
+      let item = observed.get(el);
+      if (!item || item.key !== id) {
+        if (item) { dwelling.delete(item.key); observer.unobserve(el); }
+        item = {key:id,ratio:0}; observed.set(el,item); observer.observe(el);
+      }
+      if (seen.has('impression|'+id) || !exposed(el,item)) { dwelling.delete(id); continue; }
+      active.add(id);
+      if (!dwelling.has(id)) dwelling.set(id,now);
+      if (now-dwelling.get(id) >= 1000) { emit('impression',p,'viewport'); dwelling.delete(id); }
+    }
+    for (const [el,item] of observed) if (!current.has(el)) { observer.unobserve(el); observed.delete(el); dwelling.delete(item.key); }
+    for (const id of dwelling.keys()) if (!active.has(id)) dwelling.delete(id);
+  }
+  window.BCUTMeasurement = {
+    click,
+    setBlocked(value) { blocked = !!value; if (blocked) dwelling.clear(); }
+  };
+  document.addEventListener('visibilitychange',() => { dwelling.clear(); });
+  window.addEventListener('pagehide',() => { dwelling.clear(); });
+  // Only twelve candidate posters; scan also catches the site's reused DOM nodes during pagination.
+  setInterval(tick,250);
+})();
+
+</script>
 <script src="./support.js"></script>
 <!-- OneSignal 웹푸시 -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -230,6 +354,90 @@ select,input,button{font-family:inherit}
 .wp-arrow{position:absolute;top:0;bottom:4px;right:0;width:72px;display:none;align-items:center;justify-content:flex-end;padding-right:12px;font-size:36px;line-height:1;color:#fff;cursor:pointer;opacity:0;transition:opacity .2s;background:linear-gradient(to right,rgba(7,7,10,0),rgba(7,7,10,.78));border-radius:0 12px 12px 0;pointer-events:none;user-select:none}
 #weeklypick:hover .wp-arrow{opacity:1;pointer-events:auto}
 @media(hover:none){.wp-arrow{display:none!important}}
+
+/* Paid-purchase selection: uses the existing theme and age filters. */
+.paid-picks{margin-top:20px;padding:24px;border:1px solid var(--rankBandLine);border-radius:20px;background:var(--bg1);scroll-margin-top:120px}
+.paid-picks-head{display:flex;justify-content:space-between;align-items:start;gap:16px;margin-bottom:20px}
+.paid-picks h2{font-size:24px;line-height:1.3;letter-spacing:-.7px}
+.paid-picks-intro{font-size:13px;line-height:1.7;color:var(--mut);margin-top:8px}
+.paid-picks-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.paid-picks-group h3{font-size:14px;margin-bottom:12px;line-height:1.5}
+.paid-picks-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.paid-pick{min-width:0;display:flex;flex-direction:column}
+.paid-pick-poster{border:0;padding:0;cursor:pointer;background:var(--bg2);width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;position:relative}
+.paid-pick-poster img{width:100%;height:100%;object-fit:cover;display:block}
+.paid-pick-model{font-size:12px;font-weight:800;margin:10px 0 5px;color:var(--t2);height:18px;line-height:18px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.paid-pick-title{font-size:13px;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere;font-weight:800;height:3em;min-height:3em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.paid-pick-format{font-size:11px;color:var(--mut);margin-top:8px;line-height:1.5;height:16.5px;white-space:nowrap}
+.paid-pick-intensity{align-items:center;gap:7px;height:24px;margin-top:6px;font-size:11px;color:var(--mut)}
+.paid-pick-meter{display:flex;align-items:center;gap:3px;flex:1;max-width:100px}
+.paid-pick-meter span{height:6px;flex:1;border-radius:2px;background:var(--w4)}
+.paid-pick-meter span[data-filled="true"]{background:var(--acc)}
+.paid-pick-level{font-size:10px;font-variant-numeric:tabular-nums;min-width:25px;text-align:right}
+.paid-pick-price{font-size:16px;font-weight:900;letter-spacing:-.3px;margin-top:4px}
+.paid-pick-link{display:flex;justify-content:center;align-items:center;min-height:42px;margin-top:12px;padding:9px 7px;border:1px solid var(--line);border-radius:7px;background:var(--bg0);color:var(--txt);font-size:12px;font-weight:800;text-align:center;line-height:1.4}
+.paid-pick-link:hover{border-color:var(--acc);color:var(--acc2)}
+.paid-picks :focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.recent-disclosure{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.recent-disclosure summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;list-style:none;cursor:pointer;color:var(--t2);font-size:13px;font-weight:700}
+.recent-disclosure summary::-webkit-details-marker{display:none}
+.recent-disclosure summary:focus-visible{outline:2px solid var(--acc);outline-offset:4px;border-radius:4px}
+.recent-disclosure-action{font-size:12px;color:var(--mut);font-weight:500}
+.recent-disclosure .recent-collapse{display:none}
+.recent-disclosure[open] .recent-expand{display:none}
+.recent-disclosure[open] .recent-collapse{display:inline}
+@media(max-width:1000px){.paid-picks-groups{grid-template-columns:1fr}.paid-picks{padding:20px}}
+@media(max-width:480px){.paid-picks{padding:16px 12px}.paid-picks h2{font-size:21px}.paid-picks-grid{grid-template-columns:1fr}.paid-pick{display:grid;grid-template-columns:90px minmax(0,1fr);column-gap:12px;align-content:start}.paid-pick-poster{grid-column:1;grid-row:1 / span 6;align-self:start}.paid-pick-model,.paid-pick-title,.paid-pick-format,.paid-pick-intensity,.paid-pick-price,.paid-pick-link{grid-column:2}.paid-pick-model{margin-top:0}.paid-pick-link{margin-top:8px;min-height:38px}.paid-picks-grid{gap:20px}.paid-picks-groups{gap:24px}}
+
+/* One quiet shelf for releases that have left the newest banner. */
+.rediscovery{border-top:1px solid var(--line);padding-top:25px;scroll-margin-top:210px}
+.rediscovery-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
+.rediscovery h2{font-size:22px;line-height:1.4;letter-spacing:-.6px}
+.rediscovery-intro{font-size:13px;line-height:1.65;color:var(--mut);margin-top:7px}
+.rediscovery-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.rediscovery-tab{min-height:42px;padding:10px 15px;border:1px solid var(--line);border-radius:9px;background:var(--bg0);color:var(--t2);font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.rediscovery-tab span{margin-left:5px;font-size:11px;font-variant-numeric:tabular-nums;opacity:.7}
+.rediscovery-tab[aria-pressed="true"]{background:var(--txt);border-color:var(--txt);color:var(--bg0)}
+.rediscovery-summary{font-size:12px;line-height:1.7;color:var(--mut);margin:0 0 16px}
+.rediscovery-empty{padding:30px 10px;text-align:center;color:var(--mut);font-size:13px}
+.rediscovery-note{font-size:11px;line-height:1.7;color:var(--mut);margin-top:12px}
+.rediscovery-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+.rediscovery-card{min-width:0}
+.rediscovery-poster{display:block;width:100%;aspect-ratio:2/3;background:var(--bg2);border:0;border-radius:9px;padding:0;overflow:hidden;cursor:pointer}
+.rediscovery-poster img{width:100%;height:100%;object-fit:cover;display:block}
+.rediscovery-model{font-size:11px;color:var(--mut);margin-top:10px;line-height:18px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.rediscovery-title{font-size:13px;font-weight:800;line-height:1.5;margin-top:3px;height:3em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.rediscovery-meta{display:flex;flex-wrap:wrap;gap:3px 7px;font-size:11px;line-height:18px;color:var(--mut);margin:7px 0}
+.rediscovery-link{display:flex;align-items:center;justify-content:center;min-height:38px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:800;background:var(--bg0);color:var(--txt)}
+.rediscovery-link:hover{border-color:var(--acc);color:var(--acc2)}
+.rediscovery-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;flex-wrap:wrap}
+.rediscovery-pagination{display:flex;align-items:center;gap:9px}
+.rediscovery-count{font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;min-width:74px}
+.rediscovery-page-button{min-height:40px;padding:9px 13px;border:1px solid var(--line);border-radius:7px;background:var(--bg0);color:var(--txt);font-size:12px;font-weight:700;cursor:pointer}
+.rediscovery-random{border:0;padding:10px 0;background:transparent;color:var(--mut);font-size:12px;cursor:pointer;min-height:40px}
+.rediscovery :focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+@media(max-width:1000px){.rediscovery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){
+  .rediscovery{padding-top:20px}.rediscovery h2{font-size:21px}
+  .rediscovery-tabs{gap:6px}.rediscovery-tab{padding:9px 10px;font-size:12px}.rediscovery-tab span{margin-left:3px}
+  .rediscovery-grid{display:flex;overflow-x:auto;gap:12px;padding:2px 3px 12px;scroll-snap-type:x proximity}
+  .rediscovery-card{flex:0 0 144px;scroll-snap-align:start}
+  .rediscovery-pagination{width:100%;justify-content:flex-end}
+  .rediscovery-count{margin-right:auto}.rediscovery-random{padding:0;min-height:32px}
+}
+
+/* Every calendar cover is independently operable; clip blur inside its button. */
+.calendar-thumb{display:block;padding:0;border:0;border-radius:6px;background:var(--bg2);overflow:hidden;cursor:pointer;color:inherit;flex:0 0 auto}
+.calendar-thumb:focus-visible{outline:3px solid var(--acc);outline-offset:-3px}
+.mThs .calendar-thumb{width:calc(50% - 2px);aspect-ratio:3/4}
+.mThs.one .calendar-thumb{width:100%;aspect-ratio:3/4}
+.mThs .calendar-thumb img,.mThs.one .calendar-thumb img{width:100%;height:100%;aspect-ratio:auto;object-fit:cover;display:block;border-radius:0}
+.mLrow{cursor:default}
+.mLthumbs{overflow-x:auto;padding:3px 2px;min-width:0;scrollbar-width:thin}
+.mLthumbs .calendar-thumb{width:44px;height:58px}
+.mLthumbs .calendar-thumb img{width:100%;height:100%;border-radius:0;display:block}
+.quick-nav .qItem:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:8px}
+
 </style>
 </helmet>
 
@@ -357,7 +565,7 @@ select,input,button{font-family:inherit}
   </section>
 
   <div style="display:{{ pageHeadShow }};height:{{ stickyTop }}"></div>
-  <div style="position:sticky;z-index:70;top:{{ stickyTop }};background:linear-gradient(to bottom,var(--bg0) 62%,var(--hf0));padding:12px 0 16px">
+  <div class="quick-nav" style="position:sticky;z-index:70;top:{{ stickyTop }};background:var(--bg0);padding:10px 0 12px;border-bottom:1px solid var(--line)">
     <div class="qmenu" style="max-width:1360px;margin:0 auto;padding:0 {{ padX }}">
       <sc-for list="{{ qmenu }}" as="c" hint-placeholder-count="7">
         <a href="{{ c.href }}" class="qItem">
@@ -374,6 +582,38 @@ select,input,button{font-family:inherit}
       <button onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:13px;font-weight:800;padding:9px 15px;border-radius:999px;cursor:pointer" style-hover="border-color:var(--w5)">← 홈</button>
       <h1 style="font-size:23px;font-weight:900;letter-spacing:-.6px">{{ pageTitle }}</h1>
     </div>
+
+    <section id="paid-picks" class="paid-picks" aria-labelledby="paid-picks-title" style="display:{{ paidPickShow }}">
+      <div class="paid-picks-head"><div>
+        <h2 id="paid-picks-title">{{ paidPickTitle }}</h2>
+        <p class="paid-picks-intro">뭐 볼지 고민될 때, 여기서 골라보세요.</p>
+      </div></div>
+      <div class="paid-picks-groups">
+        <sc-for list="{{ paidPickGroups }}" as="g" hint-placeholder-count="0">
+          <div class="paid-picks-group"><h3>{{ g.title }}</h3>
+            <div class="paid-picks-grid">
+              <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="0">
+                <article class="paid-pick" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
+                  <button type="button" class="paid-pick-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
+                    <img loading="lazy" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
+                  </button>
+                  <div class="paid-pick-model">{{ p.model }}</div>
+                  <h4 class="paid-pick-title" title="{{ p.title }}">{{ p.title }}</h4>
+                  <div class="paid-pick-format">{{ p.format }} · 코인 개별 구매</div>
+                  <div class="paid-pick-intensity" style="display:{{ p.intensityShow }}" role="img" aria-label="{{ p.intensityLabel }}">
+                    <span aria-hidden="true">수위</span>
+                    <span class="paid-pick-meter" aria-hidden="true"><sc-for list="{{ p.intensityBars }}" as="bar" hint-placeholder-count="0"><span data-filled="{{ bar.filled }}"></span></sc-for></span>
+                    <span class="paid-pick-level" aria-hidden="true">{{ p.intensityText }}</span>
+                  </div>
+                  <div class="paid-pick-price">{{ p.price }}</div>
+                  <a class="paid-pick-link" href="{{ p.url }}" target="_blank" rel="noopener" aria-label="{{ p.linkLabel }}" onClick="{{ p.outbound }}">작품 보러 가기</a>
+                </article>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
 
     <section id="wish" style="display:{{ wishShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap">
@@ -399,19 +639,21 @@ select,input,button{font-family:inherit}
     </section>
 
     <section id="recent" style="display:{{ recentShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">최근 본 화보</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">RECENTLY VIEWED</span>
-      </div>
-      <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:10px">
-        <sc-for list="{{ recent }}" as="p" hint-placeholder-count="0">
-          <div onClick="{{ p.open }}" style="flex:0 0 auto;width:132px;cursor:pointer">
-            <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-              <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
+      <details class="recent-disclosure">
+        <summary aria-controls="recent-items">
+          <span>최근 본 화보</span>
+          <span class="recent-disclosure-action"><span class="recent-expand">펼치기 <span aria-hidden="true">⌄</span></span><span class="recent-collapse">접기 <span aria-hidden="true">⌃</span></span></span>
+        </summary>
+        <div id="recent-items" style="display:flex;gap:12px;overflow-x:auto;padding:2px 0 14px">
+          <sc-for list="{{ recent }}" as="p" hint-placeholder-count="0">
+            <div onClick="{{ p.open }}" style="flex:0 0 auto;width:132px;cursor:pointer">
+              <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
+                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
+              </div>
             </div>
-          </div>
-        </sc-for>
-      </div>
+          </sc-for>
+        </div>
+      </details>
     </section>
 
     <section id="ranking" style="display:{{ rankingShow }}">
@@ -557,6 +799,42 @@ select,input,button{font-family:inherit}
      </div>
     </section>
 
+    <section id="rediscovery" class="rediscovery" aria-labelledby="rediscovery-title" style="display:{{ rediscoveryShow }}">
+      <div class="rediscovery-heading"><div>
+        <h2 id="rediscovery-title">놓쳤다면, 여기서</h2>
+        <p class="rediscovery-intro">새로 나온 화보부터 지난 화보까지, 매일 다른 작품을 만나보세요.</p>
+      </div></div>
+      <div class="rediscovery-tabs" role="group" aria-label="공개 시기별 화보">
+        <sc-for list="{{ rediscoveryTabs }}" as="t" hint-placeholder-count="0">
+          <button type="button" class="rediscovery-tab" onClick="{{ t.select }}" aria-pressed="{{ t.selected }}" aria-controls="rediscovery-cards">{{ t.label }} <span>{{ t.count }}</span></button>
+        </sc-for>
+      </div>
+      <p class="rediscovery-summary" aria-live="polite">{{ rediscoverySummary }}</p>
+      <p class="rediscovery-empty" style="display:{{ rediscoveryEmptyShow }}">이 기간에 보여드릴 화보가 아직 없어요. 다른 기간을 골라보세요.</p>
+      <div id="rediscovery-cards" class="rediscovery-grid">
+        <sc-for list="{{ rediscoveryCards }}" as="p" hint-placeholder-count="0">
+          <article class="rediscovery-card" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
+            <button type="button" class="rediscovery-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
+              <img loading="lazy" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
+            </button>
+            <div class="rediscovery-model">{{ p.model }}</div>
+            <h3 class="rediscovery-title" title="{{ p.title }}">{{ p.title }}</h3>
+            <div class="rediscovery-meta"><span>{{ p.date }} 공개</span><span>{{ p.buy }}</span></div>
+            <a class="rediscovery-link" href="{{ p.url }}" target="_blank" rel="noopener" aria-label="{{ p.linkLabel }}" onClick="{{ p.outbound }}">작품 보기</a>
+          </article>
+        </sc-for>
+      </div>
+      <div class="rediscovery-footer">
+        <div class="rediscovery-pagination">
+          <span class="rediscovery-count" aria-live="polite" aria-atomic="true">{{ rediscoveryCount }}</span>
+          <button type="button" class="rediscovery-page-button" onClick="{{ rediscoveryPrev }}" aria-label="이전 화보 묶음 보기" aria-controls="rediscovery-cards" style="display:{{ rediscoveryPagingShow }}">이전</button>
+          <button type="button" class="rediscovery-page-button" onClick="{{ rediscoveryNext }}" aria-controls="rediscovery-cards" style="display:{{ rediscoveryPagingShow }}">다른 화보 보기</button>
+        </div>
+        <button type="button" class="rediscovery-random" onClick="{{ gacha }}">전체 화보에서 랜덤으로 골라보기</button>
+      </div>
+      <p class="rediscovery-note">첫 묶음은 매일 새롭게 골라드려요. ‘다른 화보 보기’로 더 둘러보세요.</p>
+    </section>
+
     <a href="https://bcut.maximkorea.net/?utm_source=bcutrank&utm_medium=rank_cta&utm_campaign=weekly_rank" target="_blank" style="display:{{ rankingShow }};text-decoration:none" onClick="{{ trackRankCta }}">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:linear-gradient(135deg,var(--acc),#ff5a63);border-radius:20px;padding:24px 26px;box-shadow:0 14px 34px rgba(230,0,18,.28)">
         <div style="min-width:0;flex:1 1 320px">
@@ -571,7 +849,7 @@ select,input,button{font-family:inherit}
 
     <section id="rising" style="display:{{ risingShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">요즘 폼 미친 라이징 <span style="color:var(--acc)">미스맥심</span></h2>
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">눈여겨볼 미스맥심</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">RISING · MISS MAXIM</span>
       </div>
       <div class="shelfRow" style="gap:18px;padding:6px 2px 6px">
@@ -905,28 +1183,10 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
-    <section id="livenow" style="display:{{ liveShow }}">
-      <div class="secHead"><h2><span class="liveDot"></span>지금 보는 중</h2><span class="en">다른 분들이 지금 보고 있어요</span></div>
-      <div class="shelfRow" style="gap:14px">
-        <sc-for list="{{ liveWorks }}" as="l" hint-placeholder-count="0">
-          <div onClick="{{ l.open }}" class="nwCard" style="cursor:pointer">
-            <div class="cvCard" style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
-              <img loading="lazy" src="{{ l.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ l.blur }}">
-              <div style="position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(6,6,9,.55),transparent);pointer-events:none"></div>
-              <span class="livePin" title="다른 분들이 지금 보고 있어요"></span>
-              <span class="cvCta sm">자세히 →</span>
-            </div>
-            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.title }}</div>
-            <div style="font-size:11px;color:var(--mut);margin-top:2px">{{ l.sub }}</div>
-          </div>
-        </sc-for>
-      </div>
-    </section>
-
-    <section id="newweek" style="display:{{ recentNewShow }}">
+<section id="newweek" style="display:{{ recentNewShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">이번 주 공개된 신작</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">NEW THIS WEEK</span>
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">최근 7일 신작</h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">총 {{ recentNewCount }}편 · 옆으로 넘겨보세요</span>
       </div>
       <div style="position:relative">
       <div class="shelfRow" style="gap:14px">
@@ -1193,7 +1453,7 @@ select,input,button{font-family:inherit}
             <div class="mCell {{ m.todayCls }}">
               <span class="mDay" style="display:{{ m.dayShow }}">{{ m.day }}</span>
               <div class="mThs {{ m.oneCls }}" style="display:{{ m.thShow }}">
-                <sc-for list="{{ m.thumbs }}" as="t" hint-placeholder-count="0"><img loading="lazy" src="{{ t.img }}" alt="" onClick="{{ t.open }}" style="cursor:pointer"></sc-for>
+                <sc-for list="{{ m.thumbs }}" as="t" hint-placeholder-count="0"><button type="button" class="calendar-thumb" data-work-id="{{ t.id }}" onClick="{{ t.open }}" aria-label="{{ t.infoLabel }}" title="{{ t.title }}"><img loading="lazy" src="{{ t.img }}" alt="" style="filter:{{ t.blur }}"></button></sc-for>
               </div>
             </div>
           </sc-for>
@@ -1201,10 +1461,10 @@ select,input,button{font-family:inherit}
       </div>
       <div class="monthList">
         <sc-for list="{{ monthList }}" as="l" hint-placeholder-count="0">
-          <div class="mLrow" onClick="{{ l.open }}">
+          <div class="mLrow" data-date="{{ l.date }}">
             <div class="mLdate {{ l.todayCls }}">{{ l.label }}</div>
             <div class="mLthumbs">
-              <sc-for list="{{ l.works }}" as="w" hint-placeholder-count="0"><img loading="lazy" src="{{ w.img }}" alt=""></sc-for>
+              <sc-for list="{{ l.works }}" as="w" hint-placeholder-count="0"><button type="button" class="calendar-thumb" data-work-id="{{ w.id }}" onClick="{{ w.open }}" aria-label="{{ w.infoLabel }}" title="{{ w.title }}"><img loading="lazy" src="{{ w.img }}" alt="" style="filter:{{ w.blur }}"></button></sc-for>
               <span class="mLmore" style="display:{{ l.moreShow }}">{{ l.more }}</span>
             </div>
           </div>
@@ -1226,9 +1486,7 @@ select,input,button{font-family:inherit}
   </footer>
 
   <button onClick="{{ toTop }}" style="position:fixed;right:20px;bottom:20px;z-index:80;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-size:19px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:{{ topOpacity }}">↑</button>
-  <button onClick="{{ gacha }}" title="오늘의 랜덤 B컷" class="gachaFab" style="position:fixed;right:20px;bottom:74px;z-index:80;align-items:center;gap:5px;height:46px;padding:0 15px;border-radius:23px;border:1px solid rgba(230,0,18,.5);background:var(--acc);color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(230,0,18,.34);display:{{ gachaShow }}">🎲 랜덤</button>
-
-  <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:200;background:rgba(4,4,6,.82);backdrop-filter:blur(6px);padding:22px;overflow-y:auto;display:flex;align-items:center;justify-content:center">
       <div onClick="{{ stop }}" style="position:relative;width:100%;max-width:540px;max-height:92vh;margin:auto;display:flex;flex-direction:column;background:var(--bg1);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.7);animation:fadeUp .22s ease">
         <button onClick="{{ closeModal }}" style="position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:0;font-size:14px;cursor:pointer">✕</button>
@@ -1300,7 +1558,7 @@ select,input,button{font-family:inherit}
             <span style="font-size:11.5px;font-weight:800;color:{{ modal.hypeColor }};display:{{ modal.hypeShow }}">{{ modal.hypeText }}</span>
             <span style="font-size:11px;font-weight:800;color:var(--t2);background:var(--w2);border:1px solid var(--line);padding:4px 10px;border-radius:999px;white-space:nowrap;margin-left:auto;display:{{ modal.buyTagShow }}">{{ modal.buyTag }}</span>
           </div>
-          <a href="{{ modal.cta }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--acc);color:#fff;font-weight:800;font-size:15.5px;padding:16px;border-radius:9px;box-shadow:0 10px 24px rgba(230,0,18,.34)">{{ modal.ctaLabel }}</a>
+          <a href="{{ modal.cta }}" target="_blank" rel="noopener" onClick="{{ modal.trackOutbound }}" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--acc);color:#fff;font-weight:800;font-size:15.5px;padding:16px;border-radius:9px;box-shadow:0 10px 24px rgba(230,0,18,.34)">{{ modal.ctaLabel }}</a>
           <div style="text-align:center;font-size:11px;font-weight:700;color:var(--mut);margin-top:8px;display:{{ modal.origHintShow }}">무삭제 원본 · 전체 컷은 B컷에서 볼 수 있어요</div>
         </div>
       </div>
@@ -1563,6 +1821,8 @@ class Component extends DCLogic {
 
   syncUrl(){
     try{const S=this.state,D=S.D,q=new URLSearchParams();
+      const previewQuery=new URLSearchParams(location.search);
+      ['admin','preview','measure'].forEach(key=>{if(previewQuery.get(key)==='1')q.set(key,'1');});
       const lastWi=(D&&D.weeks&&D.weeks.length)?D.weeks.length-1:0;
       if(S.tab==='models')q.set('tab','models');
       if(S.mode==='month')q.set('mode','month');
@@ -1575,9 +1835,65 @@ class Component extends DCLogic {
       history.replaceState(null,'',location.pathname+(qs?('?'+qs):'')+vh);
     }catch(e){}
   }
-  openWork(id){try{const a=[id].concat(this.state.recent.filter(x=>x!==id)).slice(0,12);localStorage.setItem('bcut_recent',JSON.stringify(a));this.setState({recent:a});}catch(e){}
+  rediscoveryQueue(works,config,day,excluded=[]){
+    const lo=config.minDays,hi=config.maxDays==null?Infinity:config.maxDays;
+    if(!Number.isInteger(lo)||lo<0||(hi!==Infinity&&(!Number.isInteger(hi)||hi<lo)))return [];
+    const stamp=Date.parse(day+'T00:00:00Z'),epoch=Math.floor(stamp/86400000);
+    if(!Number.isFinite(stamp))return [];
+    const skip=new Set(excluded.concat(config.excludeIds||[]).map(String));
+    const edges=(config.bandEdges||[]).filter(Number.isInteger).slice().sort((a,b)=>a-b);
+    const bands=Array.from({length:edges.length+1},()=>[]);
+    Object.keys(works).forEach(id=>{
+      const w=works[id];
+      if(!w||skip.has(id)||!w.img||!['코인','구독'].includes(w.buy)||!/^\d{4}-\d{2}-\d{2}$/.test(w.pub||''))return;
+      const pub=Date.parse(w.pub+'T00:00:00Z');
+      if(!Number.isFinite(pub)||new Date(pub).toISOString().slice(0,10)!==w.pub)return;
+      const ageDays=Math.round((stamp-pub)/86400000);
+      if(ageDays<lo||ageDays>hi)return;
+      const band=edges.findIndex(edge=>ageDays<=edge);
+      bands[band===-1?edges.length:band].push({id,ageDays});
+    });
+    // Rotate each age band by the Korean calendar day. No sales cutoff or popularity claim.
+    const queues=bands.map(items=>{
+      items.sort((a,b)=>works[a.id].pub.localeCompare(works[b.id].pub)||a.id.localeCompare(b.id));
+      const stride=bands.length===1?6:2;
+      const offset=items.length?((epoch*stride)%items.length+items.length)%items.length:0;
+      return items.slice(offset).concat(items.slice(0,offset));
+    });
+    const result=[];
+    while(queues.some(q=>q.length))queues.forEach(q=>result.push(...q.splice(0,2)));
+    // Distribute models across each six-card page without dropping eligible works.
+    if(!config.diversifyModels)return result;
+    const remaining=result.slice(),ordered=[];
+    while(remaining.length){
+      const seenModels=new Set();
+      for(let slot=0;slot<6&&remaining.length;slot++){
+        let at=remaining.findIndex(entry=>(works[entry.id].models||[]).every(model=>!seenModels.has(model)));
+        if(at<0)at=0;
+        const entry=remaining.splice(at,1)[0];ordered.push(entry);
+        (works[entry.id].models||[]).forEach(model=>seenModels.add(model));
+      }
+    }
+    return ordered;
+  }
+  trackRediscovery(event,context,origin){
+    try{
+      if(context && window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);
+    }catch(e){}
+  }
+  trackWorkOutbound(context){
+    if(context&&context.module==='rediscovery')this.trackRediscovery('bcut_rediscovery_outbound',context,'modal');
+    else this.trackPaidPick('bcut_exp_outbound',context,'modal');
+  }
+
+  trackPaidPick(event, context, origin){
+    try{
+      if(context && window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);
+    }catch(e){}
+  }
+  openWork(id,experiment=null){try{const a=[id].concat(this.state.recent.filter(x=>x!==id)).slice(0,12);localStorage.setItem('bcut_recent',JSON.stringify(a));this.setState({recent:a});}catch(e){}
     this.hit(id);
-    this.setState({modal:{kind:'work',id}});document.body.style.overflow='hidden';
+    this.setState({modal:{kind:'work',id,experiment}});document.body.style.overflow='hidden';
     try{if(!this._hist){history.pushState({m:1},'');this._hist=true;}}catch(e){}}
   /* 화보 조회 카운터: data.json 의 counterUrl 이 있으면 세션당 1회 집계 */
   hit(id){try{const D=this.state.D;const u=D&&D.counterUrl;if(!u||!id)return;
@@ -1854,7 +2170,7 @@ class Component extends DCLogic {
       nwGrid:S.mob?'repeat(3,1fr)':'repeat(auto-fill,minmax(150px,1fr))',
       mdCols:S.mob?'repeat(3,1fr)':'repeat(auto-fill,minmax(150px,1fr))',
       nwMoreShow:'none',nwMoreLabel:'',nwMore:()=>{},
-      liveShow:'none',liveWorks:[],monthShow:'none',monthCells:[],monthList:[],monthLabel2:'',monthEmptyShow:'none',calPrevShow:'none',calNextShow:'none',calPrev:()=>{},calNext:()=>{},
+      rediscoveryShow:'none',rediscoveryCards:[],rediscoveryTabs:[],rediscoverySummary:'',rediscoveryEmptyShow:'none',rediscoveryPrev:()=>{},rediscoveryNext:()=>{},monthShow:'none',monthCells:[],monthList:[],monthLabel2:'',monthEmptyShow:'none',calPrevShow:'none',calNextShow:'none',calPrev:()=>{},calNext:()=>{},
       secGap:S.mob?'46px':'64px',
       h2Size:S.mob?'17px':'19px',
       hdrBg:S.scrolled?(dark?'rgba(7,7,10,.92)':'rgba(255,255,255,.93)'):'var(--hdrTop)',
@@ -2291,7 +2607,8 @@ class Component extends DCLogic {
     const wkAgoStr=_wa.getFullYear()+'-'+_p2(_wa.getMonth()+1)+'-'+_p2(_wa.getDate());
     const rnAll=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>=wkAgoStr&&W[id].pub<=today)
       .sort((a,b)=>W[b].pub.localeCompare(W[a].pub)||(+b-+a));
-    const rnShown=rnAll.slice(0,S.nwn);
+    const rnShown=rnAll;
+    base.recentNewCount=rnAll.length;
     if(rnShown.length){base.recentNewShow='block';base.recentNew=rnShown.map(id=>({img:W[id].img||'',blur:this.blurOf(id),
       cap:W[id].pub===today?'오늘 공개':(this.fmt(W[id].pub)+' 공개'),
       title:this.splitTitle(W[id].title||id).name,
@@ -2317,7 +2634,7 @@ class Component extends DCLogic {
           try{localStorage.setItem(_rk,JSON.stringify(this._risingIds));Object.keys(localStorage).forEach(k=>{if(k.indexOf('bcut_rising_')===0&&k!==_rk)localStorage.removeItem(k);});}catch(e){}
         }
       }
-      const _rid=(this._risingIds||[]).filter(id=>W[id]);
+      const _rid=(this._risingIds||[]).filter(id=>W[id]&&W[id].pub&&W[id].pub<=today);
       const _seenM=new Set();const _ring=[];
       /* ── 큐레이션 뱃지 판정용 사전 계산 (모델 단위) ── */
       const _mo=today.slice(0,7);
@@ -2326,16 +2643,16 @@ class Component extends DCLogic {
       const _60=new Date(today+'T00:00:00');_60.setDate(_60.getDate()-60);
       const _60s=_60.getFullYear()+'-'+_p2(_60.getMonth()+1)+'-'+_p2(_60.getDate());
       const _mcount={},_first={},_todayM=new Set();
-      Object.keys(W).forEach(id=>{const w=W[id];if(!w||!w.pub)return;(w.models||[]).forEach(mm=>{mm=(mm||'').trim();if(!MSM.has(mm))return;if(w.pub.slice(0,7)===_mo)_mcount[mm]=(_mcount[mm]||0)+1;if(!_first[mm]||w.pub<_first[mm])_first[mm]=w.pub;if(w.pub===today)_todayM.add(mm);});});
+      Object.keys(W).forEach(id=>{const w=W[id];if(!w||!w.pub||w.pub>today)return;(w.models||[]).forEach(mm=>{mm=(mm||'').trim();if(!MSM.has(mm))return;if(w.pub.slice(0,7)===_mo)_mcount[mm]=(_mcount[mm]||0)+1;if(!_first[mm]||w.pub<_first[mm])_first[mm]=w.pub;if(w.pub===today)_todayM.add(mm);});});
       /* 역주행: 이번주 랭킹에 든 60일+ 구작이 신규진입/순위상승 → 그 모델 */
       const _wi=this.state.wi;const _retro=new Set();
-      try{this.weekWorks(_wi).forEach(x=>{const w=W[x.id];if(!w||!w.pub||w.pub>_60s)return;const _pr=this.workRankAt(x.id,_wi-1);if(!_pr||x.rank<=_pr){(w.models||[]).forEach(mm=>{mm=(mm||'').trim();if(MSM.has(mm))_retro.add(mm);});}});}catch(e){}
+      try{this.weekWorks(_wi).forEach(x=>{const w=W[x.id];if(!w||!w.pub||w.pub>_60s)return;const _pr=this.workRankAt(x.id,_wi-1);if(!_pr||x.rank<_pr){(w.models||[]).forEach(mm=>{mm=(mm||'').trim();if(MSM.has(mm))_retro.add(mm);});}});}catch(e){}
       const _badge=(m)=>{
         if(_todayM.has(m))return{t:'🏆 NEW',c:'#f5a623'};
         if(_first[m]&&_first[m]>=_90s)return{t:'⚡ 신예',c:'#8b5cf6'};
         if(_retro.has(m))return{t:'🔥 이번 주 역주행',c:'#E60012'};
         if((_mcount[m]||0)>=2)return{t:'📚 이번 달 '+_mcount[m]+'편',c:'#12b886'};
-        return{t:'🚀 급상승',c:'#ff7a3d'};
+        return{t:'화보 둘러보기',c:'var(--mut)'};
       };
       _rid.forEach(id=>{const w=W[id];const m=((w.models||[]).map(x=>(x||'').trim()).find(x=>MSM.has(x))||'').trim();if(!m||_seenM.has(m))return;_seenM.add(m);
         const _b=_badge(m);
@@ -2357,52 +2674,37 @@ class Component extends DCLogic {
       }
     }catch(e){}
 
-    /* 홈 추가: 지금 보는 중 (랜덤 화보 + 실시간 느낌) */
-    const _allIds=Object.keys(W);
-    if(_allIds.length&&(!this._liveIds||this._liveIds.length===0)){
-      const sd=this._liveSeed||(this._liveSeed=Math.floor(Math.random()*100000)+1);
-      const sh=_allIds.slice();
-      for(let i=sh.length-1;i>0;i--){const j=(sd*(i+7)+i*131)%(i+1);const t=sh[i];sh[i]=sh[j];sh[j]=t;}
-      this._liveIds=sh.slice(0,8);
-    }
-    const _bset=['🔥 HOT','지금 인기','주목','많이 봐요'];
-    base.liveWorks=(this._liveIds||[]).filter(id=>W[id]).map(id=>{const w=W[id];
-      const h=id.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-      return {img:w.img||'',blur:this.blurOf(id),title:this.splitTitle(w.title||id).name,
-        sub:(w.models||[]).join(' & ')||'MAXIM B컷',badge:_bset[h%_bset.length],open:()=>this.openWork(id)};});
-    base.liveShow=(V==='home'&&base.liveWorks.length)?'block':'none';
-
-    /* 홈 추가: 공개 캘린더 (월 이동 가능 · PC 격자 / 모바일 리스트) */
-    const _cbase=new Date(today+'T00:00:00');
-    const _monthsWith=new Set();
-    Object.keys(W).forEach(id=>{const p=W[id]&&W[id].pub;if(p&&/^\d{4}-\d{2}/.test(p)){const pp=p.split('-');_monthsWith.add((+pp[0])*12+(+pp[1]-1));}});
-    const _curM=_cbase.getFullYear()*12+_cbase.getMonth();
-    const _allM=[..._monthsWith,_curM];
-    const _minOff=Math.min(..._allM)-_curM, _maxOff=Math.max(..._allM)-_curM;
-    const _off=Math.max(_minOff,Math.min(_maxOff,this.state.calMoff||0));
+    /* Calendar: each cover has its own work ID, blur, and keyboard-accessible button. */
+    const _cbase=new Date(today+'T00:00:00'),_curM=_cbase.getFullYear()*12+_cbase.getMonth();
+    const _allM=Object.keys(W).map(id=>W[id].pub).filter(p=>/^\d{4}-\d{2}-\d{2}$/.test(p||''))
+      .map(p=>Number(p.slice(0,4))*12+Number(p.slice(5,7))-1);
+    _allM.push(_curM);
+    const _minOff=Math.min(..._allM)-_curM,_maxOff=Math.max(..._allM)-_curM;
+    const _off=Math.max(_minOff,Math.min(_maxOff,S.calMoff||0));
     const _td=new Date(_cbase.getFullYear(),_cbase.getMonth()+_off,1),_y=_td.getFullYear(),_mo=_td.getMonth();
-    const _lead=(new Date(_y,_mo,1).getDay()+6)%7, _dim=new Date(_y,_mo+1,0).getDate();
+    const _lead=(new Date(_y,_mo,1).getDay()+6)%7,_dim=new Date(_y,_mo+1,0).getDate();
     const _pubOf=ymd=>Object.keys(W).filter(id=>W[id].pub===ymd);
+    const calendarItem=id=>{
+      const w=W[id],title=this.splitTitle(w.title||id).name;
+      return {id,img:w.img||'',title,blur:this.blurOf(id),
+        infoLabel:title+' 작품 정보'+(w.pub>today?' · '+this.fmt(w.pub)+' 공개 예정':''),open:()=>this.openWork(id)};
+    };
     base.monthLabel2=_y+'년 '+(_mo+1)+'월';
-    base.calPrevShow=_off>_minOff?'flex':'none';
-    base.calNextShow=_off<_maxOff?'flex':'none';
-    base.calPrev=()=>this.setState({calMoff:Math.max(_minOff,(this.state.calMoff||0)-1)});
-    base.calNext=()=>this.setState({calMoff:Math.min(_maxOff,(this.state.calMoff||0)+1)});
+    base.calPrevShow=_off>_minOff?'flex':'none';base.calNextShow=_off<_maxOff?'flex':'none';
+    base.calPrev=()=>this.setState({calMoff:Math.max(_minOff,_off-1)});
+    base.calNext=()=>this.setState({calMoff:Math.min(_maxOff,_off+1)});
     base.monthCells=[];
     for(let i=0;i<_lead;i++)base.monthCells.push({todayCls:'',dayShow:'none',day:'',thShow:'none',oneCls:'',thumbs:[]});
-    for(let d=1;d<=_dim;d++){const ymd=_y+'-'+_p2(_mo+1)+'-'+_p2(d);const rel=_pubOf(ymd);
-      base.monthCells.push({todayCls:ymd===today?'mToday':'',dayShow:'flex',day:String(d),
-        thShow:rel.length?'flex':'none',oneCls:rel.length===1?'one':'',
-        thumbs:rel.map(id=>({img:W[id].img||'',open:()=>this.openWork(id)}))});}
     base.monthList=[];const _wn=['일','월','화','수','목','금','토'];
-    for(let d=1;d<=_dim;d++){const ymd=_y+'-'+_p2(_mo+1)+'-'+_p2(d);const rel=_pubOf(ymd);
-      if(!rel.length)continue;const dd=new Date(_y,_mo,d);const firstId=rel[0];
-      base.monthList.push({label:(_mo+1)+'.'+d+' ('+_wn[dd.getDay()]+')',todayCls:ymd===today?'mToday':'',
-        works:rel.slice(0,6).map(id=>({img:W[id].img||''})),
-        moreShow:rel.length>6?'inline':'none',more:rel.length>6?('+'+(rel.length-6)):'',
-        open:()=>this.openWork(firstId)});}
+    for(let d=1;d<=_dim;d++){
+      const ymd=_y+'-'+_p2(_mo+1)+'-'+_p2(d),rel=_pubOf(ymd),items=rel.map(calendarItem);
+      base.monthCells.push({todayCls:ymd===today?'mToday':'',dayShow:'flex',day:String(d),
+        thShow:rel.length?'flex':'none',oneCls:rel.length===1?'one':'',thumbs:items});
+      if(rel.length)base.monthList.push({date:ymd,label:(_mo+1)+'.'+d+' ('+_wn[new Date(_y,_mo,d).getDay()]+')',
+        todayCls:ymd===today?'mToday':'',works:items,moreShow:'none',more:''});
+    }
     base.monthEmptyShow=base.monthList.length?'none':'block';
-    base.monthShow=(V==='home')?'block':'none';
+    base.monthShow=V==='home'?'block':'none';
 
     /* 위시리스트 */
     const wl=wish.filter(id=>W[id]);
@@ -2619,6 +2921,7 @@ class Component extends DCLogic {
           simShow:'none',simLabel:'이 화보와 비슷한',similar:[],
           gridShow:others.length?'block':'none',gridLabel:'이 모델의 다른 화보',
           others:others.map(x=>({img:W[x].img||'',blur:this.blurOf(x),open:()=>this.openWork(x)})),
+          trackOutbound:()=>this.trackWorkOutbound(S.modal.experiment),
           cta:'https://bcut.maximkorea.net/work/'+id,ctaLabel:_subActive?'구독하고 보기 ›':'코인으로 바로 보기 ›',origHintShow:'block',
           buyRowShow:'flex',buyTagShow:'inline-block',buyTag:_subActive?'구독 전용 · 월 ₩19,900':'개별 구매',
           hypeShow:(wr&&wr<=10)?'inline-flex':'none',hypeColor:(wr&&wr<=3)?'var(--acc)':'var(--mut)',hypeText:(wr&&wr<=3)?('🔥 이번 주 #'+wr+' · 지금 인기'):((wr&&wr<=10)?('이번 주 랭킹 #'+wr):''),
@@ -2640,11 +2943,11 @@ class Component extends DCLogic {
             why:(w.photo&&W[o.x].photo===w.photo)?('작가 '+w.photo):((W[o.x].models||[]).join(' & ')||''),
             open:()=>this.openWork(o.x)}));}
       }else if(S.modal.kind==='rising'){const nm=S.modal.id;
-        const mworks=Object.keys(W).filter(id=>W[id]&&W[id].img&&(W[id].models||[]).map(m=>(m||'').trim()).includes(nm))
+        const mworks=Object.keys(W).filter(id=>W[id]&&W[id].img&&W[id].pub&&W[id].pub<=today&&(W[id].models||[]).map(m=>(m||'').trim()).includes(nm))
           .sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
         const hid=mworks[0]||'';const hw=W[hid]||{};
         base.modal={coverShow:'block',img:hw.img||'',bgImg:'url('+(hw.img||'')+')',blur:this.blurOf(hid),
-          title:nm,tag:'🚀 이번 주 라이징 1픽',tagShow:'block',
+          title:nm,tag:'모델 컬렉션',tagShow:'block',
           model:'RISING · MISS MAXIM',
           meta:'최근 화보 '+mworks.length+'편',
           desc:'',descShow:'none',stats:[],
@@ -2654,7 +2957,7 @@ class Component extends DCLogic {
           others:mworks.slice(0,8).map(x=>({img:W[x].img||'',blur:this.blurOf(x),open:()=>this.openWork(x)})),
           cta:hid?('https://bcut.maximkorea.net/work/'+hid):'https://bcut.maximkorea.net',ctaLabel:'대표 화보 보러가기 ›',origHintShow:'none',
           buyRowShow:'flex',buyTagShow:'none',buyTag:'',
-          hypeShow:'inline-flex',hypeColor:'var(--acc)',hypeText:'🚀 급상승 라이징',
+          hypeShow:'none',hypeColor:'var(--acc)',hypeText:'',
           copy:()=>{try{navigator.clipboard.writeText(location.href);this.setState({copied:true});clearTimeout(this._cp);this._cp=setTimeout(()=>this.setState({copied:false}),1600);}catch(e){}},
           copyLabel:S.copied?'복사됨 ✓':'링크 복사',
           share:()=>{const u=hid?('https://bcut.maximkorea.net/work/'+hid):'https://bcut.maximkorea.net';
@@ -2702,10 +3005,95 @@ class Component extends DCLogic {
       base.searchShow=(V==='search')?'block':'none';
       base.pageHeadShow='flex';base.pageTitle=_titles[V]||'';
     }
+    // Public metadata only. Revenue and purchaser data stay outside data.json.
+    base.paidPickShow='none';base.paidPickGroups=[];base.paidPickIntensityNoteShow='none';
+    const experiment=D.revenueExperiment;
+    if(experiment && experiment.enabled === true && V==='home'){
+      const at=Number(S.now)||Date.now();
+      const starts=experiment.startsAt?Date.parse(experiment.startsAt):-Infinity;
+      const ends=experiment.endsAt?Date.parse(experiment.endsAt):Infinity;
+      if(at>=starts && at<ends){
+        const seen=new Set();
+        const hasIntensity=(experiment.groups||[]).some(g=>(g.items||[]).some(p=>Number.isInteger(p.intensity)&&p.intensity>=1&&p.intensity<=5));
+        base.paidPickIntensityNoteShow=hasIntensity?'block':'none';
+        base.paidPickGroups=(experiment.groups||[]).slice(0,2).map(g=>({title:g.title,items:(g.items||[]).filter(p=>{
+          const w=W[String(p.id)];if(!w||seen.has(String(p.id))||w.buy!=='코인'||(w.pub&&w.pub>today)||!Number.isFinite(p.coin)||p.coin<=0)return false;
+          seen.add(String(p.id));return true;
+        }).slice(0,3).map((p,i)=>{
+          const id=String(p.id),w=W[id],title=this.splitTitle(w.title||id).name;
+          const intensity=Number.isInteger(p.intensity)&&p.intensity>=1&&p.intensity<=5?p.intensity:null;
+          const context={experiment_id:experiment.id,work_id:id,selection_group:g.id,card_position:i+1};
+          return {id,title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model:(w.models||[]).join(' & '),
+            intensityShow:hasIntensity?'flex':'none',intensityText:intensity===null?'미등록':intensity+'/5',
+            intensityLabel:intensity===null?'수위 미등록':'운영자 수위 기준 5단계 중 '+intensity+'단계',intensityBars:[1,2,3,4,5].map(n=>({filled:String(intensity!==null&&n<=intensity)})),
+            format:p.format||'구성은 상세에서 확인',price:p.coin.toLocaleString('ko-KR')+'코인',
+            url:'https://bcut.maximkorea.net/work/'+id,infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보러 가기 (새 창)',
+            open:()=>{this.trackPaidPick('bcut_exp_card_open',context,'poster');this.openWork(id,context);},
+            outbound:()=>this.trackPaidPick('bcut_exp_outbound',context,'card')};
+        })})).filter(g=>g.items.length);
+        if(base.paidPickGroups.length===2 && base.paidPickGroups.every(g=>g.items.length===3)){base.paidPickShow='block';base.paidPickTitle=experiment.title;
+          base.paidPickPeriod=experiment.analysisStart+' ~ '+experiment.analysisEnd;
+          base.paidPickVerified=experiment.verifiedAt;}
+      }
+    }
+
+    // New releases and the older catalogue share one shelf; day boundary is Korea time.
+    base.rediscoveryShow='none';base.rediscoveryCards=[];base.rediscoveryTabs=[];
+    base.rediscoverySummary='';base.rediscoveryEmptyShow='none';
+    const rediscovery=D.rediscovery;
+    if(V==='home'&&rediscovery&&rediscovery.enabled===true){
+      const discoveryDay=new Date((Number(S.now)||Date.now())+9*3600000).toISOString().slice(0,10);
+      const excluded=base.paidPickShow==='block'?base.paidPickGroups.flatMap(g=>g.items.map(p=>p.id)):[];
+      const cacheKey=discoveryDay+'|'+excluded.join(',');
+      if(!this._rediscoveryCache||this._rediscoveryCache.key!==cacheKey||this._rediscoveryCache.works!==W||this._rediscoveryCache.config!==rediscovery){
+        const groups=(rediscovery.groups||[]).map(group=>({
+          ...group,queue:this.rediscoveryQueue(W,{...group,excludeIds:rediscovery.excludeIds||[],diversifyModels:true},discoveryDay,excluded)
+        }));
+        this._rediscoveryCache={key:cacheKey,works:W,config:rediscovery,groups};
+      }
+      const groups=this._rediscoveryCache.groups;
+      const group=groups.find(g=>g.id===S.rediscoveryGroup)||groups.find(g=>g.id===rediscovery.defaultGroup)||groups[0];
+      if(group&&groups.some(g=>g.queue.length)){
+        const queue=group.queue,size=6,pages=Math.ceil(queue.length/size);
+        this._rediscoveryCache.queue=queue;
+        const selectedPage=S.rediscoveryDay===discoveryDay?Number(S.rediscoveryPage)||0:0;
+        const page=pages?Math.max(0,Math.min(pages-1,selectedPage)):0;
+        const shown=queue.slice(page*size,(page+1)*size);
+        const resetScroll=()=>{const row=document.getElementById('rediscovery-cards');if(row)row.scrollLeft=0;};
+        base.rediscoveryTabs=groups.map(g=>({id:g.id,label:g.label,count:g.queue.length,
+          selected:String(g.id===group.id),select:()=>{
+            this.setState({rediscoveryGroup:g.id,rediscoveryDay:discoveryDay,rediscoveryPage:0});resetScroll();
+          }}));
+        base.rediscoverySummary=group.description;
+        const activeSubs=new Set(Object.keys(W).filter(id=>W[id].buy==='구독'&&W[id].pub&&W[id].pub<=discoveryDay)
+          .sort((a,b)=>W[b].pub.localeCompare(W[a].pub)).slice(0,4));
+        base.rediscoveryCards=shown.map((entry,i)=>{
+          const id=entry.id,w=W[id],title=this.splitTitle(w.title||id).name;
+          const context={module:'rediscovery',shelf_id:rediscovery.id,shelf_group:group.id,work_id:id,card_position:i+1,shelf_page:page+1,days_since_release:entry.ageDays};
+          const date=w.pub.slice(0,4)===discoveryDay.slice(0,4)?this.fmt(w.pub):w.pub.replace(/-/g,'.');
+          return {id,title,measureContext:JSON.stringify(context),img:w.img,blur:this.blurOf(id),model:(w.models||[]).join(' & '),date,
+            buy:activeSubs.has(id)?'구독':'개별 구매',url:'https://bcut.maximkorea.net/work/'+id,
+            infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보기 (새 창)',
+            open:()=>{this.trackRediscovery('bcut_rediscovery_open',context,'poster');this.openWork(id,context);},
+            outbound:()=>this.trackRediscovery('bcut_rediscovery_outbound',context,'card')};
+        });
+        base.rediscoveryShow='block';base.rediscoveryEmptyShow=shown.length?'none':'block';
+        base.rediscoveryCount=shown.length?(page*size+1)+'–'+(page*size+shown.length)+' / '+queue.length+'편':'0편';
+        base.rediscoveryPagingShow=pages>1?'inline-flex':'none';
+        const turn=delta=>{
+          if(!pages)return;
+          this.setState({rediscoveryGroup:group.id,rediscoveryDay:discoveryDay,rediscoveryPage:(page+delta+pages)%pages});resetScroll();
+        };
+        base.rediscoveryPrev=()=>turn(-1);base.rediscoveryNext=()=>turn(1);
+      }
+    }
+
+
     base.goHome=()=>this.goView('home');
     base.gacha=()=>this.gacha();
     base.gachaShow=(this.state.view==='home'||!this.state.view)?'inline-flex':'none';
     base.risingShow=base.risingShow||'none';base.rising=base.rising||[];
+    if(window.BCUTMeasurement)window.BCUTMeasurement.setBlocked(!!base.gate||!!base.modal||!!base.popup||V!=='home');
     return Object.assign(base,themeVals);
   }
 }

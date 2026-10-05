@@ -139,6 +139,106 @@ if(!window.BCUT_ANALYTICS_DISABLED){
 })();
 
 </script>
+<script>
+/* Presentation only: keep catalogue titles, prices and experiment IDs unchanged. */
+(() => {
+  const featuredNames = {
+    '2226': '물이 없는 목욕시간', '2224': 'VIP와의 애프터타임',
+    '2175': 'Real Doll', '2094': '정X범벅', '1910': '어른의 놀이', '2160': 'Nurse'
+  };
+  const fold = value => String(value || '').normalize('NFKC').toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
+  function title(value, data) {
+    const original = String(value || '').trim();
+    const prefix = original.match(/^([\[(（【][^\]\)）】]{1,24}[\]\)）】])\s*(.+)$/);
+    const tag = prefix ? prefix[1] : '';
+    const source = prefix ? prefix[2].trim() : original;
+    const featured = Object.keys(featuredNames).find(id => data?.works?.[id]?.title === original);
+    if (featured) return { tag, name: featuredNames[featured] };
+    let name = source
+      .replace(/\s*\[X(?:[- ]?level)?[- ]?\d+\]\s*/gi, ' ')
+      .replace(/[\p{Extended_Pictographic}\p{Emoji_Modifier}\uFE0F\u200D\u20E3]/gu, '')
+      .replace(/[（(]\s*(?:PHOTO\s*(?:\+|&)\s*VIDEO|VIDEO\s*(?:\+|&)\s*PHOTO)\s*[)）]/gi, '(사진 + 영상)')
+      .replace(/[（(]\s*PHOTO(?:\s*ONLY)?\s*[)）]/gi, '(사진)')
+      .replace(/[（(]\s*VIDEO(?:\s*ONLY)?\s*[)）]/gi, '(영상)')
+      .replace(/\s+/g, ' ').trim();
+    // A quoted name following a Latin model name is a common catalogue convention.
+    const quoted = name.match(/^[A-Za-z][A-Za-z ._-]*\s+['‘]([^'’]+)['’](\s*\([^)]*\))?$/);
+    if (quoted) name = quoted[1] + (quoted[2] || '');
+    return { tag, name: name || source || original };
+  }
+  function format(work, selection) {
+    const selected = String(selection?.format || '').trim();
+    if (selected === '사진') return '사진 화보';
+    if (selected === '영상') return '영상 화보';
+    if (selected === '영상 포함' || selected === '사진 + 영상') return '사진 + 영상';
+    const name = String(work.title || '');
+    if (/PHOTO\s*(?:\+|&)\s*VIDEO|VIDEO\s*(?:\+|&)\s*PHOTO/i.test(name)) return '사진 + 영상';
+    if (/VIDEO\s*ONLY|[（(]\s*VIDEO\s*[)）]/i.test(name)) return '영상 화보';
+    if (/PHOTO\s*ONLY|[（(]\s*PHOTO\s*[)）]/i.test(name)) return '사진 화보';
+    return work.vid ? '영상 포함' : '사진 화보';
+  }
+  function purchase(id, data, subActive) {
+    const work = data.works?.[id] || {};
+    const selected = (data.revenueExperiment?.groups || []).flatMap(group => group.items || [])
+      .find(item => String(item.id) === String(id));
+    const knownCoin = work.buy === '코인' && Number.isFinite(selected?.coin) && selected.coin > 0;
+    return {
+      format: format(work, selected),
+      price: subActive ? '월 19,900원' : knownCoin ? selected.coin.toLocaleString('ko-KR') + '코인' : '',
+      priceNote: subActive ? '구독으로 열람' : knownCoin ? '개별 구매' : '가격은 B컷에서 확인',
+      original: String(work.title || id)
+    };
+  }
+  function matches(work, id, query, data) {
+    const needle = fold(query);
+    return !needle || [work.title, title(work.title, data).name, ...(work.models || []), work.photo, id]
+      .some(value => fold(value).includes(needle));
+  }
+  window.BCUTCatalogueUI = Object.freeze({ title, format, purchase, matches });
+})();
+
+</script>
+<script>
+/* Shared, deterministic catalogue search. Public data remains untouched. */
+(() => {
+  const defaults = Object.freeze({q:'',modelSel:'all',searchCreator:'all',searchBuy:'all',yearSel:'all',searchVideo:false,searchAdult:false,searchRelease:'released',sort:'latest'});
+  function query(data, state, today, active, ranks) {
+    const works=data.works||{}, subscribed=new Set(active||[]);
+    const upcoming=state.searchRelease==='upcoming';
+    const ids=Object.keys(works).filter(id=>{
+      const w=works[id];
+      if(!w||!w.img)return false;
+      const future=!!w.pub&&w.pub>today;
+      if(future!==upcoming)return false;
+      if(state.q&&!window.BCUTCatalogueUI.matches(w,id,state.q,data))return false;
+      if(state.modelSel&&state.modelSel!=='all'&&!(w.models||[]).includes(state.modelSel))return false;
+      if(state.searchCreator&&state.searchCreator!=='all'&&(w.photo||'').trim()!==state.searchCreator)return false;
+      if(state.yearSel&&state.yearSel!=='all'&&(w.pub||'').slice(0,4)!==state.yearSel)return false;
+      const sub=upcoming?w.buy==='구독':subscribed.has(id);
+      if(state.searchBuy==='sub'&&!sub)return false;
+      if(state.searchBuy==='coin'&&(sub||!['코인','구독'].includes(w.buy)))return false;
+      if(state.searchVideo&&!w.vid)return false;
+      if(state.searchAdult&&!w.b19)return false;
+      return true;
+    });
+    const dateOrder=(a,b)=>(upcoming?1:-1)*(works[a].pub||'').localeCompare(works[b].pub||'')||a.localeCompare(b,undefined,{numeric:true});
+    ids.sort((a,b)=>state.sort==='popular'?((ranks?.[a]||Infinity)-(ranks?.[b]||Infinity))||dateOrder(a,b):dateOrder(a,b));
+    return ids;
+  }
+  function options(works) {
+    const models=new Map(),creators=new Map(),years=new Set();
+    Object.values(works).forEach(w=>{
+      [...new Set(w.models||[])].filter(Boolean).forEach(name=>models.set(name,(models.get(name)||0)+1));
+      const author=(w.photo||'').trim();if(author)creators.set(author,(creators.get(author)||0)+1);
+      if(/^\d{4}-/.test(w.pub||''))years.add(w.pub.slice(0,4));
+    });
+    const list=map=>[{v:'all',label:'전체'}].concat([...map].sort((a,b)=>a[0].localeCompare(b[0],'ko')).map(([v,n])=>({v,label:v+' ('+n+')'})));
+    return {models:list(models),creators:list(creators),years:[{v:'all',label:'전체'}].concat([...years].sort().reverse().map(y=>({v:y,label:y+'년'})))};
+  }
+  window.BCUTSearch=Object.freeze({defaults,query,options});
+})();
+
+</script>
 <script src="./support.js"></script>
 <!-- OneSignal 웹푸시 -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -389,41 +489,43 @@ select,input,button{font-family:inherit}
 @media(max-width:1000px){.paid-picks-groups{grid-template-columns:1fr}.paid-picks{padding:20px}}
 @media(max-width:480px){.paid-picks{padding:16px 12px}.paid-picks h2{font-size:21px}.paid-picks-grid{grid-template-columns:1fr}.paid-pick{display:grid;grid-template-columns:90px minmax(0,1fr);column-gap:12px;align-content:start}.paid-pick-poster{grid-column:1;grid-row:1 / span 6;align-self:start}.paid-pick-model,.paid-pick-title,.paid-pick-format,.paid-pick-intensity,.paid-pick-price,.paid-pick-link{grid-column:2}.paid-pick-model{margin-top:0}.paid-pick-link{margin-top:8px;min-height:38px}.paid-picks-grid{gap:20px}.paid-picks-groups{gap:24px}}
 
-/* One quiet shelf for releases that have left the newest banner. */
-.rediscovery{border-top:1px solid var(--line);padding-top:25px;scroll-margin-top:210px}
-.rediscovery-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
+/* One shelf using BCUT's existing palette and Pretendard type. */
+.rediscovery{border-top:1px solid var(--line);padding-top:28px;scroll-margin-top:160px}
+.rediscovery-heading{margin-bottom:20px}
 .rediscovery h2{font-size:22px;line-height:1.4;letter-spacing:-.6px}
-.rediscovery-intro{font-size:13px;line-height:1.65;color:var(--mut);margin-top:7px}
-.rediscovery-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.rediscovery-tab{min-height:42px;padding:10px 15px;border:1px solid var(--line);border-radius:9px;background:var(--bg0);color:var(--t2);font:inherit;font-size:13px;font-weight:800;cursor:pointer}
-.rediscovery-tab span{margin-left:5px;font-size:11px;font-variant-numeric:tabular-nums;opacity:.7}
-.rediscovery-tab[aria-pressed="true"]{background:var(--txt);border-color:var(--txt);color:var(--bg0)}
-.rediscovery-summary{font-size:12px;line-height:1.7;color:var(--mut);margin:0 0 16px}
-.rediscovery-empty{padding:30px 10px;text-align:center;color:var(--mut);font-size:13px}
-.rediscovery-note{font-size:11px;line-height:1.7;color:var(--mut);margin-top:12px}
-.rediscovery-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+.rediscovery-tabs{display:flex;gap:6px;border-bottom:1px solid var(--line)}
+.rediscovery-tab{min-height:48px;padding:10px 14px 12px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--mut);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.rediscovery-tab span{margin-left:5px;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
+.rediscovery-tab[aria-pressed="true"]{border-bottom-color:var(--acc);color:var(--txt);font-weight:900}
+.rediscovery-summary{font-size:12px;line-height:1.7;color:var(--mut);margin:12px 0 18px}
+.rediscovery-empty{padding:36px 12px;text-align:center;color:var(--mut);font-size:13px;line-height:1.7}
+.rediscovery-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:22px 14px}
 .rediscovery-card{min-width:0}
-.rediscovery-poster{display:block;width:100%;aspect-ratio:2/3;background:var(--bg2);border:0;border-radius:9px;padding:0;overflow:hidden;cursor:pointer}
-.rediscovery-poster img{width:100%;height:100%;object-fit:cover;display:block}
-.rediscovery-model{font-size:11px;color:var(--mut);margin-top:10px;line-height:18px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.rediscovery-title{font-size:13px;font-weight:800;line-height:1.5;margin-top:3px;height:3em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
-.rediscovery-meta{display:flex;flex-wrap:wrap;gap:3px 7px;font-size:11px;line-height:18px;color:var(--mut);margin:7px 0}
-.rediscovery-link{display:flex;align-items:center;justify-content:center;min-height:38px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:800;background:var(--bg0);color:var(--txt)}
+.rediscovery-poster{display:block;width:100%;aspect-ratio:2/3;background:var(--bg2);border:0;border-radius:7px;padding:0;overflow:hidden;cursor:pointer}
+.rediscovery-poster img{width:100%;height:100%;object-fit:contain;display:block}
+.rediscovery-model{font-size:12px;color:var(--mut);margin-top:10px;height:18px;line-height:18px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.rediscovery-title{font-size:14px;font-weight:800;line-height:1.45;margin-top:4px;height:2.9em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.rediscovery-meta{display:flex;flex-wrap:wrap;gap:2px 7px;font-size:11px;line-height:18px;min-height:36px;color:var(--mut);margin:7px 0}
+.rediscovery-link{display:flex;align-items:center;justify-content:center;min-height:42px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:800;background:var(--bg0);color:var(--txt)}
 .rediscovery-link:hover{border-color:var(--acc);color:var(--acc2)}
-.rediscovery-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;flex-wrap:wrap}
-.rediscovery-pagination{display:flex;align-items:center;gap:9px}
-.rediscovery-count{font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;min-width:74px}
-.rediscovery-page-button{min-height:40px;padding:9px 13px;border:1px solid var(--line);border-radius:7px;background:var(--bg0);color:var(--txt);font-size:12px;font-weight:700;cursor:pointer}
-.rediscovery-random{border:0;padding:10px 0;background:transparent;color:var(--mut);font-size:12px;cursor:pointer;min-height:40px}
+.rediscovery-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}
+.rediscovery-pagination{display:flex;align-items:center;gap:8px}
+.rediscovery-count{font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;line-height:1.6}
+.rediscovery-page-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:10px 15px;border:1px solid var(--line);border-radius:7px;background:var(--bg0);color:var(--txt);font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.rediscovery-page-button[aria-disabled="true"]{opacity:.4;cursor:default}
+.rediscovery-refresh{background:var(--txt);border-color:var(--txt);color:var(--bg0)}
+.rediscovery-refresh>span{font-size:20px;font-weight:400;line-height:1}
 .rediscovery :focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.rediscovery.rediscovery-page{border-top:0;padding-top:0}
+.rediscovery-page .rediscovery-heading{display:none}
 @media(max-width:1000px){.rediscovery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){
-  .rediscovery{padding-top:20px}.rediscovery h2{font-size:21px}
-  .rediscovery-tabs{gap:6px}.rediscovery-tab{padding:9px 10px;font-size:12px}.rediscovery-tab span{margin-left:3px}
-  .rediscovery-grid{display:flex;overflow-x:auto;gap:12px;padding:2px 3px 12px;scroll-snap-type:x proximity}
-  .rediscovery-card{flex:0 0 144px;scroll-snap-align:start}
-  .rediscovery-pagination{width:100%;justify-content:flex-end}
-  .rediscovery-count{margin-right:auto}.rediscovery-random{padding:0;min-height:32px}
+  .rediscovery{padding-top:24px}.rediscovery h2{font-size:21px}.rediscovery-heading{margin-bottom:14px}
+  .rediscovery-tab{padding:10px 10px 12px;font-size:14px}.rediscovery-tab span{margin-left:4px}
+  .rediscovery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}
+  .rediscovery-poster{aspect-ratio:auto;height:clamp(172px,47vw,232px)}
+  .rediscovery-model{margin-top:8px}
+  .rediscovery-footer{gap:8px}.rediscovery-page-button{padding:10px 12px}
 }
 
 /* Every calendar cover is independently operable; clip blur inside its button. */
@@ -437,6 +539,134 @@ select,input,button{font-family:inherit}
 .mLthumbs .calendar-thumb{width:44px;height:58px}
 .mLthumbs .calendar-thumb img{width:100%;height:100%;border-radius:0;display:block}
 .quick-nav .qItem:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:8px}
+
+/* BCUT: retain the existing theme; let the covers carry the colour. */
+.paid-pick-group-label{display:none}
+.paid-pick-format{overflow:hidden;text-overflow:ellipsis}
+.work-dialog:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.work-dialog-model{font-size:13px;color:var(--acc2);font-weight:800;text-align:center;margin:0 0 6px}
+.work-dialog-title{font-size:23px;font-weight:900;line-height:1.3;letter-spacing:-.5px;text-align:center;word-break:keep-all;overflow-wrap:anywhere}
+.work-purchase-info{margin:18px 0 12px;padding:15px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);align-items:center;justify-content:space-between;gap:12px}
+.work-purchase-format{font-size:14px;font-weight:800;color:var(--t2)}
+.work-purchase-price{text-align:right}
+.work-purchase-price strong{display:block;font-size:21px;line-height:1.3;font-weight:900;letter-spacing:-.5px}
+.work-purchase-price small{display:block;font-size:12px;line-height:1.5;color:var(--mut);margin-top:3px}
+.work-original-title{margin:12px 0;color:var(--mut);font-size:12px;line-height:1.6}
+.work-original-title summary{cursor:pointer;width:fit-content;padding:5px 0}
+.work-original-title p{margin-top:6px;overflow-wrap:anywhere;color:var(--t2)}
+.modal-rank-details{margin-top:16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:0 0 2px}
+.modal-rank-details>summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;font-weight:700;font-size:13px;color:var(--t2)}
+.modal-rank-details>summary::-webkit-details-marker{display:none}
+.modal-rank-details>summary:after{content:'+';font-size:19px;font-weight:400}
+.modal-rank-details[open]>summary:after{content:'−'}
+.modal-rank-details[open]{padding-bottom:16px}
+.modal-rank-details:focus-within,.work-original-title:focus-within{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+.work-dialog-footer-price{font-size:17px;font-weight:900;white-space:nowrap}
+@media(max-width:600px){
+  .paid-picks{padding:16px 12px}
+  .paid-picks h2{font-size:21px}
+  .paid-picks-head{margin-bottom:16px}
+  .paid-picks-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}
+  .paid-picks-group,.paid-picks-grid{display:contents}
+  .paid-picks-group>h3{display:none}
+  .paid-pick{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:4px;align-content:start;row-gap:0}
+  .paid-pick-poster{grid-column:1 / -1;grid-row:2;aspect-ratio:auto;height:clamp(160px,45vw,184px);border-radius:7px;align-self:start;background:var(--bg2)}
+  .paid-pick-poster img{object-fit:contain}
+  .paid-pick-model{grid-column:1;grid-row:3;height:18px;font-size:12px;line-height:18px;margin:8px 0 0}
+  .paid-pick-price{grid-column:2;grid-row:3;margin:8px 0 0;font-size:14px;line-height:18px;letter-spacing:-.5px}
+  .paid-pick-title{grid-column:1 / -1;grid-row:4;font-size:14px;line-height:1.4;height:1.4em;min-height:1.4em;margin-top:4px;white-space:nowrap;display:block;text-overflow:ellipsis}
+  .paid-pick-format{grid-column:1 / -1;grid-row:5;margin-top:3px;height:17px;font-size:11px;line-height:17px}
+  .paid-pick-intensity{grid-column:1 / -1;grid-row:6;margin-top:3px;height:18px;gap:5px}
+  .paid-pick-meter{max-width:76px}
+  .paid-pick-link{grid-column:1 / -1;grid-row:7;margin-top:7px;min-height:42px;padding:8px 4px;font-size:12px}
+  .work-dialog-overlay{padding:12px!important}
+  .work-dialog{max-height:calc(100dvh - 24px)!important}
+  .work-dialog-cover{max-height:220px!important}
+  .work-dialog-body{padding:18px 20px 22px!important}
+  .work-dialog-title{font-size:22px}
+  .work-purchase-info{margin-top:14px;padding:12px 0}
+  .work-purchase-price strong{font-size:20px}
+  .work-dialog-footer{padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))!important}
+}
+@media(max-width:360px){.paid-pick-title{font-size:13px}.paid-pick-price{font-size:13px}}
+
+/* Compact navigation and catalogue controls, in BCUT's existing type and palette. */
+.primary-nav a{display:flex;align-items:center;min-height:44px;padding:8px 10px;border-radius:6px;font-size:13px;font-weight:700;color:var(--t2)}
+.primary-nav a[aria-current="page"]{color:var(--acc);background:var(--w1)}
+.primary-nav a:hover{color:var(--acc)}
+.quick-nav{display:none}
+.nav-more-trigger{font:inherit;background:transparent;border:0;cursor:pointer;color:var(--t2);padding:0}
+.nav-more-dots{font-size:22px;letter-spacing:2px;line-height:25px}
+.nav-dismiss{position:fixed;inset:0;border:0;background:transparent;z-index:65;cursor:default}
+.nav-more-panel{position:absolute;right:16px;top:calc(100% + 6px);width:min(320px,calc(100vw - 32px));padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--bg0);box-shadow:0 14px 32px rgba(0,0,0,.15)}
+.nav-more-panel a{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:10px 14px;border-radius:7px;font-size:14px;font-weight:700;color:var(--t2)}
+.nav-more-panel a:hover,.nav-more-panel a[aria-current="page"]{background:var(--w1);color:var(--acc)}
+.primary-nav a:focus-visible,.quick-nav button:focus-visible,.nav-more-panel a:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(min-width:1100px){#hdrNav{display:flex!important}.nav-dismiss{display:none!important}header>div:first-child{gap:12px!important}.primary-nav{gap:0!important;margin-left:0!important}}
+@media(max-width:1099px){
+  #hdrNav{display:none!important}.quick-nav{display:block;padding:5px 0 7px!important}
+  .quick-nav .qmenu{gap:4px}.quick-nav .qItem{gap:3px;min-height:51px;justify-content:center;border-radius:8px}
+  .quick-nav .qIcon{width:27px;height:27px;border:0!important;box-shadow:none;background:transparent!important;border-radius:0}
+  .quick-nav .qIcon i{width:23px;height:23px;background:var(--t2)!important}
+  .quick-nav .qItem[aria-current="page"] .qIcon i{background:var(--acc)!important}
+  .quick-nav .qItem[aria-current="page"] .qLabel,.quick-nav .nav-more-trigger[aria-expanded="true"]{color:var(--acc)!important}
+  .quick-nav .qLabel{font-size:12px;line-height:17px}
+}
+.search-home-title{font-size:21px;font-weight:900;letter-spacing:-.4px;margin-bottom:18px}
+.search-controls{border-bottom:1px solid var(--line);padding-bottom:18px}
+.search-input-wrap{position:relative}
+.search-input-wrap input{width:100%;height:52px;padding:12px 48px 12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--bg1);color:var(--txt);font:inherit;font-size:16px;outline:none}
+.search-input-wrap input:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(230,0,18,.08)}
+.search-input-wrap input::-webkit-search-cancel-button{display:none}
+.search-query-clear{position:absolute;top:4px;right:4px;align-items:center;justify-content:center;width:44px;height:44px;font-size:24px;border:0;background:transparent;color:var(--mut);cursor:pointer}
+.search-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.search-people label,.search-extra-panel>label:not(.search-check){min-width:0;display:flex;align-items:center;gap:10px;padding:0 12px;border:1px solid var(--line);border-radius:8px;color:var(--mut);font-size:12px;font-weight:700}
+.search-people label,.search-extra-panel>label:not(.search-check){white-space:nowrap}
+.search-people select,.search-extra-panel select{flex:1;min-width:0;width:0;height:44px;border:0;background:transparent;color:var(--txt);font:inherit;font-size:13px;cursor:pointer}
+#search option{background:var(--bg0);color:var(--txt)}
+.search-purchase-row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-top:12px}
+.search-purchase{display:flex;align-items:center;gap:3px;padding:3px;border:1px solid var(--line);border-radius:9px}
+.search-purchase button{padding:8px 17px;min-height:36px;border:0;background:transparent;border-radius:6px;font-size:13px;font-weight:700;color:var(--t2);cursor:pointer;white-space:nowrap}
+.search-purchase button[aria-pressed="true"]{background:var(--txt);color:var(--bg0)}
+.search-extra{flex:1;min-width:140px}
+.search-extra>summary{margin-left:auto;width:fit-content;min-height:44px;display:flex;gap:12px;align-items:center;cursor:pointer;list-style:none;font-size:13px;font-weight:700;padding:8px 12px;color:var(--t2)}
+.search-extra>summary::-webkit-details-marker{display:none}.search-extra>summary:after{content:'+';font-size:18px}.search-extra[open]>summary:after{content:'−'}
+.search-extra-panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px 0 0}
+.search-check{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;cursor:pointer;color:var(--t2)}
+.search-check input{width:18px;height:18px;accent-color:var(--acc)}
+.search-chips{align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.search-chips button{display:flex;align-items:center;gap:10px;max-width:100%;min-height:34px;border:1px solid var(--line);padding:6px 10px;border-radius:6px;background:var(--w1);color:var(--t2);font-size:12px;cursor:pointer}
+.search-chips button span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:230px}
+.search-chips .search-reset{background:transparent;border-color:transparent;text-decoration:underline;color:var(--mut)}
+.search-result-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0}
+.search-result-count{font-size:14px;font-weight:800;margin-right:auto}
+.search-result-bar select{min-height:40px;max-width:130px;border:0;background:var(--bg0);color:var(--t2);font-size:13px;font-weight:700;cursor:pointer}
+.search-random{min-height:40px;align-items:center;border:1px solid var(--line);border-radius:7px;background:transparent;padding:8px 12px;font-size:12px;font-weight:700;color:var(--t2);cursor:pointer}
+.search-scope-note{font-size:13px;color:var(--mut);margin:0 0 16px;line-height:1.6}
+.search-results{display:grid;gap:24px 16px}
+.search-result{display:flex;flex-direction:column;min-width:0;border:0;background:transparent;text-align:left;color:var(--txt);font:inherit;cursor:pointer;padding:0}
+.search-result-cover{position:relative;display:block;width:100%;aspect-ratio:2/3;border-radius:8px;background:var(--bg2);overflow:hidden}
+.search-result-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.search-result-model{color:var(--mut);font-size:12px;font-weight:600;margin:8px 0 4px;min-height:18px;line-height:18px;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.search-result-title{font-size:14px;font-weight:800;line-height:1.45;min-height:2.9em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.search-result-date{font-size:11px;line-height:1.6;color:var(--mut);margin-top:5px}
+.search-result-foot{display:flex;gap:7px;justify-content:space-between;width:100%;margin-top:4px;font-size:11px;line-height:1.6;color:var(--t2)}
+.search-age-hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:5px 10px;border-radius:5px;background:var(--acc);color:#fff;font-size:11px;white-space:nowrap}
+.search-empty{text-align:center;padding:40px 16px;color:var(--t2)}
+.search-empty strong{font-size:17px}.search-empty p{font-size:13px;line-height:1.7;margin:10px 0 18px;color:var(--mut)}
+.search-empty button,.search-more button{min-height:44px;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-weight:700;padding:10px 20px;border-radius:8px;cursor:pointer}
+.search-more{text-align:center;margin-top:24px}
+#search button:focus-visible,#search select:focus-visible,#search summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+@media(max-width:600px){
+  header>div:first-child{gap:10px!important}
+  .search-people{gap:8px}.search-people label{gap:5px;padding:0 9px;font-size:11px}.search-people select{font-size:12px}
+  .search-purchase-row{gap:6px}.search-purchase button{padding:8px 11px;font-size:12px}
+  .search-extra{min-width:105px}.search-extra>summary{padding:8px 3px;font-size:12px;gap:6px}
+  .search-extra[open]{flex-basis:100%}.search-extra[open]>summary{margin-top:-50px;margin-bottom:6px}
+  .search-result-bar{gap:8px;margin:14px 0}.search-result-count{font-size:13px}
+  .search-result-bar select{font-size:12px}.search-random{padding:6px 9px;font-size:11px}
+  .search-results{gap:22px 12px}
+}
 
 </style>
 </helmet>
@@ -456,14 +686,7 @@ select,input,button{font-family:inherit}
         <span class="hdrTag" style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:var(--mut);padding-left:8px">MAXIM</span>
         <span class="hdrTag" style="font-size:10.5px;font-weight:800;letter-spacing:3.2px;color:var(--acc2);padding-left:9px;border-left:1px solid var(--w5)">RANKING</span>
       </a>
-      <nav id="hdrNav" style="gap:2px;margin-left:8px;display:{{ navShow }}">
-        <a href="#/" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">주간 랭킹</a>
-        <a href="#/new" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">신작</a>
-        <a href="#/sub" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">구독</a>
-        <a href="#/creators" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">작가별</a>
-        <a href="#/models" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">모델별</a>
-        <a href="#/search" style="font-size:13.5px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:7px">찾아보기</a>
-      </nav>
+      <nav id="hdrNav" class="primary-nav" aria-label="주요 메뉴" style="gap:2px;margin-left:8px;display:{{ navShow }}"><sc-for list="{{ desktopMenu }}" as="c" hint-placeholder-count="0"><a href="{{ c.href }}" aria-current="{{ c.current }}">{{ c.label }}</a></sc-for></nav>
       <div style="flex:1"></div>
       <button onClick="{{ toggleTheme }}" title="{{ themeLabel }}" aria-label="{{ themeLabel }}" style="display:flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background-color:var(--w1);color:var(--txt);font-size:12.5px;font-weight:700;line-height:1;cursor:pointer;flex:0 0 auto;white-space:nowrap"><span style="font-size:14px;line-height:1">{{ themeIcon }}</span>{{ themeName }}</button>
       <a href="https://bcut.maximkorea.net" target="_blank" style="background:var(--acc);color:#fff;font-size:13px;font-weight:800;padding:9px 18px;border-radius:6px;white-space:nowrap">B컷 바로가기</a>
@@ -565,15 +788,18 @@ select,input,button{font-family:inherit}
   </section>
 
   <div style="display:{{ pageHeadShow }};height:{{ stickyTop }}"></div>
+  <button type="button" class="nav-dismiss" tabindex="-1" aria-label="더보기 메뉴 닫기" onClick="{{ closeMoreNav }}" style="display:{{ navMoreShow }}"></button>
   <div class="quick-nav" style="position:sticky;z-index:70;top:{{ stickyTop }};background:var(--bg0);padding:10px 0 12px;border-bottom:1px solid var(--line)">
     <div class="qmenu" style="max-width:1360px;margin:0 auto;padding:0 {{ padX }}">
-      <sc-for list="{{ qmenu }}" as="c" hint-placeholder-count="7">
-        <a href="{{ c.href }}" class="qItem">
+      <sc-for list="{{ qmenu }}" as="c" hint-placeholder-count="4">
+        <a href="{{ c.href }}" class="qItem" aria-current="{{ c.current }}">
           <span class="qIcon" style="background:{{ c.iconBg }};border:1px solid {{ c.iconBd }}"><i style="-webkit-mask-image:{{ c.mask }};mask-image:{{ c.mask }};background-color:{{ c.iconFg }}"></i></span>
           <span class="qLabel" style="color:{{ c.labelColor }}">{{ c.label }}</span>
         </a>
       </sc-for>
+      <button type="button" class="qItem nav-more-trigger" aria-expanded="{{ navMoreExpanded }}" aria-controls="bcut-more-links" onClick="{{ toggleMoreNav }}"><span class="nav-more-dots" aria-hidden="true">···</span><span class="qLabel">더보기</span></button>
     </div>
+    <nav id="bcut-more-links" class="nav-more-panel" aria-label="더보기 메뉴" style="display:{{ navMoreShow }}"><sc-for list="{{ moreMenu }}" as="c" hint-placeholder-count="0"><a href="{{ c.href }}" aria-current="{{ c.current }}" onClick="{{ closeMoreNav }}">{{ c.label }}<span aria-hidden="true">›</span></a></sc-for></nav>
   </div>
 
   <main style="max-width:1360px;margin:0 auto;display:flex;flex-direction:column;padding:0 {{ padX }} 90px;gap:{{ secGap }}">
@@ -594,12 +820,13 @@ select,input,button{font-family:inherit}
             <div class="paid-picks-grid">
               <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="0">
                 <article class="paid-pick" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
+                  <div class="paid-pick-group-label">{{ p.groupTitle }}</div>
                   <button type="button" class="paid-pick-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
                     <img loading="lazy" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
                   </button>
                   <div class="paid-pick-model">{{ p.model }}</div>
                   <h4 class="paid-pick-title" title="{{ p.title }}">{{ p.title }}</h4>
-                  <div class="paid-pick-format">{{ p.format }} · 코인 개별 구매</div>
+                  <div class="paid-pick-format">{{ p.format }}</div>
                   <div class="paid-pick-intensity" style="display:{{ p.intensityShow }}" role="img" aria-label="{{ p.intensityLabel }}">
                     <span aria-hidden="true">수위</span>
                     <span class="paid-pick-meter" aria-hidden="true"><sc-for list="{{ p.intensityBars }}" as="bar" hint-placeholder-count="0"><span data-filled="{{ bar.filled }}"></span></sc-for></span>
@@ -799,18 +1026,15 @@ select,input,button{font-family:inherit}
      </div>
     </section>
 
-    <section id="rediscovery" class="rediscovery" aria-labelledby="rediscovery-title" style="display:{{ rediscoveryShow }}">
-      <div class="rediscovery-heading"><div>
-        <h2 id="rediscovery-title">놓쳤다면, 여기서</h2>
-        <p class="rediscovery-intro">새로 나온 화보부터 지난 화보까지, 매일 다른 작품을 만나보세요.</p>
-      </div></div>
-      <div class="rediscovery-tabs" role="group" aria-label="공개 시기별 화보">
+    <section id="rediscovery" class="rediscovery {{ rediscoveryViewClass }}" aria-labelledby="rediscovery-title" style="display:{{ rediscoveryShow }}">
+      <div class="rediscovery-heading"><h2 id="rediscovery-title">신작 모아보기</h2></div>
+      <div class="rediscovery-tabs" role="group" aria-label="신작 둘러보기">
         <sc-for list="{{ rediscoveryTabs }}" as="t" hint-placeholder-count="0">
           <button type="button" class="rediscovery-tab" onClick="{{ t.select }}" aria-pressed="{{ t.selected }}" aria-controls="rediscovery-cards">{{ t.label }} <span>{{ t.count }}</span></button>
         </sc-for>
       </div>
-      <p class="rediscovery-summary" aria-live="polite">{{ rediscoverySummary }}</p>
-      <p class="rediscovery-empty" style="display:{{ rediscoveryEmptyShow }}">이 기간에 보여드릴 화보가 아직 없어요. 다른 기간을 골라보세요.</p>
+      <p class="rediscovery-summary">{{ rediscoverySummary }}</p>
+      <p class="rediscovery-empty" role="status" style="display:{{ rediscoveryEmptyShow }}">{{ rediscoveryEmptyText }}</p>
       <div id="rediscovery-cards" class="rediscovery-grid">
         <sc-for list="{{ rediscoveryCards }}" as="p" hint-placeholder-count="0">
           <article class="rediscovery-card" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
@@ -819,20 +1043,19 @@ select,input,button{font-family:inherit}
             </button>
             <div class="rediscovery-model">{{ p.model }}</div>
             <h3 class="rediscovery-title" title="{{ p.title }}">{{ p.title }}</h3>
-            <div class="rediscovery-meta"><span>{{ p.date }} 공개</span><span>{{ p.buy }}</span></div>
+            <div class="rediscovery-meta"><span>{{ p.date }} 공개</span><span>{{ p.format }}</span></div>
             <a class="rediscovery-link" href="{{ p.url }}" target="_blank" rel="noopener" aria-label="{{ p.linkLabel }}" onClick="{{ p.outbound }}">작품 보기</a>
           </article>
         </sc-for>
       </div>
-      <div class="rediscovery-footer">
-        <div class="rediscovery-pagination">
-          <span class="rediscovery-count" aria-live="polite" aria-atomic="true">{{ rediscoveryCount }}</span>
-          <button type="button" class="rediscovery-page-button" onClick="{{ rediscoveryPrev }}" aria-label="이전 화보 묶음 보기" aria-controls="rediscovery-cards" style="display:{{ rediscoveryPagingShow }}">이전</button>
-          <button type="button" class="rediscovery-page-button" onClick="{{ rediscoveryNext }}" aria-controls="rediscovery-cards" style="display:{{ rediscoveryPagingShow }}">다른 화보 보기</button>
+      <div class="rediscovery-footer" style="display:{{ rediscoveryFooterShow }}">
+        <span class="rediscovery-count" aria-live="polite" aria-atomic="true">{{ rediscoveryCount }}</span>
+        <div class="rediscovery-pagination" style="display:{{ rediscoveryPagingShow }}">
+          <button type="button" class="rediscovery-page-button" onClick="{{ rediscoveryPrev }}" aria-disabled="{{ rediscoveryPrevDisabled }}" aria-label="이전 신작 6편 보기" aria-controls="rediscovery-cards">이전</button>
+          <button type="button" class="rediscovery-page-button" onClick="{{ rediscoveryNext }}" aria-disabled="{{ rediscoveryNextDisabled }}" aria-label="다음 신작 6편 보기" aria-controls="rediscovery-cards">다음 신작</button>
         </div>
-        <button type="button" class="rediscovery-random" onClick="{{ gacha }}">전체 화보에서 랜덤으로 골라보기</button>
+        <button type="button" class="rediscovery-page-button rediscovery-refresh" onClick="{{ rediscoveryRefresh }}" aria-controls="rediscovery-cards" style="display:{{ rediscoveryRandomShow }}"><span aria-hidden="true">↻</span> 다른 화보 보기</button>
       </div>
-      <p class="rediscovery-note">첫 묶음은 매일 새롭게 골라드려요. ‘다른 화보 보기’로 더 둘러보세요.</p>
     </section>
 
     <a href="https://bcut.maximkorea.net/?utm_source=bcutrank&utm_medium=rank_cta&utm_campaign=weekly_rank" target="_blank" style="display:{{ rankingShow }};text-decoration:none" onClick="{{ trackRankCta }}">
@@ -1183,33 +1406,7 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 
-<section id="newweek" style="display:{{ recentNewShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">최근 7일 신작</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">총 {{ recentNewCount }}편 · 옆으로 넘겨보세요</span>
-      </div>
-      <div style="position:relative">
-      <div class="shelfRow" style="gap:14px">
-        <sc-for list="{{ recentNew }}" as="p" hint-placeholder-count="0">
-          <div onClick="{{ p.open }}" class="nwCard" style="cursor:pointer">
-            <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
-              <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
-              <div style="position:absolute;top:0;left:0;right:0;height:46%;background:linear-gradient(to bottom,rgba(6,6,9,.7),rgba(6,6,9,.2) 55%,transparent);pointer-events:none"></div>
-              <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:900;padding:3px 9px;border-radius:5px;background:#E60012;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);white-space:nowrap;display:{{ p.coverShow }}">👑 표지모델</div>
-              <div style="position:absolute;top:8px;left:8px;font-size:10px;font-weight:900;padding:3px 9px;border-radius:5px;background:var(--acc);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);text-shadow:0 1px 2px rgba(0,0,0,.3)">{{ p.cap }}</div>
-              <div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.85);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.5);display:{{ p.vidShow }}">▶ 영상</div>
-              <div style="position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:{{ p.subShow }};background:#ffd400;color:#111;font-size:10.5px;font-weight:900;padding:3px 11px;border-radius:4px">구독</div>
-            </div>
-            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
-          </div>
-        </sc-for>
-      </div>
-        <div style="position:absolute;left:0;right:0;bottom:0;height:120px;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--bg0));display:{{ nwMoreShow }}"></div>
-      </div>
-      <div style="display:{{ nwMoreShow }};justify-content:center;margin-top:-16px;position:relative;z-index:2">
-        <button onClick="{{ nwMore }}" style="display:inline-flex;align-items:center;gap:8px;border:0;background:var(--acc);color:#fff;font-size:14px;font-weight:800;padding:13px 32px;border-radius:999px;cursor:pointer;box-shadow:0 8px 22px rgba(230,0,18,.38)" style-hover="filter:brightness(1.08);transform:translateY(-1px)">{{ nwMoreLabel }} ↓</button>
-      </div>
-    </section>
+
 
     <section id="next" style="display:{{ nextShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
@@ -1292,60 +1489,52 @@ select,input,button{font-family:inherit}
       </a>
     </section>
 
-    <section id="search" style="display:{{ searchShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">화보 찾아보기</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">SEARCH</span>
-      </div>
-      <input value="{{ q }}" onInput="{{ onQ }}" placeholder="모델명 · 화보 제목 검색" style="width:100%;padding:15px 18px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:var(--w1);color:var(--txt);outline:none" style-focus="border-color:var(--acc)">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 12px">
-        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
-          <button onClick="{{ f.go }}" style="border:1px solid var(--line);font-weight:700;font-size:12.5px;padding:8px 16px;border-radius:999px;cursor:pointer;background:{{ f.bg }};color:{{ f.fg }}">{{ f.label }}</button>
-        </sc-for>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px">
-        <div style="display:inline-flex;background:var(--w1);border:1px solid var(--line);border-radius:8px;padding:3px">
-          <sc-for list="{{ sorts }}" as="s" hint-placeholder-count="3">
-            <button onClick="{{ s.go }}" style="border:0;font-weight:800;font-size:12.5px;padding:8px 14px;border-radius:6px;cursor:pointer;background:{{ s.bg }};color:{{ s.fg }}">{{ s.label }}</button>
-          </sc-for>
+    <section id="search" aria-label="화보 검색" style="display:{{ searchShow }}">
+      <h2 class="search-home-title" style="display:{{ searchHeadingShow }}">화보 찾아보기</h2>
+      <div class="search-controls">
+        <div class="search-input-wrap">
+          <input type="search" value="{{ q }}" onInput="{{ onQ }}" aria-label="제목, 모델, 작가 검색" placeholder="제목, 모델, 작가를 검색하세요" autocomplete="off">
+          <button type="button" class="search-query-clear" onClick="{{ searchClearQuery }}" aria-label="검색어 지우기" style="display:{{ searchQueryClearShow }}">×</button>
         </div>
-        <div style="display:inline-flex;align-items:center;gap:7px;background:var(--w1);border:1px solid var(--line);border-radius:8px;padding:8px 12px">
-          <span style="font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.4px">모델</span>
-          <select value="{{ modelSel }}" onChange="{{ onModel }}" style="background:transparent;border:0;color:var(--txt);font-size:12.5px;font-weight:700;cursor:pointer;outline:none;max-width:150px">
-            <sc-for list="{{ modelOpts }}" as="o" hint-placeholder-count="0">
-              <option value="{{ o.v }}" style="background:#15151a">{{ o.label }}</option>
-            </sc-for>
-          </select>
+        <div class="search-people">
+          <label>모델<select aria-label="모델 선택" value="{{ modelSel }}" onChange="{{ onModel }}"><sc-for list="{{ modelOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></select></label>
+          <label>작가<select aria-label="작가 선택" value="{{ searchCreator }}" onChange="{{ searchOnCreator }}"><sc-for list="{{ searchCreatorOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></select></label>
         </div>
-        <div style="display:inline-flex;align-items:center;gap:7px;background:var(--w1);border:1px solid var(--line);border-radius:8px;padding:8px 12px">
-          <span style="font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.4px">연도</span>
-          <select value="{{ yearSel }}" onChange="{{ onYear }}" style="background:transparent;border:0;color:var(--txt);font-size:12.5px;font-weight:700;cursor:pointer;outline:none">
-            <sc-for list="{{ yearOpts }}" as="o" hint-placeholder-count="0">
-              <option value="{{ o.v }}" style="background:#15151a">{{ o.label }}</option>
-            </sc-for>
-          </select>
-        </div>
-        <div style="font-size:12px;color:var(--mut);font-weight:700;margin-left:auto">{{ resultCount }}</div>
-      </div>
-      <div style="position:relative">
-      <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr))">
-        <sc-for list="{{ results }}" as="p" hint-placeholder-count="0">
-          <div onClick="{{ p.open }}" style="cursor:pointer">
-            <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-              <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
-              <div style="position:absolute;top:7px;left:7px;font-size:8.5px;font-weight:900;letter-spacing:.5px;padding:3px 6px;border-radius:3px;display:{{ p.origShow }};background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</div>
-              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;letter-spacing:.5px;padding:5px 11px;border-radius:999px;background:rgba(230,0,18,.92);color:#fff;display:{{ p.lockShow }}">19+ 확인 필요</div>
+        <div class="search-purchase-row">
+          <div class="search-purchase" role="group" aria-label="구매 방식"><sc-for list="{{ searchBuyOptions }}" as="f" hint-placeholder-count="0"><button type="button" aria-pressed="{{ f.pressed }}" onClick="{{ f.go }}">{{ f.label }}</button></sc-for></div>
+          <details class="search-extra">
+            <summary>{{ searchFilterLabel }}</summary>
+            <div class="search-extra-panel">
+              <label class="search-check"><input type="checkbox" checked="{{ searchVideo }}" onChange="{{ searchOnVideo }}">영상 포함</label>
+              <label class="search-check"><input type="checkbox" checked="{{ searchAdult }}" onChange="{{ searchOnAdult }}">19금만</label>
+              <label>공개 연도<select aria-label="공개 연도" value="{{ yearSel }}" onChange="{{ onYear }}"><sc-for list="{{ yearOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></select></label>
+              <label>공개 상태<select aria-label="공개 상태" value="{{ searchRelease }}" onChange="{{ searchOnRelease }}"><option value="released">공개된 화보</option><option value="upcoming">공개 예정</option></select></label>
             </div>
-            <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t3)">{{ p.t1 }}<span style="color:var(--acc2);background:rgba(230,0,18,.16);border-radius:3px">{{ p.t2 }}</span>{{ p.t3 }}</div>
-          </div>
+          </details>
+        </div>
+        <div class="search-chips" aria-label="선택한 검색 조건" style="display:{{ searchChipsShow }}"><sc-for list="{{ searchChips }}" as="c" hint-placeholder-count="0"><button type="button" onClick="{{ c.remove }}" aria-label="{{ c.removeLabel }}" title="{{ c.label }}"><span>{{ c.label }}</span><span aria-hidden="true">×</span></button></sc-for><button type="button" class="search-reset" onClick="{{ searchReset }}">모두 초기화</button></div>
+      </div>
+      <div class="search-result-bar">
+        <div class="search-result-count" role="status" aria-live="polite">{{ resultCount }}</div>
+        <select aria-label="결과 정렬" value="{{ searchSort }}" onChange="{{ searchOnSort }}"><option value="latest" label="{{ searchLatestLabel }}">{{ searchLatestLabel }}</option><option value="popular">인기순</option></select>
+        <button type="button" class="search-random" onClick="{{ searchRandom }}" style="display:{{ searchRandomShow }}">아무거나 골라보기</button>
+      </div>
+      <p class="search-scope-note" style="display:{{ searchScopeShow }}">{{ searchScopeNote }}</p>
+      <div class="search-empty" style="display:{{ searchEmptyShow }}"><strong>조건에 맞는 화보가 없어요</strong><p>검색어를 바꾸거나 선택한 조건을 줄여보세요.</p><button type="button" onClick="{{ searchReset }}">검색 조건 초기화</button></div>
+      <div class="search-results" style="grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr))">
+        <sc-for list="{{ results }}" as="p" hint-placeholder-count="0">
+          <button type="button" class="search-result" data-work-id="{{ p.id }}" aria-label="{{ p.infoLabel }}" onClick="{{ p.open }}">
+            <span class="search-result-cover"><img loading="lazy" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="search-age-hint" style="display:{{ p.lockShow }}">19+ 확인 필요</span></span>
+            <span class="search-result-model">{{ p.model }}</span>
+            <span class="search-result-title">{{ p.title }}</span>
+            <span class="search-result-date">{{ p.date }}</span>
+            <span class="search-result-foot"><span>{{ p.format }}</span><span>{{ p.buy }}</span></span>
+          </button>
         </sc-for>
       </div>
-      <div style="position:absolute;left:0;right:0;bottom:0;height:170px;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--bg0) 88%);display:{{ moreShow }}"></div>
-      </div>
-      <div style="text-align:center;margin-top:-30px;position:relative;z-index:2;display:{{ moreShow }}">
-        <button onClick="{{ more }}" style="background:var(--w3);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:13px 30px;border-radius:8px;cursor:pointer" style-hover="background:var(--w4)">{{ moreLabel }}</button>
-      </div>
+      <div class="search-more" style="display:{{ moreShow }}"><button type="button" onClick="{{ more }}">{{ moreLabel }}</button></div>
     </section>
+
 
     <section id="models" style="display:{{ mdShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
@@ -1487,20 +1676,26 @@ select,input,button{font-family:inherit}
 
   <button onClick="{{ toTop }}" style="position:fixed;right:20px;bottom:20px;z-index:80;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-size:19px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:{{ topOpacity }}">↑</button>
 <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:200;background:rgba(4,4,6,.82);backdrop-filter:blur(6px);padding:22px;overflow-y:auto;display:flex;align-items:center;justify-content:center">
-      <div onClick="{{ stop }}" style="position:relative;width:100%;max-width:540px;max-height:92vh;margin:auto;display:flex;flex-direction:column;background:var(--bg1);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.7);animation:fadeUp .22s ease">
-        <button onClick="{{ closeModal }}" style="position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:0;font-size:14px;cursor:pointer">✕</button>
+    <div class="work-dialog-overlay" onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:200;background:rgba(4,4,6,.82);backdrop-filter:blur(6px);padding:22px;overflow-y:auto;display:flex;align-items:center;justify-content:center">
+      <div class="work-dialog" role="dialog" aria-modal="true" aria-label="{{ modal.dialogLabel }}" onClick="{{ stop }}" style="position:relative;width:100%;max-width:540px;max-height:92vh;margin:auto;display:flex;flex-direction:column;background:var(--bg1);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.7);animation:fadeUp .22s ease">
+        <button aria-label="상세창 닫기" onClick="{{ closeModal }}" style="position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:0;font-size:14px;cursor:pointer">✕</button>
         <div style="flex:1 1 auto;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch">
-        <div style="position:relative;width:100%;aspect-ratio:3/4;max-height:340px;overflow:hidden;background:#0a0a0d;display:{{ modal.coverShow }}">
+        <div class="work-dialog-cover" style="position:relative;width:100%;aspect-ratio:3/4;max-height:340px;overflow:hidden;background:#0a0a0d;display:{{ modal.coverShow }}">
           <div style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(46px) brightness(.5) saturate(1.15);transform:scale(1.45);background-image:{{ modal.bgImg }}"></div>
           <div style="position:absolute;inset:0;box-shadow:inset 0 0 130px 24px rgba(0,0,0,.5);pointer-events:none"></div>
           <img src="{{ modal.img }}" alt="" style="position:absolute;inset:0;margin:auto;max-width:92%;max-height:90%;object-fit:contain;display:block;z-index:1;border-radius:8px;box-shadow:0 16px 44px rgba(0,0,0,.6);filter:{{ modal.blur }}">
         </div>
-        <div style="padding:24px 26px 28px">
-          <div style="font-size:11.5px;font-weight:800;letter-spacing:1.2px;color:var(--mut);text-align:center;margin-bottom:6px;display:{{ modal.tagShow }}">{{ modal.tag }}</div>
-          <div style="font-size:22px;font-weight:900;letter-spacing:-.5px;line-height:1.25;text-align:center">{{ modal.title }}</div>
-          <div style="color:var(--acc2);font-weight:800;font-size:14px;margin-top:8px;text-align:center">{{ modal.model }}</div>
-          <div style="color:var(--mut);font-size:12.5px;margin-top:8px;text-align:center">{{ modal.meta }}</div>
+        <div class="work-dialog-body" style="padding:24px 26px 28px">
+          <div class="work-dialog-model">{{ modal.model }}</div>
+          <h2 class="work-dialog-title">{{ modal.title }}</h2>
+          <div class="work-purchase-info" style="display:{{ modal.purchaseShow }}">
+            <div class="work-purchase-format">{{ modal.format }}</div>
+            <div class="work-purchase-price"><strong>{{ modal.price }}</strong><small>{{ modal.priceNote }}</small></div>
+          </div>
+          <div style="color:var(--mut);font-size:12px;margin-top:8px;text-align:center;line-height:1.6">{{ modal.meta }}</div>
+          <details class="work-original-title" style="display:{{ modal.originalShow }}"><summary>원제 보기</summary><p>{{ modal.originalTitle }}</p></details>
+          <div style="background:var(--w1);border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.7;color:var(--t2);margin-top:18px;display:{{ modal.descShow }}">{{ modal.desc }}</div>
+          <details class="modal-rank-details" style="display:{{ modal.rankingShow }}"><summary>랭킹 기록 보기</summary>
           <div style="display:flex;justify-content:center;gap:26px;margin-top:22px;flex-wrap:wrap">
             <sc-for list="{{ modal.stats }}" as="s" hint-placeholder-count="4">
               <div style="text-align:center">
@@ -1509,7 +1704,6 @@ select,input,button{font-family:inherit}
               </div>
             </sc-for>
           </div>
-          <div style="background:var(--w1);border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.7;color:var(--t2);margin-top:18px;display:{{ modal.descShow }}">{{ modal.desc }}</div>
           <div style="margin-top:22px;display:{{ modal.lineShow }}">
             <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--mut);margin-bottom:12px">주차별 순위 변화</div>
             <div style="border-radius:10px;overflow:hidden;background:var(--w1);border:1px solid var(--line)">
@@ -1528,6 +1722,7 @@ select,input,button{font-family:inherit}
               </sc-for>
             </div>
           </div>
+          </details>
           <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--mut);margin:22px 0 10px;display:{{ modal.gridShow }}">{{ modal.gridLabel }}</div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
             <sc-for list="{{ modal.others }}" as="o" hint-placeholder-count="0">
@@ -1553,8 +1748,9 @@ select,input,button{font-family:inherit}
           </div>
         </div>
         </div>
-        <div style="flex:0 0 auto;border-top:1px solid var(--line);background:var(--bg1);padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px))">
+        <div class="work-dialog-footer" style="flex:0 0 auto;border-top:1px solid var(--line);background:var(--bg1);padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px))">
           <div style="align-items:center;gap:10px;margin-bottom:9px;display:{{ modal.buyRowShow }}">
+            <span class="work-dialog-footer-price" style="display:{{ modal.footerPriceShow }}">{{ modal.price }}</span>
             <span style="font-size:11.5px;font-weight:800;color:{{ modal.hypeColor }};display:{{ modal.hypeShow }}">{{ modal.hypeText }}</span>
             <span style="font-size:11px;font-weight:800;color:var(--t2);background:var(--w2);border:1px solid var(--line);padding:4px 10px;border-radius:999px;white-space:nowrap;margin-left:auto;display:{{ modal.buyTagShow }}">{{ modal.buyTag }}</span>
           </div>
@@ -1620,7 +1816,7 @@ const MSM=new Set('강선혜 강하빈 고아라 그린 김갑주 김나정 김�
 function isMSM(w){return !!(w&&(w.models||[]).some(m=>MSM.has((m||'').trim())));}
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0,calMoff:0,rkAll:false};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'latest',modelSel:'all',yearSel:'all',searchCreator:'all',searchBuy:'all',searchVideo:false,searchAdult:false,searchRelease:'released',navMore:false,copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0,calMoff:0,rkAll:false};
 
   componentDidMount(){
     try{this._admin=/[?&](admin|preview)=1/.test(location.search)||!!window.IS_ADMIN;}catch(e){this._admin=!!window.IS_ADMIN;}
@@ -1642,15 +1838,20 @@ class Component extends DCLogic {
     let th=null;try{th=localStorage.getItem('bcut_theme');}catch(e){}
     this.applyTheme(th||this.props.theme||'light');
     this.bindGlobal();
-    this._hashV=()=>{if(this.state.modal)return;this.setState({view:this.viewFromHash()});try{window.scrollTo(0,0);}catch(e){}};
+    this._hashV=()=>{if(this.state.modal)return;this.setState({view:this.viewFromHash(),navMore:false});try{window.scrollTo(0,0);}catch(e){}};
     window.addEventListener('hashchange',this._hashV);
     try{const iv=this.viewFromHash();if(iv!=='home')this.setState({view:iv});}catch(e){}
     try{const q=new URLSearchParams(location.search),st={};
       if(q.get('tab')==='models')st.tab='models';
       if(q.get('mode')==='month')st.mode='month';
-      if(q.get('sort'))st.sort=q.get('sort');
+      if(['latest','popular'].includes(q.get('sort')))st.sort=q.get('sort');
       if(q.get('model'))st.modelSel=q.get('model');
       if(q.get('year'))st.yearSel=q.get('year');
+      if(q.get('q'))st.q=q.get('q');
+      if(q.get('creator'))st.searchCreator=q.get('creator');
+      if(['sub','coin'].includes(q.get('buy')))st.searchBuy=q.get('buy');
+      st.searchVideo=q.get('video')==='1';st.searchAdult=q.get('adult')==='1';
+      if(q.get('release')==='upcoming')st.searchRelease='upcoming';
       this._qWeek=q.get('week')?+q.get('week'):null;
       this._qWork=q.get('w')||q.get('work')||null;
       if(Object.keys(st).length)this.setState(st);
@@ -1665,7 +1866,7 @@ class Component extends DCLogic {
   viewFromHash(){var h=(location.hash||'').replace(/^#\/?/,'').split('?')[0].toLowerCase();
     var map={'':'home','home':'home','top':'home','ranking':'home','new':'new','next':'new','sub':'sub','creators':'creators','models':'models','search':'search'};
     return map[h]||'home';}
-  goView(v){try{location.hash=(v&&v!=='home')?('#/'+v):'';}catch(e){}this.setState({view:v});try{window.scrollTo(0,0);}catch(e){}}
+  goView(v){try{location.hash=(v&&v!=='home')?('#/'+v):'';}catch(e){}this.setState({view:v,navMore:false});try{window.scrollTo(0,0);}catch(e){}}
   /* 오늘의 랜덤 B컷(가챠): 미스맥심·최근작 위주 반가중 랜덤 → 모달 오픈 */
   gacha(){try{const D=this.state.D;if(!D||!D.works)return;const W=D.works,today=this.today();
     const rec=Object.keys(W).filter(id=>{const w=W[id];return w&&w.img&&(!w.pub||w.pub<=today);});
@@ -1676,7 +1877,7 @@ class Component extends DCLogic {
     if(id)this.openWork(id);}catch(e){}}
 
   bindGlobal(){
-    this._key=e=>{if(e.key==='Escape'){if(this.state.modal)this.close();else if(this.state.help)this.setState({help:false});}};
+    this._key=e=>{if(e.key==='Escape'){if(this.state.navMore)this.setState({navMore:false});else if(this.state.modal)this.close();else if(this.state.help)this.setState({help:false});}};
     document.addEventListener('keydown',this._key);
     this._pop=()=>{if(this.state.modal){this._hist=false;this.close();}};
     window.addEventListener('popstate',this._pop);
@@ -1810,11 +2011,7 @@ class Component extends DCLogic {
     const t=new Date(this.today()+'T00:00:00');
     return t>=s.a&&t<=s.b;
   }
-  splitTitle(t){
-    const s=String(t||'').trim();
-    const m=s.match(/^([\[(（【][^\]\)）】]{1,24}[\]\)）】])\s*(.+)$/);
-    return (m&&m[2].trim())?{tag:m[1],name:m[2].trim()}:{tag:'',name:s};
-  }
+  splitTitle(t){return window.BCUTCatalogueUI.title(t,this.state.D);}
   blurOf(id){const w=(this.state.D.works||{})[id];return (this.state.age==='minor'&&w&&w.b19&&!w.safe)?'blur(16px)':'none';}
   pad(n){return String(n).padStart(2,'0');}
   seg(ms){if(ms<0)ms=0;let s=Math.floor(ms/1000);const h=Math.floor(s/3600);s-=h*3600;const m=Math.floor(s/60);s-=m*60;return{hh:this.pad(h),mm:this.pad(m),ss:this.pad(s)};}
@@ -1827,59 +2024,60 @@ class Component extends DCLogic {
       if(S.tab==='models')q.set('tab','models');
       if(S.mode==='month')q.set('mode','month');
       if(S.wi!==lastWi)q.set('week',String(S.wi));   /* 최신 주차면 생략(주소 깔끔) */
-      if(S.sort&&S.sort!=='random')q.set('sort',S.sort);
+      if(S.sort&&S.sort!=='latest')q.set('sort',S.sort);
       if(S.modelSel&&S.modelSel!=='all')q.set('model',S.modelSel);
       if(S.yearSel&&S.yearSel!=='all')q.set('year',S.yearSel);
+      if(S.q)q.set('q',S.q);
+      if(S.searchCreator&&S.searchCreator!=='all')q.set('creator',S.searchCreator);
+      if(S.searchBuy&&S.searchBuy!=='all')q.set('buy',S.searchBuy);
+      if(S.searchVideo)q.set('video','1');if(S.searchAdult)q.set('adult','1');
+      if(S.searchRelease==='upcoming')q.set('release','upcoming');
       const qs=q.toString();
       const vh=(S.view&&S.view!=='home')?('#/'+S.view):'';
       history.replaceState(null,'',location.pathname+(qs?('?'+qs):'')+vh);
     }catch(e){}
   }
-  rediscoveryQueue(works,config,day,excluded=[]){
-    const lo=config.minDays,hi=config.maxDays==null?Infinity:config.maxDays;
-    if(!Number.isInteger(lo)||lo<0||(hi!==Infinity&&(!Number.isInteger(hi)||hi<lo)))return [];
-    const stamp=Date.parse(day+'T00:00:00Z'),epoch=Math.floor(stamp/86400000);
-    if(!Number.isFinite(stamp))return [];
-    const skip=new Set(excluded.concat(config.excludeIds||[]).map(String));
-    const edges=(config.bandEdges||[]).filter(Number.isInteger).slice().sort((a,b)=>a-b);
-    const bands=Array.from({length:edges.length+1},()=>[]);
-    Object.keys(works).forEach(id=>{
+  rediscoveryQueue(works,config,day){
+    const lo=config.minDays,hi=config.maxDays,stamp=Date.parse(day+'T00:00:00Z');
+    if(!Number.isInteger(lo)||lo<0||!Number.isInteger(hi)||hi<lo||!Number.isFinite(stamp))return [];
+    const skip=new Set((config.excludeIds||[]).map(String));
+    return Object.keys(works).flatMap(id=>{
       const w=works[id];
-      if(!w||skip.has(id)||!w.img||!['코인','구독'].includes(w.buy)||!/^\d{4}-\d{2}-\d{2}$/.test(w.pub||''))return;
+      if(!w||skip.has(id)||!w.img||!['코인','구독'].includes(w.buy)||!/^\d{4}-\d{2}-\d{2}$/.test(w.pub||''))return [];
       const pub=Date.parse(w.pub+'T00:00:00Z');
-      if(!Number.isFinite(pub)||new Date(pub).toISOString().slice(0,10)!==w.pub)return;
+      if(!Number.isFinite(pub)||new Date(pub).toISOString().slice(0,10)!==w.pub)return [];
       const ageDays=Math.round((stamp-pub)/86400000);
-      if(ageDays<lo||ageDays>hi)return;
-      const band=edges.findIndex(edge=>ageDays<=edge);
-      bands[band===-1?edges.length:band].push({id,ageDays});
-    });
-    // Rotate each age band by the Korean calendar day. No sales cutoff or popularity claim.
-    const queues=bands.map(items=>{
-      items.sort((a,b)=>works[a.id].pub.localeCompare(works[b.id].pub)||a.id.localeCompare(b.id));
-      const stride=bands.length===1?6:2;
-      const offset=items.length?((epoch*stride)%items.length+items.length)%items.length:0;
-      return items.slice(offset).concat(items.slice(0,offset));
-    });
-    const result=[];
-    while(queues.some(q=>q.length))queues.forEach(q=>result.push(...q.splice(0,2)));
-    // Distribute models across each six-card page without dropping eligible works.
-    if(!config.diversifyModels)return result;
-    const remaining=result.slice(),ordered=[];
-    while(remaining.length){
-      const seenModels=new Set();
-      for(let slot=0;slot<6&&remaining.length;slot++){
-        let at=remaining.findIndex(entry=>(works[entry.id].models||[]).every(model=>!seenModels.has(model)));
+      return ageDays>=lo&&ageDays<=hi?[{id,ageDays}]:[];
+    }).sort((a,b)=>works[b.id].pub.localeCompare(works[a.id].pub)||b.id.localeCompare(a.id,undefined,{numeric:true}));
+  }
+  rediscoverySample(queue,previous,works,random=Math.random){
+    const size=Math.min(6,queue.length),last=new Set(previous),usedModels=new Set(),result=[],shuffled=queue.slice();
+    for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+    // Never repeat a work from the preceding set while unseen candidates remain.
+    for(const bucket of [shuffled.filter(x=>!last.has(x.id)),shuffled.filter(x=>last.has(x.id))]){
+      while(bucket.length&&result.length<size){
+        let at=bucket.findIndex(x=>(works[x.id].models||[]).every(m=>!usedModels.has(m)));
         if(at<0)at=0;
-        const entry=remaining.splice(at,1)[0];ordered.push(entry);
-        (works[entry.id].models||[]).forEach(model=>seenModels.add(model));
+        const item=bucket.splice(at,1)[0];result.push(item);
+        (works[item.id].models||[]).forEach(m=>usedModels.add(m));
       }
     }
-    return ordered;
+    return result;
+  }
+  rediscoveryPrefs(){
+    if(this._releasePrefs)return this._releasePrefs;
+    this._releaseStorageKey='bcut_release_shelf_v3'+(this._admin?'_preview':'');
+    let stored={};try{stored=JSON.parse(localStorage.getItem(this._releaseStorageKey)||'{}')||{};}catch(e){}
+    this._releasePrefs={group:['new','month'].includes(stored.group)?stored.group:null,
+      lastMissed:Array.isArray(stored.lastMissed)?stored.lastMissed.filter(id=>typeof id==='string').slice(0,6):[]};
+    return this._releasePrefs;
+  }
+  saveRediscoveryPrefs(patch){
+    Object.assign(this.rediscoveryPrefs(),patch);
+    try{localStorage.setItem(this._releaseStorageKey,JSON.stringify(this._releasePrefs));}catch(e){}
   }
   trackRediscovery(event,context,origin){
-    try{
-      if(context && window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);
-    }catch(e){}
+    try{if(context&&window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);}catch(e){}
   }
   trackWorkOutbound(context){
     if(context&&context.module==='rediscovery')this.trackRediscovery('bcut_rediscovery_outbound',context,'modal');
@@ -2216,6 +2414,9 @@ class Component extends DCLogic {
     base.classicsShow='none';base.classics=[];base.classicsCols='1.6fr 1fr 1fr';
     base.spotShow='none';base.champs=[];base.champX='translateX(0%)';base.champSlideW='100%';base.champGap='0px';base.champAspect='16/10';base.champPrevShow='none';base.champNextShow='none';base.champPrev=()=>{};base.champNext=()=>{};base.champTS=()=>{};base.champTE=()=>{};
     base.promoX='translateX(0%)';base.promoDots=[];base.promoDotsShow='none';base.promoTS=()=>{};base.promoTE=()=>{};
+    base.desktopMenu=[];base.moreMenu=[];
+    base.navMoreShow=S.navMore?'block':'none';base.navMoreExpanded=String(!!S.navMore);
+    base.toggleMoreNav=()=>this.setState({navMore:!this.state.navMore});base.closeMoreNav=()=>this.setState({navMore:false});
     if(!D)return base;
 
     const wi=S.wi,isM=S.tab==='models',isMonth=S.mode==='month',W=D.works||{};
@@ -2268,6 +2469,11 @@ class Component extends DCLogic {
         return {href:c[0],label:c[2],mask:_mask(_ic[c[1]]),
           iconBg:on?'var(--acc)':'var(--w1)',iconFg:on?'#fff':'var(--t2)',
           iconBd:on?'var(--acc)':'var(--line)',labelColor:on?'var(--txt)':'var(--t2)'};});
+    const fullMenu=base.qmenu.map(c=>({...c,current:c.href===(V==='home'?'#/':'#/'+V)?'page':'false'}));
+    const findMenu=href=>fullMenu.find(c=>c.href===href);
+    base.desktopMenu=['#/','#/new','#/models','#/creators','#/sub','#/search','worldcup.html'].map(findMenu).map(c=>({...c,label:c.href==='#/search'?'검색':c.label}));
+    base.moreMenu=['#/creators','#/sub','worldcup.html'].map(findMenu);
+    base.qmenu=[['#/','랭킹'],['#/new','신작'],['#/models','모델'],['#/search','검색']].map(([href,label])=>({...findMenu(href),label}));
     base.chips=base.qmenu;
 
     /* 랭킹 */
@@ -2735,44 +2941,67 @@ class Component extends DCLogic {
     /* 명예의 전당 셸프는 이번 주 1위 히어로 캐러셀(#spot)로 통합됨 — 셸프(#hall)는 숨김 유지 */
     base.hallShow='none';
 
-  /* 검색 */
-    base.filters=[['all','전체'],['19','19'],['영상','영상'],['오리지널','맥심 오리지널'],['프리미엄','프리미엄']].map(f=>({
-      label:f[1],bg:S.filter===f[0]?'var(--txt)':'var(--w1)',fg:S.filter===f[0]?'var(--bg0)':'var(--t2)',
-      go:()=>{this.reshuffle();this.setState({filter:f[0],show:12});}}));
-    base.onQ=e=>this.setState({q:e.target.value,show:12});
-    if(!this._rand)this._rand=(()=>{const a=Object.keys(W);if(this._admin)return a;
-      for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;})();
-    let ids=this._rand.slice();
-    if(S.filter==='19')ids=ids.filter(id=>W[id].b19);else if(S.filter==='영상')ids=ids.filter(id=>W[id].vid);
-    else if(S.filter==='오리지널')ids=ids.filter(id=>W[id].buy==='구독');else if(S.filter==='프리미엄')ids=ids.filter(id=>W[id].buy==='코인');
-    const q=S.q.trim().toLowerCase();
-    if(q)ids=ids.filter(id=>((W[id].title||'').toLowerCase().includes(q)||(W[id].models||[]).join(' ').toLowerCase().includes(q)||String(id).includes(q)));
-    if(S.modelSel&&S.modelSel!=='all')ids=ids.filter(id=>(W[id].models||[]).includes(S.modelSel));
-    if(S.yearSel&&S.yearSel!=='all')ids=ids.filter(id=>(W[id].pub||'').slice(0,4)===S.yearSel);
+    /* Search: published catalogue first, independent filters, stable ordering. */
+    const searchDefaults=window.BCUTSearch.defaults;
+    const searchSet=patch=>this.setState({...patch,show:12});
+    const ids=window.BCUTSearch.query(D,S,today,active,this.bestMap().w);
+    const searchOpts=window.BCUTSearch.options(W);
+    const q=(S.q||'').trim().toLowerCase();
+    const upcomingSearch=S.searchRelease==='upcoming';
+    const subscribedSearch=new Set(active);
+    base.searchHeadingShow=V==='search'?'none':'block';
+    base.onQ=e=>searchSet({q:e.target.value});
+    base.searchClearQuery=()=>searchSet({q:''});
+    base.searchQueryClearShow=S.q?'inline-flex':'none';
+    base.modelSel=S.modelSel||'all';base.modelOpts=searchOpts.models;
+    base.onModel=e=>searchSet({modelSel:e.target.value});
+    base.searchCreator=S.searchCreator||'all';base.searchCreatorOpts=searchOpts.creators;
+    base.searchOnCreator=e=>searchSet({searchCreator:e.target.value});
+    base.yearSel=S.yearSel||'all';base.yearOpts=searchOpts.years;
+    base.onYear=e=>searchSet({yearSel:e.target.value});
+    base.searchVideo=!!S.searchVideo;base.searchAdult=!!S.searchAdult;
+    base.searchOnVideo=e=>searchSet({searchVideo:e.target.checked});
+    base.searchOnAdult=e=>searchSet({searchAdult:e.target.checked});
+    base.searchRelease=S.searchRelease||'released';
+    base.searchOnRelease=e=>searchSet({searchRelease:e.target.value});
+    base.searchBuyOptions=[['all','전체'],['sub','구독'],['coin','개별 구매']].map(([v,label])=>({
+      label,pressed:String((S.searchBuy||'all')===v),go:()=>searchSet({searchBuy:v})}));
+    base.searchSort=S.sort==='popular'?'popular':'latest';
+    base.searchLatestLabel=upcomingSearch?'공개 임박순':'최신 공개순';
+    base.searchOnSort=e=>searchSet({sort:e.target.value});
+    base.searchReset=()=>searchSet({...searchDefaults});
+    const chosen=[];
+    const chip=(key,label)=>chosen.push({label,removeLabel:label+' 조건 해제',remove:()=>searchSet({[key]:searchDefaults[key]})});
+    if(S.q)chip('q','검색어: '+S.q);
+    if(S.modelSel&&S.modelSel!=='all')chip('modelSel','모델: '+S.modelSel);
+    if(S.searchCreator&&S.searchCreator!=='all')chip('searchCreator','작가: '+S.searchCreator);
+    if(S.searchBuy&&S.searchBuy!=='all')chip('searchBuy',S.searchBuy==='sub'?'구독':'개별 구매');
+    if(S.searchVideo)chip('searchVideo','영상 포함');
+    if(S.searchAdult)chip('searchAdult','19금만');
+    if(S.yearSel&&S.yearSel!=='all')chip('yearSel',S.yearSel+'년');
+    if(upcomingSearch)chip('searchRelease','공개 예정');
+    base.searchChips=chosen;base.searchChipsShow=chosen.length?'flex':'none';
+    const extras=Number(!!S.searchVideo)+Number(!!S.searchAdult)+Number(!!S.yearSel&&S.yearSel!=='all')+Number(upcomingSearch);
+    base.searchFilterLabel=extras?'추가 필터 · '+extras:'추가 필터';
+    base.resultCount=(upcomingSearch?'공개 예정 ':chosen.length?'검색 결과 ':'공개된 화보 ')+ids.length+'편';
+    base.searchScopeNote=upcomingSearch?'공개 예정 작품이에요. 공개일을 확인하세요.':'';
+    base.searchScopeShow=upcomingSearch?'block':'none';
+    base.searchEmptyShow=ids.length?'none':'block';
+    base.searchRandomShow=ids.length&&!upcomingSearch?'inline-flex':'none';
+    base.searchRandom=()=>{if(!upcomingSearch&&ids.length)this.openWork(ids[Math.floor(Math.random()*ids.length)]);};
+    base.results=ids.slice(0,S.show).map(id=>{
+      const w=W[id],title=this.splitTitle(w.title||id).name;
+      const sub=upcomingSearch?w.buy==='구독':subscribedSearch.has(id);
+      return {id,title,img:w.img||'',model:(w.models||[]).join(' · '),blur:this.blurOf(id),
+        infoLabel:title+' 작품 정보',format:window.BCUTCatalogueUI.format(w),
+        date:w.pub?(w.pub.slice(0,4)===today.slice(0,4)?this.fmt(w.pub):w.pub.replace(/-/g,'.'))+(upcomingSearch?' 공개 예정':' 공개'):'공개일 미등록',
+        buy:upcomingSearch?(sub?'구독 예정':'공개 예정'):(sub?'구독':'개별 구매'),
+        lockShow:(S.age==='minor'&&w.b19&&!w.safe)?'block':'none',open:()=>this.openWork(id)};
+    });
+    base.moreShow=ids.length>S.show?'block':'none';
+    base.moreLabel='화보 '+Math.min(12,Math.max(0,ids.length-S.show))+'개 더 보기 · 남은 '+Math.max(0,ids.length-S.show)+'개';
+    base.more=()=>this.setState({show:S.show+12});
 
-    /* 정렬 */
-    const sort=S.sort||'random';
-    if(sort==='latest')ids=ids.slice().sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
-    else if(sort==='popular')ids=ids.slice().sort((a,b)=>((bw[a]||99)-(bw[b]||99))||(W[b].pub||'').localeCompare(W[a].pub||''));
-    base.sorts=[['random','랜덤'],['latest','최신순'],['popular','인기순']].map(s=>({label:s[1],
-      bg:sort===s[0]?'var(--txt)':'transparent',fg:sort===s[0]?'var(--bg0)':'var(--mut)',
-      go:()=>{if(s[0]==='random')this.reshuffle();this.setState({sort:s[0],show:12});}}));
-
-    const modelCount={};Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>{modelCount[m]=(modelCount[m]||0)+1;}));
-    base.modelOpts=[{v:'all',label:'전체'}].concat(Object.keys(modelCount).sort((a,b)=>modelCount[b]-modelCount[a]||a.localeCompare(b)).slice(0,40).map(m=>({v:m,label:m+' ('+modelCount[m]+')'})));
-    base.modelSel=S.modelSel||'all';base.onModel=e=>{this.reshuffle();this.setState({modelSel:e.target.value,show:12});};
-    const years=[...new Set(Object.keys(W).map(id=>(W[id].pub||'').slice(0,4)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
-    base.yearOpts=[{v:'all',label:'전체'}].concat(years.map(y=>({v:y,label:y+'년'})));
-    base.yearSel=S.yearSel||'all';base.onYear=e=>{this.reshuffle();this.setState({yearSel:e.target.value,show:12});};
-    base.resultCount=ids.length+'편';
-
-    base.results=ids.slice(0,S.show).map(id=>{const ti=this.splitTitle(W[id].title||id).name;
-      let t1=ti,t2='',t3='';
-      if(q){const p=ti.toLowerCase().indexOf(q);if(p>=0){t1=ti.slice(0,p);t2=ti.slice(p,p+q.length);t3=ti.slice(p+q.length);}}
-      return {img:W[id].img||'',title:ti,t1,t2,t3,blur:this.blurOf(id),
-        origShow:W[id].buy==='구독'?'block':'none',
-        lockShow:(S.age==='minor'&&W[id].b19&&!W[id].safe)?'block':'none',open:()=>this.openWork(id)};});
-    if(ids.length>S.show){base.moreShow='block';base.moreLabel='화보 '+Math.min(12,ids.length-S.show)+'개 더 보기 · 남은 '+(ids.length-S.show)+'개';base.more=()=>this.setState({show:S.show+12});}
 
     /* 작가별 */
     const byC={};Object.keys(W).forEach(id=>{const c=((W[id]||{}).photo||'').trim();if(!c)return;(byC[c]=byC[c]||[]).push(id);});
@@ -2914,7 +3143,7 @@ class Component extends DCLogic {
           title:this.splitTitle(w.title||id).name,tag:this.splitTitle(w.title||id).tag,
           tagShow:this.splitTitle(w.title||id).tag?'block':'none',
           model:(w.models||[]).join(' & ')||'—',
-          meta:[w.pub?this.fmt(w.pub)+' 공개':'',_buyLabel,w.photo?('작가 '+w.photo):''].filter(Boolean).join(' · '),
+          meta:[w.pub?this.fmt(w.pub)+' 공개':'',w.photo?('작가 '+w.photo):''].filter(Boolean).join(' · '),
           desc:w.desc||'',descShow:w.desc?'block':'none',
           stats:[{v:wr?'#'+wr:'-',l:'이번 주'},{v:best?'#'+best:'-',l:'역대 최고'},{v:st+'주',l:'연속 TOP3'},{v:mp,l:'이번 달 pt'}],
           trendShow:'block',trend:trendOf(id,false),lineShow:'none',lineImg:BLANK,
@@ -2983,6 +3212,17 @@ class Component extends DCLogic {
           share:()=>{const u=md.creatorId?('https://bcut.maximkorea.net/creator/'+md.creatorId):'https://bcut.maximkorea.net';
             if(navigator.share)navigator.share({title:nm,url:u}).catch(()=>{});else{try{navigator.clipboard.writeText(u);}catch(e){}}}};}
     }
+    if(base.modal){
+      Object.assign(base.modal,{dialogLabel:base.modal.title+' 상세 정보',purchaseShow:'none',format:'',price:'',priceNote:'',originalShow:'none',originalTitle:'',footerPriceShow:'none',rankingShow:(base.modal.stats||[]).length?'block':'none'});
+      if(S.modal.kind==='work'){
+        const id=S.modal.id,w=W[id]||{};
+        const subActive=w.buy==='구독'&&((w.pub||'')>today||active.indexOf(id)>=0);
+        const info=window.BCUTCatalogueUI.purchase(id,D,subActive);
+        Object.assign(base.modal,{purchaseShow:'flex',format:info.format,price:info.price,priceNote:info.priceNote,
+          originalTitle:info.original,originalShow:info.original!==base.modal.title?'block':'none',
+          footerPriceShow:info.price?'inline':'none',hypeShow:info.price?'none':base.modal.hypeShow});
+      }
+    }
     /* ── 뷰(페이지) 라우팅: 홈은 전체 노출(원래대로), 카테고리는 해당 섹션만 ── */
     const inHome=V==='home';
     const _titles={new:'신작 화보',sub:'구독 화보',creators:'작가별 화보',models:'모델별 화보',search:'화보 찾아보기'};
@@ -3023,10 +3263,10 @@ class Component extends DCLogic {
           const id=String(p.id),w=W[id],title=this.splitTitle(w.title||id).name;
           const intensity=Number.isInteger(p.intensity)&&p.intensity>=1&&p.intensity<=5?p.intensity:null;
           const context={experiment_id:experiment.id,work_id:id,selection_group:g.id,card_position:i+1};
-          return {id,title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model:(w.models||[]).join(' & '),
+          return {id,title,groupTitle:g.title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model:(w.models||[]).join(' & '),
             intensityShow:hasIntensity?'flex':'none',intensityText:intensity===null?'미등록':intensity+'/5',
             intensityLabel:intensity===null?'수위 미등록':'운영자 수위 기준 5단계 중 '+intensity+'단계',intensityBars:[1,2,3,4,5].map(n=>({filled:String(intensity!==null&&n<=intensity)})),
-            format:p.format||'구성은 상세에서 확인',price:p.coin.toLocaleString('ko-KR')+'코인',
+            format:window.BCUTCatalogueUI.format(w,p),price:p.coin.toLocaleString('ko-KR')+'코인',
             url:'https://bcut.maximkorea.net/work/'+id,infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보러 가기 (새 창)',
             open:()=>{this.trackPaidPick('bcut_exp_card_open',context,'poster');this.openWork(id,context);},
             outbound:()=>this.trackPaidPick('bcut_exp_outbound',context,'card')};
@@ -3039,53 +3279,53 @@ class Component extends DCLogic {
 
     // New releases and the older catalogue share one shelf; day boundary is Korea time.
     base.rediscoveryShow='none';base.rediscoveryCards=[];base.rediscoveryTabs=[];
-    base.rediscoverySummary='';base.rediscoveryEmptyShow='none';
+    base.rediscoveryEmptyShow='none';base.rediscoveryFooterShow='none';
+    base.rediscoveryPagingShow='none';base.rediscoveryRandomShow='none';
+    base.rediscoverySummary='';base.rediscoveryCount='';base.recentNewShow='none';
+    base.rediscoveryViewClass=V==='new'?'rediscovery-page':'';
     const rediscovery=D.rediscovery;
-    if(V==='home'&&rediscovery&&rediscovery.enabled===true){
+    if(['home','new'].includes(V)&&rediscovery&&rediscovery.enabled===true){
       const discoveryDay=new Date((Number(S.now)||Date.now())+9*3600000).toISOString().slice(0,10);
-      const excluded=base.paidPickShow==='block'?base.paidPickGroups.flatMap(g=>g.items.map(p=>p.id)):[];
-      const cacheKey=discoveryDay+'|'+excluded.join(',');
-      if(!this._rediscoveryCache||this._rediscoveryCache.key!==cacheKey||this._rediscoveryCache.works!==W||this._rediscoveryCache.config!==rediscovery){
-        const groups=(rediscovery.groups||[]).map(group=>({
-          ...group,queue:this.rediscoveryQueue(W,{...group,excludeIds:rediscovery.excludeIds||[],diversifyModels:true},discoveryDay,excluded)
-        }));
-        this._rediscoveryCache={key:cacheKey,works:W,config:rediscovery,groups};
+      const prefs=this.rediscoveryPrefs(),cacheKey=discoveryDay+'|'+JSON.stringify(rediscovery.excludeIds||[]);
+      if(!this._rediscoveryCache||this._rediscoveryCache.key!==cacheKey||this._rediscoveryCache.works!==W){
+        const groups=[{id:'new',label:'이번 주 신작',minDays:0,maxDays:6},{id:'month',label:'놓친 신작',minDays:7,maxDays:29}]
+          .map(g=>({...g,queue:this.rediscoveryQueue(W,{...g,excludeIds:rediscovery.excludeIds||[]},discoveryDay)}));
+        this._rediscoveryCache={key:cacheKey,works:W,groups,shown:null,draw:0,newPage:0};
       }
-      const groups=this._rediscoveryCache.groups;
-      const group=groups.find(g=>g.id===S.rediscoveryGroup)||groups.find(g=>g.id===rediscovery.defaultGroup)||groups[0];
-      if(group&&groups.some(g=>g.queue.length)){
-        const queue=group.queue,size=6,pages=Math.ceil(queue.length/size);
-        this._rediscoveryCache.queue=queue;
-        const selectedPage=S.rediscoveryDay===discoveryDay?Number(S.rediscoveryPage)||0:0;
-        const page=pages?Math.max(0,Math.min(pages-1,selectedPage)):0;
-        const shown=queue.slice(page*size,(page+1)*size);
-        const resetScroll=()=>{const row=document.getElementById('rediscovery-cards');if(row)row.scrollLeft=0;};
-        base.rediscoveryTabs=groups.map(g=>({id:g.id,label:g.label,count:g.queue.length,
-          selected:String(g.id===group.id),select:()=>{
-            this.setState({rediscoveryGroup:g.id,rediscoveryDay:discoveryDay,rediscoveryPage:0});resetScroll();
-          }}));
-        base.rediscoverySummary=group.description;
-        const activeSubs=new Set(Object.keys(W).filter(id=>W[id].buy==='구독'&&W[id].pub&&W[id].pub<=discoveryDay)
-          .sort((a,b)=>W[b].pub.localeCompare(W[a].pub)).slice(0,4));
-        base.rediscoveryCards=shown.map((entry,i)=>{
-          const id=entry.id,w=W[id],title=this.splitTitle(w.title||id).name;
-          const context={module:'rediscovery',shelf_id:rediscovery.id,shelf_group:group.id,work_id:id,card_position:i+1,shelf_page:page+1,days_since_release:entry.ageDays};
-          const date=w.pub.slice(0,4)===discoveryDay.slice(0,4)?this.fmt(w.pub):w.pub.replace(/-/g,'.');
-          return {id,title,measureContext:JSON.stringify(context),img:w.img,blur:this.blurOf(id),model:(w.models||[]).join(' & '),date,
-            buy:activeSubs.has(id)?'구독':'개별 구매',url:'https://bcut.maximkorea.net/work/'+id,
-            infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보기 (새 창)',
-            open:()=>{this.trackRediscovery('bcut_rediscovery_open',context,'poster');this.openWork(id,context);},
-            outbound:()=>this.trackRediscovery('bcut_rediscovery_outbound',context,'card')};
-        });
-        base.rediscoveryShow='block';base.rediscoveryEmptyShow=shown.length?'none':'block';
-        base.rediscoveryCount=shown.length?(page*size+1)+'–'+(page*size+shown.length)+' / '+queue.length+'편':'0편';
-        base.rediscoveryPagingShow=pages>1?'inline-flex':'none';
-        const turn=delta=>{
-          if(!pages)return;
-          this.setState({rediscoveryGroup:group.id,rediscoveryDay:discoveryDay,rediscoveryPage:(page+delta+pages)%pages});resetScroll();
-        };
-        base.rediscoveryPrev=()=>turn(-1);base.rediscoveryNext=()=>turn(1);
-      }
+      const cache=this._rediscoveryCache,groups=cache.groups,preferred=S.rediscoveryGroup||prefs.group;
+      const group=groups.find(g=>g.id===preferred)||groups.find(g=>g.queue.length)||groups[0];
+      const missed=group.id==='month',queue=group.queue,pages=Math.ceil(queue.length/6);
+      const page=Math.max(0,Math.min(cache.newPage,Math.max(0,pages-1)));
+      const draw=()=>{
+        cache.shown=this.rediscoverySample(queue,this.rediscoveryPrefs().lastMissed,W);
+        cache.draw++;this.saveRediscoveryPrefs({lastMissed:cache.shown.map(x=>x.id)});
+      };
+      if(missed&&cache.shown===null)draw();
+      const shown=missed?cache.shown:queue.slice(page*6,(page+1)*6);
+      base.rediscoveryShow='block';
+      base.rediscoveryTabs=groups.map(g=>({id:g.id,label:g.label,count:g.queue.length,selected:String(g.id===group.id),
+        select:()=>{this.saveRediscoveryPrefs({group:g.id});this.setState({rediscoveryGroup:g.id});}}));
+      base.rediscoverySummary=missed?'최근 한 달 속 놓친 화보':'최근 7일 · 최신 공개순';
+      base.rediscoveryEmptyShow=shown.length?'none':'block';
+      base.rediscoveryEmptyText=missed?'이 기간에 공개된 화보가 아직 없어요. 이번 주 신작을 둘러보세요.':'이번 주에 공개된 화보가 아직 없어요. 놓친 신작을 둘러보세요.';
+      base.rediscoveryCards=shown.map((entry,i)=>{
+        const id=entry.id,w=W[id],title=this.splitTitle(w.title||id).name;
+        const context={module:'rediscovery',shelf_id:'recent-releases-v3',shelf_group:group.id,work_id:id,
+          card_position:i+1,shelf_page:missed?cache.draw:page+1,days_since_release:entry.ageDays};
+        return {id,title,measureContext:JSON.stringify(context),img:w.img,blur:this.blurOf(id),model:(w.models||[]).join(' · '),
+          date:this.fmt(w.pub),format:window.BCUTCatalogueUI.format(w),
+          url:'https://bcut.maximkorea.net/work/'+id,infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보기 (새 창)',
+          open:()=>{this.trackRediscovery('bcut_rediscovery_open',context,'poster');this.openWork(id,context);},
+          outbound:()=>this.trackRediscovery('bcut_rediscovery_outbound',context,'card')};
+      });
+      base.rediscoveryFooterShow=shown.length?'flex':'none';
+      base.rediscoveryCount=missed?'전체 '+queue.length+'편 중 '+shown.length+'편':(page*6+1)+'–'+(page*6+shown.length)+' / '+queue.length+'편';
+      base.rediscoveryPagingShow=!missed&&pages>1?'flex':'none';
+      base.rediscoveryRandomShow=missed&&queue.length>6?'inline-flex':'none';
+      base.rediscoveryPrevDisabled=String(page===0);base.rediscoveryNextDisabled=String(page>=pages-1);
+      const turn=delta=>{const next=page+delta;if(next<0||next>=pages)return;cache.newPage=next;this.setState({rediscoveryRevision:(S.rediscoveryRevision||0)+1});};
+      base.rediscoveryPrev=()=>turn(-1);base.rediscoveryNext=()=>turn(1);
+      base.rediscoveryRefresh=()=>{if(queue.length<=6)return;draw();this.setState({rediscoveryRevision:(S.rediscoveryRevision||0)+1});};
     }
 
 
@@ -3093,7 +3333,7 @@ class Component extends DCLogic {
     base.gacha=()=>this.gacha();
     base.gachaShow=(this.state.view==='home'||!this.state.view)?'inline-flex':'none';
     base.risingShow=base.risingShow||'none';base.rising=base.rising||[];
-    if(window.BCUTMeasurement)window.BCUTMeasurement.setBlocked(!!base.gate||!!base.modal||!!base.popup||V!=='home');
+    if(window.BCUTMeasurement)window.BCUTMeasurement.setBlocked(!!base.gate||!!base.modal||!!base.popup||!['home','new'].includes(V));
     return Object.assign(base,themeVals);
   }
 }

@@ -1,4 +1,11 @@
 User-agent: *
+
+# 템플릿 변수가 그대로 링크로 노출되는 주소 차단
+# (예: /{{ b.link }}, /{{ kakaoUrl }} — 크롤러가 JS 실행 전 원본 HTML을 읽어서 생기는 404)
+Disallow: /*{{
+Disallow: /*%7B%7B
+Disallow: /*%7b%7b
+
 Allow: /
 
 Sitemap: https://bcutrank.com/sitemap.xml

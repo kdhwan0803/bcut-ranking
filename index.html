@@ -18,11 +18,42 @@
 <script>
 /* Start the public catalogue request while the document and runtime load. */
 (function(){
+  function warmFirstPosters(data){
+    // Match the visible recommendation shelf before React creates its images.
+    const hash=(location.hash||'').replace(/^#\/?/,'').split('?')[0].toLowerCase();
+    const query=new URLSearchParams(location.search);
+    const saved=history.state?.bcutList;
+    if(!['','home','top','ranking'].includes(hash)||query.has('w')||query.has('work')||
+      (saved?.version===1&&saved.url===location.pathname+location.search+location.hash&&saved.values?.view!=='home'))return;
+    const experiment=data?.revenueExperiment,works=data?.works||{},now=Date.now();
+    if(experiment?.enabled!==true||!(now>=(experiment.startsAt?Date.parse(experiment.startsAt):-Infinity)&&
+      now<(experiment.endsAt?Date.parse(experiment.endsAt):Infinity)))return;
+    const date=new Date(now),today=date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+    const seen=new Set();
+    const groups=(experiment.groups||[]).slice(0,2).map(group=>(group.items||[]).filter(item=>{
+      const id=String(item.id),work=works[id];
+      if(!work||seen.has(id)||work.buy!=='코인'||(work.pub&&work.pub>today)||!Number.isFinite(item.coin)||item.coin<=0)return false;
+      seen.add(id);return true;
+    }).slice(0,3));
+    if(groups.length!==2||groups.some(group=>group.length!==3))return;
+    const urls=new Set();
+    for(const item of groups[0].slice(0,2)){
+      const src=works[String(item.id)].img;if(!src)continue;
+      const url=new URL(src,location.href);if(!/^https?:$/.test(url.protocol)||urls.has(url.href))continue;
+      urls.add(url.href);
+      const link=document.createElement('link');link.rel='preload';link.as='image';link.href=url.href;
+      link.setAttribute('fetchpriority','high');link.setAttribute('data-bcut-first-poster',String(item.id));
+      document.head.appendChild(link);
+    }
+  }
   try{
     if(window.BCUT_DATA)return;
     const preview=/[?&](admin|preview)=1(?:&|$)/.test(location.search)||!!window.IS_ADMIN;
     if(preview&&window.parent!==window)return;
-    window.BCUT_INITIAL_DATA=fetch('data.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
+    window.BCUT_INITIAL_DATA=fetch('data.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(data=>{
+      try{warmFirstPosters(data);}catch(_){}
+      return data;
+    }).catch(()=>null);
   }catch(_){}
 })();
 </script>
@@ -941,7 +972,7 @@ select,input,button{font-family:inherit}
                 <article class="paid-pick" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
                   <div class="paid-pick-group-label">{{ p.groupTitle }}</div>
                   <button type="button" class="paid-pick-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
-                    <img loading="lazy" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
+                    <img loading="{{ p.loading }}" fetchpriority="{{ p.fetchPriority }}" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
                   </button>
                   <div class="paid-pick-model">{{ p.model }}</div>
                   <h4 class="paid-pick-title" title="{{ p.title }}">{{ p.title }}</h4>
@@ -3573,7 +3604,7 @@ class Component extends DCLogic {
           const id=String(p.id),w=W[id],title=this.splitTitle(w.title||id).name;
           const intensity=Number.isInteger(p.intensity)&&p.intensity>=1&&p.intensity<=5?p.intensity:null;
           const context={experiment_id:experiment.id,work_id:id,selection_group:g.id,card_position:i+1};
-          return {id,title,groupTitle:g.title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model:(w.models||[]).join(' & '),
+          return {id,title,groupTitle:g.title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model:(w.models||[]).join(' & '),loading:'lazy',fetchPriority:'auto',
             intensityShow:hasIntensity?'flex':'none',intensityText:intensity===null?'미등록':intensity+'/5',
             intensityLabel:intensity===null?'수위 미등록':'운영자 수위 기준 5단계 중 '+intensity+'단계',intensityBars:[1,2,3,4,5].map(n=>({filled:String(intensity!==null&&n<=intensity)})),
             format:window.BCUTCatalogueUI.format(w,p),price:p.coin.toLocaleString('ko-KR')+'코인',
@@ -3582,6 +3613,7 @@ class Component extends DCLogic {
             outbound:()=>this.trackPaidPick('bcut_exp_outbound',context,'card')};
         })})).filter(g=>g.items.length);
         if(base.paidPickGroups.length===2 && base.paidPickGroups.every(g=>g.items.length===3)){base.paidPickShow='block';base.paidPickTitle=experiment.title;
+          for(const item of base.paidPickGroups[0].items.slice(0,2)){item.loading='eager';item.fetchPriority='high';}
           base.paidPickPeriod=experiment.analysisStart+' ~ '+experiment.analysisEnd;
           base.paidPickVerified=experiment.verifiedAt;}
       }

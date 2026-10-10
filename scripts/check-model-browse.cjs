@@ -32,6 +32,20 @@ assert.equal(JSON.stringify(info), before, 'filtering and sorting do not change 
 assert.equal(browse.video({ vid: '1' }), true);
 assert.equal(browse.video({ vid: '0', title: 'VIDEO' }), false, 'use the same explicit video flag as gallery badges');
 assert.deepEqual(browse.ordered([], 'video', 'popular'), []);
+assert.deepEqual(browse.fromURL('https://bcutrank.com/models/seuli.html?format=video&sort=popular'), {filter:'video',sort:'popular'});
+assert.deepEqual(browse.fromURL('https://bcutrank.com/models/seuli.html?format=bad&sort=bad'), {filter:'all',sort:'latest'});
+const shared = new URL(browse.listURL('https://bcutrank.com/models/seuli.html?utm_source=test&preview=1#grid','photo','popular'));
+assert.equal(shared.searchParams.get('utm_source'),'test'); assert.equal(shared.searchParams.get('preview'),'1');
+assert.equal(shared.hash,'#model-browse'); assert.equal(shared.searchParams.get('format'),'photo');
+assert.equal(shared.searchParams.get('sort'),'popular');
+const defaults = new URL(browse.listURL(shared.href,'all','latest'));
+assert(!defaults.searchParams.has('format')); assert(!defaults.searchParams.has('sort'));
+const destination = new URL(browse.workURL('https://bcutrank.com/?w=2274','seuli','video','popular',new URLSearchParams('preview=1')));
+assert.equal(destination.searchParams.get('mb_model'),'seuli'); assert.equal(destination.searchParams.get('mb_format'),'video');
+assert.equal(destination.searchParams.get('mb_sort'),'popular'); assert.equal(destination.searchParams.get('w'),'2274');
+assert.equal(destination.searchParams.get('preview'),'1');
+assert.equal(browse.workURL('https://example.com/?w=2274','seuli','video','popular',new URLSearchParams()),'https://example.com/?w=2274');
+assert.equal(browse.workURL('https://bcutrank.com/?w=2274','other','video','popular',new URLSearchParams()),'https://bcutrank.com/?w=2274');
 const data = JSON.parse(fs.readFileSync(path.join(root, 'data.json'), 'utf8'));
 const pilots = { donggeuran: '동그란', seuli: '슬이', bakseoi: '박서이' };
 const counts = {};
@@ -48,6 +62,7 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
     assert.equal((html.match(/src="\.\.\/model-browse-pilot\.js"/g) || []).length, 1);
     assert.equal((html.match(/data-work-id="/g) || []).length, real.items.length);
     assert(html.includes('aria-label="화보 필터와 정렬" hidden'), 'without JS the full static gallery remains available');
+    assert.equal((html.match(/id="model-browse-share"/g)||[]).length,1);
     assert(html.indexOf('src="../model-browse-pilot.js"') < html.indexOf('src="../model-page.js"'), 'bind controls before the existing refresh');
     assert(html.includes('href="#grid"'), 'the static gallery shortcut works without JavaScript');
     assert(html.includes('data-model-pilot="' + slug + '"'), 'existing latest-work pilot remains enabled');
@@ -56,4 +71,4 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   } else assert(!html.includes('model-browse-pilot.js') && !html.includes('id="model-browse"'), file + ': pilot scope');
 }
 assert.deepEqual(Object.keys(counts).sort(), Object.keys(pilots).sort(), 'all three representative model pages are generated');
-console.log(JSON.stringify({ result: 'PASS', modelBrowsePilots: counts, scenarios: ['photo/video flags', 'published only', 'future and invalid rankings', 'best weekly rank', 'rank/date ties', 'immutable sorting', 'empty results', 'no-JS gallery', 'three-model scope and existing features'] }));
+console.log(JSON.stringify({ result: 'PASS', modelBrowsePilots: counts, scenarios: ['photo/video flags', 'published only', 'future and invalid rankings', 'best weekly rank', 'rank/date ties', 'immutable sorting', 'empty results', 'URL restore and invalid values', 'share URL preserves other parameters', 'work context and preview propagation', 'no-JS gallery', 'three-model scope and existing features'] }));

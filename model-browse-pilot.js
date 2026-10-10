@@ -3,7 +3,7 @@
   else { root.BCUTModelBrowse = factory(root.BCUTModelData); root.BCUTModelBrowse.init(); }
 })(typeof window === 'object' ? window : this, function (api) {
   'use strict';
-  var slug = 'bakseoi', view;
+  var slugs = ['donggeuran', 'seuli', 'bakseoi'], view;
   function video(work) { return work.vid === true || String(work.vid) === '1'; }
   function ranks(data, date) {
     var best = Object.create(null), works = data.works || {};
@@ -42,7 +42,7 @@
       '<div id="model-browse-empty" hidden><p>이 조건에 맞는 공개 화보가 없습니다.</p><button type="button" id="model-browse-reset">전체 화보 보기</button></div></section>';
   }
   function decorate(html, state, data, pageSlug, css) {
-    if (pageSlug !== slug) return html;
+    if (slugs.indexOf(pageSlug) === -1) return html;
     var info = seed(state, data);
     html = html.replace(/<section id="model-browse"[\s\S]*?<\/section>\n?/g, '')
       .replace(/<style id="model-browse-css">[\s\S]*?<\/style>\n?/g, '')

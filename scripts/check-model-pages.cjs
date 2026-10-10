@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const api = require('../model-page-data.js');
+const pilot = require('../model-cta-pilot.js');
 const root = path.resolve(__dirname, '..');
 const data = JSON.parse(fs.readFileSync(path.join(root, 'data.json'), 'utf8'));
 const arg = process.argv.indexOf('--date');
@@ -36,7 +37,7 @@ assert.equal(api.summary(data, '박보름', '2026-10-10').latestId, '2340');
 assert(!api.summary(data, '죠야끼', '2026-10-10').published.includes('2395'));
 assert(api.summary(data, '죠야끼', '2026-10-10').upcoming.includes('2395'));
 assert.equal(api.summary(data, '죠야끼', '2026-10-11').latestId, '2395');
-let checked = 0;
+let checked = 0, pilotChecked = 0;
 for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html'))) {
   const html = fs.readFileSync(path.join(root, 'models', file), 'utf8');
   const match = html.match(/data-model="([^"]+)"/);
@@ -50,6 +51,15 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   const links = [...html.matchAll(/<a[^>]+data-latest-work[^>]+href="([^"]+)"/g)];
   assert.equal(links.length, 3, label + 'latest button count');
   links.forEach(link => assert.equal(decode(link[1]), state.latestUrl, label + 'latest button'));
+  if (pilot.selected(file.slice(0, -5))) {
+    const sale = new URL(decode(html.match(/data-latest-sale href="([^"]+)"/)[1]));
+    assert.equal(sale.hostname, 'bcut.maximkorea.net', label + 'sale destination');
+    assert.equal(sale.pathname, '/work/' + state.latestId, label + 'latest sale ID');
+    assert.equal(sale.searchParams.get('utm_campaign'), pilot.version, label + 'campaign');
+    assert(html.includes('<time datetime="' + state.works[state.latestId].pub + '">'), label + 'release date');
+    assert(!/onclick="[^"]*model_(?:cta|top3)_click/.test(html), label + 'duplicate legacy tracking removed');
+    pilotChecked++;
+  } else assert(!html.includes('data-model-pilot'), label + 'pilot scope');
   const json = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
   const collection = json.find(item => item['@type'] === 'CollectionPage');
   const faq = json.find(item => item['@type'] === 'FAQPage');
@@ -73,10 +83,11 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   checked++;
 }
 assert.equal(fs.readFileSync(path.join(root, 'data.json'), 'utf8').replace(/\r\n/g, '\n'), execFileSync('git', ['show', 'HEAD:data.json'], { cwd: root, encoding: 'utf8' }).replace(/\r\n/g, '\n'));
+assert.equal(pilotChecked, pilot.slugs.length);
 for (const file of ['index.html', 'worldcup.html']) {
   const source = fs.readFileSync(path.join(root, file), 'utf8');
   assert(source.includes("blurOf(){return 'none';}"), file + ': clear image policy');
   assert(!/lockShow:.*age==='minor'/.test(source), file + ': central age overlay');
   assert(!source.includes('blur(7px)'), file + ': upcoming thumbnail blur');
 }
-console.log(JSON.stringify({ result: 'PASS', date, checkedModelPages: checked, scenarios: ['KST midnight', 'published/upcoming', 'draft/invalid date', 'zero works', 'HTML escaping', 'all latest buttons', 'metadata/FAQ/schema', 'existing local image paths', 'TOP3 links preserved', 'data.json unchanged', 'thumbnail blur removed'] }));
+console.log(JSON.stringify({ result: 'PASS', date, checkedModelPages: checked, pilotPages: pilotChecked, scenarios: ['KST midnight', 'published/upcoming', 'draft/invalid date', 'zero works', 'HTML escaping', 'all latest buttons', 'metadata/FAQ/schema', 'existing local image paths', 'TOP3 links preserved', 'data.json unchanged', 'thumbnail blur removed', 'pilot sale destination/date/scope'] }));

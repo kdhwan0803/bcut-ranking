@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const api = require('../model-page-data.js');
+const pilot = require('../model-cta-pilot.js');
 const root = path.resolve(__dirname, '..');
 const data = JSON.parse(fs.readFileSync(path.join(root, 'data.json'), 'utf8'));
 const dateIndex = process.argv.indexOf('--date');
@@ -66,6 +67,7 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   html = html.replace(/<script src="\.\.\/model-page(?:-data)?\.js" defer><\/script>\n?/g, '');
   html = html.replace('</body>', '<script src="../model-page-data.js" defer></script>\n<script src="../model-page.js" defer></script>\n</body>');
   html = clearThumbs(html);
+  html = pilot.decorate(html, state, file.slice(0, -5));
   fs.writeFileSync(filePath, html);
   count++;
 }

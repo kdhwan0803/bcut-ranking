@@ -38,6 +38,7 @@
       var existing; try { existing = JSON.parse(schema.textContent); } catch (e) { existing = []; }
       schema.textContent = JSON.stringify(api.schema(state, canonical.href, existing));
     }
+    document.dispatchEvent(new CustomEvent('bcut:model-update', { detail: state }));
   }
   var pending;
   function refresh() {

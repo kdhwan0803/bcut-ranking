@@ -1,0 +1,60 @@
+name: Build and deploy catalogue
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # KST 00:17: advance works already registered with a future release date.
+    - cron: '17 15 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalogue-pages-${{ github.event_name == 'pull_request' && github.event.number || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source and modification history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Check sitemap update rules
+        run: node scripts/check-sitemap.cjs
+      - name: Generate and verify model pages and sitemap
+        run: node scripts/build-site.cjs
+      - name: Upload verified Pages artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy verified catalogue
+        id: deployment
+        uses: actions/deploy-pages@v4

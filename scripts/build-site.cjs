@@ -18,6 +18,7 @@ async function main() {
   run('check-model-pages.cjs');
   run('check-model-browse.cjs');
   run('check-work-detail.cjs');
+  run('check-home-browse.cjs');
   const modelFiles = ['index.html', ...fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html')).map(file => 'models/' + file)];
   const generatedHash = sitemap.fingerprint(root, modelFiles);
   run('update-model-pages.cjs');

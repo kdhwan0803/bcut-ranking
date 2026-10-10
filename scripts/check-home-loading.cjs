@@ -5,16 +5,21 @@ const vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const data=JSON.parse(fs.readFileSync(path.join(root,'data.json'),'utf8'));
+const posterData=structuredClone(data),posterIds=['900001','900002','900003','900004','900005','900006'];
+posterData.revenueExperiment={enabled:true,id:'loading-test',title:'Test shelf',groups:[0,1].map(group=>({id:'group'+group,title:'Group '+group,
+  items:posterIds.slice(group*3,group*3+3).map(id=>({id,coin:100}))}))};
+for(const id of posterIds)posterData.works[id]={title:'Poster '+id,buy:'코인',pub:'2000-01-01',models:[],safe:true,img:'assets/covers/'+id+'.webp'};
 const inline=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match=>match[1]);
 const early=inline.find(code=>code.includes('Start the public catalogue request'));
 const logic=html.match(/<script type="text\/x-dc"[^>]*>([\s\S]*?)<\/script>/)[1];
-function fixture({fetch,search='?preview=1',frame=false,embedded=false}={}){
+function fixture({fetch,search='?preview=1',hash='',historyState=null,frame=false,embedded=false}={}){
   const window={};window.parent=frame?{postMessage(){}}:window;
+  const preloads=[];
   window.addEventListener=()=>{};
   if(embedded)window.BCUT_DATA=data;
   const context=vm.createContext({window,fetch,console,Date,URL,URLSearchParams,
-    location:{search,pathname:'/',hash:''},history:{state:null,replaceState(){}},
-    document:{body:{style:{}},getElementById(){return null;},querySelector(){return null;}},
+    location:{search,pathname:'/',hash,href:'https://bcutrank.com/'+search+hash},history:{state:historyState,replaceState(){}},
+    document:{body:{style:{}},head:{appendChild(link){preloads.push(link);}},createElement(){return {setAttribute(key,value){this[key]=value;}};},getElementById(){return null;},querySelector(){return null;}},
     localStorage:{getItem(){return null;},setItem(){}},
     DCLogic:class{constructor(){this.props={};}setState(patch){Object.assign(this.state,patch);}}});
   vm.runInContext(early,context);
@@ -23,15 +28,18 @@ function fixture({fetch,search='?preview=1',frame=false,embedded=false}={}){
   vm.runInContext(logic+'\nthis.App=Component;',context);
   const app=new context.App();app._admin=/[?&](admin|preview)=1/.test(search);let applied;
   app.apply=value=>{applied=value;};
-  return {window,app,get applied(){return applied;}};
+  return {window,app,preloads,get applied(){return applied;}};
 }
 (async()=>{
   let resolve,calls=0;
   const pending=fixture({fetch:()=>{calls++;return calls===1?new Promise(done=>{resolve=done;}):Promise.resolve({ok:true,json:async()=>data});}});
   assert.equal(calls,1,'Data starts before component mount');
   const loading=pending.app.load();assert.equal(calls,1,'Mount reuses in-flight request');
-  resolve({ok:true,json:async()=>data});await loading;
-  assert.equal(pending.applied,data);assert.equal(pending.window.BCUT_INITIAL_DATA,null);
+  resolve({ok:true,json:async()=>posterData});await loading;
+  assert.equal(pending.applied,posterData);assert.equal(pending.window.BCUT_INITIAL_DATA,null);
+  assert.deepEqual(pending.preloads.map(link=>link['data-bcut-first-poster']),posterIds.slice(0,2),'First two visible posters are requested before catalogue apply');
+  assert(pending.preloads.every(link=>link.rel==='preload'&&link.as==='image'&&link.fetchpriority==='high'));
+  assert.equal(pending.preloads[0].href,new URL(posterData.works[posterIds[0]].img,'https://bcutrank.com/').href,'Preload uses the original thumbnail URL');
   await pending.app.load();assert.equal(calls,2,'Later reload is fresh');
   for(const failure of [()=>Promise.reject(new Error('offline')),()=>Promise.resolve({ok:false,status:503}),()=>Promise.resolve({ok:true,json:async()=>{throw new Error('bad JSON');}}),()=>Promise.resolve({ok:true,json:async()=>[]})]){
     let attempts=0;
@@ -43,10 +51,34 @@ function fixture({fetch,search='?preview=1',frame=false,embedded=false}={}){
     await special.app.load();assert.equal(requests,0,'Embedded data and editor preview avoid catalogue fetch');
     if(options.embedded)assert.equal(special.applied,data);else assert.equal(special.applied,undefined);
   }
-  const hero=fixture({embedded:true});Object.assign(hero.app.state,{D:data,wi:data.weeks.length-1,view:'home',mob:true,spot:0});
+  async function warmed(catalogue,options={}){
+    const test=fixture({...options,fetch:async()=>({ok:true,json:async()=>catalogue})});
+    await test.window.BCUT_INITIAL_DATA;return test;
+  }
+  for(const options of [{hash:'#/search'},{hash:'#/models'},{hash:'#/new'},{search:'?preview=1&w=2226'},
+    {historyState:{bcutList:{version:1,url:'/?preview=1',values:{view:'search'}}}}]){
+    assert.equal((await warmed(posterData,options)).preloads.length,0,'Other views, restored lists and work deep links avoid unrelated preloads');
+  }
+  for(const mutate of [d=>{d.revenueExperiment.enabled=false;},d=>{d.revenueExperiment.startsAt='2999-01-01';},
+    d=>{d.revenueExperiment.endsAt='2000-01-01';},d=>{d.revenueExperiment.startsAt='invalid';},
+    d=>{d.revenueExperiment.groups[1].items.pop();},d=>{d.works[posterIds[0]].pub='2999-01-01';},
+    d=>{d.revenueExperiment.groups[0].items[1].id=posterIds[0];},d=>{d.works[posterIds[0]].buy='구독';}]){
+    const changed=structuredClone(posterData);mutate(changed);
+    assert.equal((await warmed(changed)).preloads.length,0,'Hidden or invalid recommendation shelves do not preload');
+  }
+  const duplicateImage=structuredClone(posterData);duplicateImage.works[posterIds[1]].img=duplicateImage.works[posterIds[0]].img;
+  assert.equal((await warmed(duplicateImage)).preloads.length,1,'Same image URL is preloaded once');
+  const noImage=structuredClone(posterData);noImage.works[posterIds[0]].img='';
+  assert.equal((await warmed(noImage)).preloads.length,1,'Empty image URLs are skipped');
+  const hero=fixture({embedded:true});Object.assign(hero.app.state,{D:posterData,wi:data.weeks.length-1,view:'home',mob:true,spot:0});
   const slides=Array.from({length:8},(_,i)=>({id:'',title:'Card '+i,img:'https://example.com/'+i+'.webp',bg:i===0?'https://example.com/banner.webp':'',manual:i===0}));
   hero.app.buildSpotlight=()=>slides;
   let values=hero.app.vals();
+  assert.equal(values.paidPickShow,'block');
+  assert.deepEqual(Array.from(values.paidPickGroups.flatMap(group=>group.items),item=>[item.id,item.loading,item.fetchPriority]),
+    posterIds.map((id,i)=>[id,i<2?'eager':'lazy',i<2?'high':'auto']),
+    'Only the first visible recommendation row receives eager high priority');
+  assert(html.includes('loading="{{ p.loading }}" fetchpriority="{{ p.fetchPriority }}" decoding="async"'),'Rendered poster uses the selected priority');
   const ready=()=>Array.from(values.slides,(slide,i)=>slide.img.startsWith('https:')?i:null).filter(i=>i!==null);
   assert.equal(values.slides.length,10,'Infinite carousel retains both clones');
   assert.deepEqual(ready(),[0,1,2]);assert.equal(values.slides[1].fetchPriority,'high');

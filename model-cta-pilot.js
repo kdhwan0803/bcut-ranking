@@ -68,7 +68,7 @@
       if (host.dataset.stateKey === key) return;
       var markup = feature(state, slug), template = document.createElement('template');
       template.innerHTML = markup;
-      if (host.innerHTML === template.innerHTML) { host.dataset.stateKey = key; return; }
+      if (window.BCUTImages ? window.BCUTImages.matches(host, markup) : host.innerHTML === template.innerHTML) { host.dataset.stateKey = key; return; }
       var focused = document.activeElement, position = host.contains(focused) && focused.dataset.pilotPosition;
       host.innerHTML = markup; host.dataset.stateKey = key;
       if (position) { var target = host.querySelector('[data-pilot-position="' + position + '"]'); if (target) target.focus({preventScroll:true}); }

@@ -95,6 +95,7 @@ if(!window.BCUT_ANALYTICS_DISABLED){
     if (item.ratio < .5) return false;
     const img = el.querySelector('img');
     if (!img || !img.complete || !img.naturalWidth) return false;
+    if (window.BCUTImages && window.BCUTImages.original(img) !== img.getAttribute('src')) return false;
     const r = el.getBoundingClientRect();
     const l = Math.max(0,r.left), t = Math.max(0,r.top), right = Math.min(innerWidth,r.right), bottom = Math.min(innerHeight,r.bottom);
     if (right <= l || bottom <= t || r.width <= 0 || r.height <= 0) return false;
@@ -240,6 +241,7 @@ if(!window.BCUT_ANALYTICS_DISABLED){
 
 </script>
 <script src="./support.js"></script>
+<script src="./thumbnail-fallback.js" defer></script>
 <!-- OneSignal 웹푸시 -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -1099,7 +1101,7 @@ select,input,button{font-family:inherit}
         <div id="wp-strip" class="wp-strip">
           <sc-for list="{{ wpCuts }}" as="c" hint-placeholder-count="0">
             <div onClick="{{ c.open }}" class="wp-cut" style="width:{{ c.w }}">
-              <div class="wp-im" style="background-image:{{ c.imgCss }}"></div>
+              <div class="wp-im"><img loading="lazy" src="{{ c.img }}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 12%;display:block"></div>
             </div>
           </sc-for>
         </div>
@@ -1116,7 +1118,7 @@ select,input,button{font-family:inherit}
         <div style="display:flex;gap:{{ champGap }};transition:transform .5s ease;transform:{{ champX }}">
           <sc-for list="{{ champs }}" as="c" hint-placeholder-count="1">
             <div onClick="{{ c.open }}" style="flex:0 0 {{ champSlideW }};position:relative;cursor:pointer;background:#0a0a0d;aspect-ratio:{{ champAspect }};border:{{ c.cardBorder }};border-radius:16px;overflow:hidden">
-              <div style="position:absolute;inset:0;background-size:cover;background-position:center 18%;background-image:{{ c.bg }};filter:{{ c.blur }}"></div>
+              <img loading="lazy" src="{{ c.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 18%;filter:{{ c.blur }}">
               <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,0) 0%,rgba(8,8,11,.1) 56%,rgba(8,8,11,.9) 100%)"></div>
               <div style="position:absolute;top:16px;left:16px;z-index:3;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(6px);border-radius:999px;padding:7px 13px;font-size:12px;font-weight:900;{{ c.badgeStyle }}">{{ c.badge }}</div>
               <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:14px 22px 18px">
@@ -1146,7 +1148,7 @@ select,input,button{font-family:inherit}
       <div style="display:grid;grid-template-columns:{{ classicsCols }};gap:13px">
         <sc-for list="{{ classics }}" as="c" hint-placeholder-count="0">
           <div onClick="{{ c.open }}" style="position:relative;cursor:pointer;border-radius:14px;overflow:hidden;background:var(--bg2);grid-row:{{ c.gr }};grid-column:{{ c.gc }};aspect-ratio:{{ c.ar }};outline:{{ c.ring }};outline-offset:-2px">
-            <div style="position:absolute;inset:0;background-size:cover;background-position:center 15%;background-image:{{ c.imgCss }};filter:{{ c.blur }}"></div>
+            <img loading="lazy" src="{{ c.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;filter:{{ c.blur }}">
             <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,0) 42%,rgba(8,8,11,.92) 100%)"></div>
             <div style="position:absolute;top:10px;left:10px;z-index:3;min-width:{{ c.rankSz }};height:{{ c.rankSz }};display:inline-flex;align-items:center;justify-content:center;font-size:{{ c.rankFs }};font-weight:900;border-radius:9px;background:rgba(8,8,11,.72);border:1px solid rgba(255,255,255,.18);color:#fff;padding:0 6px">{{ c.rank }}</div>
             <div style="position:absolute;top:10px;right:10px;z-index:3;display:{{ c.revShow }};font-size:11px;font-weight:900;border-radius:7px;padding:4px 8px;background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600">{{ c.rev }}</div>
@@ -2662,7 +2664,7 @@ class Component extends DCLogic {
         const _latest=_done[0];
         const _mkWeekly=(i)=>{const t=this.weekWorks(i)[0]; if(!t||!W[t.id])return null; const id=t.id,w=W[id],isCur=(i===_latest);
           const _hi=((D.heroImgById&&D.heroImgById[id]&&String(D.heroImgById[id]).trim())||(isCur&&D.heroImg&&String(D.heroImg).trim()))||''; const _img=_hi||w.img||''; const wl=(_wks[i]||{}).label||'';
-          return {bg:'url('+_img+')',blur:(_hi?'none':this.blurOf(id)),cardBorder:'0',
+          return {img:_img,bg:'url('+_img+')',blur:(_hi?'none':this.blurOf(id)),cardBorder:'0',
             eyebrow:isCur?'LATEST CHAMPION':'HALL OF FAME',eyebrowColor:'var(--acc2)',
             badge:'🥇 '+wl+' 1위',badgeStyle:'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
             title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
@@ -2670,7 +2672,7 @@ class Component extends DCLogic {
             open:()=>this.openWork(id)};};
         const _mkMonthly=(mo,id)=>{const w=W[id],ml=this.monthLabel(mo);
           const _mi=(D.monthImg&&D.monthImg[mo]&&String(D.monthImg[mo]).trim())||''; const _mimg=_mi||w.img||'';
-          return {bg:'url('+_mimg+')',blur:(_mi?'none':this.blurOf(id)),cardBorder:'3px solid #e6b545',
+          return {img:_mimg,bg:'url('+_mimg+')',blur:(_mi?'none':this.blurOf(id)),cardBorder:'3px solid #e6b545',
             eyebrow:'MONTHLY BEST',eyebrowColor:'var(--goldText)',
             badge:'👑 '+ml+' 월간 1위',badgeStyle:'background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600',
             title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
@@ -2708,7 +2710,7 @@ class Component extends DCLogic {
           const _img=_hi||w.img||'';
           const _tag=o.tag||'';
           return {open:()=>this.openWork(id),
-            imgCss:'url("'+_img+'")', blur:(_hi?'none':this.blurOf(id)),
+            img:_img,imgCss:'url("'+_img+'")', blur:(_hi?'none':this.blurOf(id)),
             gr:isH?(_mob?'auto':'1 / span 2'):'auto',
             gc:isH?(_mob?'1 / span 2':'1'):'auto',
             ar:isH?(_mob?'16/10':'auto'):'5/6',
@@ -2736,7 +2738,7 @@ class Component extends DCLogic {
           base.wpShow='block';
           base.wpTag=wp.tag||('이번 주, 이 화보 — '+((w.models||[]).join(' & ')||''));
           base.wpOpen=()=>this.openWork(id);
-          base.wpCuts=imgs.map(function(u){return {imgCss:'url("'+u+'")', w:_w, coin:_coin, open:()=>this.openWork(id)};}.bind(this));
+          base.wpCuts=imgs.map(function(u){return {img:u,imgCss:'url("'+u+'")', w:_w, coin:_coin, open:()=>this.openWork(id)};}.bind(this));
         }
       }
     }catch(e){}

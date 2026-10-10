@@ -22,7 +22,7 @@
     meta('meta[property="og:image"]', state.image);
     text('cnt', state.count); text('cnt2', state.count + '편'); text('upcnt', state.upcoming.length + '편');
     grid.dataset.count = state.count;
-    html(grid, api.cards(state, false));
+    if (!window.BCUTModelBrowse || !window.BCUTModelBrowse.update(state, data)) html(grid, api.cards(state, false));
     var upwrap = document.getElementById('upwrap'), upgrid = document.getElementById('upgrid');
     if (upwrap && upgrid) { html(upgrid, api.cards(state, true)); upwrap.hidden = !state.upcoming.length; }
     var intro = document.querySelector('.intro'), faq = document.querySelector('.faq');

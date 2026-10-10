@@ -64,7 +64,7 @@
       latestUrl: latestId ? workLink(latestId) : BASE + '/?model=' + encodeURIComponent(model),
       image: latest ? image(latest.img, true) : '', faq: faq };
   }
-  function cards(state, upcoming) {
+  function cards(state, upcoming, identify) {
     var ids = upcoming ? state.upcoming : state.published;
     if (!ids.length && !upcoming) return '<div class="empty">현재 공개된 화보가 없습니다.</div>';
     return ids.map(function (id) {
@@ -73,6 +73,7 @@
       var badge = (upcoming ? '<span class="bd up">🗓 예정</span>' : '') + (adult ? '<span class="bd b19">19</span>' : '') + (video ? '<span class="bd vid">▶ 영상</span>' : '');
       var tag = upcoming ? 'div' : 'a';
       var attrs = upcoming ? '' : ' href="' + escape(workLink(id)) + '" rel="nofollow"';
+      if (identify && !upcoming) attrs += ' data-work-id="' + escape(id) + '"';
       return '<' + tag + ' class="card' + (upcoming ? ' up' : '') + (adult ? ' b19' : '') + '"' + attrs + '><div class="thumb"><img loading="lazy" src="' + escape(image(work.img)) + '" alt="' + escape(name) + '"><div class="badges">' + badge + '</div></div><div class="meta"><div class="mt">' + escape(name) + '</div><div class="mp">' + escape(work.pub) + (upcoming ? ' 공개 예정' : '') + '</div></div></' + tag + '>';
     }).join('\n');
   }

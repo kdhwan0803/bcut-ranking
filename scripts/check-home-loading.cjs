@@ -12,8 +12,9 @@ for(const id of posterIds)posterData.works[id]={title:'Poster '+id,buy:'코인',
 const inline=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match=>match[1]);
 const early=inline.find(code=>code.includes('Start the public catalogue request'));
 const logic=html.match(/<script type="text\/x-dc"[^>]*>([\s\S]*?)<\/script>/)[1];
-function fixture({fetch,search='?preview=1',hash='',historyState=null,frame=false,embedded=false}={}){
+function fixture({fetch,search='?preview=1',hash='',historyState=null,frame=false,embedded=false,resourceMap}={}){
   const window={};window.parent=frame?{postMessage(){}}:window;
+  if(resourceMap)window.__resources=resourceMap;
   const preloads=[];
   window.addEventListener=()=>{};
   if(embedded)window.BCUT_DATA=data;
@@ -34,6 +35,12 @@ function fixture({fetch,search='?preview=1',hash='',historyState=null,frame=fals
   let resolve,calls=0;
   const pending=fixture({fetch:()=>{calls++;return calls===1?new Promise(done=>{resolve=done;}):Promise.resolve({ok:true,json:async()=>data});}});
   assert.equal(calls,1,'Data starts before component mount');
+  assert(pending.window.__resources,'Standalone page supplies the runtime resource mode before boot');
+  const existingResources={'./vendor/react.production.min.js':'bundled-react.js'};
+  const existing=fixture({embedded:true,resourceMap:existingResources});assert.equal(existing.window.__resources,existingResources,'Existing resource mappings are preserved');
+  assert.equal(fixture({frame:true,search:'?preview=1'}).window.__resources,undefined,'Editor iframe retains its template refresh behavior');
+  for(const label of ['모델 선택','작가 선택','공개 연도','공개 상태','결과 정렬'])
+    assert(html.includes('<sc-raw-select aria-label="'+label+'"'),'Browser parsing preserves native select templates before the single runtime boot');
   const loading=pending.app.load();assert.equal(calls,1,'Mount reuses in-flight request');
   resolve({ok:true,json:async()=>posterData});await loading;
   assert.equal(pending.applied,posterData);assert.equal(pending.window.BCUT_INITIAL_DATA,null);

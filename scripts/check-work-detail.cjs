@@ -38,9 +38,13 @@ assert.equal(JSON.stringify(fixture),before);
 for (const work of Object.values(data.works)) assert.equal(ui.released(work,date),api.listed(work)&&work.pub<=date);
 for (const [name,slug] of Object.entries(mapping)) {
   assert(/^[a-z0-9_-]+$/.test(slug)); assert(fs.existsSync(path.join(root,'models',slug+'.html')));
-  const link=ui.modelLinks([name])[0]; assert.equal(link.href,'models/'+slug+'.html'+(['donggeuran','seuli','bakseoi'].includes(slug)?'#model-browse':'#grid'));
+  const link=ui.modelLinks([name])[0]; assert.equal(link.href,'models/'+slug+'.html?preview=1'+(['donggeuran','seuli','bakseoi'].includes(slug)?'#model-browse':'#grid'));
 }
 assert(ui.modelLinks(['없는 모델'])[0].href.includes('model='));
+assert.equal(ui.previewLink('?w=2393'),'?w=2393&preview=1');
+context.location.search='?admin=1&measure=1'; assert.equal(ui.previewLink('models/bakseoi.html#model-browse'),'models/bakseoi.html?admin=1&measure=1#model-browse');
+context.location.search=''; assert.equal(ui.modelLinks(['박서이'])[0].href,'models/bakseoi.html#model-browse'); assert.equal(ui.previewLink('?w=2393'),'?w=2393');
+context.location.search='?preview=1';
 const entry=ui.browseEntry('?w=2393&mb_model=bakseoi&mb_format=video&mb_sort=popular');
 assert.deepEqual(plain(entry),{model:'박서이',model_slug:'bakseoi',work_id:'2393',browse_format:'video',browse_sort:'popular'});
 for(const query of ['?w=2393&mb_model=bad&mb_format=all&mb_sort=latest','?w=bad&mb_model=bakseoi&mb_format=all&mb_sort=latest','?w=2393&mb_model=bakseoi&mb_format=bad&mb_sort=latest','?w=2393&mb_model=bakseoi&mb_format=all&mb_sort=bad']) assert.equal(ui.browseEntry(query),null);
@@ -55,7 +59,7 @@ for (const [id,model] of [['2393','박서이'],['2055','동그란'],['2274','슬
   assert(modal.modelLinks.some(link=>link.name===model));
   assert.equal(modal.gridShow,'none');
   assert.equal(modal.relatedShow,'block');
-  assert(modal.relatedCards.every(card=>card.title&&card.date&&card.href==='?w='+card.id));
+  assert(modal.relatedCards.every(card=>card.title&&card.date&&card.href==='?w='+card.id+'&preview=1'));
   assert(modal.relatedCards.every(card=>card.kind===(data.works[card.id].vid===true||String(data.works[card.id].vid)==='1'?'영상 포함':'사진')));
   let opened,prevented=false; app.openWork=value=>{opened=value;};
   const card=modal.relatedCards[0];

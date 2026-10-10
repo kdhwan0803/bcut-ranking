@@ -20,6 +20,20 @@ function clearThumbs(html) {
   return html.replace(/\.card(?:\.up)?(?:\.b19)? \.thumb img\{filter:blur\([^}]+\}/g, '')
     .replace(/<div class=["']lock["']>🔞<\/div>/g, '');
 }
+function improveInitialRender(html, slug) {
+  if (slug !== 'bakseoi') return html;
+  html = html.replace(/<noscript data-model-speed-fonts>[\s\S]*?<\/noscript>\n?/g, '');
+  html = html.replace(/<link\b(?=[^>]*href="https:\/\/fonts\.googleapis\.com\/css2\?)[^>]*>/g, tag => {
+    const url = tag.match(/href="([^"]+)"/)[1].replace(/display=(?:swap|optional)/, 'display=optional');
+    return '<link href="' + url + '" rel="stylesheet" media="print" onload="this.media=\'all\'">\n' +
+      '<noscript data-model-speed-fonts><link href="' + url + '" rel="stylesheet"></noscript>';
+  });
+  const css = fs.readFileSync(path.join(root, 'model-cta-pilot.css'), 'utf8').replace(/\r\n/g, '\n').trim();
+  html = html.replace(/<style id="model-pilot-critical">[\s\S]*?<\/style>\n?/g, '')
+    .replace(/<link rel="stylesheet" href="\.\.\/model-cta-pilot\.css">\n?/g, '')
+    .replace('</head>', '<style id="model-pilot-critical">' + css + '</style>\n</head>');
+  return html.replace(/<body([^>]*)>/, (_, attrs) => '<body' + attrs.replace(/ data-model-speed="[^"]*"/g, '') + ' data-model-speed="1">');
+}
 let count = 0;
 const slugs = {};
 for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html') && file !== 'models.html')) {
@@ -68,6 +82,7 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   html = html.replace('</body>', '<script src="../model-page-data.js" defer></script>\n<script src="../model-page.js" defer></script>\n</body>');
   html = clearThumbs(html);
   html = pilot.decorate(html, state, file.slice(0, -5));
+  html = improveInitialRender(html, file.slice(0, -5));
   fs.writeFileSync(filePath, html);
   count++;
 }

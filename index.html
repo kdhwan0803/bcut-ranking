@@ -18,6 +18,10 @@
 <script>
 /* Start the public catalogue request while the document and runtime load. */
 (function(){
+  // The standalone document already contains the complete component template.
+  // Use the runtime's bundled-resource mode to avoid fetching and compiling it twice.
+  // Editor iframes keep their own resource map and template refresh behavior.
+  if(window.parent===window&&!window.__resources)window.__resources={};
   function warmFirstPosters(data){
     // Match the visible recommendation shelf before React creates its images.
     const hash=(location.hash||'').replace(/^#\/?/,'').split('?')[0].toLowerCase();
@@ -1695,8 +1699,8 @@ select,input,button{font-family:inherit}
           <sc-for list="{{ searchSuggestions }}" as="m" hint-placeholder-count="0"><a class="search-model-choice" href="{{ m.href }}" aria-label="{{ m.label }}"><strong>{{ m.name }}</strong><span>공개 화보 {{ m.count }}편</span></a></sc-for>
         </nav>
         <div class="search-people">
-          <label>모델<select aria-label="모델 선택" value="{{ modelSel }}" onChange="{{ onModel }}"><sc-for list="{{ modelOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></select></label>
-          <label>작가<select aria-label="작가 선택" value="{{ searchCreator }}" onChange="{{ searchOnCreator }}"><sc-for list="{{ searchCreatorOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></select></label>
+          <label>모델<sc-raw-select aria-label="모델 선택" value="{{ modelSel }}" onChange="{{ onModel }}"><sc-for list="{{ modelOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></sc-raw-select></label>
+          <label>작가<sc-raw-select aria-label="작가 선택" value="{{ searchCreator }}" onChange="{{ searchOnCreator }}"><sc-for list="{{ searchCreatorOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></sc-raw-select></label>
         </div>
         <div class="search-purchase-row">
           <div class="search-purchase" role="group" aria-label="구매 방식"><sc-for list="{{ searchBuyOptions }}" as="f" hint-placeholder-count="0"><button type="button" aria-pressed="{{ f.pressed }}" onClick="{{ f.go }}">{{ f.label }}</button></sc-for></div>
@@ -1705,8 +1709,8 @@ select,input,button{font-family:inherit}
             <div class="search-extra-panel">
               <label class="search-check"><input type="checkbox" checked="{{ searchVideo }}" onChange="{{ searchOnVideo }}">영상 포함</label>
               <label class="search-check"><input type="checkbox" checked="{{ searchAdult }}" onChange="{{ searchOnAdult }}">19금만</label>
-              <label>공개 연도<select aria-label="공개 연도" value="{{ yearSel }}" onChange="{{ onYear }}"><sc-for list="{{ yearOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></select></label>
-              <label>공개 상태<select aria-label="공개 상태" value="{{ searchRelease }}" onChange="{{ searchOnRelease }}"><option value="released">공개된 화보</option><option value="upcoming">공개 예정</option></select></label>
+              <label>공개 연도<sc-raw-select aria-label="공개 연도" value="{{ yearSel }}" onChange="{{ onYear }}"><sc-for list="{{ yearOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></sc-raw-select></label>
+              <label>공개 상태<sc-raw-select aria-label="공개 상태" value="{{ searchRelease }}" onChange="{{ searchOnRelease }}"><option value="released">공개된 화보</option><option value="upcoming">공개 예정</option></sc-raw-select></label>
             </div>
           </details>
         </div>
@@ -1714,7 +1718,7 @@ select,input,button{font-family:inherit}
       </div>
       <div class="search-result-bar">
         <div class="search-result-count" role="status" aria-live="polite">{{ resultCount }}</div>
-        <select aria-label="결과 정렬" value="{{ searchSort }}" onChange="{{ searchOnSort }}"><option value="latest" label="{{ searchLatestLabel }}">{{ searchLatestLabel }}</option><option value="popular">인기순</option></select>
+        <sc-raw-select aria-label="결과 정렬" value="{{ searchSort }}" onChange="{{ searchOnSort }}"><option value="latest" label="{{ searchLatestLabel }}">{{ searchLatestLabel }}</option><option value="popular">인기순</option></sc-raw-select>
         <button type="button" class="search-random" onClick="{{ searchRandom }}" style="display:{{ searchRandomShow }}">아무거나 골라보기</button>
       </div>
       <p class="search-scope-note" style="display:{{ searchScopeShow }}">{{ searchScopeNote }}</p>

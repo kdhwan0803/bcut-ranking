@@ -60,4 +60,14 @@ const oldWeek=app.weekWorks(0);assert.equal(app.weekWorks(0),oldWeek,'ranking ca
 const updated=structuredClone(data);updated.weeks[0].ranking.reverse();app.apply(updated);assert.notEqual(app.weekWorks(0),oldWeek,'catalogue updates invalidate cached calculations');
 const expected=updated.weeks[0].ranking.filter(id=>updated.works[id]&&app.pubOk(id,0));assert.deepEqual(plain(app.weekWorks(0).map(item=>item.id)),expected);
 const original=data.works['2393'].title;assert.equal(original,JSON.parse(fs.readFileSync(path.join(root,'data.json'),'utf8')).works['2393'].title);
+for(const view of ['home','new','sub','creators','models','search']){
+  app.state.view=view;const page=app.vals();
+  assert.equal(page.sectionVisible.heroShow,view==='home');
+  assert.equal(page.sectionVisible.searchShow,view==='home'||view==='search');
+  assert.equal(page.sectionVisible.crShow,view==='home'||view==='creators');
+  assert.equal(page.sectionVisible.crGridShow,view==='creators','Full creator grid is only mounted on the creator page');
+  assert.equal(page.sectionVisible.mdShow,view==='home'||view==='models');
+}
+assert.equal(new context.App().vals().sectionVisible.searchShow,false,'Data loading does not mount catalogue lists');
+assert(html.includes('<sc-if value="{{ sectionVisible.crGridShow }}"'),'Hidden full creator grid must not render cards');
 console.log(JSON.stringify({result:'PASS',scenarios:['partial/exact/Unicode model matching','public-only counts and collaborations','date rollover','six suggestions at most','preview links','empty search preserves query while relaxing filters','history restores filters/expanded cards/scroll/focus','invalid saved state ignored','unchanged URL avoids repeated history updates','catalogue unchanged']}));

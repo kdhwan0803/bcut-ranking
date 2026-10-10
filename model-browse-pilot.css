@@ -6,6 +6,9 @@ body[data-model-browse] #model-browse button{padding:9px 14px;font-weight:700}
 body[data-model-browse] #model-browse .model-browse-filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 body[data-model-browse] .model-browse-filters span{font-size:11px;font-weight:500;margin-left:3px;opacity:.85}
 body[data-model-browse] .model-browse-sort{display:flex;align-items:center;gap:9px;color:var(--ink2);font-size:12px}
+body[data-model-browse] .model-browse-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+body[data-model-browse] #model-browse-share-status{color:var(--ink2);font-size:12px;margin-top:8px}
+body[data-model-browse] #model-browse-share-status:empty{display:none}
 body[data-model-browse] #model-browse select{padding:8px 30px 8px 12px}
 body[data-model-browse] #model-browse-status{color:var(--ink2);font-size:12px;margin-top:12px}
 body[data-model-browse] #model-browse-hint{color:var(--ink2);font-size:12px;line-height:1.65;margin-top:7px;max-width:66ch}
@@ -13,4 +16,4 @@ body[data-model-browse] #model-browse-empty{margin-top:14px;padding:20px;border:
 body[data-model-browse] #model-browse-empty button{margin-top:12px}
 body[data-model-browse] #model-browse :focus-visible{outline:3px solid var(--accent2);outline-offset:3px}
 body[data-model-browse] #model-browse [hidden],body[data-model-browse] #grid [hidden]{display:none!important}
-@media(max-width:599px){body[data-model-browse] .model-browse-filters{width:100%;display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:6px}body[data-model-browse] .model-browse-filters button{padding-left:8px;padding-right:8px}body[data-model-browse] .model-browse-controls{gap:10px}body[data-model-browse] .model-browse-sort{margin-left:auto}}
+@media(max-width:599px){body[data-model-browse] .model-browse-filters{width:100%;display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:6px}body[data-model-browse] .model-browse-filters button{padding-left:8px;padding-right:8px}body[data-model-browse] .model-browse-controls{gap:10px}body[data-model-browse] .model-browse-actions{width:100%;justify-content:space-between;gap:8px}body[data-model-browse] .model-browse-sort{margin-left:auto}}

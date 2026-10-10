@@ -95,6 +95,7 @@ if(!window.BCUT_ANALYTICS_DISABLED){
     if (item.ratio < .5) return false;
     const img = el.querySelector('img');
     if (!img || !img.complete || !img.naturalWidth) return false;
+    if (window.BCUTImages && window.BCUTImages.original(img) !== img.getAttribute('src')) return false;
     const r = el.getBoundingClientRect();
     const l = Math.max(0,r.left), t = Math.max(0,r.top), right = Math.min(innerWidth,r.right), bottom = Math.min(innerHeight,r.bottom);
     if (right <= l || bottom <= t || r.width <= 0 || r.height <= 0) return false;

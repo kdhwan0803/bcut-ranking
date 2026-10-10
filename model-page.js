@@ -7,6 +7,7 @@
   function meta(selector, value) { var element = document.querySelector(selector); if (element) element.setAttribute('content', value); }
   function html(element, value) {
     if (!element) return;
+    if (window.BCUTImages) { if (!window.BCUTImages.matches(element, value)) element.innerHTML = value; return; }
     var template = document.createElement('template'); template.innerHTML = value;
     // Compare browser-normalized HTML so an unchanged refresh keeps loaded
     // images and the user's focused element instead of replacing the DOM.
@@ -37,7 +38,10 @@
     document.querySelectorAll('.mtop a').forEach(function (link) {
       var match = link.href.match(/\/work\/(\d+)/), img = link.querySelector('img');
       var work = match && data.works[match[1]];
-      if (work && img && img.getAttribute('src') !== api.image(work.img)) img.src = api.image(work.img);
+      if (work && img) {
+        var original = window.BCUTImages ? window.BCUTImages.original(img) : img.getAttribute('src');
+        if (original !== api.image(work.img)) img.src = api.image(work.img);
+      }
     });
     var schema = document.querySelector('script[type="application/ld+json"]');
     var canonical = document.querySelector('link[rel="canonical"]');

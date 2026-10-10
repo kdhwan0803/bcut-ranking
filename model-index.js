@@ -2,6 +2,7 @@
   'use strict';
   var api = window.BCUTModelData, grid = document.getElementById('grid'), input = document.getElementById('q');
   var config = JSON.parse(document.getElementById('model-directory-config').textContent);
+  var renderedMarkup;
   function filter() {
     var value = input.value.trim().toLowerCase(), shown = 0;
     grid.querySelectorAll('.card').forEach(function (card) {
@@ -18,7 +19,11 @@
     }).then(function (data) {
       if (!data.works || typeof data.works !== 'object') throw new Error('Invalid catalogue');
       var entries = api.directory(data, config);
-      grid.innerHTML = api.directoryHTML(entries);
+      var markup = api.directoryHTML(entries);
+      if (renderedMarkup !== markup) {
+        if (!window.BCUTImages || !window.BCUTImages.matches(grid, markup)) grid.innerHTML = markup;
+        renderedMarkup = markup;
+      }
       var title = '맥심 B컷 모델 전체 ' + entries.length + '명 · 화보 랭킹';
       var description = '맥심 B컷 화보 모델 ' + entries.length + '명을 한눈에. 모델별 인기 화보와 신작을 MAXIM B컷 주간 랭킹에서 확인하세요.';
       document.title = title;

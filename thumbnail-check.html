@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>썸네일 점검 | 맥심 B컷 랭킹</title>
+<script src="./thumbnail-fallback.js" defer></script>
+<script src="./thumbnail-check.js" defer></script>
+<style>
+:root{color-scheme:dark;--bg:#0f0c0d;--panel:#1b1618;--ink:#f4eef0;--muted:#b5a7ac;--line:#45383e;--accent:#e60012}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;line-height:1.6}
+a{color:inherit;text-underline-offset:4px}button,input,select,textarea{font:inherit}button{cursor:pointer;min-height:44px}button:disabled{cursor:default;opacity:.5}
+:focus-visible{outline:3px solid #ff8490;outline-offset:3px}header{border-bottom:1px solid var(--line)}header>div{max-width:1080px;margin:auto;padding:15px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{text-decoration:none;font-weight:800}.brand b{color:#ff5a63}header a:last-child{font-size:13px;color:var(--muted)}
+main{max-width:1080px;margin:auto;padding:32px 20px 60px}h1{font-size:clamp(27px,6vw,38px);line-height:1.25;margin:0 0 12px;letter-spacing:-1px}.intro{max-width:680px;color:var(--muted);margin:0 0 24px;font-size:14px}.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end}label{display:grid;gap:6px;font-size:13px;color:var(--muted)}.query{flex:1;min-width:210px}input,select{min-height:46px;border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--panel);color:var(--ink)}button{border:1px solid var(--line);border-radius:8px;padding:9px 14px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:700}.primary{background:var(--accent);border-color:var(--accent);color:#fff}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.summary{font-size:14px;margin:18px 0 8px;min-height:24px}progress{display:block;width:100%;height:5px;accent-color:var(--accent)}.note{color:var(--muted);font-size:12px;margin:8px 0 22px}.empty{border:1px dashed var(--line);padding:30px 18px;text-align:center;color:var(--muted);border-radius:8px;font-size:14px}
+.row{display:grid;grid-template-columns:72px minmax(0,1fr) 130px;gap:18px;padding:18px 0;border-bottom:1px solid var(--line);align-items:center}.cover{width:72px;height:96px;display:grid;place-items:center;background:var(--panel);border-radius:6px;overflow:hidden;color:var(--muted)}.cover img{width:100%;height:100%;object-fit:cover;display:block}.details{min-width:0}.work-id{font-weight:800;color:#ff8490;font-variant-numeric:tabular-nums}.title{font-size:15px;font-weight:700;margin:3px 0;overflow-wrap:anywhere}.meta,.links{font-size:12px;color:var(--muted)}.links{display:flex;gap:14px;flex-wrap:wrap;margin-top:7px}.state{font-size:13px;font-weight:700;margin-bottom:8px}.state[data-result="ok"]{color:#8cdbad}.state[data-result="error"],.state[data-result="timeout"],.state[data-result="invalid"]{color:#ffb7be}.result-actions{text-align:right}.result-actions button{font-size:12px}.more{margin:20px 0;width:100%}textarea{display:block;width:100%;min-height:160px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:12px;border-radius:8px;font-size:12px}.message{font-size:13px;color:var(--muted);min-height:21px}
+@media(max-width:540px){main{padding:25px 16px 50px}header>div{padding:14px 16px}.controls>label{width:100%}.row{grid-template-columns:60px minmax(0,1fr);gap:12px}.cover{width:60px;height:80px}.result-actions{grid-column:2;text-align:left;display:flex;align-items:center;gap:12px}.state{margin:0}.actions button{flex:1}.title{font-size:14px}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div><a class="brand" href="/">MAXIM <b>B컷 랭킹</b></a><a href="/models/models.html">모델 목록</a></div></header>
+<main>
+<h1>썸네일 점검</h1>
+<p class="intro">불러오지 못한 썸네일을 작품 번호로 확인하세요. 원래 이미지와 작품 정보를 열어 보고, 교체할 목록을 복사할 수 있습니다.</p>
+<div class="controls">
+<label class="query">점검 대상<input id="query" type="search" placeholder="작품 번호·모델명·제목으로 찾기" autocomplete="off"></label>
+<label>결과 보기<select id="filter"><option value="issues">실패·시간 초과</option><option value="all">전체</option><option value="ok">정상</option><option value="pending">미점검</option></select></label>
+</div>
+<div class="actions"><button id="start" class="primary" disabled>대상 점검 시작</button><button id="stop" hidden>점검 중지</button><button id="copy" disabled>실패 목록 복사</button></div>
+<p id="summary" class="summary" role="status" aria-live="polite">작품 목록을 불러오는 중…</p>
+<progress id="progress" max="1" value="0" aria-label="썸네일 점검 진행률"></progress>
+<p class="note">검색한 작품을 한 번에 4개씩 점검합니다. 시간 초과는 연결 상태에 따라 달라질 수 있으니 다시 점검하세요. 점검 결과는 이 화면을 닫으면 초기화됩니다.</p>
+<p id="message" class="message" role="status"></p>
+<textarea id="export" aria-label="복사할 실패 목록" readonly hidden></textarea>
+<div id="results"></div>
+<button id="more" class="more" hidden>더 보기</button>
+<noscript><p>점검을 실행하려면 브라우저에서 JavaScript를 켜 주세요.</p></noscript>
+</main>
+</body>
+</html>

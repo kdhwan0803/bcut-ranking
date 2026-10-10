@@ -33,10 +33,14 @@ assert.equal(browse.video({ vid: '1' }), true);
 assert.equal(browse.video({ vid: '0', title: 'VIDEO' }), false, 'use the same explicit video flag as gallery badges');
 assert.deepEqual(browse.ordered([], 'video', 'popular'), []);
 const data = JSON.parse(fs.readFileSync(path.join(root, 'data.json'), 'utf8'));
-const real = browse.seed(api.summary(data, '박서이', date), data);
+const pilots = { donggeuran: '동그란', seuli: '슬이', bakseoi: '박서이' };
+const counts = {};
 for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html'))) {
   const html = fs.readFileSync(path.join(root, 'models', file), 'utf8');
-  if (file === 'bakseoi.html') {
+  const slug = file.slice(0, -5);
+  if (Object.hasOwn(pilots, slug)) {
+    const real = browse.seed(api.summary(data, pilots[slug], date), data);
+    counts[slug] = { total: real.items.length, photos: real.items.filter(item => !item.video).length, videoIncluding: real.items.filter(item => item.video).length };
     const seed = JSON.parse(html.match(/<script id="model-browse-state" type="application\/json">([\s\S]*?)<\/script>/)[1]);
     assert.deepEqual(seed, real);
     assert.equal((html.match(/id="model-browse"/g) || []).length, 1);
@@ -45,6 +49,11 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
     assert.equal((html.match(/data-work-id="/g) || []).length, real.items.length);
     assert(html.includes('aria-label="화보 필터와 정렬" hidden'), 'without JS the full static gallery remains available');
     assert(html.indexOf('src="../model-browse-pilot.js"') < html.indexOf('src="../model-page.js"'), 'bind controls before the existing refresh');
+    assert(html.includes('href="#grid"'), 'the static gallery shortcut works without JavaScript');
+    assert(html.includes('data-model-pilot="' + slug + '"'), 'existing latest-work pilot remains enabled');
+    assert(html.includes('src="../thumbnail-fallback.js"'), 'thumbnail failure handling remains enabled');
+    if (slug === 'bakseoi') assert(html.includes('data-model-speed="1"'), 'mobile speed pilot remains enabled');
   } else assert(!html.includes('model-browse-pilot.js') && !html.includes('id="model-browse"'), file + ': pilot scope');
 }
-console.log(JSON.stringify({ result: 'PASS', modelBrowsePilot: 'bakseoi', works: real.items.length, scenarios: ['photo/video flags', 'published only', 'future and invalid rankings', 'best weekly rank', 'rank/date ties', 'immutable sorting', 'empty results', 'no-JS gallery', 'pilot scope'] }));
+assert.deepEqual(Object.keys(counts).sort(), Object.keys(pilots).sort(), 'all three representative model pages are generated');
+console.log(JSON.stringify({ result: 'PASS', modelBrowsePilots: counts, scenarios: ['photo/video flags', 'published only', 'future and invalid rankings', 'best weekly rank', 'rank/date ties', 'immutable sorting', 'empty results', 'no-JS gallery', 'three-model scope and existing features'] }));

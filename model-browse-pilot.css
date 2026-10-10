@@ -3,7 +3,7 @@ body[data-model-browse] .model-browse-controls{display:flex;align-items:center;j
 body[data-model-browse] .model-browse-filters{display:flex;gap:7px;flex-wrap:wrap}
 body[data-model-browse] #model-browse button,body[data-model-browse] #model-browse select{font:inherit;font-size:13px;min-height:44px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer}
 body[data-model-browse] #model-browse button{padding:9px 14px;font-weight:700}
-body[data-model-browse] .model-browse-filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+body[data-model-browse] #model-browse .model-browse-filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 body[data-model-browse] .model-browse-filters span{font-size:11px;font-weight:500;margin-left:3px;opacity:.85}
 body[data-model-browse] .model-browse-sort{display:flex;align-items:center;gap:9px;color:var(--ink2);font-size:12px}
 body[data-model-browse] #model-browse select{padding:8px 30px 8px 12px}

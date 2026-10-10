@@ -16,6 +16,7 @@ async function main() {
   const run = file => execFileSync(process.execPath, [path.join(__dirname, file), '--date', date], { cwd: root, stdio: 'inherit' });
   run('update-model-pages.cjs');
   run('check-model-pages.cjs');
+  run('check-model-browse.cjs');
   const modelFiles = fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html')).map(file => 'models/' + file);
   const generatedHash = sitemap.fingerprint(root, modelFiles);
   run('update-model-pages.cjs');

@@ -2,7 +2,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const api = require('../model-page-data.js');
 const pilot = require('../model-cta-pilot.js');
+const browse = require('../model-browse-pilot.js');
 const root = path.resolve(__dirname, '..');
+const browseCSS = fs.readFileSync(path.join(root, 'model-browse-pilot.css'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(root, 'data.json'), 'utf8'));
 const dateIndex = process.argv.indexOf('--date');
 const date = dateIndex < 0 ? api.today() : process.argv[dateIndex + 1];
@@ -83,6 +85,7 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   html = clearThumbs(html);
   html = pilot.decorate(html, state, file.slice(0, -5));
   html = improveInitialRender(html, file.slice(0, -5));
+  html = browse.decorate(html, state, data, file.slice(0, -5), browseCSS);
   fs.writeFileSync(filePath, html);
   count++;
 }

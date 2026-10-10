@@ -114,4 +114,11 @@ html = html.replace(/<script>[\s\S]*?<\/script>/g, script => /var SLUG=/.test(sc
   .replace(/<script src="\.\.\/(?:model-page-data|model-index)\.js" defer><\/script>\n?/g, '');
 html = html.replace('</body>', '<script id="model-directory-config" type="application/json">' + JSON.stringify(config).replace(/</g, '\\u003c') + '</script>\n<script src="../model-page-data.js" defer></script>\n<script src="../model-index.js" defer></script>\n</body>');
 fs.writeFileSync(directoryPath, clearThumbs(html));
+// Include the shared fallback in the directory and the two legacy layouts too.
+for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html'))) {
+  const filePath = path.join(root, 'models', file);
+  const source = fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n')
+    .replace(/<script src="\.\.\/thumbnail-fallback\.js" defer><\/script>\n?/g, '');
+  fs.writeFileSync(filePath, source.replace('</head>', '<script src="../thumbnail-fallback.js" defer></script>\n</head>'));
+}
 console.log(JSON.stringify({ date, modelPages: count, directoryModels: entries.length }));

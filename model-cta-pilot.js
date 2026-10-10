@@ -58,7 +58,9 @@
       try { window.gtag('event', name, params); } catch (e) {}
     }
     function params(workId, origin) {
-      return { module_id: version, list_id: version, model: model, model_slug: slug, work_id: workId || '', link_origin: origin, transport_type: 'beacon' };
+      var values = { module_id: version, list_id: version, model: model, model_slug: slug, work_id: workId || '', link_origin: origin, transport_type: 'beacon' };
+      if (origin === 'work_list' && window.BCUTModelBrowse) Object.assign(values, window.BCUTModelBrowse.selection());
+      return values;
     }
     function update(state) {
       var host = document.getElementById('latest-feature');

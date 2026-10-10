@@ -100,6 +100,12 @@ else {
   config = { slugs: JSON.parse(oldConfig[1]), portraits: JSON.parse(oldConfig[2]) };
 }
 Object.assign(config.slugs, slugs);
+// Keep detail-to-model links on the same authoritative page map as the directory.
+const homePath = path.join(root, 'index.html');
+const modelLinks = Object.fromEntries(Object.entries(config.slugs).filter(([name, slug]) =>
+  name && /^[a-z0-9_-]+$/.test(slug) && fs.existsSync(path.join(root, 'models', slug + '.html'))));
+const home = fs.readFileSync(homePath, 'utf8').replace(/<script id="work-model-links"[\s\S]*?<\/script>\r?\n?/g, '');
+fs.writeFileSync(homePath, home.replace('</head>', '<script id="work-model-links" type="application/json">' + JSON.stringify(modelLinks).replace(/</g, '\\u003c') + '</script>\n</head>'));
 const entries = api.directory(data, config, date);
 const title = '맥심 B컷 모델 전체 ' + entries.length + '명 · 화보 랭킹';
 const description = '맥심 B컷 화보 모델 ' + entries.length + '명을 한눈에. 모델별 인기 화보와 신작을 MAXIM B컷 주간 랭킹에서 확인하세요.';

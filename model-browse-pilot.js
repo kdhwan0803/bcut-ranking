@@ -30,13 +30,56 @@
     return items.filter(function (item) { return filter === 'video' ? item.video : filter === 'photo' ? !item.video : true; })
       .sort(function (a, b) { return (sort === 'popular' ? (a.rank || Infinity) - (b.rank || Infinity) : 0) || latest(a, b); });
   }
+  function fromURL(href) {
+    var query = new URL(href).searchParams;
+    return { filter: ['photo', 'video'].indexOf(query.get('format')) >= 0 ? query.get('format') : 'all',
+      sort: query.get('sort') === 'popular' ? 'popular' : 'latest' };
+  }
+  function listURL(href, filter, sort) {
+    var url = new URL(href);
+    url.searchParams.delete('format'); url.searchParams.delete('sort');
+    if (filter === 'photo' || filter === 'video') url.searchParams.set('format', filter);
+    if (sort === 'popular') url.searchParams.set('sort', sort);
+    url.hash = 'model-browse'; return url.href;
+  }
+  function selection() {
+    return view ? { browse_format: view.filter, browse_sort: view.sort,
+      visible_count: ordered(view.info.items, view.filter, view.sort).length } : {};
+  }
+  function workURL(href, slug, filter, sort, preview) {
+    var url = new URL(href);
+    if (url.hostname !== 'bcutrank.com' || !/^\d+$/.test(url.searchParams.get('w') || '') || slugs.indexOf(slug) < 0) return href;
+    url.searchParams.set('mb_model', slug); url.searchParams.set('mb_format', filter); url.searchParams.set('mb_sort', sort);
+    ['admin', 'preview', 'measure'].forEach(function (key) { if (preview.get(key) === '1') url.searchParams.set(key, '1'); });
+    return url.href;
+  }
+  function change(filter, sort, kind) {
+    if (filter === view.filter && sort === view.sort) return;
+    var previous = { previous_format: view.filter, previous_sort: view.sort };
+    view.filter = filter; view.sort = sort; render();
+    try { history.pushState(history.state, '', listURL(location.href, filter, sort)); } catch (e) {}
+    if (window.BCUT_ANALYTICS_DISABLED || window.IS_ADMIN || typeof window.gtag !== 'function') return;
+    try { window.gtag('event', 'model_browse_change', Object.assign({ module_id: 'model_browse_v1',
+      model: view.info.model, model_slug: document.body.dataset.modelPilot, change_type: kind,
+      total_count: view.info.items.length, transport_type: 'beacon' }, previous, selection())); } catch (e) {}
+  }
+  async function copyList() {
+    var status = document.getElementById('model-browse-share-status');
+    try {
+      var url = new URL(listURL(location.href, view.filter, view.sort));
+      ['admin', 'preview', 'measure'].forEach(function (key) { url.searchParams.delete(key); });
+      await navigator.clipboard.writeText(url.href);
+      status.textContent = '현재 조건의 목록 링크를 복사했습니다.';
+    } catch (e) { status.textContent = '주소창의 링크를 복사해 주세요.'; }
+  }
   function controls(info) {
     var esc = api.escape, photos = info.items.filter(function (item) { return !item.video; }).length;
     return '<section id="model-browse" aria-label="화보 필터와 정렬" hidden><div class="model-browse-controls">' +
       '<div class="model-browse-filters" role="group" aria-label="화보 종류">' +
       [['all', '전체', info.items.length], ['photo', '사진', photos], ['video', '영상 포함', info.items.length - photos]].map(function (item) {
         return '<button type="button" data-model-format="' + item[0] + '" aria-controls="grid" aria-pressed="' + (item[0] === 'all') + '">' + item[1] + ' <span>' + item[2] + '</span></button>';
-      }).join('') + '</div><label class="model-browse-sort">정렬<select id="model-browse-sort" aria-controls="grid"><option value="latest">최신순</option><option value="popular">인기순</option></select></label></div>' +
+      }).join('') + '</div><div class="model-browse-actions"><button type="button" id="model-browse-share">목록 링크 복사</button><label class="model-browse-sort">정렬<select id="model-browse-sort" aria-controls="grid"><option value="latest">최신순</option><option value="popular">인기순</option></select></label></div></div>' +
+      '<p id="model-browse-share-status" role="status" aria-live="polite"></p>' +
       '<p id="model-browse-status" role="status" aria-live="polite" aria-atomic="true">' + esc(info.items.length) + '편 중 ' + esc(info.items.length) + '편 · 최신순</p>' +
       '<p id="model-browse-hint" hidden>인기순은 역대 주간 랭킹의 최고 순위 기준입니다. 동률이거나 순위 기록이 없는 작품은 최신순으로 표시합니다.</p>' +
       '<div id="model-browse-empty" hidden><p>이 조건에 맞는 공개 화보가 없습니다.</p><button type="button" id="model-browse-reset">전체 화보 보기</button></div></section>';
@@ -61,6 +104,8 @@
     var order = items.concat(view.info.items.filter(function (item) { return !selected.has(item.id); }));
     order.forEach(function (item, index) {
       var card = view.nodes.get(item.id); if (!card) return;
+      if (!view.hrefs.has(card)) view.hrefs.set(card, card.getAttribute('href'));
+      card.setAttribute('href', workURL(view.hrefs.get(card), document.body.dataset.modelPilot, view.filter, view.sort, new URLSearchParams(location.search)));
       card.hidden = !selected.has(item.id);
       if (view.grid.children[index] !== card) view.grid.insertBefore(card, view.grid.children[index] || null);
     });
@@ -73,10 +118,12 @@
     document.getElementById('model-browse-status').textContent = view.info.items.length + '편 중 ' + items.length + '편 · ' + (view.sort === 'popular' ? '인기순' : '최신순');
     document.getElementById('model-browse-hint').hidden = view.sort !== 'popular';
     document.getElementById('model-browse-empty').hidden = !!items.length;
+    document.getElementById('model-browse-sort').value = view.sort;
     if (focusedId && selected.has(focusedId) && document.activeElement !== focused) view.nodes.get(focusedId).focus({ preventScroll: true });
   }
   function comparable(card) {
     var copy = card.cloneNode(true); copy.removeAttribute('hidden');
+    if (view.hrefs.has(card)) copy.setAttribute('href', view.hrefs.get(card));
     if (window.BCUTImages) {
       var images = card.querySelectorAll('img'), copies = copy.querySelectorAll('img');
       images.forEach(function (img, index) { copies[index].setAttribute('src', window.BCUTImages.original(img)); });
@@ -106,17 +153,22 @@
     var toolbar = document.getElementById('model-browse'), grid = document.getElementById('grid'), info;
     try { info = JSON.parse(document.getElementById('model-browse-state').textContent); } catch (e) { return; }
     if (!toolbar || !grid || !Array.isArray(info.items) || info.model !== grid.dataset.model) return;
-    view = { info: info, grid: grid, toolbar: toolbar, nodes: new Map(), filter: 'all', sort: 'latest' };
+    var initial = fromURL(location.href);
+    view = { info: info, grid: grid, toolbar: toolbar, nodes: new Map(), hrefs: new WeakMap(), filter: initial.filter, sort: initial.sort };
     grid.querySelectorAll('[data-work-id]').forEach(function (card) { view.nodes.set(card.dataset.workId, card); });
     var empty = grid.querySelector('.empty'); if (empty) empty.remove();
     toolbar.addEventListener('click', function (event) {
       var button = event.target.closest('[data-model-format]'); if (!button) return;
-      view.filter = button.dataset.modelFormat; render();
+      change(button.dataset.modelFormat, view.sort, 'format');
     });
-    document.getElementById('model-browse-sort').addEventListener('change', function (event) { view.sort = event.target.value; render(); });
-    document.getElementById('model-browse-reset').addEventListener('click', function () { view.filter = 'all'; render(); toolbar.querySelector('[data-model-format="all"]').focus(); });
+    document.getElementById('model-browse-sort').addEventListener('change', function (event) { change(view.filter, event.target.value === 'popular' ? 'popular' : 'latest', 'sort'); });
+    document.getElementById('model-browse-reset').addEventListener('click', function () { change('all', view.sort, 'reset'); toolbar.querySelector('[data-model-format="all"]').focus(); });
+    document.getElementById('model-browse-share').addEventListener('click', copyList);
+    window.addEventListener('popstate', function () {
+      var current = fromURL(location.href); view.filter = current.filter; view.sort = current.sort; render();
+    });
     render(); toolbar.hidden = false;
     var shortcut = document.querySelector('.all-works'); if (shortcut) shortcut.setAttribute('href', '#model-browse');
   }
-  return { video: video, ranks: ranks, seed: seed, ordered: ordered, decorate: decorate, init: init, update: update };
+  return { video: video, ranks: ranks, seed: seed, ordered: ordered, fromURL: fromURL, listURL: listURL, workURL: workURL, selection: selection, decorate: decorate, init: init, update: update };
 });

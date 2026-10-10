@@ -17,7 +17,8 @@ async function main() {
   run('update-model-pages.cjs');
   run('check-model-pages.cjs');
   run('check-model-browse.cjs');
-  const modelFiles = fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html')).map(file => 'models/' + file);
+  run('check-work-detail.cjs');
+  const modelFiles = ['index.html', ...fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html')).map(file => 'models/' + file)];
   const generatedHash = sitemap.fingerprint(root, modelFiles);
   run('update-model-pages.cjs');
   assert.equal(sitemap.fingerprint(root, modelFiles), generatedHash, 'Repeated generation must be stable');

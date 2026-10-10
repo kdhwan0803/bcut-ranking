@@ -195,7 +195,41 @@ if(!window.BCUT_ANALYTICS_DISABLED){
     return !needle || [work.title, title(work.title, data).name, ...(work.models || []), work.photo, id]
       .some(value => fold(value).includes(needle));
   }
-  window.BCUTCatalogueUI = Object.freeze({ title, format, purchase, matches });
+  function modelNames(value) {
+    if (!Array.isArray(value)) { try { value = JSON.parse(String(value || '').replace(/'/g, '"')); } catch (_) { value = []; } }
+    return Array.isArray(value) ? [...new Set(value.map(name => String(name).trim()).filter(Boolean))] : [];
+  }
+  function released(work, today) {
+    if (!work || !/^\d{4}-\d{2}-\d{2}$/.test(work.pub || '')) return false;
+    const date = new Date(work.pub + 'T00:00:00Z');
+    return !isNaN(date.getTime()) && date.toISOString().slice(0,10) === work.pub && work.pub <= today &&
+      work.hidden !== true && work.published !== false && !/^(draft|hidden|deleted|unpublished)$/i.test(work.status || '');
+  }
+  function related(data, id, today) {
+    const works = data.works || {}, names = modelNames(works[id]?.models);
+    return Object.keys(works).filter(other => other !== String(id) && released(works[other], today) &&
+      modelNames(works[other].models).some(name => names.includes(name)))
+      .sort((a,b) => works[b].pub.localeCompare(works[a].pub) || b.localeCompare(a, undefined, {numeric:true}));
+  }
+  function modelLinks(names) {
+    let slugs = {};
+    try { slugs = JSON.parse(document.getElementById('work-model-links').textContent); } catch (_) {}
+    return modelNames(names).map(name => {
+      const slug = slugs[name], known = typeof slug === 'string' && /^[a-z0-9_-]+$/.test(slug);
+      return { name, label: name + (known ? ' 화보 전체 보기' : ' 화보 찾아보기'),
+        href: known ? 'models/' + slug + '.html' + (['donggeuran','seuli','bakseoi'].includes(slug) ? '#model-browse' : '#grid') : '?model=' + encodeURIComponent(name) + '#/search' };
+    });
+  }
+  function browseEntry(search) {
+    const query = new URLSearchParams(search), slug = query.get('mb_model'), id = query.get('w') || query.get('work');
+    if (!['donggeuran','seuli','bakseoi'].includes(slug) || !/^\d+$/.test(id || '') ||
+        !['all','photo','video'].includes(query.get('mb_format')) || !['latest','popular'].includes(query.get('mb_sort'))) return null;
+    let mapping = {};
+    try { mapping = JSON.parse(document.getElementById('work-model-links').textContent); } catch (_) {}
+    const model = Object.keys(mapping).find(name => mapping[name] === slug);
+    return model ? {model,model_slug:slug,work_id:id,browse_format:query.get('mb_format'),browse_sort:query.get('mb_sort')} : null;
+  }
+  window.BCUTCatalogueUI = Object.freeze({ title, format, purchase, matches, modelNames, released, related, modelLinks, browseEntry });
 })();
 
 </script>
@@ -254,6 +288,7 @@ OneSignalDeferred.push(async function(OneSignal){
   }catch(e){}
 });
 </script>
+<script id="work-model-links" type="application/json">{"손예은":"sonyeeun","동그란":"donggeuran","바비앙":"babiang","이연우":"iyeonu","예하":"yeha","최세희":"choesehui","심유이":"simyui","채솔":"chaesol","첼설아":"chelseola","은지":"eunji","모모리나":"momorina","쥬":"jyu","유디":"yudi","박서이":"bakseoi","이규영":"igyuyeong","뮤아":"myua","한지나":"hanjina","여나비":"yeonabi","수지":"suji","애순이":"aesuni","슬이":"seuli","빛베리":"bichberi","고아라":"goara","초연":"choyeon","유나":"yuna","겨우디":"gyeoudi","엘라":"elra","윤영서":"yunyeongseo","김갑주":"gimgapju","박민정":"bakminjeong","박수민":"baksumin","아리":"ari","쭈디":"jjudi","초이":"choi","옐랑":"yelrang","희야":"huiya","섹밍":"sekming","보라":"bora","그린":"geurin","박지연":"bakjiyeon","오은담":"oeundam","하리":"hari","연수":"yeonsu","박근나":"bakgeunna","강선혜":"gangseonhye","E거니":"egeoni","이나":"ina","슈":"syu","주주":"juju","김은지":"gimeunji","혜린":"hyerin","새하":"saeha","장은비":"jangeunbi","김설화":"gimseolhwa","장혜선":"janghyeseon","려니":"ryeoni","토리":"tori","채아":"chaea","히나":"hina","윤지윤":"yunjiyun","지린":"jirin","김연지":"gimyeonji","모모리나official":"momorinaofficial","에일리":"eilri","조아":"joa","핫소망":"hassomang","소은":"soeun","연유네코":"yeonyuneko","김서아":"gimseoa","전지은":"jeonjieun","E다연":"edayeon","조이온":"joion","리리":"riri","꾸뿌":"kkuppu","하윤아":"hayuna","순수":"sunsu","은유화":"eunyuhwa","유진":"yujin","엄상미":"eomsangmi","김지연":"gimjiyeon","신새롬":"sinsaerom","김소희":"gimsohui","벨벳":"belbet","이시현":"isihyeon","예리":"yeri","은수":"eunsu","이예린":"iyerin","박별":"bakbyeol","유주다":"yujuda","초영이":"choyeongi","박보름":"bakboreum","서여진":"seoyeojin","한서아":"hanseoa","타샤":"tasya","차유니":"chayuni","주빈":"jubin","소이":"soi","묘정":"myojeong","이채하":"ichaeha","김진아":"gimjina","지니":"jini","노지혜":"nojihye","이해인":"ihaein","링고lyn":"ringgolyn","안지현":"anjihyeon","이유진":"iyujin","최혜연":"choehyeyeon","이하니":"ihani","이아윤":"iayun","양혜원":"yanghyewon","청아":"cheonga","윤설화":"yunseolhwa","지아":"jia","탑체리":"tapcheri","퓨딩":"pyuding","키라":"kira","예나비":"yenabi","예리수":"yerisu","쏘블리":"ssobeulri","제아":"jea","퓨리":"pyuri","강인경":"gangingyeong","김나정":"gimnajeong","박청아":"bakcheonga","채령":"chaeryeong","도유리":"doyuri","김지예":"gimjiye","김세화":"gimsehwa","이안":"ian","이아영":"iayeong","이소윤":"isoyun","주은":"jueun","죠야끼":"jyoyakki","쥬우":"jyuu","미루":"miru","리아":"ria","서현숙":"seohyeonsuk","서지아":"seojia","시안":"sian"}</script>
 </head>
 <body>
 <x-dc>
@@ -564,6 +599,20 @@ select,input,button{font-family:inherit}
 .modal-rank-details[open]{padding-bottom:16px}
 .modal-rank-details:focus-within,.work-original-title:focus-within{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
 .work-dialog-footer-price{font-size:17px;font-weight:900;white-space:nowrap}
+.work-related{margin-top:24px;border-top:1px solid var(--line);padding-top:18px}
+.work-related h3{font-size:16px;line-height:1.5;margin:0;color:var(--txt)}
+.work-related-note{font-size:12px;line-height:1.5;color:var(--mut);margin:5px 0 12px}
+.work-related-models{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}
+.work-related-models a{display:inline-flex;align-items:center;min-height:44px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-weight:800;color:var(--acc2);max-width:100%;overflow-wrap:anywhere}
+.work-related-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px}
+.work-related-card{display:block;min-width:0;color:var(--txt)}
+.work-related-cover{position:relative;display:block;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)}
+.work-related-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.work-related-kind{position:absolute;top:7px;left:7px;background:rgba(0,0,0,.78);color:#fff;font-size:11px;font-weight:800;line-height:1.4;padding:4px 7px;border-radius:5px}
+.work-related-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:13px;font-weight:800;line-height:1.5;margin:7px 0 3px;overflow-wrap:anywhere}
+.work-related-card time{font-size:11px;line-height:1.5;color:var(--mut)}
+.work-related a:focus-visible{outline:3px solid var(--acc);outline-offset:3px;border-radius:8px}
+.work-related-empty{font-size:13px;line-height:1.6;color:var(--mut)}
 @media(max-width:600px){
   .paid-picks{padding:16px 12px}
   .paid-picks h2{font-size:21px}
@@ -1725,6 +1774,18 @@ select,input,button{font-family:inherit}
             </div>
           </div>
           </details>
+          <section class="work-related" aria-label="이 모델의 다른 화보" style="display:{{ modal.relatedShow }}">
+            <h3>이 모델의 다른 화보</h3>
+            <p class="work-related-note">{{ modal.relatedNote }}</p>
+            <div class="work-related-models"><sc-for list="{{ modal.modelLinks }}" as="m" hint-placeholder-count="0"><a href="{{ m.href }}">{{ m.label }}</a></sc-for></div>
+            <div class="work-related-grid"><sc-for list="{{ modal.relatedCards }}" as="o" hint-placeholder-count="0">
+              <a class="work-related-card" data-work-id="{{ o.id }}" href="{{ o.href }}" aria-label="{{ o.infoLabel }}" onClick="{{ o.open }}">
+                <span class="work-related-cover"><img src="{{ o.img }}" alt="{{ o.title }}" loading="lazy" decoding="async"><span class="work-related-kind">{{ o.kind }}</span></span>
+                <span class="work-related-title">{{ o.title }}</span><time datetime="{{ o.date }}">{{ o.date }} 공개</time>
+              </a>
+            </sc-for></div>
+            <p class="work-related-empty" style="display:{{ modal.relatedEmptyShow }}">현재 함께 볼 수 있는 다른 공개 화보가 없습니다.</p>
+          </section>
           <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--mut);margin:22px 0 10px;display:{{ modal.gridShow }}">{{ modal.gridLabel }}</div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
             <sc-for list="{{ modal.others }}" as="o" hint-placeholder-count="0">
@@ -1819,6 +1880,7 @@ function isMSM(w){return !!(w&&(w.models||[]).some(m=>MSM.has((m||'').trim())));
 
 class Component extends DCLogic {
   state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'latest',modelSel:'all',yearSel:'all',searchCreator:'all',searchBuy:'all',searchVideo:false,searchAdult:false,searchRelease:'released',navMore:false,copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0,calMoff:0,rkAll:false};
+  _browseEntry=window.BCUTCatalogueUI.browseEntry(location.search);
 
   componentDidMount(){
     try{this._admin=/[?&](admin|preview)=1/.test(location.search)||!!window.IS_ADMIN;}catch(e){this._admin=!!window.IS_ADMIN;}
@@ -1955,7 +2017,7 @@ class Component extends DCLogic {
     const last=Math.max(0,d.weeks.length-1);
     const qw=(this._qWeek!=null&&this._qWeek>=0&&this._qWeek<=last)?this._qWeek:last;
     this.setState({D:d,wi:qw,err:''});
-    if(this._qWork&&d.works&&d.works[this._qWork]){const _wid=this._qWork;this._qWork=null;setTimeout(()=>{try{this.openWork(_wid);}catch(e){}},80);}
+    if(this._qWork&&d.works&&d.works[this._qWork]){const _wid=this._qWork,_browse=this._browseEntry;this._qWork=null;this._browseEntry=null;setTimeout(()=>{try{this.openWork(_wid,null,_browse);}catch(e){}},80);}
   }
   retry(){this.setState({err:''});this.load();}
 
@@ -2081,9 +2143,11 @@ class Component extends DCLogic {
   trackRediscovery(event,context,origin){
     try{if(context&&window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);}catch(e){}
   }
-  trackWorkOutbound(context){
+  trackWorkOutbound(context,browse,id){
     if(context&&context.module==='rediscovery')this.trackRediscovery('bcut_rediscovery_outbound',context,'modal');
     else this.trackPaidPick('bcut_exp_outbound',context,'modal');
+    if(browse&&browse.work_id===String(id))try{track('go_bcut',Object.assign({},browse,{module_id:'model_cta_pilot_v1',list_id:'model_cta_pilot_v1',
+      link_origin:'work_detail',browse_origin:'work_list',link_url:'https://bcut.maximkorea.net/work/'+id,transport_type:'beacon'}));}catch(e){}
   }
 
   trackPaidPick(event, context, origin){
@@ -2091,9 +2155,10 @@ class Component extends DCLogic {
       if(context && window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);
     }catch(e){}
   }
-  openWork(id,experiment=null){try{const a=[id].concat(this.state.recent.filter(x=>x!==id)).slice(0,12);localStorage.setItem('bcut_recent',JSON.stringify(a));this.setState({recent:a});}catch(e){}
+  openWork(id,experiment=null,browse=null){try{const a=[id].concat(this.state.recent.filter(x=>x!==id)).slice(0,12);localStorage.setItem('bcut_recent',JSON.stringify(a));this.setState({recent:a});}catch(e){}
     this.hit(id);
-    this.setState({modal:{kind:'work',id,experiment}});document.body.style.overflow='hidden';
+    if(browse&&(browse.work_id!==String(id)||!window.BCUTCatalogueUI.modelNames(this.state.D?.works?.[id]?.models).includes(browse.model)))browse=null;
+    this.setState({modal:{kind:'work',id,experiment,browse}});document.body.style.overflow='hidden';
     try{if(!this._hist){history.pushState({m:1},'');this._hist=true;}}catch(e){}}
   /* 화보 조회 카운터: data.json 의 counterUrl 이 있으면 세션당 1회 집계 */
   hit(id){try{const D=this.state.D;const u=D&&D.counterUrl;if(!u||!id)return;
@@ -3140,7 +3205,6 @@ class Component extends DCLogic {
         const _buyLabel=(w.buy==='구독'&&!_subActive)?'코인':(w.buy||'');
         const wr=this.workRankAt(id,wi),best=this.bestMap().w[id],st=this.streak(id,wi,3,false);
         const mp=(this.monthWorks(wi).find(x=>x.id===id)||{}).pts||0;
-        const others=Object.keys(W).filter(x=>x!==id&&(W[x].models||[]).some(m=>(w.models||[]).includes(m))).slice(0,8);
         base.modal={coverShow:'block',img:w.img||'',bgImg:'url('+(w.img||'')+')',blur:this.blurOf(id),
           title:this.splitTitle(w.title||id).name,tag:this.splitTitle(w.title||id).tag,
           tagShow:this.splitTitle(w.title||id).tag?'block':'none',
@@ -3150,9 +3214,8 @@ class Component extends DCLogic {
           stats:[{v:wr?'#'+wr:'-',l:'이번 주'},{v:best?'#'+best:'-',l:'역대 최고'},{v:st+'주',l:'연속 TOP3'},{v:mp,l:'이번 달 pt'}],
           trendShow:'block',trend:trendOf(id,false),lineShow:'none',lineImg:BLANK,
           simShow:'none',simLabel:'이 화보와 비슷한',similar:[],
-          gridShow:others.length?'block':'none',gridLabel:'이 모델의 다른 화보',
-          others:others.map(x=>({img:W[x].img||'',blur:this.blurOf(x),open:()=>this.openWork(x)})),
-          trackOutbound:()=>this.trackWorkOutbound(S.modal.experiment),
+          gridShow:'none',gridLabel:'',others:[],
+          trackOutbound:()=>this.trackWorkOutbound(S.modal.experiment,S.modal.browse,id),
           cta:'https://bcut.maximkorea.net/work/'+id,ctaLabel:_subActive?'구독하고 보기 ›':'코인으로 바로 보기 ›',origHintShow:'block',
           buyRowShow:'flex',buyTagShow:'inline-block',buyTag:_subActive?'구독 전용 · 월 ₩19,900':'개별 구매',
           hypeShow:(wr&&wr<=10)?'inline-flex':'none',hypeColor:(wr&&wr<=3)?'var(--acc)':'var(--mut)',hypeText:(wr&&wr<=3)?('🔥 이번 주 #'+wr+' · 지금 인기'):((wr&&wr<=10)?('이번 주 랭킹 #'+wr):''),
@@ -3215,7 +3278,7 @@ class Component extends DCLogic {
             if(navigator.share)navigator.share({title:nm,url:u}).catch(()=>{});else{try{navigator.clipboard.writeText(u);}catch(e){}}}};}
     }
     if(base.modal){
-      Object.assign(base.modal,{dialogLabel:base.modal.title+' 상세 정보',purchaseShow:'none',format:'',price:'',priceNote:'',originalShow:'none',originalTitle:'',footerPriceShow:'none',rankingShow:(base.modal.stats||[]).length?'block':'none'});
+      Object.assign(base.modal,{dialogLabel:base.modal.title+' 상세 정보',purchaseShow:'none',format:'',price:'',priceNote:'',originalShow:'none',originalTitle:'',footerPriceShow:'none',rankingShow:(base.modal.stats||[]).length?'block':'none',relatedShow:'none',relatedCards:[],modelLinks:[],relatedNote:'',relatedEmptyShow:'none'});
       if(S.modal.kind==='work'){
         const id=S.modal.id,w=W[id]||{};
         const subActive=w.buy==='구독'&&((w.pub||'')>today||active.indexOf(id)>=0);
@@ -3223,6 +3286,16 @@ class Component extends DCLogic {
         Object.assign(base.modal,{purchaseShow:'flex',format:info.format,price:info.price,priceNote:info.priceNote,
           originalTitle:info.original,originalShow:info.original!==base.modal.title?'block':'none',
           footerPriceShow:info.price?'inline':'none',hypeShow:info.price?'none':base.modal.hypeShow});
+        const related=window.BCUTCatalogueUI.related(D,id,today);
+        const links=window.BCUTCatalogueUI.modelLinks(w.models);
+        Object.assign(base.modal,{relatedShow:'block',modelLinks:links,
+          relatedNote:related.length ? '최근 공개순 · '+Math.min(8,related.length)+'편'+(related.length>8?' / 전체 '+related.length+'편':'') : '',
+          relatedEmptyShow:related.length?'none':'block',
+          relatedCards:related.slice(0,8).map(other=>{
+            const work=W[other],title=this.splitTitle(work.title||other).name;
+            return {id:other,title,img:work.img||'',date:work.pub,kind:(work.vid===true||String(work.vid)==='1')?'영상 포함':'사진',href:'?w='+encodeURIComponent(other),infoLabel:title+' · '+work.pub+' 공개 · 작품 정보 보기',
+              open:event=>{if(event.defaultPrevented||event.button>0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();this.openWork(other);}};
+          })});
       }
     }
     /* ── 뷰(페이지) 라우팅: 홈은 전체 노출(원래대로), 카테고리는 해당 섹션만 ── */

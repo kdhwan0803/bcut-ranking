@@ -217,8 +217,14 @@ if(!window.BCUT_ANALYTICS_DISABLED){
     return modelNames(names).map(name => {
       const slug = slugs[name], known = typeof slug === 'string' && /^[a-z0-9_-]+$/.test(slug);
       return { name, label: name + (known ? ' 화보 전체 보기' : ' 화보 찾아보기'),
-        href: known ? 'models/' + slug + '.html' + (['donggeuran','seuli','bakseoi'].includes(slug) ? '#model-browse' : '#grid') : '?model=' + encodeURIComponent(name) + '#/search' };
+        href: previewLink(known ? 'models/' + slug + '.html' + (['donggeuran','seuli','bakseoi'].includes(slug) ? '#model-browse' : '#grid') : '?model=' + encodeURIComponent(name) + '#/search') };
     });
+  }
+  function previewLink(href) {
+    const query = new URLSearchParams(location.search), flags = ['admin','preview','measure'].filter(key => query.get(key) === '1').map(key => key + '=1');
+    if (!flags.length) return href;
+    const parts = href.split('#');
+    return parts[0] + (parts[0].includes('?') ? '&' : '?') + flags.join('&') + (parts.length > 1 ? '#' + parts[1] : '');
   }
   function browseEntry(search) {
     const query = new URLSearchParams(search), slug = query.get('mb_model'), id = query.get('w') || query.get('work');
@@ -229,7 +235,7 @@ if(!window.BCUT_ANALYTICS_DISABLED){
     const model = Object.keys(mapping).find(name => mapping[name] === slug);
     return model ? {model,model_slug:slug,work_id:id,browse_format:query.get('mb_format'),browse_sort:query.get('mb_sort')} : null;
   }
-  window.BCUTCatalogueUI = Object.freeze({ title, format, purchase, matches, modelNames, released, related, modelLinks, browseEntry });
+  window.BCUTCatalogueUI = Object.freeze({ title, format, purchase, matches, modelNames, released, related, modelLinks, previewLink, browseEntry });
 })();
 
 </script>
@@ -3293,7 +3299,7 @@ class Component extends DCLogic {
           relatedEmptyShow:related.length?'none':'block',
           relatedCards:related.slice(0,8).map(other=>{
             const work=W[other],title=this.splitTitle(work.title||other).name;
-            return {id:other,title,img:work.img||'',date:work.pub,kind:(work.vid===true||String(work.vid)==='1')?'영상 포함':'사진',href:'?w='+encodeURIComponent(other),infoLabel:title+' · '+work.pub+' 공개 · 작품 정보 보기',
+            return {id:other,title,img:work.img||'',date:work.pub,kind:(work.vid===true||String(work.vid)==='1')?'영상 포함':'사진',href:window.BCUTCatalogueUI.previewLink('?w='+encodeURIComponent(other)),infoLabel:title+' · '+work.pub+' 공개 · 작품 정보 보기',
               open:event=>{if(event.defaultPrevented||event.button>0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();this.openWork(other);}};
           })});
       }

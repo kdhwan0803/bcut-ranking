@@ -29,14 +29,8 @@ assert.deepEqual(api.models('5'), []);
 assert(!api.cards(api.summary(fixture, '테스트', '2026-10-10')).includes('<script>'));
 assert.equal(api.image('assets/covers/example.webp'), '../assets/covers/example.webp');
 assert.equal(api.image('javascript:alert(1)'), '');
-assert.equal(api.summary(data, '쥬', '2026-10-10').count, 16);
-assert.equal(api.summary(data, '쥬', '2026-10-10').latestId, '2394');
-assert.equal(api.summary(data, '박보름', '2026-10-09').count, 3);
-assert.equal(api.summary(data, '박보름', '2026-10-10').count, 4);
-assert.equal(api.summary(data, '박보름', '2026-10-10').latestId, '2340');
-assert(!api.summary(data, '죠야끼', '2026-10-10').published.includes('2395'));
-assert(api.summary(data, '죠야끼', '2026-10-10').upcoming.includes('2395'));
-assert.equal(api.summary(data, '죠야끼', '2026-10-11').latestId, '2395');
+// Release transitions are covered by the fixed fixture above. Live catalogue
+// expectations below are derived from data.json so later registrations remain valid.
 let checked = 0, pilotChecked = 0;
 for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html'))) {
   const html = fs.readFileSync(path.join(root, 'models', file), 'utf8');
@@ -84,6 +78,13 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
 }
 assert.equal(fs.readFileSync(path.join(root, 'data.json'), 'utf8').replace(/\r\n/g, '\n'), execFileSync('git', ['show', 'HEAD:data.json'], { cwd: root, encoding: 'utf8' }).replace(/\r\n/g, '\n'));
 assert.equal(pilotChecked, pilot.slugs.length);
+const directoryHTML = fs.readFileSync(path.join(root, 'models', 'models.html'), 'utf8');
+const directoryConfig = JSON.parse(directoryHTML.match(/<script id="model-directory-config" type="application\/json">([\s\S]*?)<\/script>/)[1]);
+const directoryEntries = api.directory(data, directoryConfig, date);
+const directorySchema = JSON.parse(directoryHTML.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+assert.equal(directorySchema.numberOfItems, directoryEntries.length, 'directory count');
+assert.deepEqual(directorySchema.itemListElement.map(item => ({ name: item.name, url: item.url })), directoryEntries.map(item => ({ name: item.name, url: item.url })), 'directory models and destinations');
+assert(directoryHTML.includes(api.directoryHTML(directoryEntries)), 'directory cards and counts');
 for (const file of ['index.html', 'worldcup.html']) {
   const source = fs.readFileSync(path.join(root, file), 'utf8');
   assert(source.includes("blurOf(){return 'none';}"), file + ': clear image policy');

@@ -810,7 +810,8 @@ select,input,button{font-family:inherit}
     <div style="font-size:12px;color:var(--mut);font-weight:700;letter-spacing:1px">{{ loadingText }}</div>
   </div>
 
-  <section id="top" onTouchStart="{{ onTouchStart }}" onTouchEnd="{{ onTouchEnd }}" onMouseEnter="{{ onCaroEnter }}" onMouseLeave="{{ onCaroLeave }}" style="display:{{ heroShow }};visibility:{{ catalogueVisibility }};padding:calc({{ stickyTop }} + 14px) 0 2px;background:var(--bg0)">
+  <sc-if value="{{ sectionVisible.heroShow }}" hint-placeholder-val="{{ false }}">
+<section id="top" onTouchStart="{{ onTouchStart }}" onTouchEnd="{{ onTouchEnd }}" onMouseEnter="{{ onCaroEnter }}" onMouseLeave="{{ onCaroLeave }}" style="display:{{ heroShow }};visibility:{{ catalogueVisibility }};padding:calc({{ stickyTop }} + 14px) 0 2px;background:var(--bg0)">
     <div class="caroClip" style="padding:0 {{ caroPad }}">
       <div class="caroTrack" style="transform:{{ trackX }};transition-duration:{{ trackDur }}">
         <sc-for list="{{ slides }}" as="s" hint-placeholder-count="0">
@@ -848,8 +849,10 @@ select,input,button{font-family:inherit}
       </div>
     </div>
   </section>
+</sc-if>
 
-  <section id="event" style="display:{{ ev.show }};position:relative;overflow:hidden;background:#07070a;color:#fff;isolation:isolate">
+  <sc-if value="{{ sectionVisible.ev_show }}" hint-placeholder-val="{{ false }}">
+<section id="event" style="display:{{ ev.show }};position:relative;overflow:hidden;background:#07070a;color:#fff;isolation:isolate">
     <div style="position:absolute;inset:0;z-index:0">
       <img src="{{ ev.bg }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;opacity:.3;filter:blur(2px) saturate(1.1)">
     </div>
@@ -887,6 +890,7 @@ select,input,button{font-family:inherit}
       </div>
     </div>
   </section>
+</sc-if>
 
   <div style="display:{{ pageHeadShow }};height:{{ stickyTop }}"></div>
   <button type="button" class="nav-dismiss" tabindex="-1" aria-label="더보기 메뉴 닫기" onClick="{{ closeMoreNav }}" style="display:{{ navMoreShow }}"></button>
@@ -910,7 +914,8 @@ select,input,button{font-family:inherit}
       <h1 style="font-size:23px;font-weight:900;letter-spacing:-.6px">{{ pageTitle }}</h1>
     </div>
 
-    <section id="paid-picks" class="paid-picks" aria-labelledby="paid-picks-title" style="display:{{ paidPickShow }}">
+    <sc-if value="{{ sectionVisible.paidPickShow }}" hint-placeholder-val="{{ false }}">
+<section id="paid-picks" class="paid-picks" aria-labelledby="paid-picks-title" style="display:{{ paidPickShow }}">
       <div class="paid-picks-head"><div>
         <h2 id="paid-picks-title">{{ paidPickTitle }}</h2>
         <p class="paid-picks-intro">뭐 볼지 고민될 때, 여기서 골라보세요.</p>
@@ -942,8 +947,10 @@ select,input,button{font-family:inherit}
         </sc-for>
       </div>
     </section>
+</sc-if>
 
-    <section id="wish" style="display:{{ wishShow }}">
+    <sc-if value="{{ sectionVisible.wishShow }}" hint-placeholder-val="{{ false }}">
+<section id="wish" style="display:{{ wishShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">공개 알림 받는 화보</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MY WISHLIST</span>
@@ -965,8 +972,10 @@ select,input,button{font-family:inherit}
         </sc-for>
       </div>
     </section>
+</sc-if>
 
-    <section id="recent" style="display:{{ recentShow }}">
+    <sc-if value="{{ sectionVisible.recentShow }}" hint-placeholder-val="{{ false }}">
+<section id="recent" style="display:{{ recentShow }}">
       <details class="recent-disclosure">
         <summary aria-controls="recent-items">
           <span>최근 본 화보</span>
@@ -983,8 +992,10 @@ select,input,button{font-family:inherit}
         </div>
       </details>
     </section>
+</sc-if>
 
-    <section id="ranking" style="display:{{ rankingShow }}">
+    <sc-if value="{{ sectionVisible.rankingShow }}" hint-placeholder-val="{{ false }}">
+<section id="ranking" style="display:{{ rankingShow }}">
      <div style="background:var(--rankBandBg);border:1px solid var(--rankBandLine);border-radius:20px;padding:22px 18px 24px;box-shadow:var(--rankBandSh)">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
         <div style="display:flex;align-items:flex-start;gap:13px">
@@ -1037,7 +1048,8 @@ select,input,button{font-family:inherit}
         <button onClick="{{ tlNext }}" aria-label="다음 주차" style="position:absolute;right:0;top:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--bg1);color:var(--txt);font-size:13px;cursor:pointer;display:{{ tlNavShow }};align-items:center;justify-content:center">›</button>
       </div>
 
-      <div style="display:{{ mRankShow }};grid-template-columns:repeat(auto-fill,minmax({{ rankColW }},1fr));align-items:start;gap:{{ rankGap }};padding:16px 0 26px">
+      <sc-if value="{{ sectionVisible.mRankShow }}" hint-placeholder-val="{{ false }}">
+<div style="display:{{ mRankShow }};grid-template-columns:repeat(auto-fill,minmax({{ rankColW }},1fr));align-items:start;gap:{{ rankGap }};padding:16px 0 26px">
         <sc-for list="{{ modelCards }}" as="m" hint-placeholder-count="0">
           <div onClick="{{ m.open }}" style="cursor:pointer;border-radius:14px;padding:20px 18px 18px;width:100%;background:{{ m.cardBg }};border:1px solid transparent;border-color:{{ m.cardLine }};transition:transform .22s,box-shadow .22s" style-hover="transform:translateY(-6px);box-shadow:0 0 0 1px var(--w5)">
             <div style="display:flex;align-items:center;gap:12px">
@@ -1073,8 +1085,10 @@ select,input,button{font-family:inherit}
           </div>
         </sc-for>
       </div>
+</sc-if>
 
-      <div style="display:{{ wRankShow }};padding:16px 0 26px;position:relative">
+      <sc-if value="{{ sectionVisible.wRankShow }}" hint-placeholder-val="{{ false }}">
+<div style="display:{{ wRankShow }};padding:16px 0 26px;position:relative">
         <div class="rkBig">
           <sc-for list="{{ bigRows }}" as="r" hint-placeholder-count="0">
             <div onClick="{{ r.open }}" class="cvCard" style="position:relative;cursor:pointer;border-radius:12px;overflow:hidden;aspect-ratio:2/3;background:var(--bg2);border:{{ r.cardBorder }};box-shadow:{{ r.cardGlow }};transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-5px)">
@@ -1114,6 +1128,7 @@ select,input,button{font-family:inherit}
         </div>
         <div style="position:absolute;left:0;right:0;bottom:0;height:180px;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--bg0) 88%);display:{{ rkMoreShow }}"></div>
       </div>
+</sc-if>
       <div style="text-align:center;margin-top:-36px;position:relative;z-index:2;display:{{ rkMoreShow }}">
         <button onClick="{{ rkMore }}" style="display:inline-flex;align-items:center;gap:7px;background:var(--w3);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:13px 30px;border-radius:999px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.14)" style-hover="background:var(--w4)">{{ rkMoreLabel }} ▾</button>
       </div>
@@ -1126,8 +1141,10 @@ select,input,button{font-family:inherit}
       </a>
      </div>
     </section>
+</sc-if>
 
-    <section id="rediscovery" class="rediscovery {{ rediscoveryViewClass }}" aria-labelledby="rediscovery-title" style="display:{{ rediscoveryShow }}">
+    <sc-if value="{{ sectionVisible.rediscoveryShow }}" hint-placeholder-val="{{ false }}">
+<section id="rediscovery" class="rediscovery {{ rediscoveryViewClass }}" aria-labelledby="rediscovery-title" style="display:{{ rediscoveryShow }}">
       <div class="rediscovery-heading"><h2 id="rediscovery-title">신작 모아보기</h2></div>
       <div class="rediscovery-tabs" role="group" aria-label="신작 둘러보기">
         <sc-for list="{{ rediscoveryTabs }}" as="t" hint-placeholder-count="0">
@@ -1158,6 +1175,7 @@ select,input,button{font-family:inherit}
         <button type="button" class="rediscovery-page-button rediscovery-refresh" onClick="{{ rediscoveryRefresh }}" aria-controls="rediscovery-cards" style="display:{{ rediscoveryRandomShow }}"><span aria-hidden="true">↻</span> 다른 화보 보기</button>
       </div>
     </section>
+</sc-if>
 
     <a href="https://bcut.maximkorea.net/?utm_source=bcutrank&utm_medium=rank_cta&utm_campaign=weekly_rank" target="_blank" style="display:{{ rankingShow }};text-decoration:none" onClick="{{ trackRankCta }}">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:linear-gradient(135deg,var(--acc),#ff5a63);border-radius:20px;padding:24px 26px;box-shadow:0 14px 34px rgba(230,0,18,.28)">
@@ -1171,7 +1189,8 @@ select,input,button{font-family:inherit}
     </a>
 
 
-    <section id="rising" style="display:{{ risingShow }}">
+    <sc-if value="{{ sectionVisible.risingShow }}" hint-placeholder-val="{{ false }}">
+<section id="rising" style="display:{{ risingShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">눈여겨볼 미스맥심</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">RISING · MISS MAXIM</span>
@@ -1186,8 +1205,10 @@ select,input,button{font-family:inherit}
         </sc-for>
       </div>
     </section>
+</sc-if>
 
-    <section id="weeklypick" style="display:{{ wpShow }}">
+    <sc-if value="{{ sectionVisible.wpShow }}" hint-placeholder-val="{{ false }}">
+<section id="weeklypick" style="display:{{ wpShow }}">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 2px 4px;flex-wrap:wrap">
         <div>
           <span style="display:block;font-size:11px;font-weight:900;letter-spacing:2.5px;color:var(--goldText);margin-bottom:6px">THIS WEEK'S PICK</span>
@@ -1207,8 +1228,10 @@ select,input,button{font-family:inherit}
         <div id="wp-arrow" class="wp-arrow" aria-label="더 보기">›</div>
       </div>
     </section>
+</sc-if>
 
-    <section id="spot" style="display:{{ spotShow }}">
+    <sc-if value="{{ sectionVisible.spotShow }}" hint-placeholder-val="{{ false }}">
+<section id="spot" style="display:{{ spotShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">이번 주 <span style="color:var(--acc)">1위</span></h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">CHAMPION</span>
@@ -1237,8 +1260,10 @@ select,input,button{font-family:inherit}
         <button onClick="{{ champNext }}" aria-label="다음 1위" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:5;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);backdrop-filter:blur(6px);color:#fff;font-size:18px;cursor:pointer;display:{{ champNextShow }};align-items:center;justify-content:center">›</button>
       </div>
     </section>
+</sc-if>
 
-    <section id="classics" style="display:{{ classicsShow }}">
+    <sc-if value="{{ sectionVisible.classicsShow }}" hint-placeholder-val="{{ false }}">
+<section id="classics" style="display:{{ classicsShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">역대 <span style="color:var(--goldText)">명작</span></h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">ALL-TIME BEST</span>
@@ -1263,8 +1288,10 @@ select,input,button{font-family:inherit}
         </sc-for>
       </div>
     </section>
+</sc-if>
 
-    <section id="hall" style="display:{{ hallShow }}">
+    <sc-if value="{{ sectionVisible.hallShow }}" hint-placeholder-val="{{ false }}">
+<section id="hall" style="display:{{ hallShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">명예의 전당</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">HALL OF FAME</span>
@@ -1290,8 +1317,10 @@ select,input,button{font-family:inherit}
         <div style="position:absolute;top:0;right:0;bottom:12px;width:92px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
       </div>
     </section>
+</sc-if>
 
-    <section id="creators" style="display:{{ crShow }}">
+    <sc-if value="{{ sectionVisible.crShow }}" hint-placeholder-val="{{ false }}">
+<section id="creators" style="display:{{ crShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">작가별로 보기</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">BY CREATOR</span>
@@ -1328,7 +1357,8 @@ select,input,button{font-family:inherit}
             <span style="display:inline-flex;align-items:center;gap:7px;background:#fff;color:#111;font-weight:900;font-size:13px;padding:10px 18px;border-radius:999px;margin-top:12px">작가 화보 보기 →</span>
           </div>
         </div>
-        <div style="display:{{ crShelfShow }};position:relative">
+        <sc-if value="{{ sectionVisible.crShelfShow }}" hint-placeholder-val="{{ false }}">
+<div style="display:{{ crShelfShow }};position:relative">
           <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:4px">
             <sc-for list="{{ creatorWorks }}" as="p" hint-placeholder-count="6">
               <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ crCardW }}">
@@ -1341,7 +1371,9 @@ select,input,button{font-family:inherit}
           </div>
           <div style="position:absolute;top:0;right:0;bottom:4px;width:72px;pointer-events:none;background:linear-gradient(to right,transparent,rgba(8,8,12,.55))"></div>
         </div>
-        <div style="display:{{ crGridShow }};gap:16px;grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr))">
+</sc-if>
+        <sc-if value="{{ sectionVisible.crGridShow }}" hint-placeholder-val="{{ false }}">
+<div style="display:{{ crGridShow }};gap:16px;grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr))">
           <sc-for list="{{ creatorWorksAll }}" as="p" hint-placeholder-count="0">
             <div onClick="{{ p.open }}" style="cursor:pointer">
               <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:#0a0a0d">
@@ -1351,9 +1383,12 @@ select,input,button{font-family:inherit}
             </div>
           </sc-for>
         </div>
+</sc-if>
       </div>
     </section>
-    <section id="picks" style="display:{{ pickShow }}">
+</sc-if>
+    <sc-if value="{{ sectionVisible.pickShow }}" hint-placeholder-val="{{ false }}">
+<section id="picks" style="display:{{ pickShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">관심 모델 <span style="color:var(--acc)">신작</span></h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">FOR YOU · 최근 본 모델의 새 화보</span>
@@ -1370,8 +1405,10 @@ select,input,button{font-family:inherit}
         </sc-for>
       </div>
     </section>
+</sc-if>
 
-    <section id="timesale" style="display:{{ tsShow }}">
+    <sc-if value="{{ sectionVisible.tsShow }}" hint-placeholder-val="{{ false }}">
+<section id="timesale" style="display:{{ tsShow }}">
       <div style="position:relative;overflow:hidden;border-radius:14px;border:1px solid rgba(230,0,18,.28);background:linear-gradient(120deg,#14141c 0%,rgba(90,12,20,.94) 100%);padding:22px 22px 10px;color:#fff">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
           <div style="display:flex;align-items:baseline;gap:10px">
@@ -1403,8 +1440,10 @@ select,input,button{font-family:inherit}
         </div>
       </div>
     </section>
+</sc-if>
 
-    <section id="package" style="display:{{ pkgShow }}">
+    <sc-if value="{{ sectionVisible.pkgShow }}" hint-placeholder-val="{{ false }}">
+<section id="package" style="display:{{ pkgShow }}">
       <div style="position:relative;overflow:hidden;border-radius:14px;border:1px solid rgba(124,92,255,.26);background:linear-gradient(120deg,#14141c 0%,rgba(44,28,96,.94) 100%);padding:22px 22px 10px;color:#fff">
         <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
           <span style="font-size:18px;font-weight:900;color:#b9a3ff">패키지 세일</span>
@@ -1428,8 +1467,10 @@ select,input,button{font-family:inherit}
         </div>
       </div>
     </section>
+</sc-if>
 
-    <section id="sub" style="display:{{ subShow }}">
+    <sc-if value="{{ sectionVisible.subShow }}" hint-placeholder-val="{{ false }}">
+<section id="sub" style="display:{{ subShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">지금 구독으로 볼 수 있는 화보</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">SUBSCRIPTION · NOW</span>
@@ -1506,10 +1547,12 @@ select,input,button{font-family:inherit}
         </div>
       </div>
     </section>
+</sc-if>
 
 
 
-    <section id="next" style="display:{{ nextShow }}">
+    <sc-if value="{{ sectionVisible.nextShow }}" hint-placeholder-val="{{ false }}">
+<section id="next" style="display:{{ nextShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">앞으로 공개될 신작</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">COMING SOON</span>
@@ -1537,6 +1580,7 @@ select,input,button{font-family:inherit}
         <div style="position:absolute;top:0;right:0;bottom:12px;width:92px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
       </div>
     </section>
+</sc-if>
 
     <div style="display:{{ rankingShow }}">
       <a href="https://www.maximkorea.net/webtoon/pay" target="_blank" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:13px 18px;border-radius:12px;background:var(--w1);border:1px solid var(--line);text-decoration:none;color:var(--txt)" style-hover="border-color:var(--w5)">
@@ -1546,7 +1590,8 @@ select,input,button{font-family:inherit}
       </a>
     </div>
 
-    <section id="featured" style="display:{{ featShow }}">
+    <sc-if value="{{ sectionVisible.featShow }}" hint-placeholder-val="{{ false }}">
+<section id="featured" style="display:{{ featShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">맥심의 추천 모델</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MAXIM'S PICK</span>
@@ -1569,8 +1614,10 @@ select,input,button{font-family:inherit}
         </div>
       </div>
     </section>
+</sc-if>
 
-    <section id="wcPromo" style="display:{{ wcShow }}">
+    <sc-if value="{{ sectionVisible.wcShow }}" hint-placeholder-val="{{ false }}">
+<section id="wcPromo" style="display:{{ wcShow }}">
       <a href="worldcup.html" style="display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;border-radius:16px;padding:30px 32px;background:linear-gradient(115deg,var(--bg1) 0%,rgba(74,10,18,.9) 62%,rgba(120,14,26,.85) 100%);border:1px solid rgba(230,0,18,.28);overflow:hidden;transition:box-shadow .25s,transform .25s" style-hover="box-shadow:0 0 0 1px var(--acc);transform:translateY(-3px)">
         <div style="min-width:0">
           <div style="font-size:10.5px;font-weight:800;letter-spacing:2.6px;color:var(--acc2)">TOURNAMENT</div>
@@ -1589,8 +1636,10 @@ select,input,button{font-family:inherit}
         </div>
       </a>
     </section>
+</sc-if>
 
-    <section id="search" aria-label="화보 검색" style="display:{{ searchShow }}">
+    <sc-if value="{{ sectionVisible.searchShow }}" hint-placeholder-val="{{ false }}">
+<section id="search" aria-label="화보 검색" style="display:{{ searchShow }}">
       <h2 class="search-home-title" style="display:{{ searchHeadingShow }}">화보 찾아보기</h2>
       <div class="search-controls">
         <div class="search-input-wrap">
@@ -1639,9 +1688,11 @@ select,input,button{font-family:inherit}
       </div>
       <div class="search-more" style="display:{{ moreShow }}"><button type="button" onClick="{{ more }}">{{ moreLabel }}</button></div>
     </section>
+</sc-if>
 
 
-    <section id="models" style="display:{{ mdShow }}">
+    <sc-if value="{{ sectionVisible.mdShow }}" hint-placeholder-val="{{ false }}">
+<section id="models" style="display:{{ mdShow }}">
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">모델별로 보기</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">BY MODEL</span>
@@ -1669,7 +1720,8 @@ select,input,button{font-family:inherit}
       <div style="text-align:center;margin:-10px 0 26px;display:{{ mdCardMoreShow }}">
         <button onClick="{{ mdCardMore }}" style="background:var(--w3);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:12px 28px;border-radius:8px;cursor:pointer" style-hover="background:var(--w4)">{{ mdCardMoreLabel }}</button>
       </div>
-      <div id="mdSelBar" style="display:{{ mdSelWrapShow }};scroll-margin-top:90px">
+      <sc-if value="{{ sectionVisible.mdSelWrapShow }}" hint-placeholder-val="{{ false }}">
+<div id="mdSelBar" style="display:{{ mdSelWrapShow }};scroll-margin-top:90px">
       <div style="display:flex;align-items:center;gap:11px;margin:6px 0 16px">
         <img src="{{ mdSelImg }}" alt="" style="width:38px;height:38px;border-radius:10px;object-fit:cover;flex:0 0 auto;box-shadow:0 3px 10px rgba(0,0,0,.15)">
         <div>
@@ -1694,9 +1746,12 @@ select,input,button{font-family:inherit}
         <button onClick="{{ mdMore }}" style="background:var(--w3);border:1px solid var(--line);color:var(--txt);font-weight:800;font-size:13.5px;padding:13px 30px;border-radius:8px;cursor:pointer">{{ mdMoreLabel }}</button>
       </div>
       </div>
+</sc-if>
     </section>
+</sc-if>
 
-    <section style="display:{{ promoShow }};flex-direction:column;gap:12px">
+    <sc-if value="{{ sectionVisible.promoShow }}" hint-placeholder-val="{{ false }}">
+<section style="display:{{ promoShow }};flex-direction:column;gap:12px">
       <div style="display:flex;align-items:baseline;gap:12px">
         <h2 style="font-size:15px;font-weight:900;letter-spacing:-.3px;color:var(--t3)">맥심 매거진</h2>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MAGAZINE</span>
@@ -1716,8 +1771,10 @@ select,input,button{font-family:inherit}
         </sc-for>
       </div>
     </section>
+</sc-if>
 
-    <section id="katalk" style="display:{{ rankingShow }}">
+    <sc-if value="{{ sectionVisible.rankingShow }}" hint-placeholder-val="{{ false }}">
+<section id="katalk" style="display:{{ rankingShow }}">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border-radius:14px;padding:24px 26px;background:linear-gradient(120deg,rgba(230,0,18,.06),var(--bg1));border:1px solid var(--line)">
         <div style="min-width:0;flex:1 1 300px">
           <div style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--acc2);margin-bottom:7px">WEEKLY ALERT</div>
@@ -1730,8 +1787,10 @@ select,input,button{font-family:inherit}
         </div>
       </div>
     </section>
+</sc-if>
 
-    <section id="calmonth" style="display:{{ monthShow }}">
+    <sc-if value="{{ sectionVisible.monthShow }}" hint-placeholder-val="{{ false }}">
+<section id="calmonth" style="display:{{ monthShow }}">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
         <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px;margin:0">📅 공개 캘린더</h2>
         <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
@@ -1766,6 +1825,7 @@ select,input,button{font-family:inherit}
         <div style="display:{{ monthEmptyShow }};text-align:center;color:var(--mut);font-size:13px;padding:24px 0">이번 달 공개 예정 화보가 아직 없어요.</div>
       </div>
     </section>
+</sc-if>
   </main>
 
   <nav aria-label="모델별 화보" style="max-width:1180px;margin:0 auto;padding:20px 26px 0;font-size:11.5px;line-height:2.1;color:var(--mut)">
@@ -1828,7 +1888,8 @@ select,input,button{font-family:inherit}
             </div>
           </div>
           </details>
-          <section class="work-related" aria-label="이 모델의 다른 화보" style="display:{{ modal.relatedShow }}">
+          <sc-if value="{{ sectionVisible.modal_relatedShow }}" hint-placeholder-val="{{ false }}">
+<section class="work-related" aria-label="이 모델의 다른 화보" style="display:{{ modal.relatedShow }}">
             <h3>이 모델의 다른 화보</h3>
             <p class="work-related-note">{{ modal.relatedNote }}</p>
             <div class="work-related-models"><sc-for list="{{ modal.modelLinks }}" as="m" hint-placeholder-count="0"><a href="{{ m.href }}">{{ m.label }}</a></sc-for></div>
@@ -1840,6 +1901,7 @@ select,input,button{font-family:inherit}
             </sc-for></div>
             <p class="work-related-empty" style="display:{{ modal.relatedEmptyShow }}">현재 함께 볼 수 있는 다른 공개 화보가 없습니다.</p>
           </section>
+</sc-if>
           <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--mut);margin:22px 0 10px;display:{{ modal.gridShow }}">{{ modal.gridLabel }}</div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
             <sc-for list="{{ modal.others }}" as="o" hint-placeholder-count="0">
@@ -1931,6 +1993,42 @@ const MVC={up:['#12b76a','rgba(18,183,106,.16)'],down:['#f04438','rgba(240,68,56
 /* MISS MAXIM 소속 모델 88명 (미스맥심 판별용) */
 const MSM=new Set('강선혜 강하빈 고아라 그린 김갑주 김나정 김서아 김설화 김세화 김소희 김수아 김은지 김주연 김지연 김지예 김효연 꾸뿌 노지혜 도유리 리리 려니 뮤아 바비앙 박근나 박별 박서이 박수민 박지연 박청아 보라 빛베리 새하 섹밍 손예은 순수 소은 신새롬 썬비키 아승연 애순이 양혜원 엄상미 여나비 연수 에일리 예리 옐랑 오은담 유디 유진 윤영서 은유화 은지 이규영 이나 이시현 이아영 이아윤 이연우 이예린 이유진 이채하 이하니 장예나 장혜선 전지은 정은 정주희 제아 조아 조이온 주은 쥬 지니 청아 채솔 채아 첼설아 최세희 최혜연 퓨리 하리 하윤아 한나나 한지나 혜린 희야 E다연'.split(' '));
 function isMSM(w){return !!(w&&(w.models||[]).some(m=>MSM.has((m||'').trim())));}
+
+/* Keep hidden catalogue sections out of the rendered DOM. */
+function visibleCatalogueSections(values){
+  values.sectionVisible={};
+  values.sectionVisible.heroShow=typeof values.heroShow==='string'&&values.heroShow!=='none';
+  values.sectionVisible.ev_show=typeof values.ev.show==='string'&&values.ev.show!=='none';
+  values.sectionVisible.paidPickShow=typeof values.paidPickShow==='string'&&values.paidPickShow!=='none';
+  values.sectionVisible.wishShow=typeof values.wishShow==='string'&&values.wishShow!=='none';
+  values.sectionVisible.recentShow=typeof values.recentShow==='string'&&values.recentShow!=='none';
+  values.sectionVisible.rankingShow=typeof values.rankingShow==='string'&&values.rankingShow!=='none';
+  values.sectionVisible.rediscoveryShow=typeof values.rediscoveryShow==='string'&&values.rediscoveryShow!=='none';
+  values.sectionVisible.risingShow=typeof values.risingShow==='string'&&values.risingShow!=='none';
+  values.sectionVisible.wpShow=typeof values.wpShow==='string'&&values.wpShow!=='none';
+  values.sectionVisible.spotShow=typeof values.spotShow==='string'&&values.spotShow!=='none';
+  values.sectionVisible.classicsShow=typeof values.classicsShow==='string'&&values.classicsShow!=='none';
+  values.sectionVisible.hallShow=typeof values.hallShow==='string'&&values.hallShow!=='none';
+  values.sectionVisible.crShow=typeof values.crShow==='string'&&values.crShow!=='none';
+  values.sectionVisible.pickShow=typeof values.pickShow==='string'&&values.pickShow!=='none';
+  values.sectionVisible.tsShow=typeof values.tsShow==='string'&&values.tsShow!=='none';
+  values.sectionVisible.pkgShow=typeof values.pkgShow==='string'&&values.pkgShow!=='none';
+  values.sectionVisible.subShow=typeof values.subShow==='string'&&values.subShow!=='none';
+  values.sectionVisible.nextShow=typeof values.nextShow==='string'&&values.nextShow!=='none';
+  values.sectionVisible.featShow=typeof values.featShow==='string'&&values.featShow!=='none';
+  values.sectionVisible.wcShow=typeof values.wcShow==='string'&&values.wcShow!=='none';
+  values.sectionVisible.searchShow=typeof values.searchShow==='string'&&values.searchShow!=='none';
+  values.sectionVisible.mdShow=typeof values.mdShow==='string'&&values.mdShow!=='none';
+  values.sectionVisible.promoShow=typeof values.promoShow==='string'&&values.promoShow!=='none';
+  values.sectionVisible.monthShow=typeof values.monthShow==='string'&&values.monthShow!=='none';
+  values.sectionVisible.modal_relatedShow=typeof values.modal?.relatedShow==='string'&&values.modal.relatedShow!=='none';
+  values.sectionVisible.mRankShow=typeof values.mRankShow==='string'&&values.mRankShow!=='none';
+  values.sectionVisible.wRankShow=typeof values.wRankShow==='string'&&values.wRankShow!=='none';
+  values.sectionVisible.crShelfShow=typeof values.crShelfShow==='string'&&values.crShelfShow!=='none';
+  values.sectionVisible.crGridShow=typeof values.crGridShow==='string'&&values.crGridShow!=='none';
+  values.sectionVisible.mdSelWrapShow=typeof values.mdSelWrapShow==='string'&&values.mdSelWrapShow!=='none';
+  return values;
+}
 
 class Component extends DCLogic {
   state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'latest',modelSel:'all',yearSel:'all',searchCreator:'all',searchBuy:'all',searchVideo:false,searchAdult:false,searchRelease:'released',navMore:false,copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0,calMoff:0,rkAll:false};
@@ -2574,7 +2672,7 @@ class Component extends DCLogic {
     base.desktopMenu=[];base.moreMenu=[];
     base.navMoreShow=S.navMore?'block':'none';base.navMoreExpanded=String(!!S.navMore);
     base.toggleMoreNav=()=>this.setState({navMore:!this.state.navMore});base.closeMoreNav=()=>this.setState({navMore:false});
-    if(!D)return base;
+    if(!D)return visibleCatalogueSections(base);
 
     const wi=S.wi,isM=S.tab==='models',isMonth=S.mode==='month',W=D.works||{};
     const V=S.view||'home';
@@ -3509,7 +3607,7 @@ class Component extends DCLogic {
     base.gachaShow=(this.state.view==='home'||!this.state.view)?'inline-flex':'none';
     base.risingShow=base.risingShow||'none';base.rising=base.rising||[];
     if(window.BCUTMeasurement)window.BCUTMeasurement.setBlocked(!!base.gate||!!base.modal||!!base.popup||!['home','new'].includes(V));
-    return Object.assign(base,themeVals);
+    return visibleCatalogueSections(Object.assign(base,themeVals));
   }
 }
 </script>

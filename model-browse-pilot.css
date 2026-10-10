@@ -1,4 +1,4 @@
-body[data-model-browse] #model-browse{margin:0 0 18px}
+body[data-model-browse] #model-browse{margin:0 0 18px;scroll-margin-top:68px}
 body[data-model-browse] .model-browse-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 body[data-model-browse] .model-browse-filters{display:flex;gap:7px;flex-wrap:wrap}
 body[data-model-browse] #model-browse button,body[data-model-browse] #model-browse select{font:inherit;font-size:13px;min-height:44px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer}

@@ -116,6 +116,7 @@
     document.getElementById('model-browse-sort').addEventListener('change', function (event) { view.sort = event.target.value; render(); });
     document.getElementById('model-browse-reset').addEventListener('click', function () { view.filter = 'all'; render(); toolbar.querySelector('[data-model-format="all"]').focus(); });
     render(); toolbar.hidden = false;
+    var shortcut = document.querySelector('.all-works'); if (shortcut) shortcut.setAttribute('href', '#model-browse');
   }
   return { video: video, ranks: ranks, seed: seed, ordered: ordered, decorate: decorate, init: init, update: update };
 });

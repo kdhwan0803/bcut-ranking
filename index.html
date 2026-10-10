@@ -853,8 +853,8 @@ select,input,button{font-family:inherit}
           <div onClick="{{ p.open }}" style="flex:0 0 auto;width:150px;cursor:pointer">
             <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
               <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.imgFilter }}" style-hover="transform:scale(1.05)">
-              <div style="position:absolute;inset:0;display:{{ p.lockShow }};flex-direction:column;align-items:center;justify-content:center;gap:4px">
-                <div style="font-size:22px;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 12px rgba(0,0,0,.7)">{{ p.dday }}</div>
+              <div style="position:absolute;left:7px;bottom:7px;padding:3px 6px;border-radius:4px;background:rgba(0,0,0,.65);display:{{ p.lockShow }};flex-direction:column;align-items:center;justify-content:center;gap:4px">
+                <div style="font-size:11px;font-weight:800;text-shadow:0 2px 12px rgba(0,0,0,.7)">{{ p.dday }}</div>
               </div>
               <div style="position:absolute;top:7px;left:7px;font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:3px;display:{{ p.openedShow }};background:var(--acc);color:#fff">공개됨</div>
               <button onClick="{{ p.wish }}" style="position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.22);cursor:pointer;font-size:13px;background:rgba(230,0,18,.9);color:#fff;line-height:1">♥</button>
@@ -1796,10 +1796,10 @@ select,input,button{font-family:inherit}
       <div style="max-width:380px;width:100%;background:var(--bg1);border:1px solid var(--line);border-radius:16px;padding:34px 28px 26px;text-align:center;animation:fadeUp .3s ease">
         <div style="width:58px;height:58px;margin:0 auto 16px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff">19+</div>
         <div style="font-size:19px;font-weight:900;letter-spacing:-.3px">잠깐, 나이를 확인할게요</div>
-        <div style="font-size:13.5px;line-height:1.7;color:var(--mut);margin-top:12px">이 사이트에는 <b style="color:var(--txt)">만 19세 이상</b> 성인 화보가 포함돼 있어요.<br>선택에 따라 19금 이미지가 흐리게 표시됩니다.</div>
+        <div style="font-size:13.5px;line-height:1.7;color:var(--mut);margin-top:12px">이 사이트에는 <b style="color:var(--txt)">만 19세 이상</b> 성인 화보가 포함돼 있어요.<br>썸네일은 미리보기 이미지입니다. 성인 작품 감상은 B컷의 로그인·성인인증 후 이용할 수 있습니다.</div>
         <div style="display:flex;flex-direction:column;gap:9px;margin-top:24px">
           <button onClick="{{ setAdult }}" style="border:0;font-size:14.5px;font-weight:800;padding:15px;border-radius:9px;cursor:pointer;background:var(--acc);color:#fff">만 19세 이상 · 모두 보기</button>
-          <button onClick="{{ setMinor }}" style="border:1px solid var(--line);font-size:14.5px;font-weight:800;padding:15px;border-radius:9px;cursor:pointer;background:var(--w2);color:var(--txt)">만 19세 미만 · 19금은 가리기</button>
+          <button onClick="{{ setMinor }}" style="border:1px solid var(--line);font-size:14.5px;font-weight:800;padding:15px;border-radius:9px;cursor:pointer;background:var(--w2);color:var(--txt)">미리보기·목록 보기</button>
         </div>
         <div style="font-size:11px;color:var(--w5);margin-top:16px;line-height:1.6">선택은 이 기기에 저장돼요.</div>
       </div>
@@ -2012,7 +2012,7 @@ class Component extends DCLogic {
     return t>=s.a&&t<=s.b;
   }
   splitTitle(t){return window.BCUTCatalogueUI.title(t,this.state.D);}
-  blurOf(id){const w=(this.state.D.works||{})[id];return (this.state.age==='minor'&&w&&w.b19&&!w.safe)?'blur(16px)':'none';}
+  blurOf(){return 'none';} // Catalogue thumbnails stay clear; purchase authentication belongs to B컷.
   pad(n){return String(n).padStart(2,'0');}
   seg(ms){if(ms<0)ms=0;let s=Math.floor(ms/1000);const h=Math.floor(s/3600);s-=h*3600;const m=Math.floor(s/60);s-=m*60;return{hh:this.pad(h),mm:this.pad(m),ss:this.pad(s)};}
 
@@ -2196,7 +2196,7 @@ class Component extends DCLogic {
         dayBg:open?'var(--acc)':isNext?'rgba(255,255,255,.92)':'rgba(8,8,11,.8)',
         dayFg:open?'#fff':isNext?'#0a0a0c':'rgba(255,255,255,.8)',
         subShow:w.buy==='구독'?'block':'none',
-        filter:open?(this.blurOf(id)):(this.blurOf(id)!=='none'?this.blurOf(id):'brightness(.62) saturate(.85)'),
+        filter:this.blurOf(id),
         lockShow:open?'none':'flex',
         dday:open?'':('D-'+dd(w.pub)),
         ddaySize:mob?'19px':'22px',
@@ -2596,7 +2596,7 @@ class Component extends DCLogic {
         lift:hov?'translateY(-10px)':'none',z:hov?'6':'1',ovOpacity:hov?'1':'0',
         origShow:(!isM&&w&&w.buy==='구독')?'inline-block':'none',
         vidShow:(!isM&&w&&w.vid)?'inline-block':'none',
-        lockShow:(!isM&&S.age==='minor'&&w&&w.b19&&!w.safe)?'block':'none',
+        lockShow:'none',
         blur:isM?'none':this.blurOf(row.id),
         enter:()=>{if(!this._touch)this.setState({hover:row.id});},
         leave:()=>{if(!this._touch)this.setState({hover:null});},
@@ -2917,7 +2917,7 @@ class Component extends DCLogic {
     if(wl.length){base.wishShow='block';
       base.wishes=wl.map(id=>{const w=W[id],open=!w.pub||w.pub<=today;
         return {img:w.img||'',open:()=>this.openWork(id),wish:e=>this.toggleWish(id,e),
-          imgFilter:open?this.blurOf(id):'blur(7px) brightness(.7)',
+          imgFilter:this.blurOf(id),
           lockShow:open?'none':'flex',openedShow:open?'block':'none',
           dday:open?'':('D-'+dd(w.pub)),line:open?'rgba(230,0,18,.4)':'var(--w3)',
           cap:open?'지금 볼 수 있어요':(this.fmt(w.pub)+' 공개')};});}
@@ -2996,7 +2996,7 @@ class Component extends DCLogic {
         infoLabel:title+' 작품 정보',format:window.BCUTCatalogueUI.format(w),
         date:w.pub?(w.pub.slice(0,4)===today.slice(0,4)?this.fmt(w.pub):w.pub.replace(/-/g,'.'))+(upcomingSearch?' 공개 예정':' 공개'):'공개일 미등록',
         buy:upcomingSearch?(sub?'구독 예정':'공개 예정'):(sub?'구독':'개별 구매'),
-        lockShow:(S.age==='minor'&&w.b19&&!w.safe)?'block':'none',open:()=>this.openWork(id)};
+        lockShow:'none',open:()=>this.openWork(id)};
     });
     base.moreShow=ids.length>S.show?'block':'none';
     base.moreLabel='화보 '+Math.min(12,Math.max(0,ids.length-S.show))+'개 더 보기 · 남은 '+Math.max(0,ids.length-S.show)+'개';

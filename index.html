@@ -462,7 +462,7 @@ select,input,button{font-family:inherit}
 .ringImg{width:88px;height:88px;border-radius:50%;padding:3px;background:linear-gradient(135deg,#7c5af8,#E60012,#ff8a3d);box-shadow:0 4px 14px rgba(230,0,18,.2);transition:transform .15s}
 .ringItem:hover .ringImg{transform:scale(1.05)}
 .ringItem:active .ringImg{transform:scale(.93)}
-.ringImg img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg0);display:block;background-image:linear-gradient(100deg,var(--bg2) 40%,var(--w3) 50%,var(--bg2) 60%);background-size:220% 100%;animation:skelShim 1.2s ease-in-out infinite}
+.ringImg img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg0);display:block;background:var(--bg2)}
 .ringName{font-size:13px;font-weight:800;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ringTag{font-size:10.5px;color:var(--acc);font-weight:800;margin-top:1px}
 @media(min-width:681px){
@@ -513,7 +513,7 @@ select,input,button{font-family:inherit}
 @media(hover:none){.cvCta{display:none}}
 /* 이미지 로딩 스켈레톤(반짝임) — 이미지가 뜨면 그 위를 덮음 */
 @keyframes skelShim{0%{background-position:180% 0}100%{background-position:-80% 0}}
-.imgSkel{background-image:linear-gradient(100deg,var(--bg2) 40%,var(--w3) 50%,var(--bg2) 60%);background-size:220% 100%;animation:skelShim 1.2s ease-in-out infinite}
+.imgSkel{background:var(--bg2)}
 @keyframes pinBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 @keyframes pinRing{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
 /* 월 캘린더 */
@@ -2050,7 +2050,7 @@ class Component extends DCLogic {
   componentDidMount(){
     try{this._admin=/[?&](admin|preview)=1/.test(location.search)||!!window.IS_ADMIN;}catch(e){this._admin=!!window.IS_ADMIN;}
     if(this._admin){window.IS_ADMIN=true;this._shuffleSeed=0.5;}
-    this._t=setInterval(()=>this.setState({now:Date.now()}),1000);
+    this._t=setInterval(()=>this.tickClock(),1000);
     this._sp=setInterval(()=>this.advance(),7000);
     this._pb=setInterval(()=>this.advancePromo(),5000);
     try{this._touch=window.matchMedia('(hover:none)').matches;}catch(e){this._touch=false;}
@@ -2179,6 +2179,22 @@ class Component extends DCLogic {
     this.setState({theme:t});}
   toggleTheme(){this.applyTheme(this.state.theme==='dark'?'light':'dark');}
 
+  tickClock(now=Date.now()){
+    const D=this.state.D;if(!D)return;
+    const previous=Number(this.state.now)||now;
+    const crossed=date=>{const at=new Date(date).getTime();return at>previous&&at<=now;};
+    const countdown=(D.timesales||[]).some(sale=>sale&&sale.id&&D.works?.[sale.id]&&sale.end&&new Date(sale.end).getTime()>previous);
+    const packageBoundary=(D.packages||[]).some(pack=>pack?.end&&crossed(pack.end));
+    const popupBoundary=!this._admin&&!this.state.popupClosed&&(D.popups||[]).some(popup=>{
+      if(!popup?.img||popup.enabled===false)return false;
+      let hiddenUntil=0;try{hiddenUntil=Number(localStorage.getItem('bcut_popup_hide_'+(popup.id||'')))||0;}catch(_){}
+      return crossed(popup.start)||crossed(popup.end)||(hiddenUntil>previous&&hiddenUntil<=now);
+    });
+    const experiment=D.revenueExperiment;
+    const experimentBoundary=experiment?.enabled===true&&(crossed(experiment.startsAt)||crossed(experiment.endsAt));
+    if(countdown||packageBoundary||popupBoundary||experimentBoundary||Math.floor(now/60000)!==Math.floor(previous/60000))this.setState({now});
+  }
+
   async load(){
     this._promoOrder=null;
     if(window.BCUT_DATA){this.apply(window.BCUT_DATA);return;}
@@ -2215,7 +2231,7 @@ class Component extends DCLogic {
     this._best=null;this._spans=null;this._calculations=null;window.BCUTSearch.invalidate(d);
     const last=Math.max(0,d.weeks.length-1);
     const qw=(this._qWeek!=null&&this._qWeek>=0&&this._qWeek<=last)?this._qWeek:last;
-    this.setState({D:d,wi:qw,err:''});
+    this.setState({D:d,wi:qw,err:'',now:Date.now()});
     if(this._qWork&&d.works&&d.works[this._qWork]){const _wid=this._qWork,_browse=this._browseEntry;this._qWork=null;this._browseEntry=null;setTimeout(()=>{try{this.openWork(_wid,null,_browse);}catch(e){}},80);}
   }
   retry(){this.setState({err:''});this.load();}

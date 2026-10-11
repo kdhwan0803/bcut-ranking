@@ -1978,7 +1978,7 @@ select,input,button{font-family:inherit}
               </div>
               <sc-if value="{{ modal.preview.videoActive }}" hint-placeholder-val="{{ false }}">
                 <div id="work-2394-video-panel" role="tabpanel" aria-labelledby="work-2394-video-tab">
-                  <div class="work-preview-video-stage"><video controls playsinline preload="metadata" src="{{ modal.preview.video }}" poster="{{ modal.preview.poster }}" aria-label="쥬 화보 6초 무음 미리보기 영상"></video></div>
+                  <div class="work-preview-video-stage"><video controls="{{ modal.preview.mediaControls }}" playsInline="{{ modal.preview.mediaControls }}" preload="metadata" src="{{ modal.preview.video }}" poster="{{ modal.preview.poster }}" aria-label="쥬 화보 6초 무음 미리보기 영상"></video></div>
                   <p class="work-preview-video-note">6초 샘플 영상 · 무음<br>전체 영상 7개 중 일부 장면입니다.</p>
                 </div>
               </sc-if>
@@ -3675,7 +3675,7 @@ class Component extends DCLogic {
           const select=(changes)=>this.setState({modal:{...this.state.modal,...changes}});
           Object.assign(base.modal,{previewClass:'work-dialog-preview',dialogLabel:preview.title+' 상세 정보',
             preview:{...preview,photo:preview.photos[index],counter:(index+1)+' / '+preview.photos.length,
-              photoSelected:String(!videoActive),videoSelected:String(videoActive),videoActive,
+              photoSelected:String(!videoActive),videoSelected:String(videoActive),videoActive,mediaControls:true,
               photoShow:videoActive?'none':'block',
               showPhotos:()=>select({previewMode:'photos'}),showVideo:()=>select({previewMode:'video'}),
               previousDisabled:String(index===0),nextDisabled:String(index===preview.photos.length-1),

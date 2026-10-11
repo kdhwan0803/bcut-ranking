@@ -3825,5 +3825,25 @@ class Component extends DCLogic {
   var n=0,iv=setInterval(function(){upd();if(++n>20)clearInterval(iv);},500);
 })();
 </script>
+<script>
+/* The template renderer drops the controls attribute. Set the native media
+   properties when this specific preview video is mounted; never autoplay. */
+(function(){
+  const selector='.work-preview-video-stage video[aria-label="쥬 화보 6초 무음 미리보기 영상"]';
+  function enable(node){
+    if(node.nodeType!==1)return;
+    if(node.matches(selector)){node.controls=true;node.playsInline=true;}
+    node.querySelectorAll(selector).forEach(video=>{video.controls=true;video.playsInline=true;});
+  }
+  function start(){
+    enable(document.body);
+    new MutationObserver(records=>{
+      records.forEach(record=>record.addedNodes.forEach(enable));
+    }).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script>
 </body>
 </html>

@@ -15,7 +15,17 @@
 /* Approved preview for work 2394. Public sale facts checked 2026-10-11 KST.
    Admin: 450 coins, coin-only, 170 work photos; product page: 171 incl. cover,
    7 videos / 15:56. Media are unchanged copies of the approved X materials. */
+/* Approved Park Seoyi preview, photo 2392 / video 2393 are separate products.
+   Public sale facts checked 2026-10-11 KST: each 200 coins; photo 128+cover,
+   video 5 / 7:30. Media are unchanged copies of the approved draft assets. */
+const parkWorkPreview=Object.freeze({model:'박서이',title:'옆집누나',separateProducts:true,
+  photos:[
+    {src:'./assets/covers/seoyi-2392-photo-051.jpg',alt:'박서이 화보 미리보기 1: 체리를 든 박서이'},
+    {src:'./assets/covers/seoyi-2392-photo-045.jpg',alt:'박서이 화보 미리보기 2: 주방에서 바라본 박서이 옆모습'},
+    {src:'./assets/covers/seoyi-2392-photo-128.jpg',alt:'박서이 화보 미리보기 3: 거울 앞에서 미소 짓는 박서이'}
+  ],video:'./assets/covers/seoyi-2392-preview-6s.mp4',poster:'./assets/covers/seoyi-2392-video-poster.jpg'});
 window.BCUTWorkPreviews=Object.freeze({
+  '2392':parkWorkPreview,'2393':parkWorkPreview,
   '2394':Object.freeze({model:'쥬',title:'밤에는 음란한 그녀',coin:450,
     photos:[
       {src:'./assets/covers/jyu-2394-photo-009.jpg',alt:'쥬 화보 미리보기 1: 창가에서 바라보는 쥬'},
@@ -883,6 +893,22 @@ select,input,button{font-family:inherit}
  .work-preview-price{font-size:33px}.work-preview-subscription{margin-bottom:17px}.work-preview-type{margin-top:13px}
 }
 @media(max-width:390px){.work-preview-stage{height:370px}.work-preview-layout{padding-left:16px;padding-right:16px}}
+
+/* Approved separate photo/video product layout for Park Seoyi. */
+.work-preview-seoyi{padding:24px 28px;gap:28px}
+.work-preview-separate-note{margin:15px 0 0;font-size:13px;font-weight:700;line-height:1.6}
+.work-preview-product{border-top:1px solid var(--line);margin-top:18px;padding-top:16px}
+.work-preview-option-heading{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
+.work-preview-option-heading h3{font-size:16px;line-height:1.4;margin:0;font-weight:700}
+.work-preview-option-price{margin:0;font-size:25px;font-weight:700;line-height:1.4;white-space:nowrap;letter-spacing:-.7px}
+.work-preview-option-price span{font-size:13px;font-weight:400;letter-spacing:0;margin-left:4px}
+.work-preview-option-composition{font-size:14px;font-weight:600;margin:8px 0 0;line-height:1.65}
+.work-preview-option-note{margin:4px 0 0;color:var(--mut);font-size:12px;line-height:1.65;word-break:keep-all}
+.work-preview-product .work-preview-cta{margin-top:13px;padding:10px 13px;min-height:44px;font-size:14px}
+.work-preview-product .work-preview-cta.secondary{color:var(--acc);background:var(--bg1);border:1px solid var(--acc)}
+.work-preview-seoyi .work-preview-help{margin-top:12px}
+.work-preview-seoyi .work-preview-check{margin-top:16px;padding-top:12px}
+@media(max-width:740px){.work-preview-seoyi{padding:40px 20px 18px;gap:24px}}
 </style>
 </helmet>
 
@@ -1960,7 +1986,7 @@ select,input,button{font-family:inherit}
         <button aria-label="상세창 닫기" onClick="{{ closeModal }}" style="position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:0;font-size:14px;cursor:pointer">✕</button>
         <div style="flex:1 1 auto;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch">
 
-        <sc-if value="{{ modal.preview }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ modal.preview.singleProduct }}" hint-placeholder-val="{{ false }}">
           <section class="work-preview-layout" aria-label="사진・영상 미리보기와 판매 구성">
             <section class="work-preview-gallery" aria-label="사진과 영상 미리보기">
               <div class="work-preview-tabs" role="tablist" aria-label="미리보기 종류">
@@ -1999,6 +2025,51 @@ select,input,button{font-family:inherit}
               <a class="work-preview-cta" href="{{ modal.cta }}" target="_blank" rel="noopener" onClick="{{ modal.trackOutbound }}">B컷에서 전체 화보 보기</a>
               <p class="work-preview-help">작품 페이지로 이동해요. 클릭만으로 결제되지 않아요.</p>
               <div class="work-preview-check"><h3>구매 전에 확인해 주세요</h3><p>로그인 후 작품의 최종 가격과 구성을 확인하고 구매해 주세요. 이 작품은 코인을 충전해 개별 구매하는 방식입니다.</p></div>
+            </section>
+          </section>
+        </sc-if>
+        <sc-if value="{{ modal.preview.separateProducts }}" hint-placeholder-val="{{ false }}">
+          <section class="work-preview-layout work-preview-seoyi" aria-label="사진·영상 미리보기와 판매 구성">
+            <section class="work-preview-gallery" aria-label="사진과 영상 미리보기">
+              <div class="work-preview-tabs" role="tablist" aria-label="미리보기 종류">
+                <button type="button" role="tab" id="work-seoyi-photos-tab" aria-controls="work-seoyi-photos-panel" aria-selected="{{ modal.preview.photoSelected }}" onClick="{{ modal.preview.showPhotos }}">사진 미리보기 <small>3장</small></button>
+                <button type="button" role="tab" id="work-seoyi-video-tab" aria-controls="work-seoyi-video-panel" aria-selected="{{ modal.preview.videoSelected }}" onClick="{{ modal.preview.showVideo }}">영상 미리보기 <small>6초</small></button>
+              </div>
+              <div id="work-seoyi-photos-panel" role="tabpanel" aria-labelledby="work-seoyi-photos-tab" style="display:{{ modal.preview.photoShow }}">
+                <div class="work-preview-stage">
+                  <img src="{{ modal.preview.photo.src }}" alt="{{ modal.preview.photo.alt }}" decoding="async">
+                  <button type="button" class="work-preview-arrow prev" aria-label="이전 사진" aria-disabled="{{ modal.preview.previousDisabled }}" onClick="{{ modal.preview.previous }}">‹</button>
+                  <button type="button" class="work-preview-arrow next" aria-label="다음 사진" aria-disabled="{{ modal.preview.nextDisabled }}" onClick="{{ modal.preview.next }}">›</button>
+                </div>
+                <div class="work-preview-caption"><span>사진 화보 중 일부를 미리 볼 수 있어요.</span><span aria-live="polite">{{ modal.preview.counter }}</span></div>
+                <div class="work-preview-thumbs" aria-label="미리보기 사진 선택"><sc-for list="{{ modal.preview.thumbnails }}" as="p" hint-placeholder-count="0"><button class="work-preview-thumb" type="button" aria-label="{{ p.label }}" aria-pressed="{{ p.selected }}" onClick="{{ p.show }}"><img src="{{ p.src }}" alt="" loading="lazy" decoding="async"></button></sc-for></div>
+              </div>
+              <sc-if value="{{ modal.preview.videoActive }}" hint-placeholder-val="{{ false }}">
+                <div id="work-seoyi-video-panel" role="tabpanel" aria-labelledby="work-seoyi-video-tab">
+                  <div class="work-preview-video-stage"><video controls="{{ modal.preview.mediaControls }}" playsInline="{{ modal.preview.mediaControls }}" preload="metadata" src="{{ modal.preview.video }}" poster="{{ modal.preview.poster }}" aria-label="박서이 옆집누나 6초 무음 미리보기 영상"></video></div>
+                  <p class="work-preview-video-note">6초 샘플 영상 · 무음<br>별도 판매하는 영상 작품 중 일부 장면입니다.</p>
+                </div>
+              </sc-if>
+            </section>
+            <section class="work-preview-info" aria-label="사진·영상 각각의 가격과 판매 구성">
+              <p class="work-preview-model">박서이</p>
+              <h2 class="work-preview-title">옆집누나</h2>
+              <p class="work-preview-credit">촬영 KoG · 2026년 10월 10일 공개</p>
+              <p class="work-preview-separate-note">사진과 영상은 각각 별도 상품이에요.</p>
+              <section class="work-preview-product" aria-labelledby="seoyi-photo-product-title">
+                <div class="work-preview-option-heading"><h3 id="seoyi-photo-product-title">사진 화보</h3><p class="work-preview-option-price">200<span>코인</span></p></div>
+                <p class="work-preview-option-composition">사진 128장 + 표지 1장</p>
+                <p class="work-preview-option-note">판매 페이지의 129장은 표지를 포함한 수량이에요.<br>200코인 개별 구매 또는 현재 월 구독으로 열람할 수 있어요.</p>
+                <a class="work-preview-cta" href="https://bcut.maximkorea.net/work/2392" target="_blank" rel="noopener" onClick="{{ modal.preview.trackPhotoOutbound }}">B컷에서 사진 화보 보기</a>
+              </section>
+              <section class="work-preview-product" aria-labelledby="seoyi-video-product-title">
+                <div class="work-preview-option-heading"><h3 id="seoyi-video-product-title">영상 작품</h3><p class="work-preview-option-price">200<span>코인</span></p></div>
+                <p class="work-preview-option-composition">영상 5개 · 총 7분 30초</p>
+                <p class="work-preview-option-note">코인 전용 작품이에요. 월 구독에 포함되지 않아요.<br>사진 화보를 구매해도 영상은 별도 구매해야 해요.</p>
+                <a class="work-preview-cta secondary" href="https://bcut.maximkorea.net/work/2393" target="_blank" rel="noopener" onClick="{{ modal.preview.trackVideoOutbound }}">B컷에서 영상 작품 보기</a>
+              </section>
+              <p class="work-preview-help">각 작품 페이지로 이동해요. 클릭만으로 결제되지 않아요.</p>
+              <div class="work-preview-check"><h3>구매 전에 확인해 주세요</h3><p>로그인 후 최종 가격과 구성을 확인해 주세요. 사진 화보의 구독 대상 여부와 열람 기간은 B컷에서 확인할 수 있어요.</p></div>
             </section>
           </section>
         </sc-if>
@@ -3674,7 +3745,10 @@ class Component extends DCLogic {
           const videoActive=S.modal.previewMode==='video';
           const select=(changes)=>this.setState({modal:{...this.state.modal,...changes}});
           Object.assign(base.modal,{previewClass:'work-dialog-preview',dialogLabel:preview.title+' 상세 정보',
-            preview:{...preview,photo:preview.photos[index],counter:(index+1)+' / '+preview.photos.length,
+            preview:{...preview,singleProduct:!preview.separateProducts,
+              trackPhotoOutbound:()=>{if(String(id)==='2392')this.trackWorkOutbound(S.modal.experiment,S.modal.browse,'2392');},
+              trackVideoOutbound:()=>{if(String(id)==='2393')this.trackWorkOutbound(S.modal.experiment,S.modal.browse,'2393');},
+              photo:preview.photos[index],counter:(index+1)+' / '+preview.photos.length,
               photoSelected:String(!videoActive),videoSelected:String(videoActive),videoActive,mediaControls:true,
               photoShow:videoActive?'none':'block',
               showPhotos:()=>select({previewMode:'photos'}),showVideo:()=>select({previewMode:'video'}),
@@ -3827,9 +3901,9 @@ class Component extends DCLogic {
 </script>
 <script>
 /* The template renderer drops the controls attribute. Set the native media
-   properties when this specific preview video is mounted; never autoplay. */
+   properties when an approved preview video is mounted; never autoplay. */
 (function(){
-  const selector='.work-preview-video-stage video[aria-label="쥬 화보 6초 무음 미리보기 영상"]';
+  const selector='.work-preview-video-stage video[aria-label="쥬 화보 6초 무음 미리보기 영상"],.work-preview-video-stage video[aria-label="박서이 옆집누나 6초 무음 미리보기 영상"]';
   function enable(node){
     if(node.nodeType!==1)return;
     if(node.matches(selector)){node.controls=true;node.playsInline=true;}

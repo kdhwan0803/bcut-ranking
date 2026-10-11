@@ -338,7 +338,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--acc2);outline-offse
 .brand-logo img{position:absolute;max-width:none;width:150.838%;height:auto;left:-25.419%;top:-117.337%;mix-blend-mode:normal;filter:drop-shadow(0 1px 1px rgba(0,0,0,.42))}
 @media(max-width:350px){.brand-logo{width:105px;flex-basis:105px}}
 
-/* 첫 방문 안내: 대표 화보를 유지하면서 첫 화면에서 구매 구성을 설명합니다. */
+/* 첫 방문 안내: 서비스 소개, 이용 방식, 구매 전 확인사항. */
 .first-guide{margin:0 0 25px;border-bottom:1px solid var(--line)}
 .first-guide summary{list-style:none;display:grid;grid-template-columns:1fr 28px;
   align-items:center;gap:12px;cursor:pointer;padding:0 0 18px;min-height:88px}
@@ -355,35 +355,25 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--acc2);outline-offse
 .first-guide[open] .guide-mark{font-size:0}
 .first-guide[open] .guide-mark::after{content:'−';font-size:25px}
 .first-guide summary:focus-visible{outline:2px solid var(--acc);outline-offset:5px}
-.first-guide .guide-body{padding:0 0 20px}
-.first-guide .guide-intro{font-size:12px;line-height:1.85;color:var(--sub);
-  padding:0 0 15px;max-width:42em}
-.guide-work{display:block;text-decoration:none;color:var(--txt);padding:16px 0;
-  border-top:1px solid var(--line)}
-.guide-work:hover{background:var(--blkH)}
-.guide-work .guide-row{display:flex;gap:12px;align-items:baseline;
-  justify-content:space-between;margin-bottom:6px}
-.guide-work .guide-model{font-size:11px;color:var(--sub);font-weight:500}
-.guide-work .guide-price{font-family:Arial,var(--kr);font-size:13px;
-  color:var(--txt);font-weight:700;white-space:nowrap}
-.guide-work h3{font-size:17px;letter-spacing:-.5px;line-height:1.4;
-  font-weight:700;overflow-wrap:anywhere}
-.guide-work .guide-format{display:block;color:var(--sub);font-size:11px;
-  margin-top:7px;line-height:1.7}
-.guide-work .guide-go{display:block;color:var(--acc);font-size:11px;
-  margin-top:8px;font-weight:700;line-height:1.7}
-.first-guide .guide-note{font-size:10px;color:var(--mut);line-height:1.8;
-  padding:10px 0 15px;border-top:1px solid var(--line)}
-.guide-help{border-top:1px solid var(--txt);padding-top:16px}
-.guide-help h3{font-size:14px;letter-spacing:-.3px;font-weight:700;margin-bottom:8px}
-.guide-help p{font-size:11px;color:var(--sub);line-height:1.9;margin-bottom:14px}
-.guide-help strong{font-weight:700;color:var(--txt)}
-.guide-help .guide-home{display:flex;align-items:center;justify-content:space-between;
-  min-height:46px;color:var(--txt);font-size:12px;font-weight:700;
-  text-decoration:none;border-top:1px solid var(--line)}
-.guide-help .guide-home:hover{color:var(--acc)}
+.first-guide .guide-body{padding:0 0 4px}
+.guide-section{padding:16px 0;border-top:1px solid var(--line)}
+.guide-section h3{font-size:14px;font-weight:700;letter-spacing:-.3px;
+  line-height:1.6;margin-bottom:8px}
+.guide-section .guide-number{font-family:Arial,sans-serif;font-size:10px;
+  font-weight:700;color:var(--acc);margin-right:9px;vertical-align:1px}
+.guide-section p,.guide-section dd,.guide-checks li{font-size:12px;
+  line-height:1.9;color:var(--sub);overflow-wrap:anywhere}
+.guide-section strong{font-weight:700;color:var(--txt)}
+.guide-options{margin-top:12px;border-top:1px solid var(--line)}
+.guide-options>div{display:grid;grid-template-columns:76px 1fr;gap:12px;
+  padding:11px 0;border-bottom:1px solid var(--line)}
+.guide-options dt{font-size:12px;font-weight:700;line-height:1.9;color:var(--txt)}
+.guide-options dd{margin:0}
+.guide-section .guide-important{margin-top:10px}
+.guide-important strong{color:var(--acc)}
+.guide-checks{list-style:none;display:grid;gap:6px}
 @media(max-width:350px){.first-guide .guide-title{font-size:17px}
-  .guide-work h3{font-size:16px}.guide-work .guide-row{gap:8px}}
+  .guide-options>div{grid-template-columns:66px 1fr;gap:10px}}
 </style>
 </head>
 <body>
@@ -395,44 +385,36 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--acc2);outline-offse
   </div>
 
 
-  <!-- 첫 방문 안내: 가격 및 구성 확인 기준 2026-10-10. 사진 추가 선정 없음. -->
+  <!-- 첫 방문 안내: 추천 작품 없이 이용 방법을 설명합니다. 2026-10-11. -->
   <details class="first-guide" id="firstPurchaseGuide">
     <summary>
-      <span><span class="guide-title">B컷이 처음이라면</span>
-        <span class="guide-lead">마음에 드는 화보 한 편부터.</span>
-        <span class="guide-action">가격·구성·구매 방법 보기</span></span>
+      <span><span class="guide-title">맥심B컷이 처음이라면</span>
+        <span class="guide-lead">서비스·이용 방법·구매 전 확인</span>
+        <span class="guide-action">안내 펼쳐보기</span></span>
       <span class="guide-mark" aria-hidden="true">+</span>
     </summary>
     <div class="guide-body">
-      <p class="guide-intro">사진으로 감상할지, 영상까지 볼지.<br>가격과 구성을 비교하고 내 취향에 맞는 작품을 골라보세요.</p>
-      <a class="guide-work" href="https://bcut.maximkorea.net/work/978?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=first_purchase_202610&amp;utm_content=guide_978" data-gate="1" data-url="https://bcut.maximkorea.net/work/978?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=first_purchase_202610&amp;utm_content=guide_978">
-        <span class="guide-row"><span class="guide-model">박민정</span><span class="guide-price">100코인</span></span>
-        <h3>MY SWEET VALENTINE S</h3>
-        <span class="guide-format">사진 화보</span>
-        <span class="guide-go">가격·구성 확인하기 <span aria-hidden="true">↗</span></span>
-      </a>
-      <a class="guide-work" href="https://bcut.maximkorea.net/work/2212?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=first_purchase_202610&amp;utm_content=guide_2212" data-gate="1" data-url="https://bcut.maximkorea.net/work/2212?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=first_purchase_202610&amp;utm_content=guide_2212">
-        <span class="guide-row"><span class="guide-model">미루</span><span class="guide-price">250코인</span></span>
-        <h3>Last summer</h3>
-        <span class="guide-format">사진 + 영상 1편 · 3분 00초</span>
-        <span class="guide-go">가격·구성 확인하기 <span aria-hidden="true">↗</span></span>
-      </a>
-      <a class="guide-work" href="https://bcut.maximkorea.net/work/2226?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=first_purchase_202610&amp;utm_content=guide_2226" data-gate="1" data-url="https://bcut.maximkorea.net/work/2226?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=first_purchase_202610&amp;utm_content=guide_2226">
-        <span class="guide-row"><span class="guide-model">쥬</span><span class="guide-price">450코인</span></span>
-        <h3>물이없는 목욕시간</h3>
-        <span class="guide-format">사진 + 영상 10편 · 총 23분 53초</span>
-        <span class="guide-go">가격·구성 확인하기 <span aria-hidden="true">↗</span></span>
-      </a>
-      <p class="guide-note">위 작품은 코인으로 개별 구매하는 화보입니다.<br>가격과 구성은 작품 상세 페이지의 최신 안내를 확인해주세요.</p>
-      <div class="guide-help">
-        <h3>사진과 영상, 무엇이 다른가요?</h3>
-        <p><strong>PHOTO ONLY</strong>는 사진, <strong>VIDEO ONLY</strong>는 영상,<br><strong>PHOTO + VIDEO</strong>는 사진과 영상이 함께 들어 있습니다.<br>같은 제목이라도 사진판과 영상판이 따로 판매될 수 있어요.</p>
-        <h3>어떻게 구매하나요?</h3>
-        <p>로그인·성인인증 → 작품 가격과 구성 확인 →<br>필요한 코인 충전 → 작품 구매 순서로 이용할 수 있습니다.</p>
-        <h3>멤버십에 가입하면 모두 볼 수 있나요?</h3>
-        <p>월 <strong>19,900원 정기결제</strong> 멤버십은 <strong>구독 대상 화보</strong>에 적용됩니다. 코인 전용 화보는 별도 구매가 필요해요. 가입 전 작품별 구독 여부를 확인해주세요.</p>
-        <a class="guide-home" href="https://bcut.maximkorea.net/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=first_purchase_202610&amp;utm_content=guide_membership" data-gate="1" data-url="https://bcut.maximkorea.net/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=first_purchase_202610&amp;utm_content=guide_membership">B컷에서 구독 대상 확인하기 <span aria-hidden="true">↗</span></a>
-      </div>
+      <section class="guide-section" aria-labelledby="guide-service-title">
+        <h3 id="guide-service-title"><span class="guide-number" aria-hidden="true">01</span>맥심B컷은 어떤 서비스인가요?</h3>
+        <p>모델들의 <strong>디지털 화보와 영상</strong>을 온라인으로 감상하는 서비스입니다. 작품마다 사진·영상 구성이 다릅니다.</p>
+      </section>
+      <section class="guide-section" aria-labelledby="guide-use-title">
+        <h3 id="guide-use-title"><span class="guide-number" aria-hidden="true">02</span>어떻게 이용하나요?</h3>
+        <p>로그인과 성인인증 후, 코인 구매 또는 구독으로 이용할 수 있습니다.</p>
+        <dl class="guide-options">
+          <div><dt>코인 구매</dt><dd>코인을 충전한 뒤 원하는 화보를 <strong>한 편씩 개별 구매</strong>합니다.</dd></div>
+          <div><dt>구독</dt><dd>월정액으로 <strong>구독 대상 화보</strong>를 감상합니다.</dd></div>
+        </dl>
+        <p class="guide-important">구독해도 <strong>코인 전용 화보는 별도 구매</strong>가 필요합니다.</p>
+      </section>
+      <section class="guide-section" aria-labelledby="guide-check-title">
+        <h3 id="guide-check-title"><span class="guide-number" aria-hidden="true">03</span>구매 전에 무엇을 확인하나요?</h3>
+        <ul class="guide-checks">
+          <li><strong>구성</strong> · 사진만 / 영상만 / 사진 + 영상</li>
+          <li><strong>분량</strong> · 사진 수, 영상 편수와 재생시간</li>
+          <li><strong>가격·이용 방식</strong> · 필요한 코인과 구독 대상 여부</li>
+        </ul>
+      </section>
     </div>
   </details>
 

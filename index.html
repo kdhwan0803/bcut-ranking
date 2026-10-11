@@ -26,6 +26,15 @@ const parkWorkPreview=Object.freeze({model:'박서이',title:'옆집누나',sepa
   ],video:'./assets/covers/seoyi-2392-preview-6s.mp4',poster:'./assets/covers/seoyi-2392-video-poster.jpg'});
 window.BCUTWorkPreviews=Object.freeze({
   '2392':parkWorkPreview,'2393':parkWorkPreview,
+/* Approved SUNLIT preview, one photo + video product. Facts checked 2026-10-11 KST.
+     145 coins / membership + coins / 45 photos + cover / 1 video, 3:07.
+     Media are unchanged copies of the approved review draft. */
+  '2340':Object.freeze({model:'박보름',title:'SUNLIT',coin:145,sunlit:true,
+    photos:[
+      {src:'./assets/covers/boreum-2340-photo-001.jpg',alt:'박보름 화보 미리보기 1: 야외에서 회색 후드 원피스를 입은 박보름'},
+      {src:'./assets/covers/boreum-2340-photo-003.jpg',alt:'박보름 화보 미리보기 2: 햇빛 아래 박보름 얼굴 클로즈업'},
+      {src:'./assets/covers/boreum-2340-photo-040.jpg',alt:'박보름 화보 미리보기 3: 창가에서 돌아보는 박보름'}
+    ],video:'./assets/covers/boreum-2340-preview-6s.mp4',poster:'./assets/covers/boreum-2340-video-poster.jpg'}),
   '2394':Object.freeze({model:'쥬',title:'밤에는 음란한 그녀',coin:450,
     photos:[
       {src:'./assets/covers/jyu-2394-photo-009.jpg',alt:'쥬 화보 미리보기 1: 창가에서 바라보는 쥬'},
@@ -2028,6 +2037,48 @@ select,input,button{font-family:inherit}
             </section>
           </section>
         </sc-if>
+        <sc-if value="{{ modal.preview.sunlit }}" hint-placeholder-val="{{ false }}">
+          <section class="work-preview-layout work-preview-sunlit" aria-label="사진・영상 미리보기와 판매 구성">
+            <section class="work-preview-gallery" aria-label="사진과 영상 미리보기">
+              <div class="work-preview-tabs" role="tablist" aria-label="미리보기 종류">
+                <button type="button" role="tab" id="work-2340-photos-tab" aria-controls="work-2340-photos-panel" aria-selected="{{ modal.preview.photoSelected }}" onClick="{{ modal.preview.showPhotos }}">사진 미리보기 <small>3장</small></button>
+                <button type="button" role="tab" id="work-2340-video-tab" aria-controls="work-2340-video-panel" aria-selected="{{ modal.preview.videoSelected }}" onClick="{{ modal.preview.showVideo }}">영상 미리보기 <small>6초</small></button>
+              </div>
+              <div id="work-2340-photos-panel" role="tabpanel" aria-labelledby="work-2340-photos-tab" style="display:{{ modal.preview.photoShow }}">
+                <div class="work-preview-stage">
+                  <img src="{{ modal.preview.photo.src }}" alt="{{ modal.preview.photo.alt }}" decoding="async">
+                  <button type="button" class="work-preview-arrow prev" aria-label="이전 사진" aria-disabled="{{ modal.preview.previousDisabled }}" onClick="{{ modal.preview.previous }}">‹</button>
+                  <button type="button" class="work-preview-arrow next" aria-label="다음 사진" aria-disabled="{{ modal.preview.nextDisabled }}" onClick="{{ modal.preview.next }}">›</button>
+                </div>
+                <div class="work-preview-caption"><span>전체 화보 중 일부를 미리 볼 수 있어요.</span><span aria-live="polite">{{ modal.preview.counter }}</span></div>
+                <div class="work-preview-thumbs" aria-label="미리보기 사진 선택"><sc-for list="{{ modal.preview.thumbnails }}" as="p" hint-placeholder-count="0"><button class="work-preview-thumb" type="button" aria-label="{{ p.label }}" aria-pressed="{{ p.selected }}" onClick="{{ p.show }}"><img src="{{ p.src }}" alt="" loading="lazy" decoding="async"></button></sc-for></div>
+              </div>
+              <sc-if value="{{ modal.preview.videoActive }}" hint-placeholder-val="{{ false }}">
+                <div id="work-2340-video-panel" role="tabpanel" aria-labelledby="work-2340-video-tab">
+                  <div class="work-preview-video-stage"><video controls="{{ modal.preview.mediaControls }}" playsInline="{{ modal.preview.mediaControls }}" preload="metadata" src="{{ modal.preview.video }}" poster="{{ modal.preview.poster }}" aria-label="박보름 SUNLIT 6초 무음 미리보기 영상"></video></div>
+                  <p class="work-preview-video-note">6초 샘플 영상 · 무음<br>전체 영상 1개 중 일부 장면입니다.</p>
+                </div>
+              </sc-if>
+            </section>
+            <section class="work-preview-info" aria-label="화보 가격과 판매 구성">
+              <p class="work-preview-model">{{ modal.preview.model }}</p>
+              <h2 class="work-preview-title">{{ modal.preview.title }}</h2>
+              <p class="work-preview-credit">촬영 taehyeong · 2026년 10월 10일 공개</p>
+              <span class="work-preview-type">사진 + 영상</span>
+              <p class="work-preview-price-label">개별 구매 가격</p>
+              <p class="work-preview-price">145<span>코인</span></p>
+              <p class="work-preview-subscription">145코인으로 개별 구매하거나, 현재 월 구독으로 열람할 수 있어요.</p>
+              <div class="work-preview-composition">
+                <h3>구매하면 볼 수 있는 구성</h3>
+                <dl><div><dt>사진</dt><dd>45장<small>표지 1장 별도</small></dd></div><div><dt>영상</dt><dd>1개<small>총 3분 7초</small></dd></div></dl>
+                <p class="work-preview-count-note">판매 페이지의 ‘46장’은 표지를 포함한 수량입니다.</p>
+              </div>
+              <a class="work-preview-cta" href="{{ modal.cta }}" target="_blank" rel="noopener" onClick="{{ modal.trackOutbound }}">B컷에서 전체 화보 보기</a>
+              <p class="work-preview-help">작품 페이지로 이동해요. 클릭만으로 결제되지 않아요.</p>
+              <div class="work-preview-check"><h3>구매 전에 확인해 주세요</h3><p>사진과 영상이 함께 들어 있는 상품이에요. 로그인 후 최종 가격·구독 대상 여부·열람 기간을 확인해 주세요.</p></div>
+            </section>
+          </section>
+        </sc-if>
         <sc-if value="{{ modal.preview.separateProducts }}" hint-placeholder-val="{{ false }}">
           <section class="work-preview-layout work-preview-seoyi" aria-label="사진·영상 미리보기와 판매 구성">
             <section class="work-preview-gallery" aria-label="사진과 영상 미리보기">
@@ -3745,7 +3796,7 @@ class Component extends DCLogic {
           const videoActive=S.modal.previewMode==='video';
           const select=(changes)=>this.setState({modal:{...this.state.modal,...changes}});
           Object.assign(base.modal,{previewClass:'work-dialog-preview',dialogLabel:preview.title+' 상세 정보',
-            preview:{...preview,singleProduct:!preview.separateProducts,
+            preview:{...preview,singleProduct:!preview.separateProducts&&!preview.sunlit,
               trackPhotoOutbound:()=>{if(String(id)==='2392')this.trackWorkOutbound(S.modal.experiment,S.modal.browse,'2392');},
               trackVideoOutbound:()=>{if(String(id)==='2393')this.trackWorkOutbound(S.modal.experiment,S.modal.browse,'2393');},
               photo:preview.photos[index],counter:(index+1)+' / '+preview.photos.length,
@@ -3903,7 +3954,7 @@ class Component extends DCLogic {
 /* The template renderer drops the controls attribute. Set the native media
    properties when an approved preview video is mounted; never autoplay. */
 (function(){
-  const selector='.work-preview-video-stage video[aria-label="쥬 화보 6초 무음 미리보기 영상"],.work-preview-video-stage video[aria-label="박서이 옆집누나 6초 무음 미리보기 영상"]';
+  const selector='.work-preview-video-stage video[aria-label="쥬 화보 6초 무음 미리보기 영상"],.work-preview-video-stage video[aria-label="박서이 옆집누나 6초 무음 미리보기 영상"],.work-preview-video-stage video[aria-label="박보름 SUNLIT 6초 무음 미리보기 영상"]';
   function enable(node){
     if(node.nodeType!==1)return;
     if(node.matches(selector)){node.controls=true;node.playsInline=true;}

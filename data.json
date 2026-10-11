@@ -14,25 +14,6 @@
     10
   ],
   "works": {
-    "2390": {
-      "title": "(19) 미루 'Secret Officegirl' [MANO]",
-      "models": [
-        "미루"
-      ],
-      "img": "assets/covers/miru-2390-photo-021.jpg",
-      "buy": "코인",
-      "b19": 1,
-      "vid": 1,
-      "pub": "2026-10-12",
-      "desc": "",
-      "tags": [],
-      "wide": "",
-      "hl": "",
-      "nb": 0,
-      "safe": true,
-      "photo": "마노",
-      "photoId": ""
-    },
     "25": {
       "title": "[MX-SM01] White is not Pure",
       "models": [
@@ -15315,12 +15296,31 @@
       "photo": "KoG",
       "photoId": ""
     },
+    "2390": {
+      "title": "(19) 미루 'Secret Officegirl' [MANO]",
+      "models": [
+        "미루"
+      ],
+      "img": "https://i.ibb.co/KzpHn9cD/2390-C-20261007113741-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-10-12",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "마노",
+      "photoId": ""
+    },
     "2392": {
       "title": "19❤️ 옆집누나 by KoG (PHOTO)",
       "models": [
         "박서이"
       ],
-      "img": "assets/covers/2392-20261010.jpg",
+      "img": "https://i.ibb.co/HTNBW0Ph/2392-C-20261010081651-opt.webp",
       "buy": "구독",
       "b19": 1,
       "vid": 0,
@@ -15339,7 +15339,7 @@
       "models": [
         "박서이"
       ],
-      "img": "assets/covers/2393-20261010.jpg",
+      "img": "https://i.ibb.co/ZzH7Xb1X/2393-C-20261010081628-opt.webp",
       "buy": "코인",
       "b19": 1,
       "vid": 1,
@@ -16341,25 +16341,25 @@
       "date": "2026-10-05",
       "ranking": [
         "2343",
+        "2394",
         "2226",
         "2163",
+        "2321",
+        "2313",
+        "2308",
+        "2151",
         "2166",
+        "2304",
+        "281",
         "2271",
         "2284",
         "2222",
-        "2103",
-        "2151",
-        "2117",
-        "1719",
-        "2165",
-        "2266",
-        "2267",
-        "2321",
-        "2325",
-        "1860",
-        "2304",
-        "2317",
-        "1698"
+        "2249",
+        "1946",
+        "1954",
+        "1910",
+        "2264",
+        "2103"
       ]
     }
   ],

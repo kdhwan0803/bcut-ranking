@@ -1311,6 +1311,12 @@ select,input,button{font-family:inherit}
     </section>
 </sc-if>
 
+    <sc-if value="{{ sectionVisible.rankingShow }}" hint-placeholder-val="{{ false }}">
+      <aside id="bcut-ad-banner" aria-label="광고" style="display:{{ rankingShow }};text-align:center;margin:20px 0 28px">
+        <div style="font-size:10px;color:var(--mut);margin-bottom:6px">광고</div>
+        <iframe src="./juicyads-banner.html" title="광고 배너" width="300" height="100" loading="lazy" style="display:block;width:300px;height:100px;max-width:100%;border:0;margin:0 auto"></iframe>
+      </aside>
+    </sc-if>
     <sc-if value="{{ sectionVisible.rediscoveryShow }}" hint-placeholder-val="{{ false }}">
 <section id="rediscovery" class="rediscovery {{ rediscoveryViewClass }}" aria-labelledby="rediscovery-title" style="display:{{ rediscoveryShow }}">
       <div class="rediscovery-heading"><h2 id="rediscovery-title">신작 모아보기</h2></div>

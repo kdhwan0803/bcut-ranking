@@ -15533,7 +15533,7 @@
       "buy": "코인",
       "b19": 1,
       "vid": 1,
-      "pub": "2026-10-25",
+      "pub": "2026-10-17",
       "desc": "",
       "tags": [],
       "wide": "",
@@ -15552,7 +15552,7 @@
       "buy": "코인",
       "b19": 1,
       "vid": 1,
-      "pub": "2026-10-31",
+      "pub": "2026-10-25",
       "desc": "",
       "tags": [],
       "wide": "",
@@ -15693,6 +15693,25 @@
       "nb": 0,
       "safe": false,
       "photo": "마노",
+      "photoId": ""
+    },
+    "2424": {
+      "title": "[X_O] Full Metal Temptation (PHOTO)",
+      "models": [
+        "슬이"
+      ],
+      "img": "https://i.ibb.co/DHwx7yCj/2424-C-20261014165723-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 0,
+      "pub": "2026-10-15",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "엑스바오",
       "photoId": ""
     }
   },

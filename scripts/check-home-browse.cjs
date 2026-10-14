@@ -17,6 +17,7 @@ const location={search:'?preview=1&q=%EB%B0%95',pathname:'/',hash:'#/search'};
 const history={state:null,replaceState(state,title,url){this.state=state;if(url){const parsed=new URL(url,'https://bcutrank.com');location.search=parsed.search;location.hash=parsed.hash;}},pushState(state){this.state=state;}};
 const context=vm.createContext({window,document,location,history,console,Date,URL,URLSearchParams,localStorage:{getItem(){return null;},setItem(){}},requestAnimationFrame:fn=>{frames.push(fn);return frames.length;},DCLogic:class{constructor(){this.props={};}setState(patch){Object.assign(this.state,patch);}}});
 const inline=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match=>match[1]);
+vm.runInContext(fs.readFileSync(path.join(root, 'paid-pick-rotation.js'), 'utf8'),context);
 vm.runInContext(inline.find(code=>code.includes('window.BCUTCatalogueUI =')),context);
 vm.runInContext(inline.find(code=>code.includes('window.BCUTSearch=')),context);
 vm.runInContext(html.match(/<script type="text\/x-dc"[^>]*>([\s\S]*?)<\/script>/)[1]+'\nthis.App=Component;',context);

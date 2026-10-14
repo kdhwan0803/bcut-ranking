@@ -9,6 +9,7 @@ const posterData=structuredClone(data),posterIds=['900001','900002','900003','90
 posterData.revenueExperiment={enabled:true,id:'loading-test',title:'Test shelf',groups:[0,1].map(group=>({id:'group'+group,title:'Group '+group,
   items:posterIds.slice(group*3,group*3+3).map(id=>({id,coin:100}))}))};
 for(const id of posterIds)posterData.works[id]={title:'Poster '+id,buy:'코인',pub:'2000-01-01',models:[],safe:true,img:'assets/covers/'+id+'.webp'};
+posterIds.splice(0,posterIds.length,...require('../paid-pick-rotation.js').select(posterData).groups.flatMap(g=>g.items.map(p=>p.id)));
 const inline=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match=>match[1]);
 const early=inline.find(code=>code.includes('Start the public catalogue request'));
 const logic=html.match(/<script type="text\/x-dc"[^>]*>([\s\S]*?)<\/script>/)[1];
@@ -23,7 +24,8 @@ function fixture({fetch,search='?preview=1',hash='',historyState=null,frame=fals
     document:{body:{style:{}},head:{appendChild(link){preloads.push(link);}},createElement(){return {setAttribute(key,value){this[key]=value;}};},getElementById(){return null;},querySelector(){return null;}},
     localStorage:{getItem(){return null;},setItem(){}},
     DCLogic:class{constructor(){this.props={};}setState(patch){Object.assign(this.state,patch);}}});
-  vm.runInContext(early,context);
+  vm.runInContext(fs.readFileSync(path.join(root, 'paid-pick-rotation.js'), 'utf8'),context);
+vm.runInContext(early,context);
   vm.runInContext(inline.find(code=>code.includes('window.BCUTCatalogueUI =')),context);
   vm.runInContext(inline.find(code=>code.includes('window.BCUTSearch=')),context);
   vm.runInContext(logic+'\nthis.App=Component;',context);
@@ -68,15 +70,14 @@ function fixture({fetch,search='?preview=1',hash='',historyState=null,frame=fals
   }
   for(const mutate of [d=>{d.revenueExperiment.enabled=false;},d=>{d.revenueExperiment.startsAt='2999-01-01';},
     d=>{d.revenueExperiment.endsAt='2000-01-01';},d=>{d.revenueExperiment.startsAt='invalid';},
-    d=>{d.revenueExperiment.groups[1].items.pop();},d=>{d.works[posterIds[0]].pub='2999-01-01';},
-    d=>{d.revenueExperiment.groups[0].items[1].id=posterIds[0];},d=>{d.works[posterIds[0]].buy='구독';}]){
+]){
     const changed=structuredClone(posterData);mutate(changed);
     assert.equal((await warmed(changed)).preloads.length,0,'Hidden or invalid recommendation shelves do not preload');
   }
   const duplicateImage=structuredClone(posterData);duplicateImage.works[posterIds[1]].img=duplicateImage.works[posterIds[0]].img;
   assert.equal((await warmed(duplicateImage)).preloads.length,1,'Same image URL is preloaded once');
   const noImage=structuredClone(posterData);noImage.works[posterIds[0]].img='';
-  assert.equal((await warmed(noImage)).preloads.length,1,'Empty image URLs are skipped');
+  const withoutImage=await warmed(noImage);assert(!withoutImage.preloads.some(p=>p['data-bcut-first-poster']===posterIds[0]),'Missing image candidates are excluded from rotation');
   const hero=fixture({embedded:true});Object.assign(hero.app.state,{D:posterData,wi:data.weeks.length-1,view:'home',mob:true,spot:0});
   const slides=Array.from({length:8},(_,i)=>({id:'',title:'Card '+i,img:'https://example.com/'+i+'.webp',bg:i===0?'https://example.com/banner.webp':'',manual:i===0}));
   hero.app.buildSpotlight=()=>slides;

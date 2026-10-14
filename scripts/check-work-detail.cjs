@@ -13,6 +13,7 @@ const window = {};
 const events=[];
 const context = vm.createContext({ window, document, console, Date, URLSearchParams, track:(name,params)=>events.push({name,params:plain(params)}),location: {search:'?preview=1',pathname:'/',hash:''}, history:{replaceState(){},pushState(){}}, localStorage:{getItem(){return null;},setItem(){}}, DCLogic:class {constructor(){this.props={};} setState(patch){Object.assign(this.state,patch);}} });
 const inline = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
+vm.runInContext(fs.readFileSync(path.join(root, 'paid-pick-rotation.js'), 'utf8'),context);
 vm.runInContext(inline.find(code => code.includes('window.BCUTCatalogueUI =')), context);
 vm.runInContext(inline.find(code => code.includes('window.BCUTSearch=')), context);
 const ui = window.BCUTCatalogueUI;

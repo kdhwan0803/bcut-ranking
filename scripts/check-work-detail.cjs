@@ -51,6 +51,37 @@ assert.deepEqual(plain(entry),{model:'박서이',model_slug:'bakseoi',work_id:'2
 for(const query of ['?w=2393&mb_model=bad&mb_format=all&mb_sort=latest','?w=bad&mb_model=bakseoi&mb_format=all&mb_sort=latest','?w=2393&mb_model=bakseoi&mb_format=bad&mb_sort=latest','?w=2393&mb_model=bakseoi&mb_format=all&mb_sort=bad']) assert.equal(ui.browseEntry(query),null);
 const source=html.match(/<script type="text\/x-dc"[^>]*>([\s\S]*?)<\/script>/)[1];
 vm.runInContext(source+'\nthis.App=Component;',context);
+// The wall clock deliberately disagrees with state.now: --date must reach the UI.
+const RealDate=context.Date;
+context.Date=class extends RealDate {
+  constructor(...args){super(...(args.length?args:['2000-01-01T00:00:00Z']));}
+  static now(){return RealDate.parse('2000-01-01T00:00:00Z');}
+};
+const releaseData=structuredClone(data);
+assert(!releaseData.works['900001'],'Synthetic release ID must not replace catalogue data');
+releaseData.works['900001']={...releaseData.works['2424'],title:'Release boundary fixture',pub:'2026-10-16'};
+const releaseBefore=JSON.stringify(releaseData);
+const releaseApp=new context.App();
+Object.assign(releaseApp.state,{D:releaseData,wi:releaseData.weeks.length-1,age:'adult',view:'search',modal:{kind:'work',id:'2274'},now:Date.parse('2026-10-14T14:59:59.998Z')});
+const releaseChecks=[];
+for(const [instant,day,originalReleased,addedReleased] of [
+  ['2026-10-14T14:59:59.999Z','2026-10-14',false,false],
+  ['2026-10-14T15:00:00.000Z','2026-10-15',true,false],
+  ['2026-10-15T14:59:59.999Z','2026-10-15',true,false],
+  ['2026-10-15T15:00:00.000Z','2026-10-16',true,true]
+]){
+  releaseApp.tickClock(Date.parse(instant));
+  assert.equal(releaseApp.today(),day,'UI follows the injected KST day: '+instant);
+  const ids=plain(releaseApp.vals().modal.relatedCards.map(card=>card.id));
+  assert.equal(ids.includes('2424'),originalReleased,'Existing release at KST midnight');
+  assert.equal(ids.includes('900001'),addedReleased,'New catalogue release at KST midnight');
+  const model=releaseData.works['2274'].models[0];
+  assert.deepEqual(ids,api.summary(releaseData,model,day).published.filter(id=>id!=='2274').slice(0,8));
+  releaseChecks.push({instant,day,originalReleased,addedReleased});
+}
+assert.equal(JSON.stringify(releaseData),releaseBefore,'Date rollover must preserve catalogue data');
+context.Date=RealDate;
+console.log(JSON.stringify({result:'PASS',timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,releaseChecks}));
 const checked=[];
 for (const [id,model] of [['2393','박서이'],['2055','동그란'],['2274','슬이']]) {
   const app=new context.App();

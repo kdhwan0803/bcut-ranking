@@ -2728,7 +2728,7 @@ class Component extends DCLogic {
   movement(cur,prev){if(!prev)return{k:'new',n:0};if(cur<prev)return{k:'up',n:prev-cur};if(cur>prev)return{k:'down',n:cur-prev};return{k:'same',n:0};}
   modelImg(md){const D=this.state.D;if(D.models[md]&&D.models[md].img)return D.models[md].img;const id=Object.keys(D.works).find(k=>(D.works[k].models||[]).includes(md));return id?D.works[id].img:'';}
   fmt(iso){if(!iso)return '-';const p=String(iso).split('-');return p.length===3?(+p[1])+'.'+(+p[2]):iso;}
-  today(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+  today(){return new Date((this.state.now ?? Date.now())+32400000).toISOString().slice(0,10);}
   /* 각 주차를 월요일~일요일로 정규화 (등록일이 며칠 어긋나도 가장 가까운 월요일로 맞춤) */
   weekSpans(){
     if(this._spans)return this._spans;

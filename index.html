@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><script src="./paid-pick-rotation.js"></script>
+<head><script src="./champion-photos.js"></script><script src="./paid-pick-rotation.js"></script>
 <meta name="juicyads-site-verification" content="65d68024901f647f25919113f7d44382">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -2914,6 +2914,7 @@ class Component extends DCLogic {
   }
   apply(d){
     if(!d||typeof d!=='object'){this.setState({err:'데이터 형식 오류'});return;}
+    d=window.BCUTChampionPhotos?.apply(d)||d;
     if(!d.works)d.works={};
     if(!d.models)d.models={};
     if(!Array.isArray(d.weeks))d.weeks=[];

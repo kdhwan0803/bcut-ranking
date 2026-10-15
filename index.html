@@ -419,6 +419,7 @@ if(!window.BCUT_ANALYTICS_DISABLED){
 })();
 
 </script>
+<script src="./subscription-ab.js" defer></script>
 <script src="./support.js" defer></script>
 <script src="./thumbnail-fallback.js" defer></script>
 <!-- OneSignal 웹푸시 -->
@@ -870,6 +871,7 @@ OneSignalDeferred.push(async function(OneSignal){
 </style>
 <script id="work-model-links" type="application/json">{"손예은":"sonyeeun","동그란":"donggeuran","바비앙":"babiang","이연우":"iyeonu","예하":"yeha","최세희":"choesehui","심유이":"simyui","채솔":"chaesol","첼설아":"chelseola","은지":"eunji","모모리나":"momorina","쥬":"jyu","유디":"yudi","박서이":"bakseoi","이규영":"igyuyeong","뮤아":"myua","한지나":"hanjina","여나비":"yeonabi","수지":"suji","애순이":"aesuni","슬이":"seuli","빛베리":"bichberi","고아라":"goara","초연":"choyeon","유나":"yuna","겨우디":"gyeoudi","엘라":"elra","윤영서":"yunyeongseo","김갑주":"gimgapju","박민정":"bakminjeong","박수민":"baksumin","아리":"ari","쭈디":"jjudi","초이":"choi","옐랑":"yelrang","희야":"huiya","섹밍":"sekming","보라":"bora","그린":"geurin","박지연":"bakjiyeon","오은담":"oeundam","하리":"hari","연수":"yeonsu","박근나":"bakgeunna","강선혜":"gangseonhye","E거니":"egeoni","이나":"ina","슈":"syu","주주":"juju","김은지":"gimeunji","혜린":"hyerin","새하":"saeha","장은비":"jangeunbi","김설화":"gimseolhwa","장혜선":"janghyeseon","려니":"ryeoni","토리":"tori","채아":"chaea","히나":"hina","윤지윤":"yunjiyun","지린":"jirin","김연지":"gimyeonji","모모리나official":"momorinaofficial","에일리":"eilri","조아":"joa","핫소망":"hassomang","소은":"soeun","연유네코":"yeonyuneko","김서아":"gimseoa","전지은":"jeonjieun","E다연":"edayeon","조이온":"joion","리리":"riri","꾸뿌":"kkuppu","하윤아":"hayuna","순수":"sunsu","은유화":"eunyuhwa","유진":"yujin","엄상미":"eomsangmi","김지연":"gimjiyeon","신새롬":"sinsaerom","김소희":"gimsohui","벨벳":"belbet","이시현":"isihyeon","예리":"yeri","은수":"eunsu","이예린":"iyerin","박별":"bakbyeol","유주다":"yujuda","초영이":"choyeongi","박보름":"bakboreum","서여진":"seoyeojin","한서아":"hanseoa","타샤":"tasya","차유니":"chayuni","주빈":"jubin","소이":"soi","묘정":"myojeong","이채하":"ichaeha","김진아":"gimjina","지니":"jini","노지혜":"nojihye","이해인":"ihaein","링고lyn":"ringgolyn","안지현":"anjihyeon","이유진":"iyujin","최혜연":"choehyeyeon","이하니":"ihani","이아윤":"iayun","양혜원":"yanghyewon","청아":"cheonga","윤설화":"yunseolhwa","지아":"jia","탑체리":"tapcheri","퓨딩":"pyuding","키라":"kira","예나비":"yenabi","예리수":"yerisu","쏘블리":"ssobeulri","제아":"jea","퓨리":"pyuri","강인경":"gangingyeong","김나정":"gimnajeong","박청아":"bakcheonga","채령":"chaeryeong","도유리":"doyuri","김지예":"gimjiye","김세화":"gimsehwa","이안":"ian","이아영":"iayeong","이소윤":"isoyun","주은":"jueun","죠야끼":"jyoyakki","쥬우":"jyuu","미루":"miru","리아":"ria","서현숙":"seohyeonsuk","서지아":"seojia","시안":"sian"}</script>
 <style>#sub a.subscription-benefit{color:var(--txt);text-decoration:none}#sub a.subscription-benefit:focus-visible{outline:2px solid var(--acc);outline-offset:4px}@media(hover:hover) and (pointer:fine){#sub a.subscription-benefit:hover{border-color:var(--acc)}}</style>
+<link rel="stylesheet" href="./subscription-ab.css">
 </head>
 <body>
 <x-dc>
@@ -2072,7 +2074,7 @@ select,input,button{font-family:inherit}
     <sc-if value="{{ sectionVisible.subShow }}" hint-placeholder-val="{{ false }}">
     <section id="sub" aria-labelledby="subscription-title" style="display:{{ subShow }}">
       <div class="subscription-heading"><div><div class="subscription-eyebrow">SUBSCRIPTION</div><h2 id="subscription-title">지금 구독으로 볼 수 있는 화보</h2><p>현재 열람 가능한 화보와 다음 공개 일정을 한눈에</p></div><span class="subscription-count">{{ subCount }}편 열람 가능</span></div>
-      <a class="subscription-membership subscription-benefit" href="subscription.html?utm_source=bcutrank&amp;utm_medium=subscription_banner&amp;utm_campaign=subscription_202610&amp;utm_content=benefit_main" aria-label="월 19,900원 구독 혜택 자세히 보기"><div class="subscription-benefit-copy"><div class="subscription-benefit-label">구독자 혜택</div><p class="subscription-benefit-title">구독으로 한 번 열람한 화보는,<br>코인 판매로 바뀌어도, 구독 유지 중엔 <strong>계속 다시 볼 수 있어요.</strong></p><p class="subscription-benefit-condition">코인 판매로 전환되기 전에 열람하지 않은 화보는 별도 구매가 필요해요.</p></div><span class="subscription-benefit-action"><span class="subscription-price">월 ₩19,900</span><span class="subscription-join">구독 혜택 보기 <span aria-hidden="true">→</span></span></span></a>
+      <a class="subscription-ab-banner" id="subscription-ab-banner" data-subscription-ab-banner data-variant="{{ subBannerVariant }}" href="{{ subBannerHref }}" aria-label="월 19,900원 구독 혜택 자세히 보기"><span class="subscription-ab-copy"><span class="subscription-ab-eyebrow">BCUT SUBSCRIPTION</span><span class="subscription-ab-title">{{ subBannerLine1 }}<br><em>{{ subBannerLine2 }}</em></span><span class="subscription-ab-subtitle">{{ subBannerSubtitle }}</span><span class="subscription-ab-condition">구독으로 열람한 화보의 재이용은 구독 유지 중에 적용</span><span class="subscription-ab-button">구독 혜택 보기 <span aria-hidden="true">→</span></span></span><span class="subscription-ab-posters" aria-hidden="true"><sc-for list="{{ subBannerPhotos }}" as="p" hint-placeholder-count="0"><img loading="lazy" src="{{ p.img }}" alt=""></sc-for></span></a>
       <div class="subscription-grid" style="display:{{ activeSubShow }}"><sc-for list="{{ subs }}" as="p" hint-placeholder-count="0"><button type="button" class="subscription-card" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}" data-work-id="{{ p.id }}"><span class="subscription-poster"><img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="subscription-available">열람 가능</span><span class="subscription-overlay"><span class="subscription-model">{{ p.model }}</span><span class="subscription-work-title">{{ p.title }}</span></span></span><span class="subscription-meta">{{ p.date }} 공개 · {{ p.format }}</span><span class="subscription-window" style="display:{{ p.windowShow }};color:{{ p.windowColor }}">구독 열람 {{ p.window }}</span></button></sc-for></div>
       <p class="subscription-empty" style="display:{{ subEmptyShow }}">다음 구독 화보의 공개를 기다려주세요.</p>
       <p class="subscription-rotation-note">새 구독 화보가 공개되면 가장 오래된 한 편부터 코인 판매로 전환됩니다.</p>
@@ -2992,6 +2994,7 @@ class Component extends DCLogic {
     try{const S=this.state,D=S.D,q=new URLSearchParams();
       const previewQuery=new URLSearchParams(location.search);
       ['admin','preview','measure'].forEach(key=>{if(previewQuery.get(key)==='1')q.set(key,'1');});
+      if(['localhost','127.0.0.1'].includes(location.hostname)&&['A','B'].includes(previewQuery.get('sub_ab')))q.set('sub_ab',previewQuery.get('sub_ab'));
       const lastWi=(D&&D.weeks&&D.weeks.length)?D.weeks.length-1:0;
       if(S.tab==='models')q.set('tab','models');
       if(S.mode==='month')q.set('mode','month');
@@ -3779,6 +3782,8 @@ class Component extends DCLogic {
     const live=Object.keys(W).filter(id=>W[id].buy==='구독'&&W[id].pub&&W[id].pub<=today)
       .sort((a,b)=>(W[b].pub||'').localeCompare(W[a].pub||''));
     const active=live.slice(0,SLOTS),past=live.slice(SLOTS,SLOTS+14);
+    const subAB=window.BCUTSubscriptionAB?.content(active.length)||{variant:'',line1:'구독으로 열람한 화보,',line2:'구독 중엔 계속 다시.',subtitle:'코인 판매로 바뀌어도 · 월 19,900원',href:'subscription.html?utm_source=bcutrank&utm_medium=subscription_banner&utm_campaign=subscription_202610&utm_content=benefit_main'};
+    Object.assign(base,{subBannerVariant:subAB.variant,subBannerLine1:subAB.line1,subBannerLine2:subAB.line2,subBannerSubtitle:subAB.subtitle,subBannerHref:subAB.href,subBannerPhotos:(active.length>2?[active[0],active[2]]:active.slice(0,2)).map(id=>({img:W[id].img||''}))});
     const fut=Object.keys(W).filter(id=>W[id].buy==='구독'&&W[id].pub&&W[id].pub>today).sort((a,b)=>W[a].pub.localeCompare(W[b].pub));
     const dd=iso=>Math.max(0,Math.round((new Date(iso+'T00:00:00')-new Date(today+'T00:00:00'))/86400000));
     if(fut.length){base.ddayShow='block';base.dday='D-'+dd(W[fut[0]].pub);base.ddayDate=this.fmt(W[fut[0]].pub);}

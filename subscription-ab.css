@@ -1,0 +1,15 @@
+#sub .subscription-ab-banner{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px;padding:24px 28px;border:1px solid var(--line);border-radius:12px;background:var(--bg0);color:var(--txt);text-decoration:none;transition:border-color .18s,box-shadow .18s}
+#sub .subscription-ab-copy{display:block;min-width:0}
+#sub .subscription-ab-eyebrow{display:block;font-size:10px;letter-spacing:1.5px;font-weight:900;color:var(--acc);margin-bottom:12px}
+#sub .subscription-ab-title{display:block;font-size:25px;font-weight:900;letter-spacing:-.8px;line-height:1.35}
+#sub .subscription-ab-title em{font-style:normal;color:var(--acc)}
+#sub .subscription-ab-subtitle{display:block;color:var(--t2);font-size:12px;line-height:1.7;margin-top:10px}
+#sub .subscription-ab-condition{display:block;font-size:10px;color:var(--mut);line-height:1.7;margin-top:7px}
+#sub .subscription-ab-button{display:inline-flex;align-items:center;gap:24px;background:var(--acc);color:white;border-radius:7px;padding:11px 15px;font-size:12px;font-weight:800;margin-top:17px}
+#sub .subscription-ab-posters{display:flex;gap:12px;flex-shrink:0}
+#sub .subscription-ab-posters img{display:block;width:102px;aspect-ratio:2/3;object-fit:contain;background:var(--bg2);border-radius:7px;box-shadow:0 3px 10px #0002}
+#sub .subscription-ab-banner:focus-visible{outline:2px solid var(--acc);outline-offset:4px}
+@media(hover:hover) and (pointer:fine){#sub .subscription-ab-banner:hover{border-color:var(--acc);box-shadow:0 4px 14px #00000012}}
+@media(max-width:600px){#sub .subscription-ab-banner{position:relative;display:block;padding:20px 16px;min-height:290px;margin-bottom:20px}#sub .subscription-ab-copy{padding-bottom:78px}#sub .subscription-ab-title{font-size:22px;letter-spacing:-.8px}#sub .subscription-ab-eyebrow{font-size:9px;margin-bottom:11px}#sub .subscription-ab-subtitle{font-size:11px;margin-top:9px}#sub .subscription-ab-condition{font-size:10px;max-width:280px}#sub .subscription-ab-button{position:absolute;left:16px;bottom:23px;margin-top:0;font-size:11px;gap:15px;padding:11px 13px;min-height:40px}#sub .subscription-ab-posters{position:absolute;right:16px;bottom:20px;gap:6px}#sub .subscription-ab-posters img{width:51px;border-radius:4px}}
+@media(max-width:374px){#sub .subscription-ab-title{font-size:20px}#sub .subscription-ab-posters img{width:43px}#sub .subscription-ab-button{gap:9px}}
+@media(prefers-reduced-motion:reduce){#sub .subscription-ab-banner{transition:none}}

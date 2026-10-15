@@ -340,9 +340,10 @@ if(!window.BCUT_ANALYTICS_DISABLED){
 
 </script>
 <script>
-/* Shared, deterministic catalogue search. Public data remains untouched. */
+/* Catalogue search; random order stays stable until page reload. */
 (() => {
-  const defaults = Object.freeze({q:'',modelSel:'all',searchCreator:'all',searchBuy:'all',yearSel:'all',searchVideo:false,searchAdult:false,searchRelease:'released',sort:'latest'});
+  const defaults = Object.freeze({q:'',modelSel:'all',searchCreator:'all',searchBuy:'all',yearSel:'all',searchVideo:false,searchAdult:false,searchRelease:'released',sort:'random'});
+  const randomOrders=new WeakMap();
   function query(data, state, today, active, ranks) {
     const works=data.works||{}, subscribed=new Set(active||[]);
     const upcoming=state.searchRelease==='upcoming';
@@ -363,7 +364,10 @@ if(!window.BCUT_ANALYTICS_DISABLED){
       return true;
     });
     const dateOrder=(a,b)=>(upcoming?1:-1)*(works[a].pub||'').localeCompare(works[b].pub||'')||a.localeCompare(b,undefined,{numeric:true});
-    ids.sort((a,b)=>state.sort==='popular'?((ranks?.[a]||Infinity)-(ranks?.[b]||Infinity))||dateOrder(a,b):dateOrder(a,b));
+    if(state.sort==='random'){
+      if(!randomOrders.has(data)){const shuffled=Object.keys(works);for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}randomOrders.set(data,new Map(shuffled.map((id,i)=>[id,i])));}
+      const order=randomOrders.get(data);ids.sort((a,b)=>order.get(a)-order.get(b));
+    }else ids.sort((a,b)=>state.sort==='popular'?((ranks?.[a]||Infinity)-(ranks?.[b]||Infinity))||dateOrder(a,b):dateOrder(a,b));
     return ids;
   }
   function options(works) {
@@ -551,6 +555,318 @@ OneSignalDeferred.push(async function(OneSignal){
 #classics .classics-open{margin-top:10px;color:#e6cc99;font-size:10px;font-weight:800;display:flex;gap:8px;align-items:center}
 #classics .classics-card:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
 @media(max-width:600px){#classics{padding:20px 14px;margin-top:0;border-radius:18px}#classics .classics-heading{margin-bottom:18px}#classics h2{font-size:23px}#classics .classics-seal{font-size:8px;letter-spacing:1px}#classics .classics-heading p{font-size:11px}#classics .classics-grid{grid-template-columns:1fr 1fr;grid-template-rows:290px 210px 210px;gap:10px}#classics .classics-card.is-first{grid-row:auto;grid-column:1 / span 2}#classics .classics-copy{left:12px;right:10px;bottom:13px}#classics .classics-model{font-size:19px}#classics .is-first .classics-model{font-size:28px}#classics .classics-title{font-size:11px}#classics .classics-rank{left:10px;top:10px;width:28px;height:30px;font-size:13px}#classics .classics-open{margin-top:7px}}
+</style>
+<style>
+#creators{padding:26px 24px;border:1px solid var(--line);border-radius:20px;background:var(--bg1)}
+#creators .creator-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px}
+#creators .creator-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--acc);margin-bottom:8px}
+#creators h2{margin:0;font-size:26px;line-height:1.2;font-weight:900;letter-spacing:-.8px}
+#creators .creator-heading p{margin:8px 0 0;color:var(--mut);font-size:12px;line-height:1.5}
+#creators .creator-select-label{display:flex;flex-direction:column;gap:6px;color:var(--mut);font-size:10px;font-weight:700;min-width:190px}
+#creators select{width:100%;max-width:250px;background:var(--bg0);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+#creators .creator-picker{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
+#creators .creator-chips{display:flex;flex:1;flex-wrap:wrap;gap:8px;min-width:0}
+#creators .creator-chips button{display:flex;align-items:center;justify-content:center;gap:7px;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg0);color:var(--t2);font:inherit;font-size:11px;font-weight:800;cursor:pointer;min-height:36px}
+#creators .creator-chips button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+#creators .creator-chip-count{font-size:9px;opacity:.65;font-weight:700;font-variant-numeric:tabular-nums}
+#creators .creator-switch{flex-shrink:0;background:transparent;color:var(--mut);border:0;padding:10px 0 10px 8px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+#creators .creator-profile{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 24px;border-radius:12px;background:linear-gradient(120deg,#25181d,#15151b 70%);color:#fff;margin-bottom:22px}
+#creators .creator-profile-label{font-size:9px;font-weight:800;letter-spacing:2px;color:#dc9fa9}
+#creators h3{font-size:30px;font-weight:900;letter-spacing:-.6px;line-height:1.15;margin:7px 0 8px;overflow-wrap:anywhere}
+#creators .creator-profile p{font-size:11px;color:#a9a5af;margin:0}
+#creators .creator-profile strong{font-weight:700;color:#eee9ed}
+#creators .creator-all{flex-shrink:0;border:1px solid #ffffff35;background:#ffffff0c;color:#fff;border-radius:8px;padding:10px 13px;font:inherit;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}
+#creators .creator-work-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+#creators .creator-work-card{display:block;width:100%;border:0;padding:0;text-align:left;background:none;color:var(--txt);font:inherit;min-width:0;cursor:pointer}
+#creators .creator-poster{position:relative;display:block;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--bg2)}
+#creators .creator-poster img{display:block;width:100%;height:100%;object-fit:cover}
+#creators .creator-format{position:absolute;bottom:7px;left:7px;background:#111118c9;border:1px solid #ffffff24;border-radius:4px;color:#fff;padding:3px 5px;font-size:8px;font-weight:800}
+#creators .creator-work-model{display:block;margin-top:10px;font-size:14px;line-height:1.4;font-weight:900;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#creators .creator-work-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin-top:3px;line-height:1.5;font-size:11px;color:var(--t2);min-height:3em}
+#creators .creator-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:15px;margin-top:20px;gap:12px}
+#creators .creator-footer>span{font-size:10px;color:var(--mut)}
+#creators .creator-footer button{border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--bg0);color:var(--txt);font:inherit;font-size:11px;font-weight:800;cursor:pointer}
+#creators .creator-full-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:24px 14px}
+#creators button:focus-visible,#creators select:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+@media(max-width:800px) and (min-width:601px){#creators .creator-work-grid,#creators .creator-full-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){#creators{padding:20px 14px;border-radius:18px}#creators .creator-heading{align-items:flex-start;flex-direction:column;gap:15px;margin-bottom:16px}#creators h2{font-size:23px}#creators .creator-heading p{font-size:11px}#creators .creator-select-label{width:100%;flex-direction:row;align-items:center;gap:12px}#creators select{flex:1;max-width:none}#creators .creator-picker{flex-direction:column;gap:3px;margin-bottom:15px}#creators .creator-chips{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%}#creators .creator-chips button{min-width:0;padding:9px 7px;font-size:10px}#creators .creator-chips button>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#creators .creator-switch{align-self:flex-end;padding:8px 0;font-size:10px}#creators .creator-profile{padding:18px 15px;gap:12px;margin-bottom:18px;align-items:flex-start}#creators h3{font-size:23px}#creators .creator-profile-label{font-size:8px;letter-spacing:1.2px}#creators .creator-all{font-size:9px;padding:8px;align-self:center}#creators .creator-work-grid,#creators .creator-full-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}#creators .creator-work-model{font-size:14px}#creators .creator-work-title{font-size:11px}#creators .creator-footer{margin-top:17px;padding-top:14px}}
+</style>
+<style>
+#creators .creator-work-grid[data-count="4"]{grid-template-columns:repeat(4,minmax(0,1fr))}
+#creators .creator-work-grid[data-count="5"]{grid-template-columns:repeat(5,minmax(0,1fr))}
+#creators .creator-work-grid.is-short{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+#creators .is-short .creator-work-card{display:grid;grid-template-columns:100px minmax(0,1fr);grid-template-rows:auto 1fr;gap:5px 14px;padding:12px;border:1px solid var(--line);border-radius:11px}
+#creators .is-short .creator-poster{grid-row:1 / span 2}
+#creators .is-short .creator-work-model{align-self:end;margin-top:0;font-size:18px;white-space:normal}
+#creators .is-short .creator-work-title{align-self:start;min-height:0;-webkit-line-clamp:3}
+@media(max-width:600px){#creators .creator-work-grid[data-count]{grid-template-columns:repeat(2,minmax(0,1fr))}#creators .creator-work-grid.is-short{grid-template-columns:1fr}#creators .is-short .creator-work-card{grid-template-columns:90px minmax(0,1fr)}}
+</style>
+<style>
+#creators .creator-picker{flex-direction:row;align-items:center;gap:8px}
+#creators .creator-chips{display:flex;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:3px 2px 7px;width:auto}
+#creators .creator-chips button{flex:0 0 auto;white-space:nowrap}
+#creators .creator-slide{display:flex;align-items:center;justify-content:center;flex:0 0 32px;width:32px;height:36px;padding:0;border:1px solid var(--line);border-radius:8px;background:var(--bg0);color:var(--txt);font-size:24px;line-height:1;cursor:pointer;margin-bottom:4px}
+@media(max-width:600px){#creators .creator-picker{gap:6px}#creators .creator-chips{gap:7px}#creators .creator-chips button{padding:9px 12px;font-size:11px}#creators .creator-slide{flex-basis:28px;width:28px}}
+@media(prefers-reduced-motion:reduce){#creators .creator-chips{scroll-behavior:auto}}
+</style>
+<style>
+#picks{padding:24px;border:1px solid var(--line);border-radius:18px;background:var(--bg1)}
+#picks .personal-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+#picks .personal-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--acc);margin-bottom:8px}
+#picks h2{font-size:24px;font-weight:900;letter-spacing:-.8px;line-height:1.2;margin:0}
+#picks h2 span{color:var(--acc)}
+#picks .personal-heading p{font-size:11px;line-height:1.5;color:var(--mut);margin:8px 0 0}
+#picks .personal-nav{display:flex;gap:7px;flex-shrink:0}
+#picks .personal-nav button{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--bg0);color:var(--txt);font-size:16px;cursor:pointer}
+#picks .personal-strip{display:flex;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:2px 2px 10px}
+#picks .personal-card{display:flex;flex:0 0 calc((100% - 24px)/3);min-width:280px;gap:13px;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--bg0);color:var(--txt);font:inherit;text-align:left;cursor:pointer;scroll-snap-align:start;box-sizing:border-box}
+#picks .personal-poster{display:block;flex:0 0 85px;width:85px;height:120px;border-radius:7px;overflow:hidden;background:var(--bg2)}
+#picks .personal-poster img{display:block;width:100%;height:100%;object-fit:cover}
+#picks .personal-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:2px 0}
+#picks .personal-model{font-size:16px;font-weight:900;line-height:1.3}
+#picks .personal-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.45;color:var(--t2);font-size:11px;margin-top:5px}
+#picks .personal-meta{font-size:9px;line-height:1.4;color:var(--mut);margin-top:6px}
+#picks .personal-open{font-size:10px;color:var(--acc);font-weight:800;margin-top:auto;padding-top:7px}
+#picks button:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+@media(max-width:600px){#picks{padding:20px 14px;border-radius:16px}#picks h2{font-size:21px}#picks .personal-heading{gap:10px;align-items:flex-start;margin-bottom:16px}#picks .personal-heading p{font-size:10px;max-width:230px}#picks .personal-nav{gap:5px;margin-top:18px}#picks .personal-nav button{width:29px;height:29px;font-size:13px}#picks .personal-card{flex-basis:88%;min-width:250px;gap:12px;padding:11px}#picks .personal-model{font-size:15px}}
+</style>
+<style>
+#picks{padding:0;border:0;border-radius:0;background:transparent}
+#picks .personal-disclosure summary h2{font-size:14px;font-weight:700;color:var(--t2);line-height:1.5;letter-spacing:0;margin:0}
+#picks .personal-disclosure summary h2::after{content:'FOR YOU';font-size:9px;font-weight:800;letter-spacing:1.5px;color:var(--mut);margin-left:12px}
+#picks #personal-picks-content{padding:4px 0 14px}
+#picks .personal-heading{margin-bottom:12px}
+#picks .personal-heading p{margin:0}
+#picks .personal-nav{margin-top:0}
+@media(max-width:600px){#picks .personal-disclosure summary h2{font-size:13px}#picks .personal-disclosure summary h2::after{display:none}#picks .personal-heading{align-items:center}#picks .personal-heading p{font-size:10px}#picks .recent-disclosure-action{font-size:11px;white-space:nowrap}}
+</style>
+<style>
+#sub{padding:26px 24px;border:1px solid var(--line);border-radius:20px;background:var(--bg1)}
+#sub .subscription-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}
+#sub .subscription-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--acc);margin-bottom:8px}
+#sub h2{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.2;margin:0}
+#sub .subscription-heading p{font-size:12px;color:var(--mut);line-height:1.5;margin:8px 0 0}
+#sub .subscription-count{flex-shrink:0;font-size:11px;font-weight:800;white-space:nowrap;border:1px solid rgba(230,0,18,.2);border-radius:20px;background:rgba(230,0,18,.06);color:var(--acc);padding:7px 10px}
+#sub .subscription-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+#sub .subscription-card{display:block;width:100%;min-width:0;background:none;border:0;padding:0;color:var(--txt);font:inherit;text-align:left;cursor:pointer}
+#sub .subscription-poster{position:relative;display:block;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2)}
+#sub .subscription-poster img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+#sub .subscription-available{position:absolute;top:9px;left:9px;color:#fff;background:rgba(17,58,43,.9);border:1px solid #ffffff28;border-radius:5px;font-size:9px;font-weight:800;padding:4px 6px}
+#sub .subscription-model{display:block;font-size:18px;line-height:1.3;font-weight:900;letter-spacing:-.3px;margin-top:12px}
+#sub .subscription-work-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:12px;line-height:1.5;min-height:3em;color:var(--t2);margin-top:4px}
+#sub .subscription-meta{display:block;color:var(--mut);font-size:10px;line-height:1.4;margin-top:6px}
+#sub .subscription-window{font-size:10px;font-weight:800;line-height:1.5;margin-top:8px}
+#sub .subscription-empty{padding:24px 0;color:var(--mut);font-size:13px}
+#sub .subscription-membership{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+#sub .subscription-membership p{margin:0;color:var(--mut);font-size:11px;line-height:1.7}
+#sub .subscription-membership a{display:flex;align-items:center;gap:14px;flex-shrink:0;color:var(--txt);text-decoration:none}
+#sub .subscription-price{font-size:16px;line-height:1.3;font-weight:900;white-space:nowrap;letter-spacing:-.3px}
+#sub .subscription-join{display:inline-flex;align-items:center;gap:6px;background:var(--acc);color:#fff;font-size:11px;font-weight:800;padding:11px 13px;border-radius:8px;white-space:nowrap}
+#sub .subscription-mobile-break{display:none}
+#sub .subscription-upcoming{margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}
+#sub .subscription-upcoming-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:15px}
+#sub h3{font-size:16px;font-weight:900;line-height:1.4;margin:0;letter-spacing:-.3px}
+#sub .subscription-upcoming-heading p{font-size:10px;line-height:1.5;margin:6px 0 0;color:var(--mut)}
+#sub .subscription-upcoming-heading strong{color:var(--txt);margin-left:4px}
+#sub .subscription-dday{color:var(--acc);font-weight:800;margin-left:5px}
+#sub .subscription-nav{display:flex;gap:6px;flex-shrink:0}
+#sub .subscription-nav button{width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--bg0);color:var(--txt);font-size:14px;cursor:pointer}
+#sub .subscription-upcoming-strip{display:flex;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:2px 2px 10px}
+#sub .subscription-upcoming-card{display:flex;gap:12px;flex:0 0 calc((100% - 24px)/3);min-width:240px;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg0);color:var(--txt);text-decoration:none;box-sizing:border-box;scroll-snap-align:start}
+#sub .subscription-upcoming-card>img{display:block;flex:0 0 56px;width:56px;height:84px;object-fit:contain;border-radius:6px;background:var(--bg2)}
+#sub .subscription-upcoming-copy{display:flex;flex-direction:column;min-width:0;justify-content:center}
+#sub .subscription-upcoming-model{font-size:13px;line-height:1.3;font-weight:900}
+#sub .subscription-upcoming-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:10px;line-height:1.4;color:var(--t2);margin-top:4px}
+#sub .subscription-upcoming-date{font-size:9px;line-height:1.5;color:var(--mut);margin-top:5px}
+#sub .subscription-upcoming-date>span{color:var(--acc);font-weight:800;margin-left:5px}
+#sub button:focus-visible,#sub a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+@media(max-width:600px){#sub{padding:20px 14px;border-radius:18px}#sub .subscription-heading{align-items:flex-start;gap:10px;margin-bottom:18px}#sub h2{font-size:22px;line-height:1.3}#sub .subscription-heading p{font-size:11px}#sub .subscription-count{font-size:9px;padding:6px 8px;margin-top:18px}#sub .subscription-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}#sub .subscription-poster{aspect-ratio:2/3}#sub .subscription-available{font-size:8px;top:7px;left:7px;padding:3px 5px}#sub .subscription-model{font-size:16px;margin-top:10px}#sub .subscription-work-title{font-size:11px}#sub .subscription-meta,#sub .subscription-window{font-size:9px}#sub .subscription-membership{flex-direction:column;align-items:stretch;gap:14px;margin-top:20px;padding-top:16px}#sub .subscription-membership a{justify-content:space-between;gap:12px}#sub .subscription-price{font-size:17px}#sub .subscription-mobile-break{display:block}#sub .subscription-upcoming{margin-top:20px;padding-top:18px}#sub h3{font-size:14px}#sub .subscription-upcoming-card{flex-basis:88%;min-width:240px}}
+</style>
+<style>
+#sub .subscription-overlay{position:absolute;left:0;right:0;bottom:0;padding:64px 14px 15px;background:linear-gradient(180deg,transparent,rgba(8,8,12,.62) 48%,rgba(8,8,12,.94));color:#fff;pointer-events:none}
+#sub .subscription-overlay .subscription-model{margin-top:0;font-size:20px;font-weight:900;line-height:1.25;color:#fff;text-shadow:0 1px 4px #0005}
+#sub .subscription-overlay .subscription-work-title{margin-top:5px;font-size:12px;font-weight:600;line-height:1.45;min-height:0;color:#eeeef2}
+#sub .subscription-meta{margin-top:10px}
+#sub .subscription-window{margin-top:5px}
+@media(max-width:600px){#sub .subscription-overlay{padding:48px 10px 11px}#sub .subscription-overlay .subscription-model{font-size:17px}#sub .subscription-overlay .subscription-work-title{font-size:10.5px;margin-top:4px}#sub .subscription-meta{margin-top:9px}}
+</style>
+<style>
+#sub .subscription-benefit{margin:0 0 22px;padding:20px;border:1px solid rgba(230,0,18,.2);border-radius:12px;background:linear-gradient(110deg,rgba(230,0,18,.065),rgba(230,0,18,.015));gap:24px}
+#sub .subscription-benefit-label{font-size:10px;font-weight:900;color:var(--acc);margin-bottom:8px;letter-spacing:.5px}
+#sub .subscription-benefit p.subscription-benefit-title{font-size:19px;font-weight:800;color:var(--txt);letter-spacing:-.5px;line-height:1.5;margin:0}
+#sub .subscription-benefit-title{word-break:keep-all}#sub .subscription-benefit-title strong{display:inline-block;white-space:nowrap;color:var(--acc);font-weight:900}
+#sub .subscription-benefit p.subscription-benefit-condition{font-size:11px;line-height:1.6;color:var(--t2);margin-top:9px}
+#sub .subscription-benefit a{display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:148px;text-align:center}
+#sub .subscription-benefit .subscription-price{font-size:23px;font-weight:900;letter-spacing:-.6px}
+#sub .subscription-benefit .subscription-join{font-size:13px;justify-content:center;padding:12px 16px}
+#sub .subscription-rotation-note{font-size:11px;line-height:1.6;color:var(--mut);margin:16px 0 0}
+@media(max-width:600px){#sub .subscription-benefit{padding:16px;gap:16px;margin-bottom:20px}#sub .subscription-benefit p.subscription-benefit-title{font-size:17px;letter-spacing:-.5px;line-height:1.5}#sub .subscription-benefit p.subscription-benefit-condition{font-size:10px;margin-top:8px}#sub .subscription-benefit a{flex-direction:row;align-items:center;justify-content:space-between;min-width:0;gap:10px}#sub .subscription-benefit .subscription-price{font-size:19px}#sub .subscription-benefit .subscription-join{font-size:11px;padding:11px 12px}#sub .subscription-rotation-note{font-size:10px}}
+</style>
+<style>
+#next{padding:26px 24px;border:1px solid var(--line);border-radius:20px;background:var(--bg1)}
+#next .coming-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}
+#next .coming-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--acc);margin-bottom:8px}
+#next h2{font-size:26px;font-weight:900;line-height:1.2;letter-spacing:-.8px;margin:0}
+#next .coming-heading p{font-size:12px;color:var(--mut);line-height:1.5;margin:8px 0 0}
+#next .coming-nav{display:flex;gap:7px;flex-shrink:0}
+#next .coming-nav button{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--bg0);color:var(--txt);font-size:16px;cursor:pointer}
+#next .coming-strip{display:flex;gap:14px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:2px 2px 11px}
+#next .coming-card{position:relative;flex:0 0 calc((100% - 70px)/6);min-width:150px}
+#next .coming-open{display:block;width:100%;padding:0;border:0;background:none;font:inherit;color:var(--txt);text-align:left;cursor:pointer}
+#next .coming-poster{position:relative;display:block;aspect-ratio:2/3;overflow:hidden;border-radius:10px;background:var(--bg2);scroll-snap-align:start}
+#next .coming-poster img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+#next .coming-type{position:absolute;top:9px;left:8px;border-radius:5px;background:#a92e49;color:#fff;font-size:11px;font-weight:900;padding:5px 7px;line-height:1.3;box-shadow:0 3px 7px rgba(0,0,0,.48),0 1px 2px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.3)}
+#next .coming-type[data-kind="coin"]{background:#eed6a3;color:#392b14}
+#next .coming-dday{display:inline-block;margin-left:4px;color:var(--t2);font-size:9px;font-weight:800}
+#next .coming-buy-note{display:block;margin-top:6px;font-size:11px;font-weight:800;color:var(--t2)}
+#next .coming-buy-note[data-kind="coin"]{color:var(--t2)}
+#next .coming-legend{display:flex;flex-wrap:wrap;gap:7px 18px;margin:-3px 0 18px;font-size:11px;color:var(--t2)}
+#next .coming-legend span{display:flex;align-items:center;gap:6px}
+#next .coming-legend b{padding:3px 6px;border-radius:4px;background:#a92e49;color:#fff;font-size:10px}
+#next .coming-legend .coin-label{background:#eed6a3;color:#392b14}
+#next .coming-wish{position:absolute;right:7px;top:7px;width:29px;height:29px;border:1px solid #ffffff45;border-radius:50%;font-size:16px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#next .coming-copy{position:absolute;left:0;right:0;bottom:0;padding:48px 11px 12px;background:linear-gradient(180deg,transparent,rgba(8,8,12,.6) 45%,rgba(8,8,12,.95));color:#fff}
+#next .coming-cover{font-size:8px;font-weight:800;color:#efd496;margin-bottom:5px}
+#next .coming-model{display:block;font-size:17px;font-weight:900;line-height:1.3;letter-spacing:-.3px}
+#next .coming-work-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:10px;font-weight:600;line-height:1.45;color:#eeeef2;margin-top:4px}
+#next .coming-date{display:block;color:var(--t2);font-size:11px;line-height:1.5;margin-top:10px}
+#next .coming-date strong{color:var(--acc);font-weight:900;margin-right:3px}
+#next .coming-meta{display:block;color:var(--mut);font-size:9px;line-height:1.5;margin-top:4px}
+#next .coming-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:17px;border-top:1px solid var(--line);padding-top:15px}
+#next .coming-footer>span{font-size:10px;color:var(--mut)}
+#next .coming-footer a{font-size:11px;color:var(--txt);font-weight:800;text-decoration:none}
+#next button:focus-visible,#next a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+@media(max-width:600px){#next{padding:20px 14px;border-radius:18px}#next h2{font-size:23px}#next .coming-heading{gap:10px;align-items:flex-start;margin-bottom:18px}#next .coming-heading p{font-size:11px;max-width:235px}#next .coming-nav{gap:5px;margin-top:18px}#next .coming-nav button{width:29px;height:29px;font-size:13px}#next .coming-strip{gap:12px}#next .coming-card{flex-basis:44%;min-width:140px}#next .coming-model{font-size:16px}#next .coming-copy{padding:44px 9px 10px}#next .coming-work-title{font-size:9.5px}#next .coming-date{font-size:10px}#next .coming-meta{font-size:8.5px}#next .coming-footer a{font-size:10px}}
+</style>
+
+<style id="shared-hover-feedback">
+/* Keep pointer feedback subtle and preserve uncropped poster images. */
+#next .coming-strip{padding-top:6px}
+:is(.coming-poster,.subscription-poster,.creator-poster,.personal-card,.subscription-upcoming-card,.classics-card,.rediscovery-poster,.paid-pick-poster){transition:transform .18s ease,box-shadow .18s ease}
+:is(.coming-nav,.subscription-nav,.creator-chips,.creator-footer,.creator-picker) button,.coming-wish{transition:box-shadow .18s ease,border-color .18s ease,filter .18s ease}
+@media(hover:hover) and (pointer:fine){
+:is(.coming-open:hover .coming-poster,.subscription-card:hover .subscription-poster,.creator-work-card:hover .creator-poster,.personal-card:hover,.subscription-upcoming-card:hover,.classics-card:hover,.rediscovery-poster:hover,.paid-pick-poster:hover){transform:translateY(-2px);box-shadow:0 0 0 2px var(--acc),0 7px 17px rgba(0,0,0,.18)}
+:is(.coming-open:hover .coming-model,.subscription-card:hover .subscription-model,.creator-work-card:hover .creator-work-model){text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+:is(.coming-nav,.subscription-nav,.creator-chips,.creator-footer,.creator-picker) button:hover,.coming-wish:hover{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 20%,transparent);filter:brightness(1.08)}
+}
+:is(.coming-open:focus-visible .coming-poster,.subscription-card:focus-visible .subscription-poster,.creator-work-card:focus-visible .creator-poster,.personal-card:focus-visible,.subscription-upcoming-card:focus-visible,.classics-card:focus-visible,.rediscovery-poster:focus-visible,.paid-pick-poster:focus-visible){box-shadow:0 0 0 2px var(--acc),0 7px 17px rgba(0,0,0,.18)}
+@media(prefers-reduced-motion:reduce){:is(.coming-poster,.subscription-poster,.creator-poster,.personal-card,.subscription-upcoming-card,.classics-card,.rediscovery-poster,.paid-pick-poster){transition:none!important;transform:none!important}}
+</style>
+<style id="featured-refresh">
+#featured{padding:26px 24px;border:1px solid var(--line);border-radius:20px;background:var(--bg1)}
+#featured .featured-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--acc);margin-bottom:8px}
+#featured h2{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.2;margin:0}
+#featured .featured-heading p{font-size:12px;color:var(--mut);margin:8px 0 22px}
+#featured .featured-profile{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:17px 19px;border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:10px;background:var(--bg0)}
+#featured .featured-person{display:flex;align-items:center;gap:15px;min-width:0}
+#featured .featured-label{font-size:10px;font-weight:800;color:var(--acc)}
+#featured .featured-person strong{font-size:27px;font-weight:900;letter-spacing:-.7px}
+#featured .featured-count{font-size:11px;color:var(--mut)}
+#featured .featured-model-link{border:1px solid var(--line);border-radius:7px;background:var(--bg1);color:var(--txt);font:inherit;font-size:11px;font-weight:800;padding:10px 13px;cursor:pointer;white-space:nowrap}
+#featured .featured-shelf-heading{display:flex;align-items:center;justify-content:space-between;margin:18px 0 8px;font-size:11px;font-weight:700;color:var(--t2)}
+#featured .featured-nav{display:flex;gap:7px}
+#featured .featured-nav button{width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--bg0);color:var(--txt);cursor:pointer}
+#featured .featured-strip{display:flex;gap:14px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:6px 2px 11px}
+#featured .featured-work{flex:0 0 calc((100% - 70px)/6);min-width:145px;border:0;background:none;padding:0;color:var(--txt);text-align:left;font:inherit;cursor:pointer}
+#featured .featured-poster{position:relative;display:block;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2);scroll-snap-align:start;transition:transform .18s ease,box-shadow .18s ease}
+#featured .featured-poster img{width:100%;height:100%;object-fit:contain;display:block}
+#featured .featured-format{position:absolute;bottom:7px;right:7px;padding:4px 6px;border-radius:4px;background:#111b;color:#fff;font-size:9px;font-weight:700}
+#featured .featured-work-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;font-weight:800;line-height:1.5;margin-top:9px}
+#featured .featured-date{display:block;font-size:10px;color:var(--mut);margin-top:5px}
+@media(min-width:601px){#featured .featured-strip.is-short{justify-content:center}#featured .featured-nav.is-short{visibility:hidden}}
+#featured .featured-work:focus-visible .featured-poster{box-shadow:0 0 0 2px var(--acc)}
+@media(hover:hover) and (pointer:fine){#featured .featured-work:hover .featured-poster{transform:translateY(-2px);box-shadow:0 0 0 2px var(--acc),0 7px 17px #0003}#featured .featured-work:hover .featured-work-title{color:var(--acc)}#featured .featured-model-link:hover,#featured .featured-nav button:hover{border-color:var(--acc);color:var(--acc)}}
+@media(max-width:600px){#featured{padding:20px 14px;border-radius:18px}#featured h2{font-size:23px}#featured .featured-heading p{font-size:11px;margin-bottom:18px}#featured .featured-profile{padding:14px 12px;gap:10px;align-items:center}#featured .featured-person{display:grid;grid-template-columns:auto auto;gap:4px 8px}#featured .featured-label{grid-column:1/-1;font-size:9px}#featured .featured-person strong{font-size:24px}#featured .featured-count{font-size:9px}#featured .featured-model-link{font-size:10px;padding:9px}#featured .featured-strip{gap:12px}#featured .featured-work{flex-basis:44%;min-width:140px}#featured .featured-work-title{font-size:11px}}
+@media(prefers-reduced-motion:reduce){#featured .featured-poster{transition:none;transform:none!important}}
+</style>
+<style id="worldcup-promo-refresh">
+#wcPromo .wc-promo-link{display:flex;justify-content:space-between;align-items:center;gap:28px;padding:28px 32px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(115deg,var(--bg1) 40%,color-mix(in srgb,var(--acc) 7%,var(--bg1)));color:var(--txt);text-decoration:none;transition:border-color .2s,box-shadow .2s}
+#wcPromo .wc-promo-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--acc);margin-bottom:12px}
+#wcPromo h2{font-size:27px;font-weight:900;letter-spacing:-.8px;line-height:1.3;margin:0}
+#wcPromo h2 span{color:var(--acc)}
+#wcPromo .wc-promo-copy p{font-size:12px;line-height:1.75;color:var(--t2);margin:12px 0}
+#wcPromo .wc-promo-ranking{font-size:10px;color:var(--mut)}
+#wcPromo .wc-promo-play{display:flex;align-items:center;gap:38px;padding:5px 0}
+#wcPromo .wc-promo-match{display:flex;position:relative;gap:15px;align-items:center;padding:8px}
+#wcPromo .wc-promo-poster{display:block;width:106px;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);box-shadow:0 6px 18px #0003;transform:rotate(-5deg);transition:transform .2s}
+#wcPromo .wc-promo-poster:nth-child(2){transform:rotate(5deg)}
+#wcPromo .wc-promo-poster img{display:block;width:100%;height:100%;object-fit:contain}
+#wcPromo .wc-promo-vs{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:var(--acc);color:white;border:3px solid var(--bg1);border-radius:50%;font-size:13px;font-weight:900;font-style:italic;box-shadow:0 3px 8px #0003}
+#wcPromo .wc-promo-start{display:flex;gap:20px;align-items:center;justify-content:center;padding:14px 20px;border-radius:9px;background:var(--acc);color:white;font-size:13px;font-weight:900;white-space:nowrap;box-shadow:0 4px 12px #e600121f;transition:transform .2s,box-shadow .2s}
+#wcPromo .wc-promo-link:focus-visible{outline:2px solid var(--acc);outline-offset:4px}
+@media(hover:hover) and (pointer:fine){#wcPromo .wc-promo-link:hover{border-color:var(--acc);box-shadow:0 5px 18px #00000012}#wcPromo .wc-promo-link:hover .wc-promo-poster{transform:rotate(-7deg) translateY(-2px)}#wcPromo .wc-promo-link:hover .wc-promo-poster:nth-child(2){transform:rotate(7deg) translateY(-2px)}#wcPromo .wc-promo-link:hover .wc-promo-start{transform:translateY(-2px);box-shadow:0 6px 16px #e6001233}}
+@media(max-width:850px){#wcPromo .wc-promo-play{gap:18px;flex-direction:column}#wcPromo .wc-promo-poster{width:87px}#wcPromo .wc-promo-start{padding:11px 18px}}
+@media(max-width:600px){#wcPromo .wc-promo-link{padding:22px 18px;border-radius:18px;flex-direction:column;gap:15px;align-items:stretch}#wcPromo h2{font-size:24px}#wcPromo h2 br{display:none}#wcPromo h2 span{display:block}#wcPromo .wc-promo-copy p{font-size:11px;margin:10px 0}#wcPromo .wc-promo-ranking{font-size:9px}#wcPromo .wc-promo-play{flex-direction:row;justify-content:space-between;gap:10px}#wcPromo .wc-promo-match{gap:9px;padding:6px}#wcPromo .wc-promo-poster{width:66px}#wcPromo .wc-promo-vs{width:31px;height:31px;font-size:10px;border-width:2px}#wcPromo .wc-promo-start{font-size:11px;gap:8px;padding:12px}}
+@media(prefers-reduced-motion:reduce){#wcPromo .wc-promo-link,#wcPromo .wc-promo-poster,#wcPromo .wc-promo-start{transition:none}#wcPromo .wc-promo-link:hover .wc-promo-poster{transform:rotate(-5deg)}#wcPromo .wc-promo-link:hover .wc-promo-poster:nth-child(2){transform:rotate(5deg)}#wcPromo .wc-promo-link:hover .wc-promo-start{transform:none}}
+</style>
+<style id="catalogue-refresh">
+#search{padding:26px 24px;border:1px solid var(--line);border-radius:20px;background:var(--bg1)}
+#search .catalogue-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--acc);margin-bottom:8px}
+#search .search-home-title{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.2;margin:0}
+#search .catalogue-heading p{font-size:12px;color:var(--mut);margin:8px 0 22px}
+#search .search-controls{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--bg0)}
+#search .search-input-wrap:before{content:'';position:absolute;left:17px;top:17px;width:12px;height:12px;border:2px solid var(--mut);border-radius:50%;pointer-events:none}
+#search .search-input-wrap:after{content:'';position:absolute;left:30px;top:30px;width:7px;height:2px;background:var(--mut);transform:rotate(45deg);pointer-events:none}
+#search .search-input-wrap input{padding-left:45px;border-radius:9px;background:var(--bg1);font-size:14px}
+#search .search-people label{background:var(--bg1)}
+#search .search-purchase{background:var(--bg1);border:0}
+#search .search-purchase button{font-size:12px;min-height:34px}
+#search .search-purchase button[aria-pressed="true"]{background:var(--acc);color:white;box-shadow:0 2px 6px #e6001226}
+#search .search-extra>summary{font-size:12px}
+#search .search-result-bar{margin:20px 0 16px}
+#search .search-result-bar select{background:transparent;font-size:12px}
+#search .search-random{background:var(--bg0);font-size:11px}
+#search .search-result-count{font-size:13px}
+#search .search-results{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:24px 14px;padding:4px 2px}
+#search .search-result-cover{border-radius:10px;transition:transform .18s ease,box-shadow .18s ease}
+#search .search-result-cover img{object-fit:contain}
+#search .search-buy-badge{position:absolute;left:8px;top:8px;padding:4px 6px;border:1px solid #ffffff4d;border-radius:5px;font-size:10px;font-weight:900;line-height:1.3;color:#fff;background:#a92e49;box-shadow:0 3px 7px #0006}
+#search .search-buy-badge[data-kind="coin"]{color:#392b14;background:#eed6a3}
+#search .search-result-model{font-size:16px;font-weight:900;color:var(--txt);margin:10px 0 4px;min-height:21px;line-height:21px;letter-spacing:-.4px}
+#search .search-result-title{font-size:11px;font-weight:600;color:var(--t2);min-height:3em;line-height:1.5}
+#search .search-result-date{font-size:10px;margin-top:6px}
+#search .search-result-foot{font-size:9px;margin-top:2px;color:var(--mut)}
+#search .search-more button{font-size:12px;background:var(--bg0);min-width:220px}
+#search .search-result:focus-visible .search-result-cover{box-shadow:0 0 0 2px var(--acc)}
+@media(hover:hover) and (pointer:fine){#search .search-result:hover .search-result-cover{transform:translateY(-2px);box-shadow:0 0 0 2px var(--acc),0 7px 17px #0003}#search .search-result:hover .search-result-model{color:var(--acc)}#search .search-purchase button:hover:not([aria-pressed="true"]){background:var(--w2)}#search .search-random:hover,#search .search-more button:hover{border-color:var(--acc);color:var(--acc)}}
+@media(min-width:601px) and (max-width:950px){#search .search-results{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:600px){#search{padding:20px 14px;border-radius:18px}#search .search-home-title{font-size:23px}#search .catalogue-heading p{font-size:11px;margin-bottom:18px}#search .search-controls{padding:12px}#search .search-input-wrap input{font-size:16px;padding-left:38px}#search .search-input-wrap:before{left:12px}#search .search-input-wrap:after{left:25px}#search .search-people{grid-template-columns:1fr;gap:8px;margin-top:10px}#search .search-people label{font-size:11px}#search .search-purchase-row{gap:4px}#search .search-purchase button{padding:7px 9px;font-size:10px;min-height:32px}#search .search-extra{min-width:70px}#search .search-extra>summary{font-size:10px;gap:4px;padding:5px 0;min-height:38px}#search .search-extra[open]>summary{margin-top:-42px}#search .search-extra-panel{gap:8px}#search .search-check{font-size:11px}#search .search-result-bar{gap:6px;margin:16px 0 12px}#search .search-result-count{width:100%;font-size:12px;margin-bottom:2px}#search .search-result-bar select{margin-right:auto;font-size:11px;min-height:34px}#search .search-random{font-size:10px;min-height:34px}#search .search-results{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:20px 12px}#search .search-result-model{font-size:15px}#search .search-buy-badge{font-size:9px;padding:4px 5px;top:7px;left:7px}}
+@media(prefers-reduced-motion:reduce){#search .search-result-cover{transition:none;transform:none!important}}
+</style>
+<style id="calendar-refresh">
+#calmonth{padding:26px 24px;border:1px solid var(--line);border-radius:20px;background:var(--bg1)}
+#calmonth .calendar-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+#calmonth .calendar-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--acc);margin-bottom:8px}
+#calmonth h2{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.2;margin:0}
+#calmonth .calendar-heading p{font-size:12px;color:var(--mut);margin:8px 0 0}
+#calmonth .calendar-toolbar{display:flex;align-items:center;gap:9px;flex-shrink:0}
+#calmonth .calendar-toolbar strong{font-size:15px;min-width:104px;text-align:center}
+#calmonth .calendar-toolbar button{border:1px solid var(--line);background:var(--bg0);color:var(--txt);cursor:pointer}
+#calmonth .calendar-current{font-size:10px;font-weight:800;border-radius:6px;padding:8px 10px;margin-right:3px}
+#calmonth .calendar-arrow{width:32px;height:32px;align-items:center;justify-content:center;border-radius:50%;font-size:14px}
+#calmonth .calendar-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;color:var(--t2);padding:13px 0;border-top:1px solid var(--line)}
+#calmonth .calendar-summary strong{color:var(--txt)}
+#calmonth .calendar-future-count{color:var(--mut)}
+#calmonth .calendar-legend{display:flex;gap:12px;font-size:10px}
+#calmonth .calendar-legend span{display:flex;gap:5px;align-items:center}
+#calmonth .calendar-legend i{display:block;width:6px;height:6px;border-radius:50%}
+#calmonth .calendar-sub-dot{background:#a92e49}#calmonth .calendar-coin-dot{background:#b89651}
+#calmonth .monthGrid{border-radius:10px;background:var(--bg0)}
+#calmonth .monthHead{background:var(--bg1)}#calmonth .monthHead span{font-size:10px;padding:10px 0}
+#calmonth .mCell{min-height:122px;padding:8px;gap:7px}
+#calmonth .mCell.mToday{background:color-mix(in srgb,var(--acc) 4%,var(--bg0));box-shadow:inset 0 0 0 1px var(--acc)}
+#calmonth .mDay{font-size:11px;align-items:center;height:22px}
+#calmonth .mCell.mToday .mDay:after{content:'오늘';position:absolute;margin-left:47px;font-size:9px;color:var(--acc);white-space:nowrap}
+#calmonth .mThs{gap:5px;flex:none;flex-wrap:nowrap}
+#calmonth .mThs .calendar-thumb,#calmonth .mThs.one .calendar-thumb{width:48px;flex:0 1 48px;max-width:48px;aspect-ratio:auto;background:none;overflow:visible;border-radius:5px;text-align:left;min-width:0}
+#calmonth .calendar-cover{display:block;overflow:hidden;border-radius:5px;aspect-ratio:2/3;background:var(--bg2);border-bottom:3px solid #a92e49;transition:box-shadow .18s,transform .18s}
+#calmonth .calendar-cover[data-kind="coin"]{border-bottom-color:#b89651}
+#calmonth .calendar-cover img{display:block;width:100%;height:100%;object-fit:contain;border-radius:0}
+#calmonth .calendar-model{display:block;font-size:9px;font-weight:800;line-height:1.5;margin-top:4px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#calmonth .calendar-thumb:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(hover:hover) and (pointer:fine){#calmonth .calendar-thumb:hover .calendar-cover{box-shadow:0 0 0 2px var(--acc),0 4px 10px #0002;transform:translateY(-2px)}#calmonth .calendar-toolbar button:hover{border-color:var(--acc);color:var(--acc)}}
+@media(max-width:680px){#calmonth{padding:20px 14px;border-radius:18px}#calmonth .calendar-heading{align-items:stretch;flex-direction:column;gap:16px;margin-bottom:16px}#calmonth h2{font-size:23px}#calmonth .calendar-heading p{font-size:11px}#calmonth .calendar-toolbar{justify-content:flex-end;gap:8px}#calmonth .calendar-current{margin-right:auto}#calmonth .calendar-toolbar strong{font-size:14px}#calmonth .calendar-summary{align-items:flex-start;font-size:10px;flex-direction:column;gap:8px}#calmonth .calendar-legend{font-size:9px}#calmonth .monthList{border-top:1px solid var(--line)}#calmonth .mLrow{align-items:flex-start;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);cursor:default}#calmonth .mLdate{flex:0 0 67px;font-size:11px;padding-top:5px;line-height:1.5}#calmonth .mLdate.mToday:after{content:'오늘';display:block;font-size:9px;margin-top:4px}#calmonth .mLthumbs{display:flex;flex-direction:row;align-items:center;overflow-x:auto;gap:12px;min-width:0;scroll-snap-type:x proximity;scrollbar-width:thin;padding:2px 2px 5px}#calmonth .mLthumbs .calendar-thumb{width:190px;flex:0 0 190px;scroll-snap-align:start;height:auto;display:flex;align-items:center;gap:10px;background:none;text-align:left;overflow:visible}#calmonth .mLthumbs .calendar-cover{flex:0 0 46px;width:46px;height:69px}#calmonth .calendar-mobile-copy{display:block;min-width:0;flex:1}#calmonth .calendar-model{font-size:13px;margin:0 0 3px}#calmonth .calendar-work-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:10px;color:var(--t2);line-height:1.4}#calmonth .calendar-buy{display:block;font-size:9px;color:var(--mut);margin-top:5px}}
+@media(prefers-reduced-motion:reduce){#calmonth .calendar-cover{transition:none;transform:none!important}}
 </style>
 <script id="work-model-links" type="application/json">{"손예은":"sonyeeun","동그란":"donggeuran","바비앙":"babiang","이연우":"iyeonu","예하":"yeha","최세희":"choesehui","심유이":"simyui","채솔":"chaesol","첼설아":"chelseola","은지":"eunji","모모리나":"momorina","쥬":"jyu","유디":"yudi","박서이":"bakseoi","이규영":"igyuyeong","뮤아":"myua","한지나":"hanjina","여나비":"yeonabi","수지":"suji","애순이":"aesuni","슬이":"seuli","빛베리":"bichberi","고아라":"goara","초연":"choyeon","유나":"yuna","겨우디":"gyeoudi","엘라":"elra","윤영서":"yunyeongseo","김갑주":"gimgapju","박민정":"bakminjeong","박수민":"baksumin","아리":"ari","쭈디":"jjudi","초이":"choi","옐랑":"yelrang","희야":"huiya","섹밍":"sekming","보라":"bora","그린":"geurin","박지연":"bakjiyeon","오은담":"oeundam","하리":"hari","연수":"yeonsu","박근나":"bakgeunna","강선혜":"gangseonhye","E거니":"egeoni","이나":"ina","슈":"syu","주주":"juju","김은지":"gimeunji","혜린":"hyerin","새하":"saeha","장은비":"jangeunbi","김설화":"gimseolhwa","장혜선":"janghyeseon","려니":"ryeoni","토리":"tori","채아":"chaea","히나":"hina","윤지윤":"yunjiyun","지린":"jirin","김연지":"gimyeonji","모모리나official":"momorinaofficial","에일리":"eilri","조아":"joa","핫소망":"hassomang","소은":"soeun","연유네코":"yeonyuneko","김서아":"gimseoa","전지은":"jeonjieun","E다연":"edayeon","조이온":"joion","리리":"riri","꾸뿌":"kkuppu","하윤아":"hayuna","순수":"sunsu","은유화":"eunyuhwa","유진":"yujin","엄상미":"eomsangmi","김지연":"gimjiyeon","신새롬":"sinsaerom","김소희":"gimsohui","벨벳":"belbet","이시현":"isihyeon","예리":"yeri","은수":"eunsu","이예린":"iyerin","박별":"bakbyeol","유주다":"yujuda","초영이":"choyeongi","박보름":"bakboreum","서여진":"seoyeojin","한서아":"hanseoa","타샤":"tasya","차유니":"chayuni","주빈":"jubin","소이":"soi","묘정":"myojeong","이채하":"ichaeha","김진아":"gimjina","지니":"jini","노지혜":"nojihye","이해인":"ihaein","링고lyn":"ringgolyn","안지현":"anjihyeon","이유진":"iyujin","최혜연":"choehyeyeon","이하니":"ihani","이아윤":"iayun","양혜원":"yanghyewon","청아":"cheonga","윤설화":"yunseolhwa","지아":"jia","탑체리":"tapcheri","퓨딩":"pyuding","키라":"kira","예나비":"yenabi","예리수":"yerisu","쏘블리":"ssobeulri","제아":"jea","퓨리":"pyuri","강인경":"gangingyeong","김나정":"gimnajeong","박청아":"bakcheonga","채령":"chaeryeong","도유리":"doyuri","김지예":"gimjiye","김세화":"gimsehwa","이안":"ian","이아영":"iayeong","이소윤":"isoyun","주은":"jueun","죠야끼":"jyoyakki","쥬우":"jyuu","미루":"miru","리아":"ria","서현숙":"seohyeonsuk","서지아":"seojia","시안":"sian"}</script>
 </head>
@@ -1587,92 +1903,25 @@ select,input,button{font-family:inherit}
 </sc-if>
 
     <sc-if value="{{ sectionVisible.crShow }}" hint-placeholder-val="{{ false }}">
-<section id="creators" style="display:{{ crShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">작가별로 보기</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">BY CREATOR</span>
-        <span style="font-size:12px;color:var(--mut);font-weight:700">탭을 눌러 작가의 세계로</span>
-      </div>
-      <div style="background:{{ crThemeBg }};border-radius:20px;padding:{{ crPad }};box-shadow:0 18px 44px rgba(0,0,0,.28)">
-        <div style="position:relative;margin-bottom:16px">
-          <div style="display:flex;gap:9px;overflow-x:auto;padding-bottom:8px">
-            <sc-for list="{{ creators }}" as="c" hint-placeholder-count="5">
-              <button onClick="{{ c.go }}" style="flex:0 0 auto;border:1px solid {{ c.line }};border-radius:999px;padding:10px 18px;cursor:pointer;background:{{ c.bg }};font-size:13.5px;font-weight:800;white-space:nowrap;color:{{ c.fg }};transition:transform .16s" style-hover="transform:translateY(-2px)">{{ c.name }}</button>
-            </sc-for>
-          </div>
-          <div style="position:absolute;top:0;right:0;bottom:8px;width:56px;pointer-events:none;background:linear-gradient(to right,transparent,rgba(8,8,12,.55))"></div>
-        </div>
-        <div style="display:{{ crPcShow }};gap:28px;align-items:center;margin-bottom:20px">
-          <div style="flex:1 1 auto;min-width:0">
-            <div style="font-size:11px;font-weight:900;letter-spacing:2.5px;color:var(--acc2)">🎬 작가 컬렉션 · BY CREATOR</div>
-            <div style="font-size:clamp(30px,3.4vw,48px);font-weight:900;letter-spacing:-1px;line-height:1.04;margin-top:10px;color:#fff">{{ crSelWordmark }}</div>
-            <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:rgba(255,255,255,.6);margin-top:10px">PHOTOGRAPHER · 화보 {{ crSelCount }}편</div>
-            <div style="font-size:13.5px;color:rgba(255,255,255,.82);margin-top:12px;line-height:1.55;max-width:520px">{{ crSelTag }}</div>
-            <span onClick="{{ crHeroOpen }}" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#111;font-weight:900;font-size:14px;padding:12px 24px;border-radius:999px;margin-top:18px;cursor:pointer">작가 화보 보기 →</span>
-          </div>
-          <div onClick="{{ crHeroOpen }}" style="flex:0 0 auto;width:230px;aspect-ratio:3/4;border-radius:16px;overflow:hidden;cursor:pointer;box-shadow:0 16px 40px rgba(0,0,0,.5);background:#0a0a0d">
-            <img src="{{ crSelImg }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ crSelBlur }}">
-          </div>
-        </div>
-        <div onClick="{{ crHeroOpen }}" style="display:{{ crMobShow }};position:relative;border-radius:14px;overflow:hidden;cursor:pointer;aspect-ratio:16/10;margin-bottom:16px;background:#0a0a0d">
-          <div style="position:absolute;inset:0;background-size:cover;background-position:center 20%;background-image:{{ crSelBg }};filter:{{ crSelBlur }}"></div>
-          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.1) 0%,rgba(8,8,11,.55) 55%,rgba(8,8,11,.96) 100%)"></div>
-          <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:18px 18px 17px">
-            <div style="font-size:10px;font-weight:900;letter-spacing:2px;color:var(--acc2)">🎬 작가 컬렉션</div>
-            <div style="font-size:clamp(24px,7vw,34px);font-weight:900;letter-spacing:-.6px;line-height:1.05;margin-top:6px;color:#fff">{{ crSelWordmark }}</div>
-            <div style="font-size:12px;color:rgba(255,255,255,.82);margin-top:7px">화보 {{ crSelCount }}편 · {{ crSelTag }}</div>
-            <span style="display:inline-flex;align-items:center;gap:7px;background:#fff;color:#111;font-weight:900;font-size:13px;padding:10px 18px;border-radius:999px;margin-top:12px">작가 화보 보기 →</span>
-          </div>
-        </div>
-        <sc-if value="{{ sectionVisible.crShelfShow }}" hint-placeholder-val="{{ false }}">
-<div style="display:{{ crShelfShow }};position:relative">
-          <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:4px">
-            <sc-for list="{{ creatorWorks }}" as="p" hint-placeholder-count="6">
-              <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ crCardW }}">
-                <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:#0a0a0d">
-                  <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
-                </div>
-                <div style="font-size:12px;font-weight:700;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.8)">{{ p.title }}</div>
-              </div>
-            </sc-for>
-          </div>
-          <div style="position:absolute;top:0;right:0;bottom:4px;width:72px;pointer-events:none;background:linear-gradient(to right,transparent,rgba(8,8,12,.55))"></div>
-        </div>
-</sc-if>
-        <sc-if value="{{ sectionVisible.crGridShow }}" hint-placeholder-val="{{ false }}">
-<div style="display:{{ crGridShow }};gap:16px;grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr))">
-          <sc-for list="{{ creatorWorksAll }}" as="p" hint-placeholder-count="0">
-            <div onClick="{{ p.open }}" style="cursor:pointer">
-              <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:#0a0a0d">
-                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
-              </div>
-              <div style="font-size:12.5px;font-weight:700;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.8)">{{ p.title }}</div>
-            </div>
-          </sc-for>
-        </div>
-</sc-if>
-      </div>
+    <section id="creators" aria-labelledby="creator-title" style="display:{{ crShow }}">
+      <div class="creator-heading"><div><div class="creator-eyebrow">BY CREATOR</div><h2 id="creator-title">작가별로 보기</h2><p>마음에 드는 작가의 다른 화보를 만나보세요</p></div><label class="creator-select-label">전체 작가 <sc-raw-select aria-label="둘러볼 작가 선택" value="{{ crSelName }}" onChange="{{ onCreatorSelect }}"><sc-for list="{{ creatorOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}" label="{{ o.label }}">{{ o.label }}</option></sc-for></sc-raw-select></label></div>
+      <div class="creator-picker"><button type="button" class="creator-slide" onClick="{{ crSlidePrev }}" aria-label="이전 작가 목록">‹</button><div class="creator-chips" id="creator-strip" role="region" aria-label="작가 목록"><sc-for list="{{ creators }}" as="c" hint-placeholder-count="4"><button type="button" onClick="{{ c.go }}" aria-pressed="{{ c.selected }}"><span>{{ c.name }}</span><span class="creator-chip-count">{{ c.count }}</span></button></sc-for></div><button type="button" class="creator-slide" onClick="{{ crSlideNext }}" aria-label="다음 작가 목록">›</button></div>
+      <div class="creator-profile"><div><div class="creator-profile-label">CREATOR COLLECTION</div><h3>{{ crSelWordmark }}</h3><p>화보 <strong>{{ crSelCount }}편</strong>을 모았습니다</p></div><button type="button" class="creator-all" onClick="{{ crHeroOpen }}" style="display:{{ crShelfShow }}">전체 화보 보기 <span aria-hidden="true">↗</span></button></div>
+      <sc-if value="{{ sectionVisible.crShelfShow }}" hint-placeholder-val="{{ false }}">
+      <div class="creator-works" style="display:{{ crShelfShow }}"><div class="creator-work-grid {{ crShortClass }}" data-count="{{ crVisibleCount }}"><sc-for list="{{ creatorWorks }}" as="p" hint-placeholder-count="4"><button type="button" class="creator-work-card" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}"><span class="creator-poster"><img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="creator-format">{{ p.format }}</span></span><span class="creator-work-model">{{ p.model }}</span><span class="creator-work-title">{{ p.title }}</span></button></sc-for></div><div class="creator-footer"><span aria-live="polite">{{ crPageLabel }}</span><button type="button" onClick="{{ crNextWorks }}" style="display:{{ crNextWorksShow }}">다른 화보 보기 <span aria-hidden="true">↻</span></button></div></div>
+      </sc-if>
+      <sc-if value="{{ sectionVisible.crGridShow }}" hint-placeholder-val="{{ false }}"><div class="creator-full-grid" style="display:{{ crGridShow }}"><sc-for list="{{ creatorWorksAll }}" as="p" hint-placeholder-count="0"><button type="button" class="creator-work-card" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}"><span class="creator-poster"><img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="creator-format">{{ p.format }}</span></span><span class="creator-work-model">{{ p.model }}</span><span class="creator-work-title">{{ p.title }}</span></button></sc-for></div></sc-if>
     </section>
-</sc-if>
+    </sc-if>
     <sc-if value="{{ sectionVisible.pickShow }}" hint-placeholder-val="{{ false }}">
-<section id="picks" style="display:{{ pickShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:15px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">관심 모델 <span style="color:var(--acc)">신작</span></h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">FOR YOU · 최근 본 모델의 새 화보</span>
+    <section id="picks" aria-labelledby="personal-picks-title" style="display:{{ pickShow }}">
+      <details class="recent-disclosure personal-disclosure"><summary aria-controls="personal-picks-content"><h2 id="personal-picks-title">관심 모델의 다른 화보</h2><span class="recent-disclosure-action"><span class="recent-expand">펼치기 <span aria-hidden="true">⌄</span></span><span class="recent-collapse">접기 <span aria-hidden="true">⌃</span></span></span></summary><div id="personal-picks-content"><div class="personal-heading"><p>최근 보거나 찜한 모델의 아직 안 본 화보를 골랐어요</p><div class="personal-nav"><button type="button" onClick="{{ personalPrev }}" aria-label="이전 관심 모델 화보">←</button><button type="button" onClick="{{ personalNext }}" aria-label="다음 관심 모델 화보">→</button></div></div>
+      <div id="personal-picks-strip" class="personal-strip" role="region" aria-label="관심 모델 추천 화보">
+        <sc-for list="{{ picks }}" as="p" hint-placeholder-count="0"><button type="button" class="personal-card" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}" data-work-id="{{ p.id }}"><span class="personal-poster"><img src="{{ p.img }}" alt="" loading="lazy" decoding="async" style="filter:{{ p.blur }}"></span><span class="personal-copy"><span class="personal-model">{{ p.model }}</span><span class="personal-title">{{ p.title }}</span><span class="personal-meta">{{ p.date }} · {{ p.format }}</span><span class="personal-open">화보 보기 <span aria-hidden="true">↗</span></span></span></button></sc-for>
       </div>
-      <div class="shelfRow" style="gap:14px;padding:2px 2px 6px">
-        <sc-for list="{{ picks }}" as="p" hint-placeholder-count="0">
-          <div onClick="{{ p.open }}" class="nwCard" style="cursor:pointer">
-            <div class="imgSkel" style="width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2)">
-              <img src="{{ p.img }}" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
-            </div>
-            <div style="font-size:11px;font-weight:800;color:var(--acc2);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.model }}</div>
-            <div style="font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">{{ p.title }}</div>
-          </div>
-        </sc-for>
-      </div>
+      </div></details>
     </section>
-</sc-if>
+    </sc-if>
 
     <sc-if value="{{ sectionVisible.tsShow }}" hint-placeholder-val="{{ false }}">
 <section id="timesale" style="display:{{ tsShow }}">
@@ -1737,117 +1986,24 @@ select,input,button{font-family:inherit}
 </sc-if>
 
     <sc-if value="{{ sectionVisible.subShow }}" hint-placeholder-val="{{ false }}">
-<section id="sub" style="display:{{ subShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">지금 구독으로 볼 수 있는 화보</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">SUBSCRIPTION · NOW</span>
-        <span style="font-size:11px;font-weight:800;color:var(--acc2);background:rgba(230,0,18,.12);border:1px solid rgba(230,0,18,.3);padding:4px 10px;border-radius:999px">{{ subCount }}편 열람 중</span>
-      </div>
-      <div style="font-size:12.5px;color:var(--mut);margin-bottom:18px;line-height:1.6">새 구독 화보가 공개되면 가장 오래된 한 편이 개별 구매로 내려갑니다.</div>
-      <a href="https://bcut.maximkorea.net/subscribe/form" target="_blank" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:2px 0 22px;padding:18px 20px;border-radius:14px;background:linear-gradient(110deg,rgba(230,0,18,.12),rgba(230,0,18,.02));border:1px solid rgba(230,0,18,.28);text-decoration:none;color:var(--txt)" style-hover="border-color:rgba(230,0,18,.5)">
-        <div style="flex:1;min-width:210px">
-          <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--acc2)">MEMBERSHIP</div>
-          <div style="font-size:17px;font-weight:900;letter-spacing:-.4px;margin-top:5px;line-height:1.45">하루 <span style="color:var(--acc)">660원</span>꼴, 구독으로 공개되는 화보를 공개 즉시 무제한 열람</div>
-          <div style="font-size:12.5px;font-weight:700;color:var(--mut);margin-top:6px;line-height:1.5">매주 새로 올라오는 최신 화보를 구독 하나로. 낱개로 사는 것보다 이득이에요.</div>
-        </div>
-        <span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:var(--acc);color:#fff;font-size:13.5px;font-weight:800;padding:12px 20px;border-radius:8px;box-shadow:0 8px 20px rgba(230,0,18,.3)">월 ₩19,900 구독하기 →</span>
-      </a>
-      <div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:12px">
-        <div style="flex:0 0 auto;width:{{ subW }};display:{{ ddayShow }}">
-          <div style="width:100%;aspect-ratio:2/3;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--acc),#4d0007);border:1px solid var(--w4)">
-            <div style="font-size:12px;font-weight:700;opacity:.9">다음 공개</div>
-            <div style="font-size:50px;font-weight:900;letter-spacing:-2.5px;margin:6px 0;line-height:1">{{ dday }}</div>
-            <div style="font-size:12px;opacity:.85">{{ ddayDate }}</div>
-          </div>
-        </div>
-        <sc-for list="{{ subs }}" as="p" hint-placeholder-count="0">
-          <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ subW }}">
-            <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
-              <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
-              <div style="position:absolute;top:8px;left:8px;display:flex;gap:4px">
-                <span style="font-size:9px;font-weight:900;padding:3px 7px;border-radius:3px;background:rgba(10,10,12,.82);color:#ffd400">ORIGINAL</span>
-                <span style="font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.82);color:#fff;display:{{ p.vidShow }}">▶ 영상</span>
-              </div>
-              <div style="position:absolute;left:0;right:0;bottom:0;padding:38px 10px 11px;background:linear-gradient(transparent,var(--posterFade))">
-                <div style="font-size:12.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
-                <div style="font-size:11.5px;color:var(--t2);margin-top:3px"><span style="color:#4ade80;font-size:8px;vertical-align:middle">●</span> {{ p.date }} 공개</div>
-                <div style="margin-top:9px;display:{{ p.windowShow }}">
-                  <div style="height:3px;border-radius:2px;background:var(--w4);overflow:hidden">
-                    <div style="height:100%;border-radius:2px;transition:width .4s;width:{{ p.barW }};background:{{ p.barColor }}"></div>
-                  </div>
-                  <div style="font-size:10.5px;font-weight:700;margin-top:5px;color:{{ p.barColor }}">구독 열람 {{ p.window }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </sc-for>
-      </div>
-
-      <div style="display:{{ upcomingShow }};margin-top:30px">
-        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
-          <h3 style="font-size:15px;font-weight:900;letter-spacing:-.3px;color:var(--t3)">곧 구독으로 열리는 화보</h3>
-          <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">COMING TO SUBSCRIPTION</span>
-        </div>
-        <div style="position:relative">
-          <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:12px">
-            <sc-for list="{{ upcoming }}" as="p" hint-placeholder-count="0">
-              <a href="{{ p.link }}" target="_blank" style="flex:0 0 auto;width:146px;text-decoration:none;color:inherit;cursor:pointer;transition:transform .2s" style-hover="transform:translateY(-3px)">
-                <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
-                  <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
-                  <div style="position:absolute;left:0;right:0;bottom:0;height:56%;background:linear-gradient(to top,#fff 10%,rgba(255,255,255,.85) 42%,transparent);pointer-events:none"></div>
-                  <div style="position:absolute;left:0;right:0;bottom:11px;text-align:center">
-                    <div style="font-size:25px;font-weight:900;letter-spacing:-1px;line-height:1;color:#E60012">{{ p.dday }}</div>
-                    <div style="font-size:11px;font-weight:800;color:#333;margin-top:3px">{{ p.date }} 공개</div>
-                  </div>
-                  <div style="position:absolute;top:8px;left:8px;font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;background:#E60012;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);white-space:nowrap;display:{{ p.coverShow }}">👑 표지모델</div>
-                  <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 7px;border-radius:3px;background:rgba(10,10,12,.82);color:#ffd400;display:{{ p.origShow }}">ORIGINAL</div>
-                </div>
-              </a>
-            </sc-for>
-            <a href="https://bcut.maximkorea.net" target="_blank" style="flex:0 0 auto;width:146px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;aspect-ratio:2/3;border-radius:9px;border:1px dashed var(--w5);background:var(--w1);text-decoration:none;color:inherit;transition:background .25s,border-color .25s" style-hover="background:var(--w3);border-color:var(--acc)">
-              <div style="width:42px;height:42px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;line-height:1">+</div>
-              <div style="font-size:12.5px;font-weight:800">더 보러가기</div>
-              <div style="font-size:10.5px;color:var(--mut);font-weight:700">B컷에서 전체보기</div>
-            </a>
-          </div>
-          <div style="position:absolute;top:0;right:0;bottom:12px;width:110px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 90%)"></div>
-        </div>
-      </div>
+    <section id="sub" aria-labelledby="subscription-title" style="display:{{ subShow }}">
+      <div class="subscription-heading"><div><div class="subscription-eyebrow">SUBSCRIPTION</div><h2 id="subscription-title">지금 구독으로 볼 수 있는 화보</h2><p>현재 열람 가능한 화보와 다음 공개 일정을 한눈에</p></div><span class="subscription-count">{{ subCount }}편 열람 가능</span></div>
+      <div class="subscription-membership subscription-benefit"><div class="subscription-benefit-copy"><div class="subscription-benefit-label">구독자 혜택</div><p class="subscription-benefit-title">구독으로 한 번 열람한 화보는,<br>코인 판매로 바뀌어도, 구독 유지 중엔 <strong>계속 다시 볼 수 있어요.</strong></p><p class="subscription-benefit-condition">코인 판매로 전환되기 전에 열람하지 않은 화보는 별도 구매가 필요해요.</p></div><a href="https://bcut.maximkorea.net/subscribe/form" target="_blank" rel="noopener" aria-label="월 19,900원 구독 시작하기 (새 창)"><span class="subscription-price">월 ₩19,900</span><span class="subscription-join">구독 시작하기 <span aria-hidden="true">↗</span></span></a></div>
+      <div class="subscription-grid" style="display:{{ activeSubShow }}"><sc-for list="{{ subs }}" as="p" hint-placeholder-count="0"><button type="button" class="subscription-card" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}" data-work-id="{{ p.id }}"><span class="subscription-poster"><img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="subscription-available">열람 가능</span><span class="subscription-overlay"><span class="subscription-model">{{ p.model }}</span><span class="subscription-work-title">{{ p.title }}</span></span></span><span class="subscription-meta">{{ p.date }} 공개 · {{ p.format }}</span><span class="subscription-window" style="display:{{ p.windowShow }};color:{{ p.windowColor }}">구독 열람 {{ p.window }}</span></button></sc-for></div>
+      <p class="subscription-empty" style="display:{{ subEmptyShow }}">다음 구독 화보의 공개를 기다려주세요.</p>
+      <p class="subscription-rotation-note">새 구독 화보가 공개되면 가장 오래된 한 편부터 코인 판매로 전환됩니다.</p>
+      <div class="subscription-upcoming" style="display:{{ upcomingShow }}"><div class="subscription-upcoming-heading"><div><h3>곧 구독으로 열리는 화보</h3><p style="display:{{ ddayShow }}">다음 공개 <strong>{{ ddayDate }}</strong> <span class="subscription-dday">{{ dday }}</span></p></div><div class="subscription-nav"><button type="button" onClick="{{ subUpcomingPrev }}" aria-label="이전 구독 예정 화보">←</button><button type="button" onClick="{{ subUpcomingNext }}" aria-label="다음 구독 예정 화보">→</button></div></div><div class="subscription-upcoming-strip" id="subscription-upcoming-strip" role="region" aria-label="구독 공개 예정 화보"><sc-for list="{{ upcoming }}" as="p" hint-placeholder-count="0"><a class="subscription-upcoming-card" href="{{ p.link }}" target="_blank" rel="noopener" aria-label="{{ p.infoLabel }}"><img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="subscription-upcoming-copy"><span class="subscription-upcoming-model">{{ p.model }}</span><span class="subscription-upcoming-title">{{ p.title }}</span><span class="subscription-upcoming-date">{{ p.date }} 공개 <span>{{ p.dday }}</span></span></span></a></sc-for></div></div>
     </section>
-</sc-if>
-
-
+    </sc-if>
 
     <sc-if value="{{ sectionVisible.nextShow }}" hint-placeholder-val="{{ false }}">
-<section id="next" style="display:{{ nextShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">앞으로 공개될 신작</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">COMING SOON</span>
-      </div>
-      <div style="position:relative">
-        <div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:12px">
-          <sc-for list="{{ nexts }}" as="p" hint-placeholder-count="0">
-            <div onClick="{{ p.open }}" style="flex:0 0 auto;cursor:pointer;width:{{ nextW }}">
-              <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid var(--w2)">
-                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.05)">
-                <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:900;padding:3px 9px;border-radius:5px;background:#E60012;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);white-space:nowrap;display:{{ p.coverShow }}">👑 표지모델</div>
-                <div style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:3px;background:rgba(10,10,12,.82);color:#fff;display:{{ p.vidShow }}">▶ 영상</div>
-                <button onClick="{{ p.wish }}" title="공개되면 알림" style="position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.2);cursor:pointer;font-size:14px;line-height:1;backdrop-filter:blur(6px);transition:transform .15s;background:{{ p.wishBg }};color:{{ p.wishFg }}" style-hover="transform:scale(1.12)">{{ p.wishIcon }}</button>
-                <div style="position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:{{ p.subShow }};background:#ffd400;color:#111;font-size:10.5px;font-weight:900;padding:3px 11px;border-radius:4px">구독</div>
-              </div>
-              <div style="font-size:12px;font-weight:700;color:var(--acc2);margin-top:8px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.cap }}</div>
-            </div>
-          </sc-for>
-          <a href="https://bcut.maximkorea.net" target="_blank" style="flex:0 0 auto;width:176px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;aspect-ratio:2/3;border-radius:9px;border:1px dashed var(--w5);background:var(--w1);transition:background .25s,border-color .25s" style-hover="background:var(--w3);border-color:var(--acc)">
-            <div style="width:44px;height:44px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">›</div>
-            <div style="font-size:13px;font-weight:800">더 보러가기</div>
-            <div style="font-size:11px;color:var(--mut)">B컷 공식 사이트</div>
-          </a>
-        </div>
-        <div style="position:absolute;top:0;right:0;bottom:12px;width:92px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg0) 94%)"></div>
-      </div>
+    <section id="next" aria-labelledby="coming-title" style="display:{{ nextShow }}">
+      <div class="coming-heading"><div><div class="coming-eyebrow">COMING SOON</div><h2 id="coming-title">앞으로 공개될 신작</h2><p>공개일 순으로 미리 둘러보고, 관심 화보는 찜해두세요</p></div><div class="coming-nav"><button type="button" onClick="{{ comingPrev }}" aria-label="이전 공개 예정 화보">←</button><button type="button" onClick="{{ comingNext }}" aria-label="다음 공개 예정 화보">→</button></div></div>
+      <div class="coming-legend" aria-label="화보 이용 방식"><span><b>구독 화보</b> 구독으로 열람</span><span><b class="coin-label">코인 화보</b> 코인으로 편당 구매</span></div>
+      <div id="coming-strip" class="coming-strip" role="region" aria-label="앞으로 공개될 화보 목록"><sc-for list="{{ nexts }}" as="p" hint-placeholder-count="0"><article class="coming-card" data-work-id="{{ p.id }}"><button type="button" class="coming-open" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}"><span class="coming-poster"><img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="coming-type" data-kind="{{ p.buyKind }}">{{ p.buyLabel }}</span><span class="coming-copy"><span class="coming-cover" style="display:{{ p.coverShow }}">표지모델</span><span class="coming-model">{{ p.model }}</span><span class="coming-work-title">{{ p.title }}</span></span></span><span class="coming-date"><strong>{{ p.date }}</strong> 공개 예정 <span class="coming-dday">{{ p.dday }}</span></span><span class="coming-buy-note" data-kind="{{ p.buyKind }}">{{ p.buyNote }}</span><span class="coming-meta">{{ p.format }}</span></button><button type="button" class="coming-wish" onClick="{{ p.wish }}" aria-label="{{ p.wishLabel }}" aria-pressed="{{ p.wished }}" style="background:{{ p.wishBg }};color:{{ p.wishFg }}">{{ p.wishIcon }}</button></article></sc-for></div>
+      <div class="coming-footer"><span>공개일 순 · 다가오는 {{ comingCount }}편</span><a href="https://bcut.maximkorea.net" target="_blank" rel="noopener">B컷에서 더 보기 <span aria-hidden="true">↗</span></a></div>
     </section>
-</sc-if>
+    </sc-if>
 
     <div style="display:{{ rankingShow }}">
       <a href="https://www.maximkorea.net/webtoon/pay" target="_blank" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:13px 18px;border-radius:12px;background:var(--w1);border:1px solid var(--line);text-decoration:none;color:var(--txt)" style-hover="border-color:var(--w5)">
@@ -1858,56 +2014,26 @@ select,input,button{font-family:inherit}
     </div>
 
     <sc-if value="{{ sectionVisible.featShow }}" hint-placeholder-val="{{ false }}">
-<section id="featured" style="display:{{ featShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">맥심의 추천 모델</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MAXIM'S PICK</span>
-      </div>
-      <div style="display:flex;gap:22px;align-items:center;border-radius:14px;padding:22px;background:linear-gradient(120deg,var(--bg1),rgba(58,20,26,.9));border:1px solid var(--line);flex-wrap:wrap">
-        <div style="flex:0 0 158px;text-align:center">
-          <img src="{{ feat.img }}" alt="" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--w5);background:var(--bg2);filter:{{ feat.blur }}">
-          <div style="font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--acc2);margin-top:12px">MAXIM'S PICK</div>
-          <div style="font-size:19px;font-weight:900;margin-top:4px">{{ feat.name }}</div>
-          <button onClick="{{ feat.open }}" style="margin-top:12px;background:var(--acc);color:#fff;border:0;font-size:12px;font-weight:800;padding:9px 17px;border-radius:6px;cursor:pointer">모델 보기 ›</button>
-        </div>
-        <div style="flex:1;min-width:0;display:flex;gap:12px;overflow-x:auto;padding-bottom:8px">
-          <sc-for list="{{ feat.works }}" as="p" hint-placeholder-count="0">
-            <div onClick="{{ p.open }}" style="flex:0 0 auto;width:132px;cursor:pointer">
-              <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.blur }}" style-hover="transform:scale(1.06)">
-              </div>
-            </div>
-          </sc-for>
-        </div>
-      </div>
+<section id="featured" aria-labelledby="featured-title" style="display:{{ featShow }}">
+      <div class="featured-heading"><div class="featured-eyebrow">MAXIM'S PICK</div><h2 id="featured-title">맥심의 추천 모델</h2><p>한 모델의 매력을, 다양한 화보로 만나보세요</p></div>
+      <div class="featured-profile"><div class="featured-person"><span class="featured-label">이번 추천 모델</span><strong>{{ feat.name }}</strong><span class="featured-count">공개 화보 {{ feat.count }}편</span></div><button type="button" class="featured-model-link" onClick="{{ feat.open }}">모델 화보 전체 보기 <span aria-hidden="true">↗</span></button></div>
+      <div class="featured-shelf-heading"><span>공개된 화보 둘러보기</span><div class="featured-nav {{ feat.shortClass }}"><button type="button" onClick="{{ feat.prev }}" aria-label="이전 추천 모델 화보">←</button><button type="button" onClick="{{ feat.next }}" aria-label="다음 추천 모델 화보">→</button></div></div>
+      <div class="featured-strip {{ feat.shortClass }}" id="featured-strip" role="region" aria-label="추천 모델의 화보 목록"><sc-for list="{{ feat.works }}" as="p" hint-placeholder-count="0"><button type="button" class="featured-work" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}"><span class="featured-poster"><img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="featured-format">{{ p.format }}</span></span><span class="featured-work-title">{{ p.title }}</span><span class="featured-date">{{ p.date }} 공개</span></button></sc-for></div>
     </section>
 </sc-if>
 
     <sc-if value="{{ sectionVisible.wcShow }}" hint-placeholder-val="{{ false }}">
-<section id="wcPromo" style="display:{{ wcShow }}">
-      <a href="worldcup.html" style="display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;border-radius:16px;padding:30px 32px;background:linear-gradient(115deg,var(--bg1) 0%,rgba(74,10,18,.9) 62%,rgba(120,14,26,.85) 100%);border:1px solid rgba(230,0,18,.28);overflow:hidden;transition:box-shadow .25s,transform .25s" style-hover="box-shadow:0 0 0 1px var(--acc);transform:translateY(-3px)">
-        <div style="min-width:0">
-          <div style="font-size:10.5px;font-weight:800;letter-spacing:2.6px;color:var(--acc2)">TOURNAMENT</div>
-          <div style="font-size:24px;font-weight:900;letter-spacing:-.8px;margin-top:10px">당신의 최애 화보는 뭔가요?</div>
-          <div style="font-size:13.5px;color:var(--t2);margin-top:8px;line-height:1.6">둘 중 하나만 고르는 이상형 월드컵. 전체 우승 TOP 10도 함께 확인하세요.</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:16px">
-          <div style="display:flex;gap:-10px">
-            <sc-for list="{{ wcThumbs }}" as="t" hint-placeholder-count="0">
-              <div style="width:62px;aspect-ratio:2/3;border-radius:7px;overflow:hidden;border:1px solid var(--w5);margin-left:-14px;box-shadow:0 8px 20px rgba(0,0,0,.5)">
-                <img loading="lazy" src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ t.blur }}">
-              </div>
-            </sc-for>
-          </div>
-          <span style="background:var(--acc);color:#fff;font-weight:800;font-size:14px;padding:14px 26px;border-radius:8px;white-space:nowrap">시작하기 ›</span>
-        </div>
+<section id="wcPromo" aria-labelledby="wc-promo-title" style="display:{{ wcShow }}">
+      <a class="wc-promo-link" href="worldcup.html" aria-label="이상형 월드컵 시작하기">
+        <div class="wc-promo-copy"><div class="wc-promo-eyebrow">BCUT TOURNAMENT</div><h2 id="wc-promo-title">내 취향의 1위는?<br><span>이상형 월드컵</span></h2><p>두 편 중 더 끌리는 화보를 골라보세요.<br>선택이 쌓이면, 나만의 우승 화보가 남아요.</p><span class="wc-promo-ranking">전체 우승 TOP 10도 함께 확인하세요 <span aria-hidden="true">↗</span></span></div>
+        <div class="wc-promo-play"><div class="wc-promo-match" aria-hidden="true"><sc-for list="{{ wcThumbs }}" as="t" hint-placeholder-count="0"><span class="wc-promo-poster"><img loading="lazy" decoding="async" src="{{ t.img }}" alt="" style="filter:{{ t.blur }}"></span></sc-for><span class="wc-promo-vs">VS</span></div><span class="wc-promo-start">월드컵 시작하기 <span aria-hidden="true">→</span></span></div>
       </a>
     </section>
 </sc-if>
 
     <sc-if value="{{ sectionVisible.searchShow }}" hint-placeholder-val="{{ false }}">
 <section id="search" aria-label="화보 검색" style="display:{{ searchShow }}">
-      <h2 class="search-home-title" style="display:{{ searchHeadingShow }}">화보 찾아보기</h2>
+      <div class="catalogue-heading" style="display:{{ searchHeadingShow }}"><div class="catalogue-eyebrow">EXPLORE BCUT</div><h2 class="search-home-title">화보 찾아보기</h2><p>모델부터 작가, 취향에 맞는 화보를 찾아보세요</p></div>
       <div class="search-controls">
         <div class="search-input-wrap">
           <input id="catalogue-query" type="search" value="{{ q }}" onInput="{{ onQ }}" onKeyDown="{{ searchSuggestKey }}" aria-label="제목, 모델, 작가 검색" placeholder="제목, 모델, 작가를 검색하세요" autocomplete="off" aria-controls="search-model-suggestions">
@@ -1937,7 +2063,7 @@ select,input,button{font-family:inherit}
       </div>
       <div class="search-result-bar">
         <div class="search-result-count" role="status" aria-live="polite">{{ resultCount }}</div>
-        <sc-raw-select aria-label="결과 정렬" value="{{ searchSort }}" onChange="{{ searchOnSort }}"><option value="latest" label="{{ searchLatestLabel }}">{{ searchLatestLabel }}</option><option value="popular">인기순</option></sc-raw-select>
+        <sc-raw-select aria-label="결과 정렬" value="{{ searchSort }}" onChange="{{ searchOnSort }}"><option value="random">랜덤순</option><option value="latest" label="{{ searchLatestLabel }}">{{ searchLatestLabel }}</option><option value="popular">인기순</option></sc-raw-select>
         <button type="button" class="search-random" onClick="{{ searchRandom }}" style="display:{{ searchRandomShow }}">아무거나 골라보기</button>
       </div>
       <p class="search-scope-note" style="display:{{ searchScopeShow }}">{{ searchScopeNote }}</p>
@@ -1945,11 +2071,11 @@ select,input,button{font-family:inherit}
       <div class="search-results" style="grid-template-columns:repeat(auto-fill,minmax({{ gridMin }},1fr))">
         <sc-for list="{{ results }}" as="p" hint-placeholder-count="0">
           <button type="button" class="search-result" data-work-id="{{ p.id }}" aria-label="{{ p.infoLabel }}" onClick="{{ p.open }}">
-            <span class="search-result-cover"><img loading="lazy" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="search-age-hint" style="display:{{ p.lockShow }}">19+ 확인 필요</span></span>
+            <span class="search-result-cover"><img loading="lazy" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}"><span class="search-buy-badge" data-kind="{{ p.buyKind }}">{{ p.buy }}</span><span class="search-age-hint" style="display:{{ p.lockShow }}">19+ 확인 필요</span></span>
             <span class="search-result-model">{{ p.model }}</span>
             <span class="search-result-title">{{ p.title }}</span>
             <span class="search-result-date">{{ p.date }}</span>
-            <span class="search-result-foot"><span>{{ p.format }}</span><span>{{ p.buy }}</span></span>
+            <span class="search-result-foot"><span>{{ p.format }}</span></span>
           </button>
         </sc-for>
       </div>
@@ -2057,15 +2183,9 @@ select,input,button{font-family:inherit}
 </sc-if>
 
     <sc-if value="{{ sectionVisible.monthShow }}" hint-placeholder-val="{{ false }}">
-<section id="calmonth" style="display:{{ monthShow }}">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px;margin:0">📅 공개 캘린더</h2>
-        <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
-          <button onClick="{{ calPrev }}" aria-label="이전 달" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:17px;line-height:1;cursor:pointer;display:{{ calPrevShow }};align-items:center;justify-content:center">‹</button>
-          <span style="min-width:98px;text-align:center;font-weight:800;font-size:14px">{{ monthLabel2 }}</span>
-          <button onClick="{{ calNext }}" aria-label="다음 달" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--w1);color:var(--txt);font-size:17px;line-height:1;cursor:pointer;display:{{ calNextShow }};align-items:center;justify-content:center">›</button>
-        </div>
-      </div>
+<section id="calmonth" aria-labelledby="calendar-title" style="display:{{ monthShow }}">
+      <div class="calendar-heading"><div><div class="calendar-eyebrow">RELEASE CALENDAR</div><h2 id="calendar-title">공개 일정</h2><p>날짜별 화보를 확인하고, 궁금한 작품을 눌러보세요</p></div><div class="calendar-toolbar"><button type="button" class="calendar-current" onClick="{{ calToday }}">이번 달</button><button type="button" class="calendar-arrow" onClick="{{ calPrev }}" aria-label="이전 달" style="display:{{ calPrevShow }}">←</button><strong aria-live="polite">{{ monthLabel2 }}</strong><button type="button" class="calendar-arrow" onClick="{{ calNext }}" aria-label="다음 달" style="display:{{ calNextShow }}">→</button></div></div>
+      <div class="calendar-summary"><span>이달 공개 <strong>{{ calendarCount }}편</strong><span class="calendar-future-count"> · 공개 예정 {{ calendarFutureCount }}편</span></span><span class="calendar-legend"><span><i class="calendar-sub-dot"></i>구독 화보</span><span><i class="calendar-coin-dot"></i>코인 화보</span></span></div>
       <div class="monthGrid">
         <div class="monthHead"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span class="sun">일</span></div>
         <div class="monthBody">
@@ -2073,7 +2193,7 @@ select,input,button{font-family:inherit}
             <div class="mCell {{ m.todayCls }}">
               <span class="mDay" style="display:{{ m.dayShow }}">{{ m.day }}</span>
               <div class="mThs {{ m.oneCls }}" style="display:{{ m.thShow }}">
-                <sc-for list="{{ m.thumbs }}" as="t" hint-placeholder-count="0"><button type="button" class="calendar-thumb" data-work-id="{{ t.id }}" onClick="{{ t.open }}" aria-label="{{ t.infoLabel }}" title="{{ t.title }}"><img loading="lazy" src="{{ t.img }}" alt="" style="filter:{{ t.blur }}"></button></sc-for>
+                <sc-for list="{{ m.thumbs }}" as="t" hint-placeholder-count="0"><button type="button" class="calendar-thumb" data-work-id="{{ t.id }}" onClick="{{ t.open }}" aria-label="{{ t.infoLabel }}" title="{{ t.title }}"><span class="calendar-cover" data-kind="{{ t.buyKind }}"><img loading="lazy" src="{{ t.img }}" alt="" style="filter:{{ t.blur }}"></span><span class="calendar-model">{{ t.model }}</span></button></sc-for>
               </div>
             </div>
           </sc-for>
@@ -2084,12 +2204,12 @@ select,input,button{font-family:inherit}
           <div class="mLrow" data-date="{{ l.date }}">
             <div class="mLdate {{ l.todayCls }}">{{ l.label }}</div>
             <div class="mLthumbs">
-              <sc-for list="{{ l.works }}" as="w" hint-placeholder-count="0"><button type="button" class="calendar-thumb" data-work-id="{{ w.id }}" onClick="{{ w.open }}" aria-label="{{ w.infoLabel }}" title="{{ w.title }}"><img loading="lazy" src="{{ w.img }}" alt="" style="filter:{{ w.blur }}"></button></sc-for>
+              <sc-for list="{{ l.works }}" as="w" hint-placeholder-count="0"><button type="button" class="calendar-thumb" data-work-id="{{ w.id }}" onClick="{{ w.open }}" aria-label="{{ w.infoLabel }}" title="{{ w.title }}"><span class="calendar-cover" data-kind="{{ w.buyKind }}"><img loading="lazy" src="{{ w.img }}" alt="" style="filter:{{ w.blur }}"></span><span class="calendar-mobile-copy"><span class="calendar-model">{{ w.model }}</span><span class="calendar-work-title">{{ w.title }}</span><span class="calendar-buy" data-kind="{{ w.buyKind }}">{{ w.buyLabel }}</span></span></button></sc-for>
               <span class="mLmore" style="display:{{ l.moreShow }}">{{ l.more }}</span>
             </div>
           </div>
         </sc-for>
-        <div style="display:{{ monthEmptyShow }};text-align:center;color:var(--mut);font-size:13px;padding:24px 0">이번 달 공개 예정 화보가 아직 없어요.</div>
+        <div style="display:{{ monthEmptyShow }};text-align:center;color:var(--mut);font-size:13px;padding:24px 0">이달에 등록된 공개 일정이 아직 없어요.</div>
       </div>
     </section>
 </sc-if>
@@ -2528,7 +2648,7 @@ function visibleCatalogueSections(values){
 }
 
 class Component extends DCLogic {
-  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'latest',modelSel:'all',yearSel:'all',searchCreator:'all',searchBuy:'all',searchVideo:false,searchAdult:false,searchRelease:'released',navMore:false,copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0,calMoff:0,rkAll:false};
+  state={D:null,err:'',tab:'works',mode:'week',wi:0,spot:0,now:Date.now(),theme:'light',age:null,modal:null,q:'',filter:'all',show:12,creator:null,cshow:10,model:null,mshow:10,mdcn:0,mq:'',scrolled:false,hover:null,recent:[],wish:[],sort:'random',modelSel:'all',yearSel:'all',searchCreator:'all',searchBuy:'all',searchVideo:false,searchAdult:false,searchRelease:'released',navMore:false,copied:false,mob:false,help:false,noticeGone:false,lineImg:'',lineFor:'',popupClosed:false,view:'home',nwn:9,champIdx:0,promoIdx:0,calMoff:0,rkAll:false};
   _browseEntry=window.BCUTCatalogueUI.browseEntry(location.search);
 
   componentDidMount(){
@@ -2557,7 +2677,7 @@ class Component extends DCLogic {
     try{const q=new URLSearchParams(location.search),st={};
       if(q.get('tab')==='models')st.tab='models';
       if(q.get('mode')==='month')st.mode='month';
-      if(['latest','popular'].includes(q.get('sort')))st.sort=q.get('sort');
+      if(['random','latest','popular'].includes(q.get('sort')))st.sort=q.get('sort');
       if(q.get('model'))st.modelSel=q.get('model');
       if(q.get('year'))st.yearSel=q.get('year');
       if(q.get('q'))st.q=q.get('q');
@@ -2572,6 +2692,7 @@ class Component extends DCLogic {
       if(this._admin){this.setState({age:'adult'});}
     }catch(e){}
     this._pendingList=window.BCUTListMemory.restore(history.state?.bcutList,this.listURL());
+    if(this._pendingList){const requestedSort=new URLSearchParams(location.search).get('sort');this._pendingList.values.sort=['random','latest','popular'].includes(requestedSort)?requestedSort:'random';}
     if(this._pendingList){this._qWeek=this._pendingList.values.wi;this.setState({...this._pendingList.values,navMore:false});}
     this._leaveList=()=>this.rememberList();
     window.addEventListener('pagehide',this._leaveList);
@@ -2791,7 +2912,7 @@ class Component extends DCLogic {
       if(S.tab==='models')q.set('tab','models');
       if(S.mode==='month')q.set('mode','month');
       if(S.wi!==lastWi)q.set('week',String(S.wi));   /* 최신 주차면 생략(주소 깔끔) */
-      if(S.sort&&S.sort!=='latest')q.set('sort',S.sort);
+      if(S.sort&&S.sort!=='random')q.set('sort',S.sort);
       if(S.modelSel&&S.modelSel!=='all')q.set('model',S.modelSel);
       if(S.yearSel&&S.yearSel!=='all')q.set('year',S.yearSel);
       if(S.q)q.set('q',S.q);
@@ -3430,7 +3551,8 @@ class Component extends DCLogic {
         });
         if(_pick.length>=3){
           base.pickShow=(V==='home')?'block':'none';
-          base.picks=_pick.slice(0,12).map(o=>({img:W[o.id].img||'',blur:this.blurOf(o.id),
+          const scrollPersonal=dir=>{const strip=document.getElementById('personal-picks-strip');if(strip)strip.scrollBy({left:dir*Math.round(strip.clientWidth*.9),behavior:'smooth'});};base.personalPrev=()=>scrollPersonal(-1);base.personalNext=()=>scrollPersonal(1);
+          base.picks=_pick.slice(0,12).map(o=>({id:o.id,infoLabel:o.model+' '+this.splitTitle(W[o.id].title||o.id).name+' 작품 정보',date:W[o.id].pub?this.fmt(W[o.id].pub)+' 공개':'공개 화보',format:W[o.id].vid?'영상 포함':'사진 화보',img:W[o.id].img||'',blur:this.blurOf(o.id),
             title:this.splitTitle(W[o.id].title||o.id).name,model:o.model,open:()=>this.openWork(o.id)}));
         }
       }
@@ -3576,7 +3698,7 @@ class Component extends DCLogic {
     const fut=Object.keys(W).filter(id=>W[id].buy==='구독'&&W[id].pub&&W[id].pub>today).sort((a,b)=>W[a].pub.localeCompare(W[b].pub));
     const dd=iso=>Math.max(0,Math.round((new Date(iso+'T00:00:00')-new Date(today+'T00:00:00'))/86400000));
     if(fut.length){base.ddayShow='block';base.dday='D-'+dd(W[fut[0]].pub);base.ddayDate=this.fmt(W[fut[0]].pub);}
-    if(active.length||fut.length){base.subShow='block';base.subCount=active.length;
+    if(active.length||fut.length){base.subShow='block';base.subCount=active.length;base.activeSubShow=active.length?'grid':'none';base.subEmptyShow=active.length?'none':'block';
       /* 오래된 순으로 다음 구독 공개일까지 열람 가능 */
       const order=active.slice().reverse();
       const until={};order.forEach((id,i)=>{if(fut[i])until[id]=W[fut[i]].pub;});
@@ -3584,18 +3706,18 @@ class Component extends DCLogic {
         const span=u?Math.max(1,Math.round((new Date(u+'T00:00:00')-new Date(W[id].pub+'T00:00:00'))/86400000)):1;
         const pct=u?Math.max(6,Math.min(100,Math.round(left/span*100))):100;
         const col=left===null?'var(--mut)':left<=2?'var(--acc2)':left<=5?'#f5b544':'#4ade80';
-        return {img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,date:this.fmt(W[id].pub),blur:this.blurOf(id),
+        return {id,infoLabel:(W[id].models||[]).join(' · ')+' '+this.splitTitle(W[id].title||id).name+' 구독 화보 정보',model:(W[id].models||[]).join(' · '),format:W[id].vid?'영상 포함':'사진 화보',img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,date:this.fmt(W[id].pub),blur:this.blurOf(id),
           vidShow:W[id].vid?'inline-block':'none',
-          windowShow:u?'block':'none',window:u?('D-'+left+' · ~'+this.fmt(u)):'',
+          windowColor:left!==null&&left<=2?'var(--acc)':'var(--t2)',windowShow:u?'block':'none',window:u?('D-'+left+' · ~'+this.fmt(u)):'',
           barW:pct+'%',barColor:col,line:'var(--w2)',open:()=>this.openWork(id)};});
-      if(fut.length){base.upcomingShow='block';
-        base.upcoming=fut.slice(0,8).map(id=>{const isCv=!!(coverNm&&(W[id].models||[]).includes(coverNm));return {img:W[id].img||'',blur:this.blurOf(id),date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub),coverShow:isCv?'block':'none',origShow:isCv?'none':'block',link:'https://bcut.maximkorea.net/work/'+id};});}}
+      if(fut.length){base.upcomingShow='block';const scrollSubs=dir=>{const strip=document.getElementById('subscription-upcoming-strip');if(strip)strip.scrollBy({left:dir*Math.round(strip.clientWidth*.9),behavior:'smooth'});};base.subUpcomingPrev=()=>scrollSubs(-1);base.subUpcomingNext=()=>scrollSubs(1);
+        base.upcoming=fut.slice(0,8).map(id=>{const isCv=!!(coverNm&&(W[id].models||[]).includes(coverNm));return {model:(W[id].models||[]).join(' · '),title:this.splitTitle(W[id].title||id).name,infoLabel:(W[id].models||[]).join(' · ')+' '+this.splitTitle(W[id].title||id).name+' · '+this.fmt(W[id].pub)+' 공개 예정 (새 창)',img:W[id].img||'',blur:this.blurOf(id),date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub),coverShow:isCv?'block':'none',origShow:isCv?'none':'block',link:'https://bcut.maximkorea.net/work/'+id};});}}
 
     /* 신작 — 앞으로 공개(coming soon) : 오늘 이후 */
     const nx=Object.keys(W).filter(id=>W[id].pub&&W[id].pub>today).sort((a,b)=>W[a].pub.localeCompare(W[b].pub)).slice(0,12);
     const wish=S.wish||[];
     const wished=id=>wish.includes(id);
-    if(nx.length){base.nextShow='block';base.nexts=nx.map(id=>({img:W[id].img||'',blur:this.blurOf(id),
+    if(nx.length){base.nextShow='block';base.comingCount=nx.length;const scrollComing=dir=>{const strip=document.getElementById('coming-strip');if(strip)strip.scrollBy({left:dir*Math.round(strip.clientWidth*.9),behavior:'smooth'});};base.comingPrev=()=>scrollComing(-1);base.comingNext=()=>scrollComing(1);base.nexts=nx.map(id=>({id,model:(W[id].models||[]).join(' · '),title:this.splitTitle(W[id].title||id).name,infoLabel:(W[id].models||[]).join(' · ')+' '+this.splitTitle(W[id].title||id).name+' · '+this.fmt(W[id].pub)+' 공개 예정 작품 정보',date:this.fmt(W[id].pub),dday:'D-'+dd(W[id].pub),buyKind:W[id].buy==='구독'?'subscription':'coin',buyLabel:W[id].buy==='구독'?'구독 화보':'코인 화보',buyNote:W[id].buy==='구독'?'구독으로 열람':'코인으로 개별 구매',format:W[id].vid?'영상 포함':'사진 화보',wishLabel:(W[id].models||[]).join(' · ')+' '+this.splitTitle(W[id].title||id).name+(wished(id)?' 찜 해제':' 찜하기'),wished:wished(id)?'true':'false',img:W[id].img||'',blur:this.blurOf(id),
       cap:W[id].pub===today?'오늘 공개':(this.fmt(W[id].pub)+' 공개 예정'),subShow:W[id].buy==='구독'?'block':'none',
       coverShow:(coverNm&&(W[id].models||[]).includes(coverNm))?'block':'none',
       vidShow:W[id].vid?'block':'none',
@@ -3691,11 +3813,13 @@ class Component extends DCLogic {
     const _pubOf=ymd=>Object.keys(W).filter(id=>W[id].pub===ymd);
     const calendarItem=id=>{
       const w=W[id],title=this.splitTitle(w.title||id).name;
-      return {id,img:w.img||'',title,blur:this.blurOf(id),
-        infoLabel:title+' 작품 정보'+(w.pub>today?' · '+this.fmt(w.pub)+' 공개 예정':''),open:()=>this.openWork(id)};
+      const sub=w.pub>today?w.buy==='구독':active.includes(id);
+      return {id,img:w.img||'',title,model:(w.models||[]).join(' · '),buyKind:sub?'subscription':'coin',buyLabel:sub?'구독 화보':'코인 화보',blur:this.blurOf(id),
+        infoLabel:(w.models||[]).join(' · ')+' '+title+' 작품 정보'+(w.pub>today?' · '+this.fmt(w.pub)+' 공개 예정':''),open:()=>this.openWork(id)};
     };
     base.monthLabel2=_y+'년 '+(_mo+1)+'월';
     base.calPrevShow=_off>_minOff?'flex':'none';base.calNextShow=_off<_maxOff?'flex':'none';
+    base.calToday=()=>this.setState({calMoff:0});
     base.calPrev=()=>this.setState({calMoff:Math.max(_minOff,_off-1)});
     base.calNext=()=>this.setState({calMoff:Math.min(_maxOff,_off+1)});
     base.monthCells=[];
@@ -3708,6 +3832,7 @@ class Component extends DCLogic {
       if(rel.length)base.monthList.push({date:ymd,label:(_mo+1)+'.'+d+' ('+_wn[new Date(_y,_mo,d).getDay()]+')',
         todayCls:ymd===today?'mToday':'',works:items,moreShow:'none',more:''});
     }
+    const monthPrefix=_y+'-'+_p2(_mo+1)+'-';const monthIds=Object.keys(W).filter(id=>(W[id].pub||'').startsWith(monthPrefix));base.calendarCount=monthIds.length;base.calendarFutureCount=monthIds.filter(id=>W[id].pub>today).length;
     base.monthEmptyShow=base.monthList.length?'none':'block';
     base.monthShow=V==='home'?'block':'none';
 
@@ -3724,7 +3849,9 @@ class Component extends DCLogic {
 
     const curList=isMonth?this.monthWorks(wi):this.weekWorks(wi);
     /* 월드컵 카드 썸네일 */
-    base.wcThumbs=curList.slice(0,3).map(x=>({img:(W[x.id]||{}).img||'',blur:this.blurOf(x.id)}));
+    const wcPool=Object.keys(W).filter(id=>W[id].img&&W[id].pub&&W[id].pub<=today);
+    if(!this._wcPromoIds||this._wcPromoIds.some(id=>!wcPool.includes(id))){const choices=wcPool.slice();this._wcPromoIds=[];while(choices.length&&this._wcPromoIds.length<2){const at=this._admin?0:Math.floor(Math.random()*choices.length);this._wcPromoIds.push(choices.splice(at,1)[0]);}}
+    base.wcThumbs=this._wcPromoIds.map(id=>({img:W[id].img,blur:this.blurOf(id)}));
 
     /* 추천 모델 */
     const nWorks=m=>Object.keys(W).filter(id=>(W[id].models||[]).includes(m)).length;
@@ -3733,9 +3860,10 @@ class Component extends DCLogic {
     if(!pool.length){const all=new Set();Object.keys(W).forEach(id=>(W[id].models||[]).forEach(m=>all.add(m)));
       pool=[...all].filter(m=>nWorks(m)>=MIN_W);}
     if(pool.length){if(!this._feat||!pool.includes(this._feat))this._feat=this._admin?pool[0]:pool[Math.floor(Math.random()*pool.length)];
-      const nm=this._feat;const fw=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)).slice(0,10);
-      base.featShow='block';base.feat={name:nm,img:this.modelImg(nm)||BLANK,blur:'none',open:()=>this.openModel(nm),
-        works:fw.map(id=>({img:W[id].img||'',blur:this.blurOf(id),open:()=>this.openWork(id)}))};}
+      const nm=this._feat;const published=Object.keys(W).filter(id=>(W[id].models||[]).includes(nm)&&W[id].pub&&W[id].pub<=today).sort((a,b)=>W[b].pub.localeCompare(W[a].pub)||Number(b)-Number(a));const fw=published.slice(0,10);
+      const slideFeatured=dir=>{const strip=document.getElementById('featured-strip');if(strip)strip.scrollBy({left:dir*Math.round(strip.clientWidth*.9),behavior:'smooth'});};
+      base.featShow='block';base.feat={name:nm,count:published.length,shortClass:fw.length<=6?'is-short':'',open:()=>this.openModel(nm),prev:()=>slideFeatured(-1),next:()=>slideFeatured(1),
+        works:fw.map(id=>({title:this.splitTitle(W[id].title||id).name,date:this.fmt(W[id].pub),format:W[id].vid?'영상 포함':'사진 화보',infoLabel:nm+' '+this.splitTitle(W[id].title||id).name+' 작품 정보',img:W[id].img||'',blur:this.blurOf(id),open:()=>this.openWork(id)}))};}
 
     /* 명예의 전당 셸프는 이번 주 1위 히어로 캐러셀(#spot)로 통합됨 — 셸프(#hall)는 숨김 유지 */
     base.hallShow='none';
@@ -3769,9 +3897,9 @@ class Component extends DCLogic {
     base.searchOnAdult=e=>searchSet({searchAdult:e.target.checked});
     base.searchRelease=S.searchRelease||'released';
     base.searchOnRelease=e=>searchSet({searchRelease:e.target.value});
-    base.searchBuyOptions=[['all','전체'],['sub','구독'],['coin','개별 구매']].map(([v,label])=>({
+    base.searchBuyOptions=[['all','전체'],['sub','구독 화보'],['coin','코인 화보']].map(([v,label])=>({
       label,pressed:String((S.searchBuy||'all')===v),go:()=>searchSet({searchBuy:v})}));
-    base.searchSort=S.sort==='popular'?'popular':'latest';
+    base.searchSort=['random','latest','popular'].includes(S.sort)?S.sort:'random';
     base.searchLatestLabel=upcomingSearch?'공개 임박순':'최신 공개순';
     base.searchOnSort=e=>searchSet({sort:e.target.value});
     base.searchReset=()=>searchSet({...searchDefaults});
@@ -3804,7 +3932,7 @@ class Component extends DCLogic {
       return {id,title,img:w.img||'',model:(w.models||[]).join(' · '),blur:this.blurOf(id),
         infoLabel:title+' 작품 정보',format:window.BCUTCatalogueUI.format(w),
         date:w.pub?(w.pub.slice(0,4)===today.slice(0,4)?this.fmt(w.pub):w.pub.replace(/-/g,'.'))+(upcomingSearch?' 공개 예정':' 공개'):'공개일 미등록',
-        buy:upcomingSearch?(sub?'구독 예정':'공개 예정'):(sub?'구독':'개별 구매'),
+        buyKind:sub?'subscription':'coin',buy:sub?'구독 화보':'코인 화보',
         lockShow:'none',open:()=>this.openWork(id)};
     });
     base.moreShow=ids.length>S.show?'block':'none';
@@ -3824,12 +3952,11 @@ class Component extends DCLogic {
     if(cs.length){const sel=S.creator&&byC[S.creator]?S.creator:cs[0];
       const _crFull=(V==='creators');
       base.crShow='block';
-      base.creators=cs.map(c=>{const on=c===sel;
-        return {name:c,
-          bg:on?'linear-gradient(130deg,rgba(230,0,18,.95),rgba(150,0,15,.95))':'rgba(255,255,255,.08)',
-          line:on?'rgba(230,0,18,.6)':'rgba(255,255,255,.18)',
-          fg:on?'#fff':'rgba(255,255,255,.82)',
-          go:()=>this.setState({creator:c})};});
+      const slideCreators=dir=>{const strip=document.getElementById('creator-strip');if(strip)strip.scrollBy({left:dir*Math.max(160,Math.round(strip.clientWidth*.8)),behavior:'smooth'});};
+      base.crSlidePrev=()=>slideCreators(-1);base.crSlideNext=()=>slideCreators(1);
+      base.creatorOptions=cs.slice().sort((a,b)=>a.localeCompare(b,'ko')).map(c=>({v:c,label:c+' · '+byC[c].length+'편'}));
+      base.onCreatorSelect=e=>this.setState({creator:e.target.value,creatorWorksPage:0});
+      base.creators=cs.map(c=>({name:c,count:byC[c].length,selected:c===sel?'true':'false',go:()=>this.setState({creator:c,creatorWorksPage:0})}));
       /* 작품 순서: 세션당 1회 랜덤(작가별 캐시) → 최신순 아님 */
       this._crWorkOrder=this._crWorkOrder||{};
       if(!this._crWorkOrder[sel]||this._crWorkOrder[sel].length!==byC[sel].length){
@@ -3855,8 +3982,12 @@ class Component extends DCLogic {
       base.crShelfShow=_crFull?'none':'block';
       base.crGridShow=_crFull?'grid':'none';
       base.crCardW=S.mob?'128px':'150px';
-      const _mk=id=>({img:W[id].img||'',title:this.splitTitle(W[id].title||id).name,blur:this.blurOf(id),open:()=>this.openWork(id)});
-      base.creatorWorks=cwAll.slice(0,S.mob?12:18).map(_mk);
+      const _mk=id=>({img:W[id].img||'',model:(W[id].models||[]).join(' · '),title:this.splitTitle(W[id].title||id).name,format:W[id].vid?'영상 포함':'사진 화보',infoLabel:(W[id].models||[]).join(' · ')+' '+this.splitTitle(W[id].title||id).name+' 작품 정보',blur:this.blurOf(id),open:()=>this.openWork(id)});
+      const pageSize=S.mob?4:6,pageCount=Math.ceil(cwAll.length/pageSize),page=Math.max(0,Math.min(S.creatorWorksPage||0,pageCount-1)),from=page*pageSize;
+      base.creatorWorks=cwAll.slice(from,from+pageSize).map(_mk);base.crShortClass=base.creatorWorks.length<=3?'is-short':'';base.crVisibleCount=base.creatorWorks.length;
+      base.crPageLabel=(from+1)+'–'+Math.min(from+pageSize,cwAll.length)+' / '+cwAll.length+'편';
+      base.crNextWorksShow=pageCount>1?'block':'none';
+      base.crNextWorks=()=>this.setState({creator:sel,creatorWorksPage:(page+1)%pageCount});
       base.creatorWorksAll=cwAll.map(_mk);}
 
     /* 모델별 */

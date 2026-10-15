@@ -429,7 +429,6 @@ OneSignalDeferred.push(async function(OneSignal){
   }catch(e){}
 });
 </script>
-<script id="work-model-links" type="application/json">{"손예은":"sonyeeun","동그란":"donggeuran","바비앙":"babiang","이연우":"iyeonu","예하":"yeha","최세희":"choesehui","심유이":"simyui","채솔":"chaesol","첼설아":"chelseola","은지":"eunji","모모리나":"momorina","쥬":"jyu","유디":"yudi","박서이":"bakseoi","이규영":"igyuyeong","뮤아":"myua","한지나":"hanjina","여나비":"yeonabi","수지":"suji","애순이":"aesuni","슬이":"seuli","빛베리":"bichberi","고아라":"goara","초연":"choyeon","유나":"yuna","겨우디":"gyeoudi","엘라":"elra","윤영서":"yunyeongseo","김갑주":"gimgapju","박민정":"bakminjeong","박수민":"baksumin","아리":"ari","쭈디":"jjudi","초이":"choi","옐랑":"yelrang","희야":"huiya","섹밍":"sekming","보라":"bora","그린":"geurin","박지연":"bakjiyeon","오은담":"oeundam","하리":"hari","연수":"yeonsu","박근나":"bakgeunna","강선혜":"gangseonhye","E거니":"egeoni","이나":"ina","슈":"syu","주주":"juju","김은지":"gimeunji","혜린":"hyerin","새하":"saeha","장은비":"jangeunbi","김설화":"gimseolhwa","장혜선":"janghyeseon","려니":"ryeoni","토리":"tori","채아":"chaea","히나":"hina","윤지윤":"yunjiyun","지린":"jirin","김연지":"gimyeonji","모모리나official":"momorinaofficial","에일리":"eilri","조아":"joa","핫소망":"hassomang","소은":"soeun","연유네코":"yeonyuneko","김서아":"gimseoa","전지은":"jeonjieun","E다연":"edayeon","조이온":"joion","리리":"riri","꾸뿌":"kkuppu","하윤아":"hayuna","순수":"sunsu","은유화":"eunyuhwa","유진":"yujin","엄상미":"eomsangmi","김지연":"gimjiyeon","신새롬":"sinsaerom","김소희":"gimsohui","벨벳":"belbet","이시현":"isihyeon","예리":"yeri","은수":"eunsu","이예린":"iyerin","박별":"bakbyeol","유주다":"yujuda","초영이":"choyeongi","박보름":"bakboreum","서여진":"seoyeojin","한서아":"hanseoa","타샤":"tasya","차유니":"chayuni","주빈":"jubin","소이":"soi","묘정":"myojeong","이채하":"ichaeha","김진아":"gimjina","지니":"jini","노지혜":"nojihye","이해인":"ihaein","링고lyn":"ringgolyn","안지현":"anjihyeon","이유진":"iyujin","최혜연":"choehyeyeon","이하니":"ihani","이아윤":"iayun","양혜원":"yanghyewon","청아":"cheonga","윤설화":"yunseolhwa","지아":"jia","탑체리":"tapcheri","퓨딩":"pyuding","키라":"kira","예나비":"yenabi","예리수":"yerisu","쏘블리":"ssobeulri","제아":"jea","퓨리":"pyuri","강인경":"gangingyeong","김나정":"gimnajeong","박청아":"bakcheonga","채령":"chaeryeong","도유리":"doyuri","김지예":"gimjiye","김세화":"gimsehwa","이안":"ian","이아영":"iayeong","이소윤":"isoyun","주은":"jueun","죠야끼":"jyoyakki","쥬우":"jyuu","미루":"miru","리아":"ria","서현숙":"seohyeonsuk","서지아":"seojia","시안":"sian"}</script>
 <style>
 .paid-picks-refresh{margin-top:12px;padding:9px 15px;border:1px solid var(--line);border-radius:999px;background:var(--bg1);color:var(--txt);font:700 12px Pretendard,sans-serif;cursor:pointer}
 .paid-picks-refresh:hover{border-color:var(--acc);color:var(--acc)}
@@ -511,7 +510,7 @@ OneSignalDeferred.push(async function(OneSignal){
 #spot .champion-nav button:disabled{opacity:.3;cursor:default}
 #spot .champion-feature{--champ-accent:#ff606e;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);border:1px solid #573039;border-radius:18px;overflow:hidden;background:linear-gradient(120deg,#201014,#111115);color:#fff}
 #spot .champion-feature[data-kind="monthly"]{--champ-accent:#e9c572;border-color:#96713b;background:linear-gradient(120deg,#302719,#121214)}
-#spot .champion-photo{display:block;border:0;padding:0;background:#09090c;min-width:0;width:100%;height:390px;cursor:pointer}
+#spot .champion-photo{display:block;border:0;padding:0;background:#09090c;min-width:0;width:100%;height:390px;cursor:pointer;overflow:hidden}
 #spot .champion-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
 #spot .champion-copy{padding:32px 36px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0}
 #spot .champion-period{display:inline-block;border:1px solid var(--champ-accent);color:var(--champ-accent);padding:6px 10px;border-radius:6px;font-size:12px;font-weight:800;margin-bottom:25px}
@@ -523,7 +522,38 @@ OneSignalDeferred.push(async function(OneSignal){
 #spot .champion-open{margin-top:24px;padding:11px 16px;border:0;border-radius:8px;background:var(--champ-accent);color:#151114;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
 #spot button:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
 @media(max-width:600px){#spot h2{font-size:22px}#spot .champion-feature{grid-template-columns:1fr}#spot .champion-photo{height:280px}#spot .champion-copy{padding:22px}#spot .champion-period{margin-bottom:18px}#spot .champion-model{font-size:30px}#spot .champion-copy h3{font-size:14px}#spot .champion-open{margin-top:18px}#spot .champion-heading{gap:12px}}
-</style></head>
+</style><style>
+#spot .champion-period{font-size:14px;padding:8px 12px;margin-bottom:19px}
+#spot .champion-streak{margin-top:12px;margin-bottom:2px;font-size:25px;line-height:1.3;font-weight:900;letter-spacing:-.6px;color:var(--champ-accent)}
+@media(max-width:600px){#spot .champion-period{font-size:13px}#spot .champion-streak{font-size:22px}}
+</style>
+<style>
+#classics{margin-top:0;padding:28px;border:1px solid rgba(184,145,68,.26);border-radius:22px;background:linear-gradient(140deg,rgba(190,151,76,.07),transparent 55%),var(--bg1)}
+#classics .classics-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}
+#classics .classics-eyebrow{font-size:10px;font-weight:900;letter-spacing:2.4px;color:var(--goldText);margin-bottom:8px}
+#classics h2{font-size:26px;font-weight:900;letter-spacing:-1px;line-height:1.2;margin:0}
+#classics h2 span{color:var(--goldText)}
+#classics .classics-heading p{font-size:12px;color:var(--mut);margin:8px 0 0;line-height:1.5}
+#classics .classics-seal{font-size:10px;font-weight:800;letter-spacing:1.8px;color:var(--goldText);border-top:1px solid rgba(184,145,68,.4);border-bottom:1px solid rgba(184,145,68,.4);padding:10px 0;white-space:nowrap}
+#classics .classics-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;grid-template-rows:234px 234px;gap:12px}
+#classics .classics-card{position:relative;display:block;width:100%;height:100%;padding:0;border:0;border-radius:12px;overflow:hidden;background:#121217;color:#fff;text-align:left;cursor:pointer;isolation:isolate}
+#classics .classics-card.is-first{grid-row:1 / span 2;box-shadow:inset 0 0 0 2px #d1ad66}
+#classics .classics-card img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;z-index:-2}
+#classics .classics-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.06) 25%,rgba(8,8,11,.12) 43%,rgba(8,8,11,.94) 100%);z-index:-1}
+#classics .classics-rank{position:absolute;left:13px;top:13px;display:flex;align-items:center;justify-content:center;width:34px;height:36px;border-radius:7px;border:1px solid rgba(233,202,137,.6);background:rgba(18,16,12,.78);color:#f3d99f;font-size:16px;font-weight:900;font-variant-numeric:tabular-nums}
+#classics .is-first .classics-rank{background:linear-gradient(135deg,#f7dda6,#bd9148);color:#34250e;border:0;width:42px;height:44px;font-size:20px}
+#classics .classics-copy{position:absolute;left:18px;right:18px;bottom:16px;display:flex;flex-direction:column;align-items:flex-start}
+#classics .classics-honor{color:#f2d79e;font-size:10px;letter-spacing:2px;font-weight:900;margin-bottom:8px}
+#classics .classics-model{font-size:22px;font-weight:900;line-height:1.2;letter-spacing:-.5px}
+#classics .is-first .classics-model{font-size:32px}
+#classics .classics-title{font-size:13px;line-height:1.45;font-weight:600;color:#eee9e1;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#classics .is-first .classics-title{font-size:15px}
+#classics .classics-open{margin-top:10px;color:#e6cc99;font-size:10px;font-weight:800;display:flex;gap:8px;align-items:center}
+#classics .classics-card:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+@media(max-width:600px){#classics{padding:20px 14px;margin-top:0;border-radius:18px}#classics .classics-heading{margin-bottom:18px}#classics h2{font-size:23px}#classics .classics-seal{font-size:8px;letter-spacing:1px}#classics .classics-heading p{font-size:11px}#classics .classics-grid{grid-template-columns:1fr 1fr;grid-template-rows:290px 210px 210px;gap:10px}#classics .classics-card.is-first{grid-row:auto;grid-column:1 / span 2}#classics .classics-copy{left:12px;right:10px;bottom:13px}#classics .classics-model{font-size:19px}#classics .is-first .classics-model{font-size:28px}#classics .classics-title{font-size:11px}#classics .classics-rank{left:10px;top:10px;width:28px;height:30px;font-size:13px}#classics .classics-open{margin-top:7px}}
+</style>
+<script id="work-model-links" type="application/json">{"손예은":"sonyeeun","동그란":"donggeuran","바비앙":"babiang","이연우":"iyeonu","예하":"yeha","최세희":"choesehui","심유이":"simyui","채솔":"chaesol","첼설아":"chelseola","은지":"eunji","모모리나":"momorina","쥬":"jyu","유디":"yudi","박서이":"bakseoi","이규영":"igyuyeong","뮤아":"myua","한지나":"hanjina","여나비":"yeonabi","수지":"suji","애순이":"aesuni","슬이":"seuli","빛베리":"bichberi","고아라":"goara","초연":"choyeon","유나":"yuna","겨우디":"gyeoudi","엘라":"elra","윤영서":"yunyeongseo","김갑주":"gimgapju","박민정":"bakminjeong","박수민":"baksumin","아리":"ari","쭈디":"jjudi","초이":"choi","옐랑":"yelrang","희야":"huiya","섹밍":"sekming","보라":"bora","그린":"geurin","박지연":"bakjiyeon","오은담":"oeundam","하리":"hari","연수":"yeonsu","박근나":"bakgeunna","강선혜":"gangseonhye","E거니":"egeoni","이나":"ina","슈":"syu","주주":"juju","김은지":"gimeunji","혜린":"hyerin","새하":"saeha","장은비":"jangeunbi","김설화":"gimseolhwa","장혜선":"janghyeseon","려니":"ryeoni","토리":"tori","채아":"chaea","히나":"hina","윤지윤":"yunjiyun","지린":"jirin","김연지":"gimyeonji","모모리나official":"momorinaofficial","에일리":"eilri","조아":"joa","핫소망":"hassomang","소은":"soeun","연유네코":"yeonyuneko","김서아":"gimseoa","전지은":"jeonjieun","E다연":"edayeon","조이온":"joion","리리":"riri","꾸뿌":"kkuppu","하윤아":"hayuna","순수":"sunsu","은유화":"eunyuhwa","유진":"yujin","엄상미":"eomsangmi","김지연":"gimjiyeon","신새롬":"sinsaerom","김소희":"gimsohui","벨벳":"belbet","이시현":"isihyeon","예리":"yeri","은수":"eunsu","이예린":"iyerin","박별":"bakbyeol","유주다":"yujuda","초영이":"choyeongi","박보름":"bakboreum","서여진":"seoyeojin","한서아":"hanseoa","타샤":"tasya","차유니":"chayuni","주빈":"jubin","소이":"soi","묘정":"myojeong","이채하":"ichaeha","김진아":"gimjina","지니":"jini","노지혜":"nojihye","이해인":"ihaein","링고lyn":"ringgolyn","안지현":"anjihyeon","이유진":"iyujin","최혜연":"choehyeyeon","이하니":"ihani","이아윤":"iayun","양혜원":"yanghyewon","청아":"cheonga","윤설화":"yunseolhwa","지아":"jia","탑체리":"tapcheri","퓨딩":"pyuding","키라":"kira","예나비":"yenabi","예리수":"yerisu","쏘블리":"ssobeulri","제아":"jea","퓨리":"pyuri","강인경":"gangingyeong","김나정":"gimnajeong","박청아":"bakcheonga","채령":"chaeryeong","도유리":"doyuri","김지예":"gimjiye","김세화":"gimsehwa","이안":"ian","이아영":"iayeong","이소윤":"isoyun","주은":"jueun","죠야끼":"jyoyakki","쥬우":"jyuu","미루":"miru","리아":"ria","서현숙":"seohyeonsuk","서지아":"seojia","시안":"sian"}</script>
+</head>
 <body>
 <x-dc>
 <helmet>
@@ -1509,10 +1539,11 @@ select,input,button{font-family:inherit}
       <div onTouchStart="{{ champTS }}" onTouchEnd="{{ champTE }}">
         <sc-for list="{{ champs }}" as="c" hint-placeholder-count="0">
           <article class="champion-feature" data-kind="{{ c.kind }}">
-            <button type="button" class="champion-photo" onClick="{{ c.open }}" aria-label="{{ c.infoLabel }}"><img loading="lazy" src="{{ c.img }}" alt="" style="filter:{{ c.blur }}"></button>
+            <button type="button" class="champion-photo" onClick="{{ c.open }}" aria-label="{{ c.infoLabel }}"><img loading="lazy" src="{{ c.img }}" alt="" style="filter:{{ c.blur }};object-position:{{ c.photoPosition }};transform:{{ c.photoTransform }};transform-origin:{{ c.photoOrigin }}"></button>
             <div class="champion-copy">
               <span class="champion-period">{{ c.badge }}</span>
               <div class="champion-award">{{ c.eyebrow }}</div>
+              <div class="champion-streak" style="display:{{ c.streakShow }}">{{ c.streakLabel }}</div>
               <div class="champion-model">{{ c.model }}</div>
               <h3>{{ c.title }}</h3>
               <div class="champion-note"><span class="champion-age" style="display:{{ c.b19Show }}">19</span><span>{{ c.tag }}</span></div>
@@ -1524,33 +1555,7 @@ select,input,button{font-family:inherit}
     </section>
 </sc-if>
 
-    <sc-if value="{{ sectionVisible.classicsShow }}" hint-placeholder-val="{{ false }}">
-<section id="classics" style="display:{{ classicsShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">역대 <span style="color:var(--goldText)">명작</span></h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">ALL-TIME BEST</span>
-      </div>
-      <div style="font-size:12.5px;color:var(--mut);margin-bottom:16px">누적 판매 기준 · 지금 봐도 후회 없는 명작</div>
-      <div style="display:grid;grid-template-columns:{{ classicsCols }};gap:13px">
-        <sc-for list="{{ classics }}" as="c" hint-placeholder-count="0">
-          <div onClick="{{ c.open }}" style="position:relative;cursor:pointer;border-radius:14px;overflow:hidden;background:var(--bg2);grid-row:{{ c.gr }};grid-column:{{ c.gc }};aspect-ratio:{{ c.ar }};outline:{{ c.ring }};outline-offset:-2px">
-            <img loading="lazy" src="{{ c.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;filter:{{ c.blur }}">
-            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,0) 42%,rgba(8,8,11,.92) 100%)"></div>
-            <div style="position:absolute;top:10px;left:10px;z-index:3;min-width:{{ c.rankSz }};height:{{ c.rankSz }};display:inline-flex;align-items:center;justify-content:center;font-size:{{ c.rankFs }};font-weight:900;border-radius:9px;background:rgba(8,8,11,.72);border:1px solid rgba(255,255,255,.18);color:#fff;padding:0 6px">{{ c.rank }}</div>
-            <div style="position:absolute;top:10px;right:10px;z-index:3;display:{{ c.revShow }};font-size:11px;font-weight:900;border-radius:7px;padding:4px 8px;background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600">{{ c.rev }}</div>
-            <div style="position:absolute;left:0;right:0;bottom:0;z-index:2;padding:26px 13px 12px">
-              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-                <span style="display:{{ c.b19Show }};background:var(--acc);color:#fff;font-size:9.5px;font-weight:900;padding:1px 5px;border-radius:4px">19</span>
-                <span style="font-size:{{ c.mFs }};font-weight:900;color:#fff">{{ c.model }}</span>
-              </div>
-              <div style="font-size:11.5px;font-weight:600;color:#c9c9d2;margin-top:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.title }}</div>
-            </div>
-            <span style="position:absolute;bottom:11px;right:11px;z-index:3;font-size:10px;font-weight:900;border-radius:6px;padding:3px 7px;background:rgba(8,8,11,.78);color:#fff;border:1px solid rgba(255,255,255,.18)">{{ c.coin }}</span>
-          </div>
-        </sc-for>
-      </div>
-    </section>
-</sc-if>
+
 
     <sc-if value="{{ sectionVisible.hallShow }}" hint-placeholder-val="{{ false }}">
 <section id="hall" style="display:{{ hallShow }}">
@@ -2088,6 +2093,20 @@ select,input,button{font-family:inherit}
       </div>
     </section>
 </sc-if>
+    <sc-if value="{{ sectionVisible.classicsShow }}" hint-placeholder-val="{{ false }}">
+    <section id="classics" aria-labelledby="classics-title" style="display:{{ classicsShow }}">
+      <div class="classics-heading"><div><div class="classics-eyebrow">HALL OF FAME</div><h2 id="classics-title">역대 <span>명작</span></h2><p>오래도록 사랑받은 화보 · 누적 판매 TOP 5</p></div><span class="classics-seal">ALL-TIME BEST</span></div>
+      <div class="classics-grid">
+        <sc-for list="{{ classics }}" as="c" hint-placeholder-count="0">
+          <button type="button" class="classics-card {{ c.featured }}" onClick="{{ c.open }}" aria-label="{{ c.infoLabel }}">
+            <img loading="lazy" src="{{ c.img }}" alt="" style="object-position:{{ c.photoPosition }};transform:scale({{ c.photoScale }});transform-origin:{{ c.photoOrigin }};filter:{{ c.blur }}">
+            <span class="classics-shade"></span><span class="classics-rank">{{ c.rank }}</span>
+            <span class="classics-copy"><span class="classics-honor" style="display:{{ c.honorShow }}">ALL-TIME No.1</span><span class="classics-model">{{ c.model }}</span><span class="classics-title">{{ c.title }}</span><span class="classics-open">화보 보기 <span aria-hidden="true">↗</span></span></span>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+    </sc-if>
   </main>
 
   <nav aria-label="모델별 화보" style="max-width:1180px;margin:0 auto;padding:20px 26px 0;font-size:11.5px;line-height:2.1;color:var(--mut)">
@@ -3432,22 +3451,23 @@ class Component extends DCLogic {
           const mw=this.monthWorks(lw)[0]; if(mw&&W[mw.id])_monthCard[mo]=mw.id;});
         const _latest=_done[0];
         const _mkWeekly=(i)=>{const t=this.weekWorks(i)[0]; if(!t||!W[t.id])return null; const id=t.id,w=W[id],isCur=(i===_latest);
+          let consecutive=1;for(let j=i-1;j>=0;j--){const previous=this.weekWorks(j)[0];if(!previous||previous.id!==id)break;consecutive++;}
           const _hi=((D.heroImgById&&D.heroImgById[id]&&String(D.heroImgById[id]).trim())||(isCur&&D.heroImg&&String(D.heroImg).trim()))||''; const _img=_hi||w.img||''; const wl=(_wks[i]||{}).label||'';
-          return {kind:'weekly',infoLabel:(w.models||[]).join(' · ')+' 1위 화보 정보',img:_img,bg:'url('+_img+')',blur:(_hi?'none':this.blurOf(id)),cardBorder:'0',
+          return {photoTransform:'scale('+((D.heroScaleById||{})[id]||1)+')',photoOrigin:(D.heroOriginById||{})[id]||'center',photoPosition:(D.heroPositionById||{})[id]||'center',streakShow:consecutive>1?'block':'none',streakLabel:consecutive+'주 연속 1위',kind:'weekly',infoLabel:(w.models||[]).join(' · ')+' 1위 화보 정보',img:_img,bg:'url('+_img+')',blur:(_hi?'none':this.blurOf(id)),cardBorder:'0',
             eyebrow:isCur?'THIS WEEK 1st':'WEEKLY 1st',eyebrowColor:'var(--acc2)',
-            badge:'🥇 '+wl+' 1위',badgeStyle:'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
+            badge:wl+' · 주간 1위',badgeStyle:'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
             title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
-            tag:'판매·조회·평점 종합 주간 1위',
+            tag:wl+' 판매·조회·평점 종합 1위',
             open:()=>this.openWork(id)};};
-        const _mkMonthly=(mo,id)=>{const w=W[id],ml=this.monthLabel(mo);
-          const _mi=(D.monthImg&&D.monthImg[mo]&&String(D.monthImg[mo]).trim())||''; const _mimg=_mi||w.img||'';
-          return {kind:'monthly',infoLabel:(w.models||[]).join(' · ')+' 월간 1위 화보 정보',img:_mimg,bg:'url('+_mimg+')',blur:(_mi?'none':this.blurOf(id)),cardBorder:'3px solid #e6b545',
+        const _mkMonthly=(mo,id)=>{const w=W[id],ml=this.monthLabel(mo),layout=(D.monthPhotoLayout||{})[mo]||{};
+          const _mi=(D.monthImg&&D.monthImg[mo]&&String(D.monthImg[mo]).trim())||(D.heroImgById&&D.heroImgById[id]&&String(D.heroImgById[id]).trim())||''; const _mimg=_mi||w.img||'';
+          return {photoTransform:'scale('+(layout.scale||1)+')',photoOrigin:layout.origin||'center',photoPosition:layout.position||'center',streakShow:'none',streakLabel:'',kind:'monthly',infoLabel:(w.models||[]).join(' · ')+' 월간 1위 화보 정보',img:_mimg,bg:'url('+_mimg+')',blur:(_mi?'none':this.blurOf(id)),cardBorder:'3px solid #e6b545',
             eyebrow:'THIS MONTH 1st',eyebrowColor:'var(--goldText)',
             badge:'👑 '+ml+' 월간 1위',badgeStyle:'background:linear-gradient(90deg,#e8b23a,#ffd873);color:#3a2600',
             title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
             tag:ml+' 한 달 종합 1위',open:()=>this.openWork(id)};};
         const _champs=[]; let _pm=null;
-        for(let k=0;k<_done.length && _champs.length<30;k++){const i=_done[k]; const mo=this.wkMonth(i);
+        for(let k=0;k<_done.length && _champs.length<30;k++){const i=_done[k]; const dateMo=this.wkMonth(i),labelMo=String((_wks[i]||{}).label||'').match(/(\d+)\s*월/); const mo=labelMo?dateMo.slice(0,4)+'-'+String(labelMo[1]).padStart(2,'0'):dateMo;
           if(mo!==_pm){ if(_monthCard[mo])_champs.push(_mkMonthly(mo,_monthCard[mo])); _pm=mo; }
           const c=_mkWeekly(i); if(c)_champs.push(c);
         }
@@ -3479,7 +3499,7 @@ class Component extends DCLogic {
         base.classicsShow='block';
         base.classicsCols=_mob?'1fr 1fr':'1.6fr 1fr 1fr';
         base.classics=_cl.slice(0,5).map((o,i)=>{const id=o.id,w=W[id],isH=(i===0);
-          const _hi=(D.heroImgById&&D.heroImgById[id]&&String(D.heroImgById[id]).trim())||'';
+          const _hi=(D.classicImgById&&D.classicImgById[id])||(D.heroImgById&&D.heroImgById[id]&&String(D.heroImgById[id]).trim())||'';
           const _img=_hi||w.img||'';
           const _tag=o.tag||'';
           return {open:()=>this.openWork(id),
@@ -3488,7 +3508,7 @@ class Component extends DCLogic {
             gc:isH?(_mob?'1 / span 2':'1'):'auto',
             ar:isH?(_mob?'16/10':'auto'):'5/6',
             ring:isH?'2px solid var(--goldText)':'0',
-            rank:['🥇','🥈','🥉','4','5'][i]||String(i+1),
+            rank:String(i+1).padStart(2,'0'),featured:isH?'is-first':'',honorShow:isH?'block':'none',infoLabel:'역대 '+(i+1)+'위 '+(w.models||[]).join(' · ')+' '+this.splitTitle(w.title||id).name+' 화보 보기',photoPosition:((D.classicPhotoLayoutById||{})[id]||{}).position||'center 20%',photoScale:((D.classicPhotoLayoutById||{})[id]||{}).scale||1,photoOrigin:((D.classicPhotoLayoutById||{})[id]||{}).origin||'center',
             rankSz:isH?'44px':'34px', rankFs:isH?'20px':'15px',
             revShow:_tag?'inline-block':'none', rev:_tag,
             b19Show:w.b19?'inline-block':'none',

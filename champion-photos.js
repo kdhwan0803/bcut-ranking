@@ -4,6 +4,7 @@
   'use strict';
   const selections={
   "heroImgById": {
+    "2396": "champion-yudi-2396-weekly.jpg",
     "506": "champion-506-weekly.jpg",
     "1711": "champion-1711-weekly.jpg",
     "1712": "champion-1712-weekly.jpg",
@@ -31,6 +32,7 @@
     "2026-05": "champion-1712-monthly.jpg"
   },
   "heroPositionById": {
+    "2396": "center top",
     "506": "center 55%",
     "1711": "center top",
     "1712": "center top",
@@ -50,6 +52,7 @@
     "2267": "center 18%"
   },
   "heroScaleById": {
+    "2396": 1,
     "506": 1.25,
     "1711": 1.2,
     "1712": 1.5,
@@ -68,6 +71,7 @@
     "2226": 1
   },
   "heroOriginById": {
+    "2396": "center top",
     "506": "center top",
     "1711": "center top",
     "1712": "65% top",

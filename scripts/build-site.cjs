@@ -15,14 +15,20 @@ async function main() {
   const before = fs.readFileSync(path.join(root, 'data.json'));
   const run = file => execFileSync(process.execPath, [path.join(__dirname, file), '--date', date], { cwd: root, stdio: 'inherit' });
   run('update-model-pages.cjs');
+  run('update-creator-pages.cjs');
   run('check-model-pages.cjs');
+  run('check-creator-pages.cjs');
   run('check-model-browse.cjs');
   run('check-work-detail.cjs');
   run('check-home-browse.cjs');
   run('check-home-loading.cjs');
-  const modelFiles = ['index.html', ...fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html')).map(file => 'models/' + file)];
+  const creatorFiles = fs.existsSync(path.join(root, 'creators'))
+    ? fs.readdirSync(path.join(root, 'creators')).filter(file => file.endsWith('.html')).map(file => 'creators/' + file)
+    : [];
+  const modelFiles = ['index.html', ...fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html')).map(file => 'models/' + file), ...creatorFiles];
   const generatedHash = sitemap.fingerprint(root, modelFiles);
   run('update-model-pages.cjs');
+  run('update-creator-pages.cjs');
   assert.equal(sitemap.fingerprint(root, modelFiles), generatedHash, 'Repeated generation must be stable');
   assert(before.equals(fs.readFileSync(path.join(root, 'data.json'))), 'Build must not edit catalogue data');
   const result = sitemap.generate(root, fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8'), previous, date);
@@ -39,6 +45,15 @@ async function main() {
     const target = path.join(output, file);
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.copyFileSync(source, target);
+  }
+  // Creator pages are generated build artifacts (not committed to the repo),
+  // so copy them into the Pages output explicitly after the tracked files.
+  const creatorsDir = path.join(root, 'creators');
+  if (fs.existsSync(creatorsDir)) {
+    fs.mkdirSync(path.join(output, 'creators'), { recursive: true });
+    for (const file of fs.readdirSync(creatorsDir).filter(name => name.endsWith('.html'))) {
+      fs.copyFileSync(path.join(creatorsDir, file), path.join(output, 'creators', file));
+    }
   }
   fs.writeFileSync(path.join(output, 'sitemap.xml'), result.sitemap);
   fs.writeFileSync(path.join(output, sitemap.STATE_FILE), JSON.stringify(result.state) + '\n');

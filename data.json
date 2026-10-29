@@ -6099,7 +6099,7 @@
       "models": [
         "에일리"
       ],
-      "img": "https://i.ibb.co/zhcSBnsy/1374-C-20260630152736-opt.webp",
+      "img": "https://i.ibb.co/jxnLQ6L/260219-opt.webp",
       "buy": "구독",
       "b19": 0,
       "vid": 0,
@@ -6213,7 +6213,7 @@
       "models": [
         "조아"
       ],
-      "img": "https://i.ibb.co/mrsD1442/1381-C-20260630152757-opt.webp",
+      "img": "https://i.ibb.co/1tkLcTmh/260228-opt.webp",
       "buy": "구독",
       "b19": 0,
       "vid": 0,
@@ -15505,6 +15505,25 @@
       "photo": "TrueEnding",
       "photoId": ""
     },
+    "2374": {
+      "title": "U.Na - Just a Friend",
+      "models": [
+        "양유나"
+      ],
+      "img": "https://i.ibb.co/VcCRp2n5/2374-friend-C-20261002165303-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-11-06",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "TrueEnding",
+      "photoId": ""
+    },
     "2377": {
       "title": "(19) BAD KITTY [ty]",
       "models": [
@@ -15522,6 +15541,25 @@
       "nb": 0,
       "safe": false,
       "photo": "taehyeong",
+      "photoId": ""
+    },
+    "2385": {
+      "title": "U.Na - I See You",
+      "models": [
+        "양유나"
+      ],
+      "img": "https://i.ibb.co/6Rxmr0Wm/2385-seeyou-C-20261006070955-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-11-05",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "TrueEnding",
       "photoId": ""
     },
     "2390": {
@@ -15777,10 +15815,10 @@
         "박서이"
       ],
       "img": "https://i.ibb.co/Y7tssMN2/2412-C-20261014161705-14-opt.webp",
-      "buy": "코인",
+      "buy": "구독",
       "b19": 1,
       "vid": 1,
-      "pub": "2026-11-11",
+      "pub": "2026-10-28",
       "desc": "",
       "tags": [],
       "wide": "",
@@ -15942,6 +15980,101 @@
       "photo": "엑스바오",
       "photoId": ""
     },
+    "2425": {
+      "title": "[X_O] Full Metal Temptation (VIDEO)",
+      "models": [
+        "슬이"
+      ],
+      "img": "https://i.ibb.co/JFpQwX56/2425-C-20261027104644-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-10-29",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "엑스바오",
+      "photoId": ""
+    },
+    "2426": {
+      "title": "[MX-JU05] Look at Love me! #1",
+      "models": [
+        "쥬"
+      ],
+      "img": "https://i.ibb.co/jPfJCvG8/2426-C-20261015160033-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2026-11-01",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "2429": {
+      "title": "[MX-YD03] Naked GET DOPAMINE #1",
+      "models": [
+        "유디"
+      ],
+      "img": "https://i.ibb.co/sMCq9Ls/2429-C-20261015161441-14-opt.webp",
+      "buy": "구독",
+      "b19": 0,
+      "vid": 0,
+      "pub": "2026-11-07",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "ZINHO",
+      "photoId": ""
+    },
+    "2436": {
+      "title": "Ahri '💗아리는 망사빤쮸💞' [X-level076]",
+      "models": [
+        "아리"
+      ],
+      "img": "https://i.ibb.co/8nMhMtc0/2436-C-20261019102152-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-11-03",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "JAY",
+      "photoId": ""
+    },
+    "2437": {
+      "title": "수지 'Cream Pie' [X-level094]",
+      "models": [
+        "수지"
+      ],
+      "img": "https://i.ibb.co/20G5cn3w/2437-C-20261019101344-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-11-08",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "JAY",
+      "photoId": ""
+    },
     "2443": {
       "title": "💕🎮나나미 치아키🎮💕 [단간론파 코스프레]",
       "models": [
@@ -15971,6 +16104,120 @@
       "b19": 1,
       "vid": 1,
       "pub": "2026-10-25",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "momosensei",
+      "photoId": ""
+    },
+    "2457": {
+      "title": "오늘은 집에가기 싫어 [ty]",
+      "models": [
+        "채령"
+      ],
+      "img": "https://i.ibb.co/LhZj1jsG/2457-C-20261023171136-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-11-02",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "taehyeong",
+      "photoId": ""
+    },
+    "2463": {
+      "title": "연쇄 귀염마🔪😈 (VIDEO)",
+      "models": [
+        "채솔"
+      ],
+      "img": "https://i.ibb.co/JwSMnYj3/2463-video-C-20261026110949-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-10-27",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "momosensei",
+      "photoId": ""
+    },
+    "2464": {
+      "title": "연쇄 귀염마🔪😈 (PHOTO)",
+      "models": [
+        "채솔"
+      ],
+      "img": "https://i.ibb.co/fVmNdVbC/2464-photo-C-20261026110840-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 0,
+      "pub": "2026-10-27",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "momosensei",
+      "photoId": ""
+    },
+    "2465": {
+      "title": ". 💕🩺💉💊 어딘가 수상한 간호사💊 🩺💉💕",
+      "models": [
+        "죠야끼"
+      ],
+      "img": "https://i.ibb.co/G4d045jY/2465-C-20261026110642-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-10-28",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "momosensei",
+      "photoId": ""
+    },
+    "2471": {
+      "title": "부끄러운 유령",
+      "models": [
+        "연유네코"
+      ],
+      "img": "https://i.ibb.co/Q3xRV4yQ/2471-C-20261028141115-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-10-29",
+      "desc": "",
+      "tags": [],
+      "wide": "",
+      "hl": "",
+      "nb": 0,
+      "safe": false,
+      "photo": "momosensei",
+      "photoId": ""
+    },
+    "2477": {
+      "title": "✨👼🏻💕天使の誘惑💕👼🏻✨ [천사의 유혹]",
+      "models": [
+        "쥬"
+      ],
+      "img": "https://i.ibb.co/ZpSVp5Nj/2477-C-20261029174223-14-opt.webp",
+      "buy": "코인",
+      "b19": 1,
+      "vid": 1,
+      "pub": "2026-10-30",
       "desc": "",
       "tags": [],
       "wide": "",
@@ -16982,6 +17229,32 @@
         "2222",
         "978",
         "1836"
+      ]
+    },
+    {
+      "label": "10월 5주차",
+      "date": "2026-10-26",
+      "ranking": [
+        "2445",
+        "2404",
+        "2422",
+        "2348",
+        "2396",
+        "2408",
+        "2411",
+        "2266",
+        "2359",
+        "2076",
+        "2400",
+        "2424",
+        "2279",
+        "2017",
+        "2463",
+        "2361",
+        "2425",
+        "2335",
+        "2308",
+        "2094"
       ]
     }
   ],

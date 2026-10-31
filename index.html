@@ -4179,9 +4179,9 @@ class Component extends DCLogic {
           simShow:'none',simLabel:'이 화보와 비슷한',similar:[],
           gridShow:'none',gridLabel:'',others:[],
           trackOutbound:()=>this.trackWorkOutbound(S.modal.experiment,S.modal.browse,id),
-          cta:'https://bcut.maximkorea.net/work/'+id,ctaLabel:_subActive?'구독하고 보기 ›':'코인으로 바로 보기 ›',origHintShow:'block',
-          buyRowShow:'flex',buyTagShow:'inline-block',buyTag:_subActive?'구독 전용 · 월 ₩19,900':'개별 구매',
-          hypeShow:(wr&&wr<=10)?'inline-flex':'none',hypeColor:(wr&&wr<=3)?'var(--acc)':'var(--mut)',hypeText:(wr&&wr<=3)?('🔥 이번 주 #'+wr+' · 지금 인기'):((wr&&wr<=10)?('이번 주 랭킹 #'+wr):''),
+          cta:'https://bcut.maximkorea.net/work/'+id,ctaLabel:(wr&&wr<=10?'이번 주 #'+wr+' · ':'')+(_subActive?'구독하고 보기 ›':'코인으로 바로 보기 ›'),origHintShow:'block',
+          buyRowShow:'flex',buyTagShow:'inline-block',buyTag:_subActive?'구독 회원 무료 열람 · 매주 신작까지':'개별 구매',
+          hypeShow:(wr&&wr<=10)?'inline-flex':'none',hypeColor:(st>=2||(wr&&wr<=3))?'var(--acc)':'var(--mut)',hypeText:(st>=2)?('👑 '+st+'주 연속 TOP3 인기'):((wr&&wr<=3)?'🔥 지금 가장 많이 보는 화보':((wr&&wr<=10)?'이번 주 인기 급상승':'')),
           copy:()=>this.copyLink(id),copyLabel:S.copied?'복사됨 ✓':'링크 복사',
           share:()=>this.shareWork(id,w.title)};
         /* 비슷한 화보: 같은 작가 → 같은 태그 → 같은 구매방식 */

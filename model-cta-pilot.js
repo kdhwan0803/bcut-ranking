@@ -29,6 +29,8 @@
   function hero(state, slug) {
     return '<section class="hero"><div class="eyebrow">MAXIM B컷 · 모델 화보</div><h1>' + api.escape(state.model) + ' 화보</h1>' +
       '<p class="sub">현재 공개된 화보 <b id="cnt">' + state.count + '</b>편 <a class="all-works" href="#grid">전체 목록 보기</a></p>' +
+      (slug === 'seuli' ?
+        '<a href="https://bcutrank.com/" style="display:inline-flex;align-items:center;min-height:44px;font-size:14px;font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:3px">이번 주 B컷 랭킹 보기 →</a>' : '') +
       '<div id="latest-feature">' + feature(state, slug) + '</div></section>';
   }
   var analytics = '<script id="model-pilot-analytics">window.BCUT_ANALYTICS_DISABLED=!/^https?:$/.test(location.protocol)||!["bcutrank.com","www.bcutrank.com","kdhwan0803.github.io"].includes(location.hostname)||/[?&](admin|preview|measure)=1(?:&|$)/.test(location.search)||!!window.IS_ADMIN;window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}if(!window.BCUT_ANALYTICS_DISABLED){gtag("js",new Date());gtag("config","G-0M1DPCT33G",{content_group:"' + version + '"});var ga=document.createElement("script");ga.async=true;ga.src="https://www.googletagmanager.com/gtag/js?id=G-0M1DPCT33G";document.head.appendChild(ga);}</script>';

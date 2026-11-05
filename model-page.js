@@ -3,6 +3,16 @@
   var api = window.BCUTModelData, grid = document.getElementById('grid');
   if (!api || !grid || !grid.dataset.model) return;
   var model = grid.dataset.model;
+  var rankingLink = document.querySelector('.hero .sub + a[href="https://bcutrank.com/"]');
+  if (rankingLink && rankingLink.textContent.trim() === '이번 주 B컷 랭킹 보기 →') {
+    rankingLink.addEventListener('click', function () {
+      if (window.BCUT_ANALYTICS_DISABLED || window.IS_ADMIN || typeof window.gtag !== 'function') return;
+      if (!/^https?:$/.test(location.protocol) ||
+          !['bcutrank.com', 'www.bcutrank.com', 'kdhwan0803.github.io'].includes(location.hostname) ||
+          /[?&](admin|preview|measure)=1(?:&|$)/.test(location.search)) return;
+      window.gtag('event', 'model_ranking_link_click', { model: model });
+    });
+  }
   function text(id, value) { var element = document.getElementById(id); if (element) element.textContent = value; }
   function meta(selector, value) { var element = document.querySelector(selector); if (element) element.setAttribute('content', value); }
   function html(element, value) {

@@ -1726,6 +1726,21 @@ select,input,button{font-family:inherit}
         </div>
       </div>
 
+      <sc-if value="{{ prediction.visible }}" hint-placeholder-val="{{ false }}">
+        <section id="weekly-prediction" aria-labelledby="weekly-prediction-title" style="margin:0 0 20px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--bg1)">
+          <h3 id="weekly-prediction-title" style="margin:0 0 6px;font-size:18px;font-weight:900">다음 주 1위 예측</h3>
+          <p role="status" style="margin:0;color:var(--txt);line-height:1.6">{{ prediction.message }}</p>
+          <sc-if value="{{ prediction.open }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:6px 0 12px;color:var(--mut);font-size:12px">11월 8일 밤 11:59까지 · 브라우저당 한 표 · 실제 랭킹과 별도</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:8px">
+              <sc-for list="{{ prediction.choices }}" as="choice" hint-placeholder-count="0">
+                <button type="button" onClick="{{ choice.vote }}" style="min-height:44px;padding:9px 12px;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--w2);color:var(--txt);font:inherit;cursor:pointer">{{ choice.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </section>
+      </sc-if>
+
       <div class="rank-periods">
         <div class="rank-period-row">
           <div class="rank-recent">
@@ -2940,6 +2955,47 @@ class Component extends DCLogic {
   weekEnd(wi){const d=((this.state.D.weeks||[])[wi]||{}).date;if(!d||!/\d{4}-\d{2}-\d{2}/.test(d))return '';const dt=new Date(d+'T00:00:00Z');dt.setUTCDate(dt.getUTCDate()+6);return dt.toISOString().slice(0,10);}
   pubOk(id,wi){const pub=(this.state.D.works[id]||{}).pub;if(!pub)return true;const e=this.weekEnd(wi);return !e||pub<=e;}
   weekWorks(wi){return this.catalogueCalc('weekWorks:'+wi,()=>{const wk=(this.state.D.weeks||[])[wi];if(!wk)return [];return (wk.ranking||[]).filter(id=>this.state.D.works[id]&&this.pubOk(id,wi)).map((id,i)=>({id,rank:i+1,pts:this.pts(i+1)}));});}
+  weeklyPrediction(wi,isMonth,isModel){
+    const hidden={visible:false};
+    const {D,predictionError}=this.state;
+    const candidateWeek='2026-11-02';
+    const resultWeek='2026-11-09';
+    const day=this.today();
+    if(isMonth||isModel||wi!==D.weeks.length-1||day<'2026-11-05'||day>='2026-11-16')return hidden;
+
+    const candidates=['2457','2436','2348','2477','2411'];
+    const title=id=>this.splitTitle(D.works[id]?.title||id).name;
+    const key='bcut_prediction_'+candidateWeek;
+    let saved;
+    try{saved=localStorage.getItem(key);}catch{}
+    const picked=candidates.includes(saved)?saved:null;
+
+    if(day>=resultWeek){
+      const resultIndex=D.weeks.findIndex(week=>week.date===resultWeek);
+      const winner=resultIndex<0?null:this.weekWorks(resultIndex)[0]?.id;
+      const pickText=picked?'내 예측은 ‘'+title(picked)+'’. ':'';
+      return {visible:true,open:false,message:pickText+(winner
+        ? '11월 9일 랭킹 1위는 ‘'+title(winner)+'’입니다.'+(picked===winner?' 예측이 맞았어요!':'')
+        : '11월 9일 랭킹이 올라오면 결과를 확인할 수 있어요.')};
+    }
+
+    if(D.weeks[wi]?.date!==candidateWeek||!candidates.every(id=>D.works[id]))return hidden;
+    if(picked)return {visible:true,open:false,message:'‘'+title(picked)+'’에 한 표를 남겼어요. 11월 9일 랭킹에서 결과를 확인해 보세요.'};
+    return {visible:true,open:true,message:predictionError||'이번 주 TOP 5 중 다음 주 1위가 될 화보를 골라보세요.',
+      choices:candidates.map((id,index)=>({label:(index+1)+'위 · '+title(id),vote:()=>{
+        if(new Date(Date.now()+32400000).toISOString().slice(0,10)>=resultWeek){
+          this.setState({now:Date.now()});return;
+        }
+        try{
+          if(candidates.includes(localStorage.getItem(key))){this.setState({now:Date.now()});return;}
+          localStorage.setItem(key,id);
+        }catch{
+          this.setState({predictionError:'이 브라우저에서 예측을 저장할 수 없어요. 브라우저 저장소 설정을 확인해 주세요.'});return;
+        }
+        track('weekly_prediction_vote',{prediction_week:candidateWeek,work_id:id});
+        this.setState({now:Date.now(),predictionError:''});
+      }}))};
+  }
   workRankAt(id,wi){const f=this.weekWorks(wi).find(x=>x.id===id);return f?f.rank:0;}
   weekModelPts(wi){return this.catalogueCalc('weekModelPts:'+wi,()=>{const m={};this.weekWorks(wi).forEach(w=>{((this.state.D.works[w.id]||{}).models||[]).forEach(md=>{m[md]=(m[md]||0)+w.pts;});});return m;});}
   weekModels(wi){return this.catalogueCalc('weekModels:'+wi,()=>{const m=this.weekModelPts(wi);return Object.keys(m).map(md=>({id:md,pts:m[md]})).sort((a,b)=>b.pts-a.pts).map((x,i)=>Object.assign({},x,{rank:i+1}));});}
@@ -3313,6 +3369,7 @@ class Component extends DCLogic {
       themeLabel:dark?'라이트 모드로 바꾸기':'다크 모드로 바꾸기'};
     const base=Object.assign({},themeVals,{
       mob:!!S.mob,
+      prediction:{visible:false},
       loadingShow:D?'none':'flex',
       catalogueVisibility:D?'visible':'hidden',
       loadingText:S.err||'랭킹 불러오는 중',
@@ -3521,6 +3578,7 @@ class Component extends DCLogic {
     const rng=isMonth?'':this.weekRange(wi);
     base.rankSubline=(isMonth?this.monthLabel(this.wkMonth(wi)):(wkLabel+(rng?' · '+rng:'')))
       +(liveNow?' · 집계 중':'');
+    base.prediction=this.weeklyPrediction(wi,isMonth,isM);
     base.rankEyebrow=isMonth?'MONTHLY RANKING':'WEEKLY RANKING';
 
     /* 모델 탭 — 전용 카드 */

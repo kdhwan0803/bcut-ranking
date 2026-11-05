@@ -26,6 +26,7 @@
     "2343": "ria-2343.jpg"
   },
   "monthImg": {
+    "2026-10": "assets/covers/2396-e2022245be87.webp",
     "2026-09": "champion-ju-2226-monthly.jpg",
     "2026-08": "champion-2094-monthly.jpg",
     "2026-07": "champion-1910-monthly.jpg",
@@ -94,6 +95,7 @@
     "2226": "center"
   },
   "monthPhotoLayout": {
+    "2026-10": {"position":"center 15%","scale":1.06,"origin":"center top"},
     "2026-09": {
       "position": "center",
       "scale": 1,

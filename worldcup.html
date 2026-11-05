@@ -305,8 +305,14 @@ class Component extends DCLogic {
   w(id){return ((this.state.D||{}).works||{})[id]||{};}
   blurOf(){return 'none';} // Catalogue thumbnails stay clear; purchase authentication belongs to B컷.
 
-  start(){const b=this.shuffle(this.state.pool).slice(0,this.state.size);
-    this.setState({bracket:b,winners:[],mi:0,champ:null,phase:'match'});window.scrollTo({top:0,behavior:'smooth'});}
+  start(){
+    if(this.state.phase==='match')return;
+    const bracket=this.shuffle(this.state.pool).slice(0,this.state.size);
+    if(bracket.length<2)return;
+    this.setState({bracket,winners:[],mi:0,champ:null,phase:'match'});
+    track('worldcup_start',{bracket_size:bracket.length});
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
   choose(side){const S=this.state;const win=S.bracket[S.mi+side];const ws=S.winners.concat([win]);let mi=S.mi+2;
     if(mi>=S.bracket.length){
       if(ws.length===1)return this.end(ws[0]);

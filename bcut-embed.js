@@ -1,8 +1,16 @@
 /* MAXIM B컷 · 함께 산 화보 / 함께 보면 좋은 화보 임베드 (외부 로더용) · ROT-FINAL-8: recs.json(동시구매) 있으면 '함께 산 화보'로 표시 · ROT-FINAL-9: data.json에 없는 화보(공개 전)에서도 최근작으로 채움 · ROT-FINAL-10: MORE 섹션이 없는 화보에서 블록이 상단으로 튀던 문제 수정(로더 스니펫 위치에 삽입) */
 (function(){
-  window.__bcutVer='ROT-FINAL-12-PAIR-COMING-1';
+  window.__bcutVer='ROT-FINAL-12-PAIR-COMING-1-IMGURL-1';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
+  function imageUrl(src){
+    var raw=String(src||'').trim();
+    if(!raw) return '';
+    try{
+      var image=new URL(raw,BASE+'/');
+      return image.protocol==='https:'||image.protocol==='http:'?image.href:'';
+    }catch(e){ return ''; }
+  }
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';
   if(!id) return;
   var css='.bctg{margin:26px auto;max-width:1000px;background:#14141a;border-radius:16px;padding:20px 20px 18px;color:#fff;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.18)}'
@@ -153,6 +161,10 @@
     fetch(BASE+'/data.json',{cache:'no-cache'}).then(function(r){return r.json();})
   ]).then(function(a){
     var RECS=a[0]||{}, W=(a[1]&&a[1].works)||{};
+    // Resolve cover paths against the data host, not the embedding website.
+    Object.keys(W).forEach(function(k){
+      if(W[k]&&W[k].img) W[k].img=imageUrl(W[k].img);
+    });
     // 이번 주 랭킹 진입 배너 (추천 블록 위) — 실제 1위 화보를 자동 노출
     try{
       if(!document.getElementById('bcut-rankbanner')){

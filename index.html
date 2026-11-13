@@ -1706,7 +1706,7 @@ select,input,button{font-family:inherit}
           <div style="display:{{ helpShow }};margin-top:14px;max-width:520px;border-radius:12px;border:1px solid var(--line);background:var(--bg1);padding:16px 18px">
             <div style="font-size:13px;font-weight:900;margin-bottom:10px">순위는 이렇게 정해져요</div>
             <div style="font-size:12.5px;color:var(--mut);line-height:1.8">
-              한 주 동안의 <b style="color:var(--txt)">판매 · 조회 · 평점</b>을 합산해 순위를 매깁니다.<br>
+              월요일부터 일요일까지의 <b style="color:var(--txt)">작품별 구매 건수</b>로 주간 순위를 매깁니다. 코인·떡 결제를 포함하며, 진행 중인 주는 표시된 시점 기준의 잠정 순위입니다.<br>
               순위별 포인트는 1위 100pt부터 10위 10pt까지 10점 간격으로 주어지고,<br>
               <b style="color:var(--txt)">모델 랭킹</b>은 그 모델이 참여한 화보들의 포인트를 모두 더한 값입니다.<br>
               <b style="color:var(--txt)">월간 랭킹</b>은 해당 월 각 주차 포인트의 합계예요.
@@ -2319,7 +2319,7 @@ select,input,button{font-family:inherit}
 
   <footer style="border-top:1px solid var(--line);padding:40px 26px 60px;text-align:center;color:var(--mut);font-size:12px;line-height:1.9">
     <div style="font-weight:900;font-size:15px;letter-spacing:2px;color:var(--t3);margin-bottom:10px">MAXIM <span style="color:var(--acc2)">B컷</span></div>
-    (주)맥심코리아 · 순위는 판매·조회·평점 종합 점수 기준입니다<br>
+    (주)맥심코리아 · 주간 순위는 작품별 구매 건수 기준입니다<br>
     <a href="https://bcut.maximkorea.net" target="_blank" style="text-decoration:underline">B컷 바로가기</a> · <a onClick="{{ openGate }}" style="text-decoration:underline;cursor:pointer">연령 설정 변경</a>
   </footer>
 
@@ -3520,7 +3520,7 @@ class Component extends DCLogic {
     const liveNow=!isMonth&&this.weekLive(wi);
     const rng=isMonth?'':this.weekRange(wi);
     base.rankSubline=(isMonth?this.monthLabel(this.wkMonth(wi)):(wkLabel+(rng?' · '+rng:'')))
-      +(liveNow?' · 집계 중':'');
+      +(liveNow?' · 집계 중':'')+(!isMonth&&((D.weeks||[])[wi]||{}).asOf?' · '+D.weeks[wi].asOf+' 기준':'');
     base.rankEyebrow=isMonth?'MONTHLY RANKING':'WEEKLY RANKING';
 
     /* 모델 탭 — 전용 카드 */
@@ -3670,7 +3670,7 @@ class Component extends DCLogic {
             eyebrow:isCur?'THIS WEEK 1st':'WEEKLY 1st',eyebrowColor:'var(--acc2)',
             badge:wl+' · 주간 1위',badgeStyle:'background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.2)',
             title:this.splitTitle(w.title||id).name,model:(w.models||[]).join(' & ')||'MAXIM B컷',b19Show:w.b19?'inline-block':'none',
-            tag:wl+' 판매·조회·평점 종합 1위',
+            tag:wl+' 판매량 1위',
             open:()=>this.openWork(id)};};
         const _mkMonthly=(mo,id)=>{const w=W[id],ml=this.monthLabel(mo),layout=(D.monthPhotoLayout||{})[mo]||{};
           const _mi=(D.monthImg&&D.monthImg[mo]&&String(D.monthImg[mo]).trim())||(D.heroImgById&&D.heroImgById[id]&&String(D.heroImgById[id]).trim())||''; const _mimg=_mi||w.img||'';

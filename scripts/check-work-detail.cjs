@@ -8,15 +8,18 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(root, 'data.json'), 'utf8'));
 const arg = process.argv.indexOf('--date'), date = arg < 0 ? api.today() : process.argv[arg + 1];
 const mapping = JSON.parse(html.match(/<script id="work-model-links" type="application\/json">([\s\S]*?)<\/script>/)[1]);
-const document = { getElementById: () => ({ textContent: JSON.stringify(mapping) }), body:{style:{}} };
+const document = { getElementById: () => ({ textContent: JSON.stringify(mapping) }), createElement: () => ({style:{}}), head:{appendChild(){}}, body:{style:{}} };
 const window = {};
 const events=[];
 const context = vm.createContext({ window, document, console, Date, URLSearchParams, track:(name,params)=>events.push({name,params:plain(params)}),location: {search:'?preview=1',pathname:'/',hash:''}, history:{replaceState(){},pushState(){}}, localStorage:{getItem(){return null;},setItem(){}}, DCLogic:class {constructor(){this.props={};} setState(patch){Object.assign(this.state,patch);}} });
 const inline = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 vm.runInContext(fs.readFileSync(path.join(root, 'paid-pick-rotation.js'), 'utf8'),context);
+vm.runInContext(fs.readFileSync(path.join(root, 'work-facts.js'), 'utf8'),context);
+vm.runInContext(fs.readFileSync(path.join(root, 'work-shopping.js'), 'utf8'),context);
 vm.runInContext(inline.find(code => code.includes('window.BCUTCatalogueUI =')), context);
 vm.runInContext(inline.find(code => code.includes('window.BCUTSearch=')), context);
 const ui = window.BCUTCatalogueUI;
+const shopping = window.BCUTShopping;
 const plain = value => JSON.parse(JSON.stringify(value));
 const fixture = {works:{
   1:{models:['A','B'],pub:'2026-10-01'},
@@ -36,6 +39,48 @@ assert.deepEqual(plain(ui.related(fixture,'1','2026-10-10')),['4','3','11','2'])
 assert.deepEqual(plain(ui.related(fixture,'10','2026-10-10')),[]);
 assert.deepEqual(plain(ui.modelNames([' A ','A','B',''])),['A','B']);
 assert.equal(JSON.stringify(fixture),before);
+const shoppingFixture={works:{
+  current:{models:['A'],photo:'creator-a',pub:'2026-10-10',title:'Set (PHOTO)'},
+  counterpart:{models:['A'],photo:'creator-a',pub:'2026-10-10',title:'Set (VIDEO)'},
+  modelNew:{models:['A'],photo:'other-1',pub:'2026-10-14',title:'Model new (PHOTO)'},
+  modelNext:{models:['A'],photo:'other-2',pub:'2026-10-13',title:'Model next (PHOTO)'},
+  modelExtra:{models:['A'],photo:'other-3',pub:'2026-10-12',title:'Model extra (PHOTO)'},
+  creatorNew:{models:['B'],photo:'creator-a',pub:'2026-10-14',title:'Creator new (PHOTO)'},
+  creatorNext:{models:['C'],photo:'creator-a',pub:'2026-10-13',title:'Creator next (PHOTO)'},
+  hidden:{models:['A'],photo:'creator-a',pub:'2026-10-15',hidden:true,title:'Hidden (PHOTO)'},
+  draft:{models:['A'],photo:'creator-a',pub:'2026-10-15',status:'draft',title:'Draft (PHOTO)'},
+  invalid:{models:['A'],photo:'creator-a',pub:'2026-02-30',title:'Invalid date (PHOTO)'},
+  future:{models:['A'],photo:'creator-a',pub:'2026-10-16',title:'Future (PHOTO)'}
+}};
+const shoppingBefore=JSON.stringify(shoppingFixture);
+const recommendations=plain(shopping.recommendations(shoppingFixture,'current','2026-10-15'));
+assert.deepEqual(recommendations,[
+  {id:'modelNew',reason:'같은 모델'},{id:'modelNext',reason:'같은 모델'},
+  {id:'creatorNew',reason:'같은 작가'},{id:'creatorNext',reason:'같은 작가'}
+],'recommendations are four unique released works, prioritising model then creator');
+assert(recommendations.length<=4&&new Set(recommendations.map(item=>item.id)).size===recommendations.length);
+for(const excluded of ['current','counterpart','modelExtra','hidden','draft','invalid','future']) assert(!recommendations.some(item=>item.id===excluded),'excluded recommendation: '+excluded);
+assert.equal(JSON.stringify(shoppingFixture),shoppingBefore,'recommendation selection must not mutate its input');
+const ineligibleOnly={works:{
+  current:{models:['A'],photo:'creator-a',pub:'2026-10-10',title:'Current'},
+  hidden:{models:['A'],photo:'creator-b',pub:'2026-10-15',hidden:true,title:'Hidden'},
+  draft:{models:['A'],photo:'creator-b',pub:'2026-10-15',status:'draft',title:'Draft'},
+  invalid:{models:['A'],photo:'creator-b',pub:'2026-02-30',title:'Invalid'},
+  future:{models:['A'],photo:'creator-b',pub:'2026-10-16',title:'Future'}
+}};
+assert.deepEqual(plain(shopping.recommendations(ineligibleOnly,'current','2026-10-15')),[],'hidden, draft, invalid-date and future works are never eligible');
+assert.deepEqual(plain(shopping.editions(shoppingFixture,'current','2026-10-15')),[
+
+  {id:'current',kind:'photo',current:true,label:'사진판 · 현재 선택'},
+  {id:'counterpart',kind:'video',current:false,label:'영상판 보기'}
+],'PHOTO/VIDEO-only editions are paired and labelled');
+assert.equal(shopping.editionKind(shoppingFixture.works.current),'photo');
+assert.equal(shopping.editionKind(shoppingFixture.works.counterpart),'video');
+const photoPurchase=shopping.purchase('2392',data,false,null,'사진 화보');
+const videoPurchase=shopping.purchase('2393',data,false,null,'영상 화보');
+assert.equal(photoPurchase.price,'200코인'); assert.equal(photoPurchase.format,'사진 화보');
+assert.equal(videoPurchase.price,'200코인'); assert.equal(videoPurchase.format,'영상 화보');
+assert.match(shopping.summary('2392',data),/내지 사진 128장/,'known official photo metadata is exposed');
 for (const work of Object.values(data.works)) assert.equal(ui.released(work,date),api.listed(work)&&work.pub<=date);
 for (const [name,slug] of Object.entries(mapping)) {
   assert(/^[a-z0-9_-]+$/.test(slug)); assert(fs.existsSync(path.join(root,'models',slug+'.html')));
@@ -76,7 +121,9 @@ for(const [instant,day,originalReleased,addedReleased] of [
   assert.equal(ids.includes('2424'),originalReleased,'Existing release at KST midnight');
   assert.equal(ids.includes('900001'),addedReleased,'New catalogue release at KST midnight');
   const model=releaseData.works['2274'].models[0];
-  assert.deepEqual(ids,api.summary(releaseData,model,day).published.filter(id=>id!=='2274').slice(0,8));
+  const expectedRelated=plain(shopping.recommendations(releaseData,'2274',day).map(item=>item.id));
+  assert.deepEqual(ids,expectedRelated,'Modal uses the approved recommendation API at the KST boundary');
+  assert(ids.length<=4&&new Set(ids).size===ids.length,'Modal recommendations stay unique and capped at four');
   releaseChecks.push({instant,day,originalReleased,addedReleased});
 }
 assert.equal(JSON.stringify(releaseData),releaseBefore,'Date rollover must preserve catalogue data');
@@ -86,13 +133,16 @@ const checked=[];
 for (const [id,model] of [['2393','박서이'],['2055','동그란'],['2274','슬이']]) {
   const app=new context.App();
   Object.assign(app.state,{D:structuredClone(data),wi:data.weeks.length-1,now:Date.parse(date+'T07:00:00Z'),age:'adult',view:'search',modal:{kind:'work',id}});
-  const modal=app.vals().modal, expected=api.summary(data,model,date).published.filter(other=>other!==id).slice(0,8);
+  const modal=app.vals().modal, expected=plain(shopping.recommendations(data,id,date).map(item=>item.id));
   assert.deepEqual(plain(modal.relatedCards.map(card=>card.id)),expected);
+  assert(expected.length<=4&&new Set(expected).size===expected.length);
+  assert(modal.relatedCards.every(card=>card.reason==='같은 모델'||card.reason==='같은 작가'));
   assert(modal.modelLinks.some(link=>link.name===model));
   assert.equal(modal.gridShow,'none');
   assert.equal(modal.relatedShow,'block');
   assert(modal.relatedCards.every(card=>card.title&&card.date&&card.href==='?w='+card.id+'&preview=1'));
-  assert(modal.relatedCards.every(card=>card.kind===(data.works[card.id].vid===true||String(data.works[card.id].vid)==='1'?'영상 포함':'사진')));
+  assert(modal.relatedCards.every(card=>card.kind===ui.format(data.works[card.id])),'Cards distinguish photo-only, video-only and included-video formats');
+  assert.equal(modal.simShow,'none'); assert.equal(modal.similar.length,0,'A second recommendation block must not duplicate the four cards');
   let opened,prevented=false; app.openWork=value=>{opened=value;};
   const card=modal.relatedCards[0];
   card.open({button:0,preventDefault(){prevented=true;}}); assert.equal(opened,card.id); assert(prevented);

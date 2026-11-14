@@ -40,10 +40,14 @@
   function validRecord(value) {
     return value && value.v === 1 && ['ranking', 'discovery', 'new', 'model'].indexOf(value.kind) >= 0 && finiteInt(value.seed) && typeof value.lastActivity === 'number' && Number.isFinite(value.lastActivity);
   }
+  var pendingNewVisit = false;
   function touch(force) {
-    if (!cached) return;
+    if (!cached || pendingNewVisit) return;
     var now = Date.now();
-    cached.lastActivity = now;
+    // A lifecycle event is not activity: an idle tab must not renew an expired visit
+    // just before reload. Keep this document stable and rotate on its next load.
+    if (now - cached.lastActivity > TTL) { pendingNewVisit = true; return; }
+    if (!force) cached.lastActivity = now;
     if (force || now - lastSavedAt >= 30000) { writeJSON(safeStore('sessionStorage'), SESSION_KEY, cached); lastSavedAt = now; }
   }
   function bindActivity() {

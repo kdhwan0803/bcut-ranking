@@ -4,7 +4,9 @@
 const checked=()=>root.BCUTWorkFacts||{works:{}};
 const fact=id=>checked().works?.[String(id)]||{};
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const names=w=>Array.isArray(w?.models)?w.models.slice().sort().join('|'):'';
+function modelNames(w){let list=w?.models;if(!Array.isArray(list)){try{list=JSON.parse(String(list||'').replace(/'/g,'"'));}catch(_){list=[];}}return Array.isArray(list)?[...new Set(list.map(n=>String(n).trim()).filter(Boolean))]:[];}
+const names=w=>modelNames(w).slice().sort().join('|');
+function published(w,day){if(!w||!/^\d{4}-\d{2}-\d{2}$/.test(w.pub||''))return false;const d=new Date(w.pub+'T00:00:00Z');return !isNaN(d.getTime())&&d.toISOString().slice(0,10)===w.pub&&w.pub<=day&&w.hidden!==true&&w.published!==false&&!/^(draft|hidden|deleted|unpublished)$/i.test(w.status||'');}
 function editionKind(w){
  const t=String(w?.title||'').normalize('NFKC');
  if(/(?:PHOTO|사진)\s*(?:\+|&)\s*(?:VIDEO|영상)|VIDEO\s*(?:\+|&)\s*PHOTO/i.test(t))return 'combined';
@@ -21,7 +23,7 @@ function editions(data,id,day){
   const byId={};for(const items of map.values())if(items.some(x=>x.kind==='photo')&&items.some(x=>x.kind==='video'))items.forEach(x=>{byId[x.id]=items;});
   [['2392','2393']].forEach(pair=>{if(pair.every(x=>W[x])&&names(W[pair[0]])===names(W[pair[1]])&&W[pair[0]].pub===W[pair[1]].pub)pair.forEach(x=>{byId[x]=pair.map((key,i)=>({id:key,kind:i?'video':'photo'}));});});groups.set(data,byId);
  }
- const pair=(groups.get(data)[String(id)]||[]).filter(x=>W[x.id].pub<=day&&W[x.id].hidden!==true&&W[x.id].published!==false);
+ const pair=(groups.get(data)[String(id)]||[]).filter(x=>published(W[x.id],day));
  return pair.length>1?pair.slice().sort((a,b)=>a.kind===b.kind?a.id.localeCompare(b.id):a.kind==='photo'?-1:1).map(x=>({...x,current:x.id===String(id),label:(x.kind==='photo'?'사진판':'영상판')+(x.id===String(id)?' · 현재 선택':' 보기')})):[];
 }
 function duration(seconds){const s=Number(seconds);if(!Number.isFinite(s)||s<=0)return '';const h=Math.floor(s/3600),m=Math.floor(s%3600/60),r=s%60;return(h?h+'시간 ':'')+(m?m+'분 ':'')+(r?r+'초':'').trim();}
@@ -34,7 +36,7 @@ function summary(id,data){
  const w=data.works?.[id]||{},f=fact(id),parts=[];
  if(w.pub&&w.pub>today())return '공개 후 최종 구성을 확인할 수 있습니다.';
  const kind=editionKind(w);
- if(kind!=='video'){
+ if(kind!=='video'&&!(w.vid&&f.photos<=1)){
   if(Number.isInteger(f.photoPages)&&f.photoPages>0)parts.push('사진 '+f.photoPages.toLocaleString('ko-KR')+'p (표지 포함)');
   else if(Number.isInteger(f.photos)&&f.photos>0)parts.push('내지 사진 '+f.photos.toLocaleString('ko-KR')+'장 (표지 제외)');
  }
@@ -45,9 +47,9 @@ function summary(id,data){
 function verification(id){const d=fact(id).checkedAt||checked().checkedAt;return d?'공식 정보 '+new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric'}).format(new Date(d))+' 확인 · 최종 가격·구성은 B컷 기준':'';}
 function recommendations(data,id,day){
  const W=data.works||{},w=W[id]||{}, paired=new Set(editions(data,id,day).map(x=>x.id));paired.add(String(id));
- const released=key=>{const x=W[key];return !paired.has(key)&&x&&x.pub&&x.pub<=day&&x.hidden!==true&&x.published!==false;};
+ const released=key=>!paired.has(key)&&published(W[key],day);
  const sorted=Object.keys(W).filter(released).sort((a,b)=>W[b].pub.localeCompare(W[a].pub)||b.localeCompare(a,undefined,{numeric:true}));
- const sameModel=sorted.filter(key=>(W[key].models||[]).some(n=>(w.models||[]).includes(n)));
+ const sameModel=sorted.filter(key=>modelNames(W[key]).some(n=>modelNames(w).includes(n)));
  const sameCreator=w.photo?sorted.filter(key=>W[key].photo===w.photo):[];
  const result=[],seen=new Set();const add=(keys,reason,limit)=>{for(const key of keys){if(result.length>=4||limit<=0)break;if(seen.has(key))continue;seen.add(key);result.push({id:key,reason});limit--;}};
  add(sameModel,'같은 모델',2);add(sameCreator,'같은 작가',2);add(sameModel,'같은 모델',4);add(sameCreator,'같은 작가',4);return result;

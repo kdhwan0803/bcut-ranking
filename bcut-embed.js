@@ -159,7 +159,7 @@
 
   // Native shelves are identified only by their exact title plus adjacent slider structure.
   // Their duplicate cards remain hidden even when a shelf is expanded.
-  function compactNativeShelves(recIds){
+  function compactNativeShelves(recIds,defaultOpen){
     var wanted={}; recIds.forEach(function(k){wanted[String(k)]=1;});
     var titles=document.querySelectorAll('.section-title'), controls=box.querySelector('.bctg-more'), count=0;
     for(var si=0;si<titles.length;si++){
@@ -179,11 +179,11 @@
         }
         title.setAttribute('data-bcut-native-was-hidden',title.hidden?'1':'0');
         slider.setAttribute('data-bcut-native-was-hidden',slider.hidden?'1':'0');
-        title.hidden=true; slider.hidden=true;
+        title.hidden=defaultOpen?title.getAttribute('data-bcut-native-was-hidden')==='1':true; slider.hidden=defaultOpen?slider.getAttribute('data-bcut-native-was-hidden')==='1':true;
       }
       if(!controls){
         controls=document.createElement('div'); controls.className='bctg-more';
-        controls.innerHTML='<span>다른 모델·작가 화보는 펼쳐서 볼 수 있습니다.</span>';
+        controls.innerHTML='<span>'+(defaultOpen?'다른 모델·작가 화보도 함께 보여드립니다. 필요하면 접을 수 있습니다.':'다른 모델·작가 화보는 펼쳐서 볼 수 있습니다.')+'</span>';
         box.appendChild(controls);
         controls.addEventListener('click',function(e){
           var button=e.target.closest&&e.target.closest('button[data-bcut-shelf]'); if(!button) return;
@@ -197,19 +197,19 @@
       if(!controls.querySelector('button[data-bcut-shelf="'+token+'"]')) {
         var button=document.createElement('button'); button.type='button'; button.setAttribute('data-bcut-shelf',token);
         var label=kind==='MODEL'?'같은 모델':'같은 작가';
-        button.setAttribute('data-bcut-kind',label); button.setAttribute('aria-expanded','false'); button.textContent=label+' 더 보기'; controls.appendChild(button);
+        button.setAttribute('data-bcut-kind',label); button.setAttribute('aria-expanded',defaultOpen?'true':'false'); button.textContent=label+(defaultOpen?' 접기':' 더 보기'); controls.appendChild(button);
       }
       count++;
     }
     return count;
   }
-  function watchNativeShelves(recIds){
-    compactNativeShelves(recIds);
+  function watchNativeShelves(recIds,defaultOpen){
+    compactNativeShelves(recIds,defaultOpen);
     if(window.__bcutNativeShelfObserver) window.__bcutNativeShelfObserver.disconnect();
     if(!window.MutationObserver||!document.body) return;
     var queued=false;
     window.__bcutNativeShelfObserver=new MutationObserver(function(){
-      if(queued) return; queued=true; setTimeout(function(){ queued=false; compactNativeShelves(recIds); },0);
+      if(queued) return; queued=true; setTimeout(function(){ queued=false; compactNativeShelves(recIds,defaultOpen); },0);
     });
     window.__bcutNativeShelfObserver.observe(document.body,{childList:true,subtree:true});
   }
@@ -326,13 +326,13 @@
       '<span class="bctg-ti">'+_ttl+'</span></div>'+
       '<span class="bctg-su">'+_sub+'</span></div>'+
       '<div class="bctg-g">'+cards+'</div>';
-    watchNativeShelves(ids);
+    watchNativeShelves(ids,String(cur.pub||'').slice(0,7)==='2026-11');
     box.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('.bctg-c'); if(!t)return;
       try{gtag('event','together_click',{from_id:id,to_id:t.getAttribute('data-to'),kind:bought?'bought':'similar'});}catch(x){}});
     // November 2026 only: keep all other release months unchanged.
     if(cur.pub&&String(cur.pub).slice(0,7)==='2026-11'&&!document.getElementById('bcut2495-flow')){
       var novemberScript=document.createElement('script');
-      novemberScript.src=BASE+'/bcut-detail-unified-202611.js?v=20261114-NOV-2';
+      novemberScript.src=BASE+'/bcut-detail-unified-202611.js?v=202611-OPEN-1';
       novemberScript.onload=function(){try{if(window.BCUTDetailUnified202611)window.BCUTDetailUnified202611.start(W,String(id));}catch(e){}};
       document.head.appendChild(novemberScript);
     }

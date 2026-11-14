@@ -329,5 +329,12 @@
     watchNativeShelves(ids);
     box.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('.bctg-c'); if(!t)return;
       try{gtag('event','together_click',{from_id:id,to_id:t.getAttribute('data-to'),kind:bought?'bought':'similar'});}catch(x){}});
+    // November 2026 only: keep all other release months unchanged.
+    if(cur.pub&&String(cur.pub).slice(0,7)==='2026-11'&&!document.getElementById('bcut2495-flow')){
+      var novemberScript=document.createElement('script');
+      novemberScript.src=BASE+'/bcut-detail-unified-202611.js?v=20261114-NOV-1';
+      novemberScript.onload=function(){try{if(window.BCUTDetailUnified202611)window.BCUTDetailUnified202611.start(W,String(id));}catch(e){}};
+      document.head.appendChild(novemberScript);
+    }
   }).catch(function(){ box.remove(); });
 })();

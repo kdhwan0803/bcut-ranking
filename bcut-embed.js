@@ -1,6 +1,6 @@
 /* MAXIM B컷 · 함께 산 화보 / 함께 보면 좋은 화보 임베드 (외부 로더용) · ROT-FINAL-8: recs.json(동시구매) 있으면 '함께 산 화보'로 표시 · ROT-FINAL-9: data.json에 없는 화보(공개 전)에서도 최근작으로 채움 · ROT-FINAL-10: MORE 섹션이 없는 화보에서 블록이 상단으로 튀던 문제 수정(로더 스니펫 위치에 삽입) */
 (function(){
-  window.__bcutVer='ROT-FINAL-12-PAIR-COMING-1-IMGURL-1';
+  window.__bcutVer='ROT-FINAL-12-PAIR-COMING-1-IMGURL-1-COMPACT-1';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   function imageUrl(src){
@@ -26,6 +26,8 @@
    +'.bctg-m{display:block;font-size:14px;font-weight:900}'
    +'.bctg-t{display:block;font-size:11.5px;font-weight:600;color:#c9c9d2;margin-top:3px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}'
    +'.bctg-b{position:absolute;top:9px;left:9px;font-size:10px;font-weight:900;border-radius:5px;padding:3px 7px;background:rgba(20,20,26,.78);color:#fff;border:1px solid rgba(255,255,255,.18)}'
+   +'.bctg-more{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:13px;font-size:11px;color:#aaaab5}.bctg-more button{appearance:none;border:1px solid rgba(255,255,255,.24);border-radius:999px;background:transparent;color:#fff;padding:6px 10px;font:inherit;font-weight:800;cursor:pointer}'
+   +'[data-bcut-native-shelf][hidden],[data-bcut-duplicate-work][hidden]{display:none!important}'
    +'@media(max-width:640px){.bctg{padding:16px 14px 14px;border-radius:12px}.bctg-g{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bctg-ti{font-size:15.5px}.bctg-m{font-size:13px}}'
    +'.bcrk{display:flex;align-items:center;gap:14px;max-width:1000px;margin:26px auto 0;text-decoration:none;color:#fff;background:linear-gradient(135deg,#1a1a22,#101015);border:1px solid rgba(255,255,255,.09);border-left:4px solid #ff5a66;border-radius:16px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.18);transition:transform .15s,box-shadow .2s,border-color .2s;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}'
    +'.bcrk:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(0,0,0,.4);border-color:rgba(230,181,69,.5)}'
@@ -155,6 +157,63 @@
     target.parentNode.insertBefore(section,target);
   }
 
+  // Native shelves are identified only by their exact title plus adjacent slider structure.
+  // Their duplicate cards remain hidden even when a shelf is expanded.
+  function compactNativeShelves(recIds){
+    var wanted={}; recIds.forEach(function(k){wanted[String(k)]=1;});
+    var titles=document.querySelectorAll('.section-title'), controls=box.querySelector('.bctg-more'), count=0;
+    for(var si=0;si<titles.length;si++){
+      var title=titles[si], text=(title.textContent||'').replace(/\s+/g,' ').trim();
+      var kind=/^MORE MODEL\b/i.test(text)?'MODEL':(/^MORE PHOTOGRAPHER\b/i.test(text)?'PHOTOGRAPHER':'');
+      var slider=title.nextElementSibling;
+      if(!kind||!slider||!slider.classList.contains('thumb-slider')||!slider.querySelector('.thumb-item')) continue;
+      var token=title.getAttribute('data-bcut-native-shelf');
+      if(!token){
+        token='bcut-native-'+kind.toLowerCase()+'-'+si;
+        title.setAttribute('data-bcut-native-shelf',token); slider.setAttribute('data-bcut-native-shelf',token);
+        var nativeItems=slider.querySelectorAll('.thumb-item');
+        for(var ni=0;ni<nativeItems.length;ni++){
+          var item=nativeItems[ni], match=(item.getAttribute('onclick')||'').match(/\/work\/(\d{2,6})/);
+          var wrap=item.parentElement;
+          if(match&&wanted[match[1]]&&wrap&&wrap.parentElement===slider){ wrap.hidden=true; wrap.setAttribute('data-bcut-duplicate-work',match[1]); }
+        }
+        title.setAttribute('data-bcut-native-was-hidden',title.hidden?'1':'0');
+        slider.setAttribute('data-bcut-native-was-hidden',slider.hidden?'1':'0');
+        title.hidden=true; slider.hidden=true;
+      }
+      if(!controls){
+        controls=document.createElement('div'); controls.className='bctg-more';
+        controls.innerHTML='<span>다른 모델·작가 화보는 펼쳐서 볼 수 있습니다.</span>';
+        box.appendChild(controls);
+        controls.addEventListener('click',function(e){
+          var button=e.target.closest&&e.target.closest('button[data-bcut-shelf]'); if(!button) return;
+          var name=button.getAttribute('data-bcut-shelf'), nodes=document.querySelectorAll('[data-bcut-native-shelf="'+name+'"]');
+          var show=button.getAttribute('aria-expanded')!=='true';
+          for(var bi=0;bi<nodes.length;bi++) nodes[bi].hidden=show?nodes[bi].getAttribute('data-bcut-native-was-hidden')==='1':true;
+          button.setAttribute('aria-expanded',show?'true':'false');
+          button.textContent=show?button.getAttribute('data-bcut-kind')+' 접기':button.getAttribute('data-bcut-kind')+' 더 보기';
+        });
+      }
+      if(!controls.querySelector('button[data-bcut-shelf="'+token+'"]')) {
+        var button=document.createElement('button'); button.type='button'; button.setAttribute('data-bcut-shelf',token);
+        var label=kind==='MODEL'?'같은 모델':'같은 작가';
+        button.setAttribute('data-bcut-kind',label); button.setAttribute('aria-expanded','false'); button.textContent=label+' 더 보기'; controls.appendChild(button);
+      }
+      count++;
+    }
+    return count;
+  }
+  function watchNativeShelves(recIds){
+    compactNativeShelves(recIds);
+    if(window.__bcutNativeShelfObserver) window.__bcutNativeShelfObserver.disconnect();
+    if(!window.MutationObserver||!document.body) return;
+    var queued=false;
+    window.__bcutNativeShelfObserver=new MutationObserver(function(){
+      if(queued) return; queued=true; setTimeout(function(){ queued=false; compactNativeShelves(recIds); },0);
+    });
+    window.__bcutNativeShelfObserver.observe(document.body,{childList:true,subtree:true});
+  }
+
   function pub(w){return w&&w.pub&&w.pub<=TODAY;}
   Promise.all([
     fetch(BASE+'/recs.json',{cache:'no-cache'}).then(function(r){return r.json();}).catch(function(){return {};}),
@@ -217,6 +276,7 @@
       }
     }catch(x){}
     var cur=W[id]||{}, moA=modelOf(cur), paA=(cur.photo||'').toString().trim();
+    var fromCreator={};
     function ok(k){ return k&&k!==id&&W[k]&&pub(W[k])&&modelOf(W[k])!==moA; }  // 같은 모델 제외
     var POOL=12; var picked=[], seen={}; seen[id]=1;
     function add(k){ if(!ok(k)||seen[k]) return; seen[k]=1; picked.push(k); }
@@ -226,7 +286,7 @@
     if(picked.length<POOL && paA){                                            // 2) 같은 작가(다른 모델) 최신
       keys.filter(function(k){return (W[k].photo||'').toString().trim()===paA&&ok(k)&&!seen[k];})
         .sort(function(x,y){return (W[y].pub||'').localeCompare(W[x].pub||'');})
-        .forEach(function(k){ if(picked.length<POOL) add(k); });
+        .forEach(function(k){ if(picked.length<POOL){ fromCreator[k]=1; add(k); } });
     }
     if(picked.length<POOL){                                                   // 3) 같은 유형+등급 다른 모델 최신(회전)
       var pool=keys.filter(function(k){return ok(k)&&!seen[k]&&W[k].buy===cur.buy&&String(W[k].b19)===String(cur.b19);})
@@ -255,10 +315,10 @@
     var _eye=bought?'MAXIM B컷 · TOGETHER':'MAXIM B컷 · 추천';
     var _ttl=bought?'이 화보를 본 분들이 <b>함께 산 화보</b>':'함께 보면 <b>좋은 화보</b>';
     var _sub=bought?'실제 구매 데이터 기준':'취향·모델·작가로 고른 추천';
-    var cards=ids.map(function(k){var w=W[k];
+    var cards=ids.map(function(k){var w=W[k], reason=fromRecs[k]?'함께 산 화보':(fromCreator[k]?'같은 크리에이터':'비슷한 취향');
       return '<a class="bctg-c" href="'+SITE+k+'" data-to="'+k+'">'+
         '<span class="bctg-img" style="background-image:url(\''+esc(w.img)+'\')"></span>'+
-        '<span class="bctg-i"><span class="bctg-m">'+esc(modelOf(w))+'</span><span class="bctg-t">'+esc(clean(w.title))+'</span></span>'+
+        '<span class="bctg-b">'+reason+'</span><span class="bctg-i"><span class="bctg-m">'+esc(modelOf(w))+'</span><span class="bctg-t">'+esc(clean(w.title))+'</span></span>'+
         '</a>';
     }).join('');
     box.className='bctg';
@@ -266,6 +326,7 @@
       '<span class="bctg-ti">'+_ttl+'</span></div>'+
       '<span class="bctg-su">'+_sub+'</span></div>'+
       '<div class="bctg-g">'+cards+'</div>';
+    watchNativeShelves(ids);
     box.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('.bctg-c'); if(!t)return;
       try{gtag('event','together_click',{from_id:id,to_id:t.getAttribute('data-to'),kind:bought?'bought':'similar'});}catch(x){}});
   }).catch(function(){ box.remove(); });

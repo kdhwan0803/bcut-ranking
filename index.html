@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><script src="./champion-photos.js?v=20261113-2457-interior"></script><script src="./paid-pick-rotation.js"></script>
+<head><script src="./champion-photos.js?v=20261113-2457-interior"></script><script src="./paid-pick-rotation.js"></script><script src="./work-facts.js?v=20261114-shopping-1"></script><script src="./work-shopping.js?v=20261114-shopping-1"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>맥심 비컷(B컷) 주간 랭킹 | 이번 주 1위 화보</title>
@@ -272,6 +272,9 @@ if(!window.BCUT_ANALYTICS_DISABLED){
     if (selected === '영상') return '영상 화보';
     if (selected === '영상 포함' || selected === '사진 + 영상') return '사진 + 영상';
     const name = String(work.title || '');
+    const editionKind=window.BCUTShopping?.editionKind(work);
+    if(editionKind==='video')return '영상 화보';
+    if(editionKind==='photo')return '사진 화보';
     if (/PHOTO\s*(?:\+|&)\s*VIDEO|VIDEO\s*(?:\+|&)\s*PHOTO/i.test(name)) return '사진 + 영상';
     if (/VIDEO\s*ONLY|[（(]\s*VIDEO\s*[)）]/i.test(name)) return '영상 화보';
     if (/PHOTO\s*ONLY|[（(]\s*PHOTO\s*[)）]/i.test(name)) return '사진 화보';
@@ -281,6 +284,7 @@ if(!window.BCUT_ANALYTICS_DISABLED){
     const work = data.works?.[id] || {};
     const selected = (data.revenueExperiment?.groups || []).flatMap(group => group.items || [])
       .find(item => String(item.id) === String(id));
+    if(window.BCUTShopping)return window.BCUTShopping.purchase(id,data,subActive,selected,format(work,selected));
     const knownCoin = work.buy === '코인' && Number.isFinite(selected?.coin) && selected.coin > 0;
     return {
       format: format(work, selected),
@@ -1610,86 +1614,6 @@ select,input,button{font-family:inherit}
       <h1 style="font-size:23px;font-weight:900;letter-spacing:-.6px">{{ pageTitle }}</h1>
     </div>
 
-    <sc-if value="{{ sectionVisible.paidPickShow }}" hint-placeholder-val="{{ false }}">
-<section id="paid-picks" class="paid-picks" aria-labelledby="paid-picks-title" style="display:{{ paidPickShow }}">
-      <div class="paid-picks-head"><div>
-        <h2 id="paid-picks-title">{{ paidPickTitle }}</h2>
-        <p class="paid-picks-intro">최근 화보 3편 + 90일 이전 화보 3편 · 매일 0시·12시 교체 (한국 시간)</p><button type="button" class="paid-picks-refresh" onClick="{{ paidPickRefresh }}">다른 6편 보기 ↻</button><span class="paid-picks-turn" aria-live="polite">{{ paidPickTurn }}</span>
-      </div></div>
-      <div class="paid-picks-groups">
-        <sc-for list="{{ paidPickGroups }}" as="g" hint-placeholder-count="0">
-          <div class="paid-picks-group"><h3>{{ g.title }}</h3>
-            <div class="paid-picks-grid">
-              <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="0">
-                <article class="paid-pick" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
-                  <div class="paid-pick-group-label">{{ p.groupTitle }}</div>
-                  <button type="button" class="paid-pick-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
-                    <img loading="{{ p.loading }}" fetchpriority="{{ p.fetchPriority }}" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
-                  </button>
-                  <div class="paid-pick-model">{{ p.model }}</div>
-                  <h4 class="paid-pick-title" title="{{ p.title }}">{{ p.title }}</h4>
-                  <div class="paid-pick-format">{{ p.format }}</div>
-                  <div class="paid-pick-intensity" style="display:{{ p.intensityShow }}" role="img" aria-label="{{ p.intensityLabel }}">
-                    <span aria-hidden="true">수위</span>
-                    <span class="paid-pick-meter" aria-hidden="true"><sc-for list="{{ p.intensityBars }}" as="bar" hint-placeholder-count="0"><span data-filled="{{ bar.filled }}"></span></sc-for></span>
-                    <span class="paid-pick-level" aria-hidden="true">{{ p.intensityText }}</span>
-                  </div>
-                  <div class="paid-pick-price" style="display:{{ p.priceShow }}">{{ p.price }}</div>
-                  <a class="paid-pick-link" href="{{ p.url }}" target="_blank" rel="noopener" aria-label="{{ p.linkLabel }}" onClick="{{ p.outbound }}">작품 보러 가기</a>
-                </article>
-              </sc-for>
-            </div>
-          </div>
-        </sc-for>
-      </div>
-    </section>
-</sc-if>
-
-    <sc-if value="{{ sectionVisible.wishShow }}" hint-placeholder-val="{{ false }}">
-<section id="wish" style="display:{{ wishShow }}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap">
-        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">공개 알림 받는 화보</h2>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MY WISHLIST</span>
-      </div>
-      <div style="font-size:12.5px;color:var(--mut);margin-bottom:16px">공개일이 되면 이 자리에 먼저 올라옵니다. 카톡 채널을 추가하면 알림도 받을 수 있어요.</div>
-      <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:12px">
-        <sc-for list="{{ wishes }}" as="p" hint-placeholder-count="0">
-          <div onClick="{{ p.open }}" style="flex:0 0 auto;width:150px;cursor:pointer">
-            <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
-              <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.imgFilter }}" style-hover="transform:scale(1.05)">
-              <div style="position:absolute;left:7px;bottom:7px;padding:3px 6px;border-radius:4px;background:rgba(0,0,0,.65);display:{{ p.lockShow }};flex-direction:column;align-items:center;justify-content:center;gap:4px">
-                <div style="font-size:11px;font-weight:800;text-shadow:0 2px 12px rgba(0,0,0,.7)">{{ p.dday }}</div>
-              </div>
-              <div style="position:absolute;top:7px;left:7px;font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:3px;display:{{ p.openedShow }};background:var(--acc);color:#fff">공개됨</div>
-              <button onClick="{{ p.wish }}" style="position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.22);cursor:pointer;font-size:13px;background:rgba(230,0,18,.9);color:#fff;line-height:1">♥</button>
-            </div>
-            <div style="font-size:11.5px;font-weight:700;color:var(--mut);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.cap }}</div>
-          </div>
-        </sc-for>
-      </div>
-    </section>
-</sc-if>
-
-    <sc-if value="{{ sectionVisible.recentShow }}" hint-placeholder-val="{{ false }}">
-<section id="recent" style="display:{{ recentShow }}">
-      <details class="recent-disclosure">
-        <summary aria-controls="recent-items">
-          <span>최근 본 화보</span>
-          <span class="recent-disclosure-action"><span class="recent-expand">펼치기 <span aria-hidden="true">⌄</span></span><span class="recent-collapse">접기 <span aria-hidden="true">⌃</span></span></span>
-        </summary>
-        <div id="recent-items" style="display:flex;gap:12px;overflow-x:auto;padding:2px 0 14px">
-          <sc-for list="{{ recent }}" as="p" hint-placeholder-count="0">
-            <div onClick="{{ p.open }}" style="flex:0 0 auto;width:132px;cursor:pointer">
-              <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
-                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
-              </div>
-            </div>
-          </sc-for>
-        </div>
-      </details>
-    </section>
-</sc-if>
-
     <sc-if value="{{ sectionVisible.rankingShow }}" hint-placeholder-val="{{ false }}">
 <section id="ranking" style="display:{{ rankingShow }}">
      <div style="background:var(--rankBandBg);border:1px solid var(--rankBandLine);border-radius:20px;padding:22px 18px 24px;box-shadow:var(--rankBandSh)">
@@ -1838,6 +1762,86 @@ select,input,button{font-family:inherit}
         <span style="flex:0 0 auto;font-size:12px;font-weight:800;color:var(--acc);white-space:nowrap">보러가기 →</span>
       </a>
      </div>
+    </section>
+</sc-if>
+
+    <sc-if value="{{ sectionVisible.paidPickShow }}" hint-placeholder-val="{{ false }}">
+<section id="paid-picks" class="paid-picks" aria-labelledby="paid-picks-title" style="display:{{ paidPickShow }}">
+      <div class="paid-picks-head"><div>
+        <h2 id="paid-picks-title">{{ paidPickTitle }}</h2>
+        <p class="paid-picks-intro">최근 화보 3편 + 90일 이전 화보 3편 · 매일 0시·12시 교체 (한국 시간)</p><button type="button" class="paid-picks-refresh" onClick="{{ paidPickRefresh }}">다른 6편 보기 ↻</button><span class="paid-picks-turn" aria-live="polite">{{ paidPickTurn }}</span>
+      </div></div>
+      <div class="paid-picks-groups">
+        <sc-for list="{{ paidPickGroups }}" as="g" hint-placeholder-count="0">
+          <div class="paid-picks-group"><h3>{{ g.title }}</h3>
+            <div class="paid-picks-grid">
+              <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="0">
+                <article class="paid-pick" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
+                  <div class="paid-pick-group-label">{{ p.groupTitle }}</div>
+                  <button type="button" class="paid-pick-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
+                    <img loading="{{ p.loading }}" fetchpriority="{{ p.fetchPriority }}" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
+                  </button>
+                  <div class="paid-pick-model">{{ p.model }}</div>
+                  <h4 class="paid-pick-title" title="{{ p.title }}">{{ p.title }}</h4>
+                  <div class="paid-pick-format">{{ p.format }}</div>
+                  <div class="paid-pick-intensity" style="display:{{ p.intensityShow }}" role="img" aria-label="{{ p.intensityLabel }}">
+                    <span aria-hidden="true">수위</span>
+                    <span class="paid-pick-meter" aria-hidden="true"><sc-for list="{{ p.intensityBars }}" as="bar" hint-placeholder-count="0"><span data-filled="{{ bar.filled }}"></span></sc-for></span>
+                    <span class="paid-pick-level" aria-hidden="true">{{ p.intensityText }}</span>
+                  </div>
+                  <div class="paid-pick-price" style="display:{{ p.priceShow }}">{{ p.price }}</div>
+                  <a class="paid-pick-link" href="{{ p.url }}" target="_blank" rel="noopener" aria-label="{{ p.linkLabel }}" onClick="{{ p.outbound }}">작품 보러 가기</a>
+                </article>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+</sc-if>
+
+    <sc-if value="{{ sectionVisible.wishShow }}" hint-placeholder-val="{{ false }}">
+<section id="wish" style="display:{{ wishShow }}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap">
+        <h2 style="font-size:19px;font-weight:900;letter-spacing:-.4px">공개 알림 받는 화보</h2>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--mut)">MY WISHLIST</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--mut);margin-bottom:16px">공개일이 되면 이 자리에 먼저 올라옵니다. 카톡 채널을 추가하면 알림도 받을 수 있어요.</div>
+      <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:12px">
+        <sc-for list="{{ wishes }}" as="p" hint-placeholder-count="0">
+          <div onClick="{{ p.open }}" style="flex:0 0 auto;width:150px;cursor:pointer">
+            <div style="position:relative;width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:var(--bg2);border:1px solid {{ p.line }}">
+              <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;filter:{{ p.imgFilter }}" style-hover="transform:scale(1.05)">
+              <div style="position:absolute;left:7px;bottom:7px;padding:3px 6px;border-radius:4px;background:rgba(0,0,0,.65);display:{{ p.lockShow }};flex-direction:column;align-items:center;justify-content:center;gap:4px">
+                <div style="font-size:11px;font-weight:800;text-shadow:0 2px 12px rgba(0,0,0,.7)">{{ p.dday }}</div>
+              </div>
+              <div style="position:absolute;top:7px;left:7px;font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:3px;display:{{ p.openedShow }};background:var(--acc);color:#fff">공개됨</div>
+              <button onClick="{{ p.wish }}" style="position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.22);cursor:pointer;font-size:13px;background:rgba(230,0,18,.9);color:#fff;line-height:1">♥</button>
+            </div>
+            <div style="font-size:11.5px;font-weight:700;color:var(--mut);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.cap }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+</sc-if>
+
+    <sc-if value="{{ sectionVisible.recentShow }}" hint-placeholder-val="{{ false }}">
+<section id="recent" style="display:{{ recentShow }}">
+      <details class="recent-disclosure">
+        <summary aria-controls="recent-items">
+          <span>최근 본 화보</span>
+          <span class="recent-disclosure-action"><span class="recent-expand">펼치기 <span aria-hidden="true">⌄</span></span><span class="recent-collapse">접기 <span aria-hidden="true">⌃</span></span></span>
+        </summary>
+        <div id="recent-items" style="display:flex;gap:12px;overflow-x:auto;padding:2px 0 14px">
+          <sc-for list="{{ recent }}" as="p" hint-placeholder-count="0">
+            <div onClick="{{ p.open }}" style="flex:0 0 auto;width:132px;cursor:pointer">
+              <div style="width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)">
+                <img loading="lazy" src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;filter:{{ p.blur }}">
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </details>
     </section>
 </sc-if>
 
@@ -2556,6 +2560,8 @@ select,input,button{font-family:inherit}
             <div class="work-purchase-format">{{ modal.format }}</div>
             <div class="work-purchase-price"><strong>{{ modal.price }}</strong><small>{{ modal.priceNote }}</small></div>
           </div>
+          <div class="work-buy-facts" style="display:{{ modal.factsShow }}"><div>{{ modal.factsSummary }}</div><div style="display:{{ modal.subWindowShow }}">{{ modal.subWindow }}</div><small>{{ modal.factsVerified }}</small></div>
+          <section class="work-editions" aria-label="사진판과 영상판 선택" style="display:{{ modal.editionShow }}"><p>사진판과 영상판은 별도 판매됩니다. 각 상품의 구성과 가격을 확인하세요.</p><div class="work-edition-links"><sc-for list="{{ modal.editions }}" as="edition" hint-placeholder-count="0"><a href="{{ edition.href }}" aria-current="{{ edition.current }}" onClick="{{ edition.open }}">{{ edition.label }}</a></sc-for></div></section>
           <div style="color:var(--mut);font-size:12px;margin-top:8px;text-align:center;line-height:1.6">{{ modal.meta }}</div>
           <details class="work-original-title" style="display:{{ modal.originalShow }}"><summary>원제 보기</summary><p>{{ modal.originalTitle }}</p></details>
           <div style="background:var(--w1);border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.7;color:var(--t2);margin-top:18px;display:{{ modal.descShow }}">{{ modal.desc }}</div>
@@ -2595,14 +2601,14 @@ select,input,button{font-family:inherit}
           </div>
           </details>
           <sc-if value="{{ sectionVisible.modal_relatedShow }}" hint-placeholder-val="{{ false }}">
-<section class="work-related" aria-label="이 모델의 다른 화보" style="display:{{ modal.relatedShow }}">
-            <h3>이 모델의 다른 화보</h3>
+<section class="work-related" aria-label="함께 볼 만한 화보" style="display:{{ modal.relatedShow }}">
+            <h3>함께 볼 만한 화보</h3>
             <p class="work-related-note">{{ modal.relatedNote }}</p>
             <div class="work-related-models"><sc-for list="{{ modal.modelLinks }}" as="m" hint-placeholder-count="0"><a href="{{ m.href }}">{{ m.label }}</a></sc-for></div>
             <div class="work-related-grid"><sc-for list="{{ modal.relatedCards }}" as="o" hint-placeholder-count="0">
               <a class="work-related-card" data-work-id="{{ o.id }}" href="{{ o.href }}" aria-label="{{ o.infoLabel }}" onClick="{{ o.open }}">
                 <span class="work-related-cover"><img src="{{ o.img }}" alt="{{ o.title }}" loading="lazy" decoding="async"><span class="work-related-kind">{{ o.kind }}</span></span>
-                <span class="work-related-title">{{ o.title }}</span><time datetime="{{ o.date }}">{{ o.date }} 공개</time>
+                <span class="work-related-reason">{{ o.reason }}</span><span class="work-related-title">{{ o.title }}</span><time datetime="{{ o.date }}">{{ o.date }} 공개</time>
               </a>
             </sc-for></div>
             <p class="work-related-empty" style="display:{{ modal.relatedEmptyShow }}">현재 함께 볼 수 있는 다른 공개 화보가 없습니다.</p>
@@ -4244,7 +4250,7 @@ class Component extends DCLogic {
             if(navigator.share)navigator.share({title:nm,url:u}).catch(()=>{});else{try{navigator.clipboard.writeText(u);}catch(e){}}}};}
     }
     if(base.modal){
-      Object.assign(base.modal,{preview:null,previewClass:'',inlineCta:false,dialogLabel:base.modal.title+' 상세 정보',purchaseShow:'none',format:'',price:'',priceNote:'',originalShow:'none',originalTitle:'',footerPriceShow:'none',rankingShow:(base.modal.stats||[]).length?'block':'none',relatedShow:'none',relatedCards:[],modelLinks:[],relatedNote:'',relatedEmptyShow:'none'});
+      Object.assign(base.modal,{preview:null,previewClass:'',inlineCta:false,dialogLabel:base.modal.title+' 상세 정보',purchaseShow:'none',format:'',price:'',priceNote:'',originalShow:'none',originalTitle:'',footerPriceShow:'none',rankingShow:(base.modal.stats||[]).length?'block':'none',relatedShow:'none',relatedCards:[],modelLinks:[],relatedNote:'',relatedEmptyShow:'none',factsShow:'none',factsSummary:'',factsVerified:'',subWindowShow:'none',subWindow:'',editionShow:'none',editions:[]});
       if(S.modal.kind==='work'){
         const id=S.modal.id,w=W[id]||{};
         const subActive=w.buy==='구독'&&((w.pub||'')>today||active.indexOf(id)>=0);
@@ -4253,6 +4259,12 @@ class Component extends DCLogic {
           originalTitle:info.original,originalShow:info.original!==base.modal.title?'block':'none',
           footerPriceShow:info.price?'inline':'none',hypeShow:info.price?'none':base.modal.hypeShow});
 
+        const shopping=window.BCUTShopping;
+        if(shopping){
+          const editions=shopping.editions(D,id,today),summary=shopping.summary(id,D);
+          const subWindow=subActive?(base.subs||[]).find(item=>String(item.id)===String(id))?.window:'';
+          Object.assign(base.modal,{factsShow:summary||info.price?'block':'none',factsSummary:summary,factsVerified:shopping.verification(id),subWindowShow:subWindow?'block':'none',subWindow:subWindow?'신규 구독 열람 '+subWindow+' · 재이용은 구독 유지 조건':'',editionShow:editions.length?'block':'none',editions:editions.map(edition=>({...edition,current:String(edition.current),href:window.BCUTCatalogueUI.previewLink('?w='+edition.id),open:event=>{if(event.defaultPrevented||event.button>0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();if(edition.id!==String(id))this.openWork(edition.id);}}))});
+        }
         const preview=window.BCUTWorkPreviews&&window.BCUTWorkPreviews[String(id)];
         base.modal.inlineCta=!preview;
         if(preview){
@@ -4276,14 +4288,15 @@ class Component extends DCLogic {
               thumbnails:preview.photos.map((photo,i)=>({...photo,label:(i+1)+'번째 사진 보기',selected:String(i===index),show:()=>select({previewPhoto:i})}))
             }});
         }
-        const related=window.BCUTCatalogueUI.related(D,id,today);
+        const related=window.BCUTShopping?window.BCUTShopping.recommendations(D,id,today):window.BCUTCatalogueUI.related(D,id,today).slice(0,4).map(other=>({id:other,reason:'같은 모델'}));
+        base.modal.others=[];base.modal.gridShow='none';base.modal.simShow='none';base.modal.similar=[];
         const links=window.BCUTCatalogueUI.modelLinks(w.models);
         Object.assign(base.modal,{relatedShow:'block',modelLinks:links,
-          relatedNote:related.length ? '최근 공개순 · '+Math.min(8,related.length)+'편'+(related.length>8?' / 전체 '+related.length+'편':'') : '',
+          relatedNote:related.length ? '같은 모델·작가 중심 · 중복 없는 '+related.length+'편' : '',
           relatedEmptyShow:related.length?'none':'block',
-          relatedCards:related.slice(0,8).map(other=>{
-            const work=W[other],title=this.splitTitle(work.title||other).name;
-            return {id:other,title,img:work.img||'',date:work.pub,kind:(work.vid===true||String(work.vid)==='1')?'영상 포함':'사진',href:window.BCUTCatalogueUI.previewLink('?w='+encodeURIComponent(other)),infoLabel:title+' · '+work.pub+' 공개 · 작품 정보 보기',
+          relatedCards:related.slice(0,4).map(item=>{
+            const other=item.id,work=W[other],title=this.splitTitle(work.title||other).name;
+            return {id:other,title,reason:item.reason,img:work.img||'',date:work.pub,kind:window.BCUTCatalogueUI.format(work),href:window.BCUTCatalogueUI.previewLink('?w='+encodeURIComponent(other)),infoLabel:title+' · '+work.pub+' 공개 · 작품 정보 보기',
               open:event=>{if(event.defaultPrevented||event.button>0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();this.openWork(other);}};
           })});
       }

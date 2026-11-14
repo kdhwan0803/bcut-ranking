@@ -89,16 +89,230 @@
   }
   function resolve() {
     bindActivity();
-    if (cached) return { kind: cached.kind, seed: cached.seed };
+    if (cached) return { kind: cached.kind, seed: cached.seed, themeSlot: cached.themeSlot };
     var now = Date.now(), session = safeStore('sessionStorage'), stored = readable(session, SESSION_KEY) ? readJSON(session, SESSION_KEY) : null;
-    if (validRecord(stored) && now - stored.lastActivity >= 0 && now - stored.lastActivity <= TTL) { cached = stored; lastSavedAt = stored.lastActivity; touch(); }
+    if (validRecord(stored) && now - stored.lastActivity >= 0 && now - stored.lastActivity <= TTL) { cached = stored; if (!finiteInt(cached.themeSlot) || cached.themeSlot < 0) cached.themeSlot = slotOf(now); lastSavedAt = stored.lastActivity; touch(); writeJSON(session, SESSION_KEY, cached); lastSavedAt = now; }
     else {
       var seed = seedNow();
-      cached = { v: 1, kind: readable(session, SESSION_KEY) ? nextKind(seed) : 'ranking', seed: seed, lastActivity: now };
+      cached = { v: 1, kind: readable(session, SESSION_KEY) ? nextKind(seed) : 'ranking', seed: seed, themeSlot: slotOf(now), lastActivity: now };
       writeJSON(session, SESSION_KEY, cached); lastSavedAt = now;
     }
-    return { kind: cached.kind, seed: cached.seed };
+    return { kind: cached.kind, seed: cached.seed, themeSlot: cached.themeSlot };
   }
+
+  // Verified public concepts and official product facts only. No inferred exposure scores.
+  // Fixed work sets avoid paired editions and keep neighboring themes free of repeat works.
+  var THEMES = [
+  {
+    "id": "bunny-three",
+    "title": "서로 다른 세 가지 바니",
+    "subtitle": "공식 소개와 대표 이미지로 확인한 바니 콘셉트 3선",
+    "rule": "curated",
+    "items": [
+      {
+        "id": "1485",
+        "reason": "블랙 바니 콘셉트의 사진·영상판"
+      },
+      {
+        "id": "1704",
+        "reason": "바니와 캣을 결합한 옐랑의 콘셉트 작품"
+      },
+      {
+        "id": "2215",
+        "reason": "바니걸 콘셉트로 소개된 히나의 작품"
+      }
+    ]
+  },
+  {
+    "id": "coin-100",
+    "title": "100코인 이하로 고르기",
+    "subtitle": "개별 구매 가격 기준 · 구독 열람 여부는 작품 정보에서 확인",
+    "rule": "budget",
+    "items": [
+      {
+        "id": "2431"
+      },
+      {
+        "id": "1396"
+      },
+      {
+        "id": "1837"
+      }
+    ]
+  },
+  {
+    "id": "maid-three",
+    "title": "세 모델의 메이드 콘셉트",
+    "subtitle": "각기 다른 모델과 시리즈로 만나는 메이드 3선",
+    "rule": "curated",
+    "items": [
+      {
+        "id": "1651",
+        "reason": "츤데레 메이드의 사진·영상판"
+      },
+      {
+        "id": "1713",
+        "reason": "고양이와 메이드 콘셉트를 결합한 작품"
+      },
+      {
+        "id": "2395",
+        "reason": "일과 후 메이드 콘셉트의 사진·영상판"
+      }
+    ]
+  },
+  {
+    "id": "photo-video",
+    "title": "사진과 영상을 한 번에",
+    "subtitle": "사진·영상이 함께 포함된 단일 상품 3편 · 사진 p는 표지 포함",
+    "rule": "mixed",
+    "items": [
+      {
+        "id": "2396"
+      },
+      {
+        "id": "2436"
+      },
+      {
+        "id": "2417"
+      }
+    ]
+  },
+  {
+    "id": "black-three",
+    "title": "블랙룩, 서로 다른 세 가지",
+    "subtitle": "블랙 의상을 중심으로 고른 서로 다른 모델의 3편",
+    "rule": "curated",
+    "items": [
+      {
+        "id": "1430",
+        "reason": "Black 시리즈의 사진·영상판"
+      },
+      {
+        "id": "1342",
+        "reason": "블랙 비키니 콘셉트의 작품"
+      },
+      {
+        "id": "1907",
+        "reason": "블랙 수트 콘셉트의 작품"
+      }
+    ]
+  },
+  {
+    "id": "photo-100",
+    "title": "사진 100장 이상, 넉넉하게",
+    "subtitle": "공식 목록상 사진 100장 이상인 작품 3편 · 사진 p는 표지 포함",
+    "rule": "photos",
+    "items": [
+      {
+        "id": "2495"
+      },
+      {
+        "id": "2455"
+      },
+      {
+        "id": "2489"
+      }
+    ]
+  },
+  {
+    "id": "video-short",
+    "title": "영상 합계 5분 이하로 골라보기",
+    "subtitle": "공개된 영상 구성 정보 기준 · 실제 재생 검토나 감상 시간 보장은 아닙니다",
+    "rule": "short",
+    "items": [
+      {
+        "id": "1894"
+      },
+      {
+        "id": "2348"
+      },
+      {
+        "id": "2490"
+      }
+    ]
+  },
+  {
+    "id": "video-long",
+    "title": "영상 합계 10분 이상으로",
+    "subtitle": "공개된 영상 구성 정보 기준 · 작품마다 사진·영상 구성은 다릅니다",
+    "rule": "long",
+    "items": [
+      {
+        "id": "1966"
+      },
+      {
+        "id": "2374"
+      },
+      {
+        "id": "2437"
+      }
+    ]
+  },
+  {
+    "id": "archive-three",
+    "title": "신작 사이, 이전 작품도",
+    "subtitle": "2026년 상반기까지 공개된 서로 다른 모델의 작품 3편",
+    "rule": "archive",
+    "items": [
+      {
+        "id": "239"
+      },
+      {
+        "id": "978"
+      },
+      {
+        "id": "1217"
+      }
+    ]
+  }
+].map(function (theme) {
+    theme.items = Object.freeze(theme.items.map(function (item) { return Object.freeze(item); }));
+    return Object.freeze(theme);
+  });
+  Object.freeze(THEMES);
+  var SLOT_MS = 8 * 60 * 60 * 1000;
+  function slotOf(now) {
+    var time = now == null ? Date.now() : new Date(now).getTime();
+    if (!Number.isFinite(time)) time = Date.now();
+    return Math.floor((time + 9 * 60 * 60 * 1000) / SLOT_MS);
+  }
+  function number(value) { return typeof value === 'number' && Number.isFinite(value) && value > 0; }
+  function themeAccepts(theme, work, fact) {
+    if (theme.rule === 'curated') return true;
+    if (!fact || typeof fact !== 'object') return false;
+    if (theme.rule === 'budget') return number(fact.coin) && fact.coin <= 100;
+    if (theme.rule === 'mixed') return number(fact.photos) && fact.photos >= 10 && number(fact.videos) && work.vid === 1 && !/VIDEO\s*ONLY|\(VIDEO\)/i.test(work.title || '');
+    if (theme.rule === 'photos') return number(fact.photos) && fact.photos >= 100;
+    if (theme.rule === 'short') return work.vid === 1 && number(fact.videos) && number(fact.seconds) && fact.seconds <= 300;
+    if (theme.rule === 'long') return work.vid === 1 && number(fact.videos) && number(fact.seconds) && fact.seconds >= 600;
+    if (theme.rule === 'archive') return work.pub <= '2026-06-30';
+    return false;
+  }
+  function videoLength(seconds) { return Math.floor(seconds / 60) + '분 ' + String(seconds % 60).padStart(2, '0') + '초'; }
+  function themeReason(theme, item, work, fact) {
+    if (theme.rule === 'curated') return item.reason;
+    if (theme.rule === 'budget') return '개별 구매 ' + fact.coin + '코인';
+    if (theme.rule === 'mixed') return (number(fact.photoPages) ? '사진 ' + fact.photoPages + 'p' : '목록상 사진 ' + fact.photos + '장') + ' · 영상 ' + fact.videos + '편';
+    if (theme.rule === 'photos') return number(fact.photoPages) ? '사진 ' + fact.photoPages + 'p · 표지 포함' : '목록상 사진 ' + fact.photos + '장';
+    if (theme.rule === 'short' || theme.rule === 'long') return '영상 ' + fact.videos + '편 · 합계 ' + videoLength(fact.seconds);
+    if (theme.rule === 'archive') return work.pub.slice(0, 7).replace('-', '년 ') + '월 공개';
+    return '';
+  }
+  function thematicPlan(works, liveSet, record, options) {
+    var facts = options.facts && options.facts.works ? options.facts.works : {};
+    var slot = record && finiteInt(record.themeSlot) && record.themeSlot >= 0 ? record.themeSlot : slotOf(options.now);
+    // Shift the order each complete cycle, so one theme is not stuck in one time of day.
+    var offset = ((slot % THEMES.length) + (Math.floor(slot / THEMES.length) % THEMES.length)) % THEMES.length;
+    for (var step = 0; step < THEMES.length; step++) {
+      var theme = THEMES[(offset + step) % THEMES.length];
+      if (!theme.items.every(function (item) { return liveSet.has(item.id) && themeAccepts(theme, works[item.id], facts[item.id]); })) continue;
+      var reasons = Object.create(null);
+      theme.items.forEach(function (item) { reasons[item.id] = themeReason(theme, item, works[item.id], facts[item.id]); });
+      return { kind: 'discovery', title: theme.title, subtitle: theme.subtitle, ids: theme.items.map(function (item) { return item.id; }), themeId: theme.id, themeSlot: slot, reasons: reasons };
+    }
+    return null;
+  }
+
   function todayKST(now) {
     var date = new Date(now == null ? Date.now() : now);
     if (!Number.isFinite(date.getTime())) date = new Date(Date.now());
@@ -146,6 +360,8 @@
     if (kind === 'ranking') return ranking();
     var ids = [];
     if (kind === 'discovery') {
+      var themed = thematicPlan(works, liveSet, record, options);
+      if (themed) return themed;
       var seen = new Set();
       ids = shuffle(idsOf(options.recommendationIds).map(String).filter(function (id) { if (seen.has(id) || !liveSet.has(id)) return false; seen.add(id); return true; }), seed ^ 0x7f4a7c15).slice(0, 3);
     } else if (kind === 'new') {
@@ -164,5 +380,5 @@
     return { kind: kind, title: meta[kind][0], subtitle: meta[kind][1], ids: ids };
   }
 
-  return Object.freeze({ resolve: resolve, plan: plan });
+  return Object.freeze({ resolve: resolve, plan: plan, slotOf: slotOf, themes: THEMES });
 }));

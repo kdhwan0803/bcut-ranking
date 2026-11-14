@@ -17677,7 +17677,18 @@
     }
   ],
   "timesales": [],
-  "popups": [],
+  "popups": [
+    {
+      "id": "yeha-stockings-20261114",
+      "enabled": true,
+      "img": "https://bcutrank.com/popup-yeha-stockings-20261114.jpg",
+      "link": "https://bcut.maximkorea.net/work/2452",
+      "title": "",
+      "sub": "",
+      "start": "2026-11-14T11:00:46.391Z",
+      "end": "2026-11-21T11:00:46.391Z"
+    }
+  ],
   "bannerBlur": 5,
   "bottomBanners": [],
   "packages": [],

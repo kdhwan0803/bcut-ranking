@@ -85,3 +85,6 @@
   setInterval(refresh, 60000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden) refresh(); });
 })();
+
+/* Keep approved public cover templates intact on model pages as well. */
+(function(){if(document.getElementById("november-public-covers"))return;var s=document.createElement("style");s.id="november-public-covers";s.textContent="/* Public November covers: keep the full template, logo and age/media badges visible. */\nimg[src*=\"assets/covers/nov2026-public-\"]{object-fit:contain!important;object-position:center!important;transform:none!important;background:#f5ead3}\n";document.head.appendChild(s);})();

@@ -4,7 +4,7 @@
   'use strict';
   const selections={
   "heroImgById": {
-    "2457": "champion-chaeryeong-2457-weekly.jpg",
+    "2457": "assets/covers/nov2026-public-2457-v1.webp",
     "2445": "https://i.ibb.co/4gwGv3dG/2445-C-20261020161326-14-opt.webp",
     "2396": "champion-yudi-2396-weekly.jpg",
     "506": "champion-506-weekly.jpg",
@@ -35,7 +35,7 @@
     "2026-05": "champion-1712-monthly.jpg"
   },
   "heroPositionById": {
-    "2457": "left center",
+    "2457": "center",
     "2445": "center top",
     "2396": "center top",
     "506": "center 55%",
@@ -78,7 +78,7 @@
     "2226": 1
   },
   "heroOriginById": {
-    "2457": "left center",
+    "2457": "center",
     "2445": "center top",
     "2396": "center top",
     "506": "center top",

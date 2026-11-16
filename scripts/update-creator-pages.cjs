@@ -76,6 +76,8 @@ function creatorIntro(state) {
   return '<p><b>' + escape(state.creator) + '</b> 작가의 화보는 현재 <b>' + state.count + '편</b>이 공개되어 있습니다.</p>'
     + '<p>' + escape(state.latestText) + '</p>'
     + (state.models.length ? '<p>참여 모델</p><div class="chips">' + chips + '</div>' : '')
+    // Required lazily: update-pair-pages.cjs itself depends on this module.
+    + require('./update-pair-pages.cjs').creatorLinksHTML(state.creator)
     + '<p>작품별 구매 방식과 현재 구독 열람 여부는 B컷에서 확인하세요. 성인 작품은 판매 사이트의 로그인·성인인증 후 이용할 수 있습니다.</p>';
 }
 
@@ -158,7 +160,7 @@ function renderDirectory(entries) {
     + '<section class="hero"><div class="eyebrow">MAXIM B컷 · 작가 화보</div><h1>작가 전체</h1><p class="sub">B컷 화보 작가 <b id="mcount">' + entries.length + '</b>명. 작가별 참여 화보와 모델을 확인하세요.</p></section>\n'
     + '<div class="seclbl">작가 목록</div>\n'
     + '<div class="grid" id="grid">\n' + cards + '\n</div>\n'
-    + '<footer class="ft">© MAXIM KOREA · B컷 · <a href="' + BASE + '/">전체 랭킹 보기</a> · <a href="' + BASE + '/models/models.html">모델 전체</a><br>본 페이지는 성인(19+) 콘텐츠를 포함할 수 있습니다.</footer>\n'
+    + '<footer class="ft">© MAXIM KOREA · B컷 · <a href="' + BASE + '/">전체 랭킹 보기</a> · <a href="' + BASE + '/models/models.html">모델 전체</a> · <a href="' + BASE + '/pairs/pairs.html">작가×모델 전체</a><br>본 페이지는 성인(19+) 콘텐츠를 포함할 수 있습니다.</footer>\n'
     + '</body></html>\n';
 }
 

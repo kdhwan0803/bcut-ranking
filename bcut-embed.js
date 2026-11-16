@@ -11,6 +11,8 @@
       return image.protocol==='https:'||image.protocol==='http:'?image.href:'';
     }catch(e){ return ''; }
   }
+  // Official detail recommendation cards use original covers; public catalogue img stays unchanged.
+  function recommendationImage(w){return imageUrl(w&&(w.officialImg||w.img));}
   var m=location.pathname.match(/\/work\/(\d{2,6})/); var id=m?m[1]:'';
   if(!id) return;
   var css='.bctg{margin:26px auto;max-width:1000px;background:#14141a;border-radius:16px;padding:20px 20px 18px;color:#fff;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.18)}'
@@ -317,7 +319,7 @@
     var _sub=bought?'실제 구매 데이터 기준':'취향·모델·작가로 고른 추천';
     var cards=ids.map(function(k){var w=W[k], reason=fromRecs[k]?'함께 산 화보':(fromCreator[k]?'같은 크리에이터':'비슷한 취향');
       return '<a class="bctg-c" href="'+SITE+k+'" data-to="'+k+'">'+
-        '<span class="bctg-img" style="background-image:url(\''+esc(w.img)+'\')"></span>'+
+        '<span class="bctg-img" style="background-image:url(\''+esc(recommendationImage(w))+'\')"></span>'+
         '<span class="bctg-b">'+reason+'</span><span class="bctg-i"><span class="bctg-m">'+esc(modelOf(w))+'</span><span class="bctg-t">'+esc(clean(w.title))+'</span></span>'+
         '</a>';
     }).join('');
@@ -332,7 +334,7 @@
     // November 2026 only: keep all other release months unchanged.
     if(cur.pub&&String(cur.pub).slice(0,7)==='2026-11'&&!document.getElementById('bcut2495-flow')){
       var novemberScript=document.createElement('script');
-      novemberScript.src=BASE+'/bcut-detail-unified-202611.js?v=202611-OPEN-1&facts=published-2483-2432-1794791903743';
+      novemberScript.src=BASE+'/bcut-detail-unified-202611.js?v=202611-OPEN-1&thumbs=original-1&facts=published-2483-2432-1794791903743';
       novemberScript.onload=function(){try{if(window.BCUTDetailUnified202611)window.BCUTDetailUnified202611.start(W,String(id));}catch(e){}};
       document.head.appendChild(novemberScript);
     }

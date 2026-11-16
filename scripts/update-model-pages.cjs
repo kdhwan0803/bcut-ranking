@@ -81,7 +81,7 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
     start + JSON.stringify(api.schema(state, canonical, JSON.parse(json))).replace(/</g, '\\u003c') + end);
   html = html.replace(/<script>[\s\S]*?<\/script>/g, script => /var MODEL=/.test(script) ? '' : script);
   html = html.replace(/<script src="\.\.\/model-page(?:-data)?\.js(?:\?[^"]*)?" defer><\/script>\n?/g, '');
-  html = html.replace('</body>', '<script src="../model-page-data.js" defer></script>\n<script src="../model-page.js?v=20261116-oct-public-1" defer></script>\n</body>');
+  html = html.replace('</body>', '<script src="../model-page-data.js" defer></script>\n<script src="../model-page.js" defer></script>\n</body>');
   html = clearThumbs(html);
   html = pilot.decorate(html, state, file.slice(0, -5));
   html = improveInitialRender(html, file.slice(0, -5));
@@ -128,6 +128,6 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   const filePath = path.join(root, 'models', file);
   const source = fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n')
     .replace(/<script src="\.\.\/thumbnail-fallback\.js" defer><\/script>\n?/g, '');
-  fs.writeFileSync(filePath, source.replace('</head>', '<script src="../thumbnail-fallback.js" defer></script>\n</head>'));
+  fs.writeFileSync(filePath, source.replace(/<style id="november-public-covers">[\s\S]*?<\/style>\n?/g, '').replace('</head>', "<style id=\"november-public-covers\">/* Public October and November covers: keep the full template, logo and age/media badges visible. */\nimg[src*=\"assets/covers/nov2026-public-\"],img[src*=\"assets/covers/oct2026-public-\"]{object-fit:contain!important;object-position:center!important;transform:none!important;background:#f5ead3}\n</style>\n<script src=\"../thumbnail-fallback.js\" defer></script>\n</head>"));
 }
 console.log(JSON.stringify({ date, modelPages: count, directoryModels: entries.length }));

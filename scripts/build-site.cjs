@@ -16,8 +16,10 @@ async function main() {
   const run = file => execFileSync(process.execPath, [path.join(__dirname, file), '--date', date], { cwd: root, stdio: 'inherit' });
   run('update-model-pages.cjs');
   run('update-creator-pages.cjs');
+  run('update-pair-pages.cjs');
   run('check-model-pages.cjs');
   run('check-creator-pages.cjs');
+  run('check-pair-pages.cjs');
   run('check-model-browse.cjs');
   run('check-work-detail.cjs');
   run('check-home-browse.cjs');
@@ -25,13 +27,21 @@ async function main() {
   const creatorFiles = fs.existsSync(path.join(root, 'creators'))
     ? fs.readdirSync(path.join(root, 'creators')).filter(file => file.endsWith('.html')).map(file => 'creators/' + file)
     : [];
-  const modelFiles = ['index.html', ...fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html')).map(file => 'models/' + file), ...creatorFiles];
+  const pairFiles = fs.readdirSync(path.join(root, 'pairs')).filter(file => file.endsWith('.html')).map(file => 'pairs/' + file);
+  const modelFiles = ['index.html', ...fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html')).map(file => 'models/' + file), ...creatorFiles, ...pairFiles];
   const generatedHash = sitemap.fingerprint(root, modelFiles);
   run('update-model-pages.cjs');
   run('update-creator-pages.cjs');
+  run('update-pair-pages.cjs');
   assert.equal(sitemap.fingerprint(root, modelFiles), generatedHash, 'Repeated generation must be stable');
   assert(before.equals(fs.readFileSync(path.join(root, 'data.json'))), 'Build must not edit catalogue data');
-  const result = sitemap.generate(root, fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8'), previous, date);
+  // Creator x model pages follow the catalogue, so their sitemap entries are
+  // added here instead of being maintained by hand in sitemap.xml.
+  let sitemapXml = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
+  if (/\/pairs\//.test(sitemapXml)) throw new Error('sitemap.xml must not list pairs/ pages; they are added at build time');
+  const pairEntries = pairFiles.map(file => '  <url>\n    <loc>' + sitemap.SITE + '/' + file + '</loc>\n    <lastmod>' + date + '</lastmod>\n  </url>\n').join('');
+  sitemapXml = sitemapXml.replace('</urlset>', pairEntries + '</urlset>');
+  const result = sitemap.generate(root, sitemapXml, previous, date);
   const output = path.join(root, '_site');
   if (fs.existsSync(output)) throw new Error('_site already exists. Use a clean checkout for each build.');
   fs.mkdirSync(output);
@@ -55,6 +65,8 @@ async function main() {
       fs.copyFileSync(path.join(creatorsDir, file), path.join(output, 'creators', file));
     }
   }
+  fs.mkdirSync(path.join(output, 'pairs'), { recursive: true });
+  for (const file of pairFiles) fs.copyFileSync(path.join(root, file), path.join(output, file));
   fs.writeFileSync(path.join(output, 'sitemap.xml'), result.sitemap);
   fs.writeFileSync(path.join(output, sitemap.STATE_FILE), JSON.stringify(result.state) + '\n');
   fs.writeFileSync(path.join(output, '.nojekyll'), '');

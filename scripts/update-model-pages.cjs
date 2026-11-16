@@ -3,6 +3,7 @@ const path = require('node:path');
 const api = require('../model-page-data.js');
 const pilot = require('../model-cta-pilot.js');
 const browse = require('../model-browse-pilot.js');
+const pairs = require('./update-pair-pages.cjs');
 const root = path.resolve(__dirname, '..');
 const browseCSS = fs.readFileSync(path.join(root, 'model-browse-pilot.css'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(root, 'data.json'), 'utf8'));
@@ -63,6 +64,14 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   html = meta(html, 'og:image', state.image);
   html = replace(html, /<section class="intro">[\s\S]*?<\/section>/, '<section class="intro">' + api.intro(state) + '</section>', file + ':intro');
   html = replace(html, /<section class="faq">[\s\S]*?<\/section>/, '<section class="faq">' + api.faqHTML(state) + '</section>', file + ':faq');
+  // Static links to this model's creator x model pages. Kept outside .intro,
+  // which model-page.js re-renders in the browser.
+  html = html.replace(/\n?<section class="pairlinks">[\s\S]*?<\/section>/g, '').replace(/<style id="pair-links-css">[\s\S]*?<\/style>\n?/g, '');
+  const pairLinks = pairs.modelLinksHTML(model);
+  if (pairLinks) {
+    html = html.replace(/(<section class="intro">[\s\S]*?<\/section>)/, (_, intro) => intro + '\n' + pairLinks)
+      .replace('</head>', pairs.MODEL_LINK_STYLE + '</head>');
+  }
   html = replace(html, /<div id="upwrap"[\s\S]*?(?=<div class="seclbl">)/,
     '<div id="upwrap"' + (state.upcoming.length ? '' : ' hidden') + '><div class="seclbl soon">곧 공개 예정 <small id="upcnt">' + state.upcoming.length + '편</small></div><div class="grid" id="upgrid">' + api.cards(state, true) + '</div></div>\n', file + ':upcoming');
   html = replace(html, /<div class="grid" id="grid"[^>]*>[\s\S]*?(?=<section class="(?:mtop|faq|rel)")/,

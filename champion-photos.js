@@ -4,6 +4,7 @@
   'use strict';
   const selections={
   "heroImgById": {
+    "2452": "champion-yeha-2452-weekly.jpg",
     "2457": "champion-chaeryeong-2457-weekly.jpg",
     "2445": "https://i.ibb.co/4gwGv3dG/2445-C-20261020161326-14-opt.webp",
     "2396": "champion-yudi-2396-weekly.jpg",
@@ -35,6 +36,7 @@
     "2026-05": "champion-1712-monthly.jpg"
   },
   "heroPositionById": {
+    "2452": "center top",
     "2457": "left center",
     "2445": "center top",
     "2396": "center top",
@@ -57,6 +59,7 @@
     "2267": "center 18%"
   },
   "heroScaleById": {
+    "2452": 1,
     "2457": 1,
     "2445": 1,
     "2396": 1,
@@ -78,6 +81,7 @@
     "2226": 1
   },
   "heroOriginById": {
+    "2452": "center top",
     "2457": "left center",
     "2445": "center top",
     "2396": "center top",

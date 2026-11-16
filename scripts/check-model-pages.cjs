@@ -31,6 +31,13 @@ assert.equal(api.image('assets/covers/example.webp'), '../assets/covers/example.
 assert.equal(api.image('javascript:alert(1)'), '');
 // Release transitions are covered by the fixed fixture above. Live catalogue
 // expectations below are derived from data.json so later registrations remain valid.
+const sharedScriptCount = source => (source.match(/<script\b[^>]*\bsrc="\.\.\/model-page\.js(?:\?[^"]*)?"[^>]*>\s*<\/script>/g) || []).length;
+const plainRuntime = '<script defer src="../model-page.js"></script>';
+const versionedRuntime = '<script defer src="../model-page.js?v=cache-test"></script>';
+assert.equal(sharedScriptCount(plainRuntime), 1, 'plain shared runtime');
+assert.equal(sharedScriptCount(versionedRuntime), 1, 'versioned shared runtime');
+assert.equal(sharedScriptCount(plainRuntime + versionedRuntime), 2, 'duplicate shared runtime detected');
+assert.equal(sharedScriptCount('<img src="../model-page.js">'), 0, 'shared runtime must be a script');
 let checked = 0, pilotChecked = 0;
 for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html'))) {
   const html = fs.readFileSync(path.join(root, 'models', file), 'utf8');
@@ -63,7 +70,7 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   assert.equal([...grid.matchAll(/<a class="card/g)].length, state.count, label + 'grid count');
   assert(!/(?:^|[;{])filter:blur\(/m.test(html), label + 'thumbnail blur');
   assert(!html.includes("class='lock'") && !html.includes('class="lock"'), label + 'central age overlay');
-  assert.equal((html.match(/src="\.\.\/model-page\.js"/g) || []).length, 1, label + 'shared script');
+  assert.equal(sharedScriptCount(html), 1, label + 'shared script');
   for (const image of html.matchAll(/<img[^>]+src="(\.\.\/[^\"]+)"/g)) {
     assert(fs.existsSync(path.resolve(root, 'models', decode(image[1]))), label + 'image exists: ' + image[1]);
   }

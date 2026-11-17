@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><script src="./champion-photos.js?v=20261116-final-week2-face-1"></script><script src="./paid-pick-rotation.js"></script><script src="./work-facts.js?v=20261114-shopping-1"></script><script src="./work-shopping.js?v=20261114-shopping-1"></script><script src="./first-corner.js?v=20261117-initial-visible-2"></script>
+<head><script src="./work-intensity.js?v=20261117-pilot-1"></script><script src="./champion-photos.js?v=20261116-final-week2-face-1"></script><script src="./paid-pick-rotation.js"></script><script src="./work-facts.js?v=20261114-shopping-1"></script><script src="./work-shopping.js?v=20261114-shopping-1"></script><script src="./first-corner.js?v=20261117-initial-visible-2"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>맥심 비컷(B컷) 주간 랭킹 | 이번 주 1위 화보</title>
@@ -1327,6 +1327,17 @@ select,input,button{font-family:inherit}
 }
 
 
+/* Scoped pilot: work detail only; existing paid-pick badge styles stay unchanged. */
+.work-dialog .work-intensity-pilot{margin:18px 0;padding:12px 14px;border:1px solid var(--line);border-radius:10px;color:var(--t2);font-size:12px;line-height:1.65}
+.work-dialog .work-intensity-pilot h3{margin:0;font-size:13px;color:var(--txt)}
+.work-dialog .work-intensity-pilot p{margin:5px 0;overflow-wrap:anywhere}
+.work-dialog .work-intensity-pilot strong{color:var(--txt);margin-right:8px}
+.work-dialog .work-intensity-pilot .work-intensity-status,.work-dialog .work-intensity-pilot .work-intensity-note{color:var(--mut);font-size:11px}
+.work-dialog .work-intensity-pilot details{margin-top:7px}
+.work-dialog .work-intensity-pilot summary{cursor:pointer;color:var(--t2);width:fit-content}
+.work-dialog .work-intensity-pilot summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:2px}
+.work-dialog .work-intensity-pilot ol{padding-left:22px;margin:6px 0}
+
 /* Work 2394 preview: inherits the live site's light/dark palette. */
 .work-dialog.work-dialog-preview{max-width:1040px!important}
 .work-dialog-preview .work-dialog-cover,.work-dialog-preview .work-dialog-intro,.work-dialog-preview .work-dialog-footer{display:none!important}
@@ -2586,6 +2597,19 @@ select,input,button{font-family:inherit}
           <details class="work-original-title" style="display:{{ modal.originalShow }}"><summary>원제 보기</summary><p>{{ modal.originalTitle }}</p></details>
           <div style="background:var(--w1);border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.7;color:var(--t2);margin-top:18px;display:{{ modal.descShow }}">{{ modal.desc }}</div>
           </div>
+          <section class="work-intensity-pilot" aria-label="수위 안내 (시범)" style="display:{{ modal.intensityShow }}">
+            <h3>수위 안내 (시범)</h3>
+            <p><strong>{{ modal.intensityValue }}</strong><span class="work-intensity-status">{{ modal.intensityStatus }}</span></p>
+            <p style="display:{{ modal.intensityScopeShow }}">확인 범위: {{ modal.intensityScope }}</p>
+            <p style="display:{{ modal.intensityExposureShow }}">노출: {{ modal.intensityExposure }}</p>
+            <p style="display:{{ modal.intensityPresentationShow }}">연출: {{ modal.intensityPresentation }}</p>
+            <p class="work-intensity-note">공식 연령 등급이나 작품 품질 점수가 아닙니다. 19+ 표시는 별도입니다. 미리보기·일부 사진 확인은 전체 화보·영상 검토를 뜻하지 않습니다.</p>
+            <details><summary>시범 기준 보기</summary>
+              <p>노출 정도를 우선하며, 연출 강도는 별도로 설명합니다.</p>
+              <ol><li>1단계: 의상 착용 중심 · 낮은 노출</li><li>2단계: 수영복·란제리 중심</li><li>3단계: 가림이 있는 노출</li><li>4단계: 직접적인 노출</li><li>5단계: 노출 범위가 특히 크거나, 직접 노출과 매우 강한 연출이 겹침</li></ol>
+              <p>소품만으로 5단계를 부여하지 않습니다. 기재한 확인 범위에 한정한 시범 안내입니다.</p>
+            </details>
+          </section>
           <sc-if value="{{ modal.inlineCta }}" hint-placeholder-val="{{ false }}">
             <section class="work-dialog-primary-action" aria-label="선택한 화보 보기">
               <a href="{{ modal.cta }}" target="_blank" rel="noopener" onClick="{{ modal.trackOutbound }}">{{ modal.ctaLabel }}</a>
@@ -3335,6 +3359,7 @@ class Component extends DCLogic {
   }
   vals(){
     const S=this.state,D=S.D;
+    const describeIntensity=work=>window.BCUTIntensity?.describe(work)||{level:null,value:'미평가',statusLabel:'미평가',ariaLabel:'수위 미평가',scopeSummary:'',exposure:null,presentation:null};
     const dark=S.theme==='dark';
     const themeVals={toggleTheme:()=>this.toggleTheme(),
       themeIcon:dark?'☀':'☾',themeName:dark?'라이트':'다크',
@@ -4272,9 +4297,11 @@ class Component extends DCLogic {
             if(navigator.share)navigator.share({title:nm,url:u}).catch(()=>{});else{try{navigator.clipboard.writeText(u);}catch(e){}}}};}
     }
     if(base.modal){
-      Object.assign(base.modal,{preview:null,previewClass:'',inlineCta:false,dialogLabel:base.modal.title+' 상세 정보',purchaseShow:'none',format:'',price:'',priceNote:'',originalShow:'none',originalTitle:'',footerPriceShow:'none',rankingShow:(base.modal.stats||[]).length?'block':'none',relatedShow:'none',relatedCards:[],modelLinks:[],relatedNote:'',relatedEmptyShow:'none',factsShow:'none',factsSummary:'',factsVerified:'',subWindowShow:'none',subWindow:'',editionShow:'none',editions:[]});
+      Object.assign(base.modal,{intensityShow:'none',intensityValue:'미평가',intensityStatus:'미평가',intensityScope:'',intensityScopeShow:'none',intensityExposure:'',intensityExposureShow:'none',intensityPresentation:'',intensityPresentationShow:'none',preview:null,previewClass:'',inlineCta:false,dialogLabel:base.modal.title+' 상세 정보',purchaseShow:'none',format:'',price:'',priceNote:'',originalShow:'none',originalTitle:'',footerPriceShow:'none',rankingShow:(base.modal.stats||[]).length?'block':'none',relatedShow:'none',relatedCards:[],modelLinks:[],relatedNote:'',relatedEmptyShow:'none',factsShow:'none',factsSummary:'',factsVerified:'',subWindowShow:'none',subWindow:'',editionShow:'none',editions:[]});
       if(S.modal.kind==='work'){
         const id=S.modal.id,w=W[id]||{};
+        const intensity=describeIntensity(w);
+        Object.assign(base.modal,{intensityShow:'block',intensityValue:intensity.value,intensityStatus:intensity.level===null?'':intensity.statusLabel,intensityScope:intensity.scopeSummary,intensityScopeShow:intensity.scopeSummary?'block':'none',intensityExposure:intensity.exposure||'',intensityExposureShow:intensity.exposure?'block':'none',intensityPresentation:intensity.presentation||'',intensityPresentationShow:intensity.presentation?'block':'none'});
         const subActive=w.buy==='구독'&&((w.pub||'')>today||active.indexOf(id)>=0);
         const info=window.BCUTCatalogueUI.purchase(id,D,subActive);
         Object.assign(base.modal,{purchaseShow:'flex',format:info.format,price:info.price,priceNote:info.priceNote,
@@ -4358,18 +4385,18 @@ class Component extends DCLogic {
       const ends=experiment.endsAt?Date.parse(experiment.endsAt):Infinity;
       if(at>=starts && at<ends){
         const seen=new Set();
-        const hasIntensity=(experiment.groups||[]).some(g=>(g.items||[]).some(p=>Number.isInteger(p.intensity)&&p.intensity>=1&&p.intensity<=5));
+        const hasIntensity=(experiment.groups||[]).some(g=>(g.items||[]).some(p=>describeIntensity(W[String(p.id)]).level!==null));
         base.paidPickIntensityNoteShow=hasIntensity?'block':'none';
         base.paidPickGroups=(experiment.groups||[]).slice(0,2).map(g=>({title:g.title,items:(g.items||[]).filter(p=>{
           const w=W[String(p.id)];if(!w||seen.has(String(p.id))||w.buy!=='코인'||(w.pub&&w.pub>today))return false;
           seen.add(String(p.id));return true;
         }).slice(0,3).map((p,i)=>{
           const id=String(p.id),w=W[id],title=this.splitTitle(w.title||id).name;
-          const intensity=Number.isInteger(p.intensity)&&p.intensity>=1&&p.intensity<=5?p.intensity:null;
+          const intensityInfo=describeIntensity(w),intensity=intensityInfo.level;
           const context={experiment_id:experiment.id,work_id:id,selection_group:g.id,card_position:i+1};
           return {id,title,groupTitle:g.title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model:(w.models||[]).join(' & '),loading:'lazy',fetchPriority:'auto',
-            intensityShow:intensity!==null?'flex':'none',intensityText:intensity===null?'미등록':intensity+'/5',
-            intensityLabel:intensity===null?'수위 미등록':'운영자 수위 기준 5단계 중 '+intensity+'단계',intensityBars:[1,2,3,4,5].map(n=>({filled:String(intensity!==null&&n<=intensity)})),
+            intensityShow:intensity!==null?'flex':'none',intensityText:intensityInfo.value,
+            intensityLabel:intensityInfo.ariaLabel,intensityBars:[1,2,3,4,5].map(n=>({filled:String(intensity!==null&&n<=intensity)})),
             format:window.BCUTCatalogueUI.format(w,p),price:Number.isFinite(p.coin)&&p.coin>0?p.coin.toLocaleString('ko-KR')+'코인':'',priceShow:Number.isFinite(p.coin)&&p.coin>0?'block':'none',
             url:'https://bcut.maximkorea.net/work/'+id,infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보러 가기 (새 창)',
             open:()=>{this.trackPaidPick('bcut_exp_card_open',context,'poster');this.openWork(id,context);},

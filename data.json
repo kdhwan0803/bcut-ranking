@@ -12014,15 +12014,25 @@
         "exposure": null,
         "presentation": null,
         "scope": {
-          "summary": "기존 입력값 보존 · 본편 재검토 전",
+          "summary": "공식 구성 정보만 확인 · 사진·영상 본편 재검토 미완료 · 기존값 유지",
           "photosReviewed": 0,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 158,
+          "thumbnailsReviewed": 0,
+          "pageIndices": [],
+          "photoSortIndices": [],
+          "videosAvailable": 4,
+          "includesCoverInTotal": true
         },
-        "basis": "기존 운영자 입력값 이관 · 재평가 아님",
+        "basis": "기존 운영자 입력값 보존 · 이번 부분 확인만으로 전체 작품 수위를 재확정하지 않음",
         "reviewedAt": null,
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "lastCheckedAt": "2026-11-17",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=1910",
+          "https://bcut.maximkorea.net/work/1910"
+        ]
       }
     },
     "1913": {
@@ -13367,7 +13377,7 @@
         "exposure": null,
         "presentation": null,
         "scope": {
-          "summary": "기존 입력값 보존 · 본편 재검토 전",
+          "summary": "기존 입력값 보존 · 이번 영상 포함 본편 재평가 미완료",
           "photosReviewed": 0,
           "videosReviewed": 0,
           "totalPhotos": null
@@ -13975,7 +13985,7 @@
         "exposure": null,
         "presentation": null,
         "scope": {
-          "summary": "기존 입력값 보존 · 본편 재검토 전",
+          "summary": "기존 입력값 보존 · 이번 영상 포함 본편 재평가 미완료",
           "photosReviewed": 0,
           "videosReviewed": 0,
           "totalPhotos": null
@@ -14125,15 +14135,32 @@
         "exposure": null,
         "presentation": null,
         "scope": {
-          "summary": "기존 입력값 보존 · 본편 재검토 전",
-          "photosReviewed": 0,
+          "summary": "썸네일132개 + 확대2컷 부분 확인 · 영상4편 미검토 · 기존값 유지",
+          "photosReviewed": 2,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 132,
+          "thumbnailsReviewed": 132,
+          "pageIndices": [
+            11,
+            118
+          ],
+          "photoSortIndices": [
+            "S10",
+            "S117"
+          ],
+          "videosAvailable": 4,
+          "includesCoverInTotal": true
         },
-        "basis": "기존 운영자 입력값 이관 · 재평가 아님",
+        "basis": "기존 운영자 입력값 보존 · 사진 일부만 재확인, 영상 포함 재평가 미완료",
         "reviewedAt": null,
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "lastCheckedAt": "2026-11-17",
+        "evidenceURLs": [
+          "https://bcut.maximkorea.net/work/2175",
+          "https://bcut.maximkorea.net/photo/2175#S10",
+          "https://bcut.maximkorea.net/photo/2175#S117"
+        ]
       }
     },
     "2176": {
@@ -14465,15 +14492,26 @@
         "exposure": null,
         "presentation": null,
         "scope": {
-          "summary": "기존 입력값 보존 · 본편 재검토 전",
+          "summary": "공식 구성 정보만 확인 · 사진·영상 본편 재검토 미완료 · 기존값 유지",
           "photosReviewed": 0,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 300,
+          "thumbnailsReviewed": 0,
+          "pageIndices": [],
+          "photoSortIndices": [],
+          "videosAvailable": 6,
+          "includesCoverInTotal": true
         },
-        "basis": "기존 운영자 입력값 이관 · 재평가 아님",
+        "basis": "기존 운영자 입력값 보존 · 이번 부분 확인만으로 전체 작품 수위를 재확정하지 않음",
         "reviewedAt": null,
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "lastCheckedAt": "2026-11-17",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2224",
+          "https://bcut.maximkorea.net/work/2224",
+          "https://bcut.maximkorea.net/photo/2224"
+        ]
       }
     },
     "2225": {
@@ -14520,15 +14558,34 @@
         "exposure": null,
         "presentation": null,
         "scope": {
-          "summary": "기존 입력값 보존 · 본편 재검토 전",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 135개 + 확대 2컷 부분 확인 · 영상 10편 미검토 · 기존값 유지",
+          "photosReviewed": 2,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 136,
+          "thumbnailsReviewed": 135,
+          "pageIndices": [
+            5,
+            136
+          ],
+          "photoSortIndices": [
+            "S4",
+            "S135"
+          ],
+          "videosAvailable": 10,
+          "includesCoverInTotal": true
         },
-        "basis": "기존 운영자 입력값 이관 · 재평가 아님",
+        "basis": "기존 운영자 입력값 보존 · 이번 부분 확인만으로 전체 작품 수위를 재확정하지 않음",
         "reviewedAt": null,
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "lastCheckedAt": "2026-11-17",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2226",
+          "https://bcut.maximkorea.net/work/2226",
+          "https://bcut.maximkorea.net/photo/2226",
+          "https://bcut.maximkorea.net/photo/2226#S4",
+          "https://bcut.maximkorea.net/photo/2226#S135"
+        ]
       }
     },
     "2233": {
@@ -16365,20 +16422,41 @@
       "officialImg": "https://i.ibb.co/X6MRZSD/2428-C-20261015160932-14-opt.webp",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 3,
+        "status": "provisional",
+        "exposure": "패치·칩 소품과 속옷으로 주요 부위를 가린 부분 노출",
+        "presentation": "보통 · 카지노 테이블·카드·칩·붉은 조명",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 96개 + 선정 3컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 3,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 97,
+          "thumbnailsReviewed": 96,
+          "pageIndices": [
+            4,
+            71,
+            89
+          ],
+          "photoSortIndices": [
+            "S3",
+            "S70",
+            "S88"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2428",
+          "https://bcut.maximkorea.net/work/2428",
+          "https://bcut.maximkorea.net/photo/2428",
+          "https://bcut.maximkorea.net/photo/2428#S3",
+          "https://bcut.maximkorea.net/photo/2428#S70",
+          "https://bcut.maximkorea.net/photo/2428#S88"
+        ]
       }
     },
     "2429": {
@@ -16402,20 +16480,41 @@
       "officialImg": "https://i.ibb.co/sMCq9Ls/2429-C-20261015161441-14-opt.webp",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 2,
+        "status": "provisional",
+        "exposure": "속옷 착용, 주요 부위 가림",
+        "presentation": "보통 · 옥외·실내 자연광·자세 변화",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 93개 + 선정 3컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 3,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 94,
+          "thumbnailsReviewed": 93,
+          "pageIndices": [
+            4,
+            49,
+            83
+          ],
+          "photoSortIndices": [
+            "S3",
+            "S48",
+            "S82"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2429",
+          "https://bcut.maximkorea.net/work/2429",
+          "https://bcut.maximkorea.net/photo/2429",
+          "https://bcut.maximkorea.net/photo/2429#S3",
+          "https://bcut.maximkorea.net/photo/2429#S48",
+          "https://bcut.maximkorea.net/photo/2429#S82"
+        ]
       }
     },
     "2430": {
@@ -16439,20 +16538,44 @@
       "officialImg": "https://i.ibb.co/v63yyVTy/2430-C-20261015161836-14-opt.webp",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 2,
+        "status": "provisional",
+        "exposure": "속옷·보디수트 착용, 주요 부위 가림",
+        "presentation": "보통 · 침대·셀카 소품·근접 구도",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 90개 + 선정 4컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 4,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 91,
+          "thumbnailsReviewed": 90,
+          "pageIndices": [
+            3,
+            36,
+            76,
+            91
+          ],
+          "photoSortIndices": [
+            "S2",
+            "S35",
+            "S75",
+            "S90"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2430",
+          "https://bcut.maximkorea.net/work/2430",
+          "https://bcut.maximkorea.net/photo/2430",
+          "https://bcut.maximkorea.net/photo/2430#S2",
+          "https://bcut.maximkorea.net/photo/2430#S35",
+          "https://bcut.maximkorea.net/photo/2430#S75",
+          "https://bcut.maximkorea.net/photo/2430#S90"
+        ]
       }
     },
     "2431": {
@@ -16476,20 +16599,41 @@
       "officialImg": "https://i.ibb.co/wN5MDz4N/2431-C-20261015162306-14-opt.webp",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 3,
+        "status": "provisional",
+        "exposure": "속옷·손·카드 소품으로 주요 부위를 가린 부분 노출",
+        "presentation": "보통 · 붉은 조명·카드·좌석 소품",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 91개 + 선정 3컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 3,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 92,
+          "thumbnailsReviewed": 91,
+          "pageIndices": [
+            4,
+            56,
+            86
+          ],
+          "photoSortIndices": [
+            "S3",
+            "S55",
+            "S85"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2431",
+          "https://bcut.maximkorea.net/work/2431",
+          "https://bcut.maximkorea.net/photo/2431",
+          "https://bcut.maximkorea.net/photo/2431#S3",
+          "https://bcut.maximkorea.net/photo/2431#S55",
+          "https://bcut.maximkorea.net/photo/2431#S85"
+        ]
       }
     },
     "2432": {
@@ -16513,20 +16657,44 @@
       "officialImg": "https://i.ibb.co/gMpvRRBd/2432-C-20261015162531-14-opt.webp",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 3,
+        "status": "provisional",
+        "exposure": "패치·손·의상으로 주요 부위를 가린 부분 노출",
+        "presentation": "보통 · 밝은 실내·침대·자세 변화",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 89개 + 선정 4컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 4,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 90,
+          "thumbnailsReviewed": 89,
+          "pageIndices": [
+            3,
+            28,
+            54,
+            89
+          ],
+          "photoSortIndices": [
+            "S2",
+            "S27",
+            "S53",
+            "S88"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2432",
+          "https://bcut.maximkorea.net/work/2432",
+          "https://bcut.maximkorea.net/photo/2432",
+          "https://bcut.maximkorea.net/photo/2432#S2",
+          "https://bcut.maximkorea.net/photo/2432#S27",
+          "https://bcut.maximkorea.net/photo/2432#S53",
+          "https://bcut.maximkorea.net/photo/2432#S88"
+        ]
       }
     },
     "2436": {
@@ -16590,20 +16758,47 @@
       "officialImg": "https://i.ibb.co/bR7pgG32/2439-C-20261027160532-14-opt.webp",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 3,
+        "status": "provisional",
+        "exposure": "손·의상으로 주요 부위를 가린 부분 노출",
+        "presentation": "강함 · 실내 촬영·소품 활용·자세 강조",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 67개 + 선정 5컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 5,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 68,
+          "thumbnailsReviewed": 67,
+          "pageIndices": [
+            3,
+            34,
+            48,
+            65,
+            68
+          ],
+          "photoSortIndices": [
+            "S2",
+            "S33",
+            "S47",
+            "S64",
+            "S67"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2439",
+          "https://bcut.maximkorea.net/work/2439",
+          "https://bcut.maximkorea.net/photo/2439",
+          "https://bcut.maximkorea.net/photo/2439#S2",
+          "https://bcut.maximkorea.net/photo/2439#S33",
+          "https://bcut.maximkorea.net/photo/2439#S47",
+          "https://bcut.maximkorea.net/photo/2439#S64",
+          "https://bcut.maximkorea.net/photo/2439#S67"
+        ]
       }
     },
     "2443": {
@@ -16687,20 +16882,44 @@
       "officialImg": "https://i.ibb.co/SwWQJbc0/2455-C-20261022164956-14-opt.webp",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 3,
+        "status": "provisional",
+        "exposure": "거품·의상으로 주요 부위를 가린 부분 노출",
+        "presentation": "보통 · 욕실·거품·거울·샤워기",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 180개 + 선정 4컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 4,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 181,
+          "thumbnailsReviewed": 180,
+          "pageIndices": [
+            3,
+            81,
+            151,
+            179
+          ],
+          "photoSortIndices": [
+            "S2",
+            "S82",
+            "S152",
+            "S180"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2455",
+          "https://bcut.maximkorea.net/work/2455",
+          "https://bcut.maximkorea.net/photo/2455",
+          "https://bcut.maximkorea.net/photo/2455#S2",
+          "https://bcut.maximkorea.net/photo/2455#S82",
+          "https://bcut.maximkorea.net/photo/2455#S152",
+          "https://bcut.maximkorea.net/photo/2455#S180"
+        ]
       }
     },
     "2456": {
@@ -17018,20 +17237,44 @@
       "officialImg": "https://i.ibb.co/SwjHs9Fs/2485-C-20261102100155-14-opt.webp",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 3,
+        "status": "provisional",
+        "exposure": "큰 절개·좁은 가림 면적의 의상, 주요 부위 가림",
+        "presentation": "보통 · 체육창고·교실·운동기구 소품",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 96개 + 선정 4컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 4,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 97,
+          "thumbnailsReviewed": 96,
+          "pageIndices": [
+            4,
+            36,
+            74,
+            87
+          ],
+          "photoSortIndices": [
+            "S3",
+            "S35",
+            "S73",
+            "S86"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2485",
+          "https://bcut.maximkorea.net/work/2485",
+          "https://bcut.maximkorea.net/photo/2485",
+          "https://bcut.maximkorea.net/photo/2485#S3",
+          "https://bcut.maximkorea.net/photo/2485#S35",
+          "https://bcut.maximkorea.net/photo/2485#S73",
+          "https://bcut.maximkorea.net/photo/2485#S86"
+        ]
       }
     },
     "2487": {
@@ -17153,20 +17396,44 @@
       "officialImg": "https://bcutrank.com/assets/covers/2495.jpg",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 4,
+        "status": "provisional",
+        "exposure": "가슴 직접 노출, 하의·천 등으로 하체 주요 부위 가림",
+        "presentation": "강함 · 침대·투명 소품·근접 구도",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 322개 + 선정 4컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 4,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 323,
+          "thumbnailsReviewed": 322,
+          "pageIndices": [
+            16,
+            171,
+            276,
+            321
+          ],
+          "photoSortIndices": [
+            "S15",
+            "S170",
+            "S275",
+            "S320"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2495",
+          "https://bcut.maximkorea.net/work/2495",
+          "https://bcut.maximkorea.net/photo/2495",
+          "https://bcut.maximkorea.net/photo/2495#S15",
+          "https://bcut.maximkorea.net/photo/2495#S170",
+          "https://bcut.maximkorea.net/photo/2495#S275",
+          "https://bcut.maximkorea.net/photo/2495#S320"
+        ]
       }
     },
     "2496": {
@@ -17310,20 +17577,47 @@
       "officialImg": "https://maximbcut.edge.naverncp.com/bw/2539/2539_C_20261116125621_14.jpg",
       "intensity": {
         "version": 1,
-        "level": null,
-        "status": "pending",
-        "exposure": null,
-        "presentation": null,
+        "level": 2,
+        "status": "provisional",
+        "exposure": "의복·속옷 착용, 주요 부위 가림",
+        "presentation": "보통 · 사무실 콘셉트·자세 변화",
         "scope": {
-          "summary": "본편 확인 전 · 수위 미평가",
-          "photosReviewed": 0,
+          "summary": "내지 썸네일 101개 + 선정 5컷 확대 확인 · 사진 전체 확대·영상 미검토",
+          "photosReviewed": 5,
           "videosReviewed": 0,
-          "totalPhotos": null
+          "totalPhotos": 102,
+          "thumbnailsReviewed": 101,
+          "pageIndices": [
+            3,
+            51,
+            73,
+            91,
+            102
+          ],
+          "photoSortIndices": [
+            "S2",
+            "S50",
+            "S72",
+            "S90",
+            "S101"
+          ],
+          "includesCoverInTotal": true
         },
-        "basis": "사진 화보 시범 검토 대상 · 공식 뷰어 로그인 필요",
-        "reviewedAt": null,
+        "basis": "직접 관찰한 사진 표본의 노출을 기본으로, 연출을 별도 기록한 잠정 분류",
+        "reviewedAt": "2026-11-17",
         "recordedAt": "2026-11-17",
-        "criteriaVersion": "exposure-staging-v1"
+        "criteriaVersion": "exposure-staging-v1",
+        "confidence": "medium",
+        "evidenceURLs": [
+          "https://bcutrank.com/?w=2539",
+          "https://bcut.maximkorea.net/work/2539",
+          "https://bcut.maximkorea.net/photo/2539",
+          "https://bcut.maximkorea.net/photo/2539#S2",
+          "https://bcut.maximkorea.net/photo/2539#S50",
+          "https://bcut.maximkorea.net/photo/2539#S72",
+          "https://bcut.maximkorea.net/photo/2539#S90",
+          "https://bcut.maximkorea.net/photo/2539#S101"
+        ]
       }
     },
     "2543": {

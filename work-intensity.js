@@ -2,7 +2,7 @@
 (function (root) {
   'use strict';
   const statuses = Object.freeze({
-    legacy: '기존 입력값 · 재검토 전',
+    legacy: '기존 입력값 · 재평가 미완료',
     user_confirmed: '사용자 확인값',
     provisional: '사진 확인 범위 기준 · 잠정',
     reviewed: '명시된 확인 범위 검토 완료',

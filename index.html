@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><script src="./work-intensity.js?v=20261117-pilot-1"></script><script src="./champion-photos.js?v=20261116-final-week2-face-1"></script><script src="./paid-pick-rotation.js"></script><script src="./work-facts.js?v=20261114-shopping-1"></script><script src="./work-shopping.js?v=20261114-shopping-1"></script><script src="./first-corner.js?v=20261117-initial-visible-2"></script>
+<head><script src="./work-intensity.js?v=20261117-pilot-2"></script><script src="./champion-photos.js?v=20261116-final-week2-face-1"></script><script src="./paid-pick-rotation.js"></script><script src="./work-facts.js?v=20261114-shopping-1"></script><script src="./work-shopping.js?v=20261114-shopping-1"></script><script src="./first-corner.js?v=20261117-initial-visible-2"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>맥심 비컷(B컷) 주간 랭킹 | 이번 주 1위 화보</title>
@@ -4374,6 +4374,8 @@ class Component extends DCLogic {
     }
     // Public metadata only. Revenue and purchaser data stay outside data.json.
     base.paidPickShow='none';base.paidPickGroups=[];base.paidPickIntensityNoteShow='none';
+    // Only originally configured picks have homepage badges; other rated works remain detail-only.
+    const intensityBadgeIds=new Set((D.revenueExperiment?.groups||[]).flatMap(g=>(g.items||[]).map(p=>String(p.id))));
     const rotationNow=Number(S.now)||Date.now(),rotationSlot=window.BCUTPaidRotation.slot(rotationNow);
     const rotationDraw=S.paidPickSlot===rotationSlot?(S.paidPickDraw||0):0;
     const experiment=window.BCUTPaidRotation.select(D,rotationNow,rotationDraw);
@@ -4385,14 +4387,14 @@ class Component extends DCLogic {
       const ends=experiment.endsAt?Date.parse(experiment.endsAt):Infinity;
       if(at>=starts && at<ends){
         const seen=new Set();
-        const hasIntensity=(experiment.groups||[]).some(g=>(g.items||[]).some(p=>describeIntensity(W[String(p.id)]).level!==null));
+        const hasIntensity=(experiment.groups||[]).some(g=>(g.items||[]).some(p=>intensityBadgeIds.has(String(p.id))&&describeIntensity(W[String(p.id)]).level!==null));
         base.paidPickIntensityNoteShow=hasIntensity?'block':'none';
         base.paidPickGroups=(experiment.groups||[]).slice(0,2).map(g=>({title:g.title,items:(g.items||[]).filter(p=>{
           const w=W[String(p.id)];if(!w||seen.has(String(p.id))||w.buy!=='코인'||(w.pub&&w.pub>today))return false;
           seen.add(String(p.id));return true;
         }).slice(0,3).map((p,i)=>{
           const id=String(p.id),w=W[id],title=this.splitTitle(w.title||id).name;
-          const intensityInfo=describeIntensity(w),intensity=intensityInfo.level;
+          const intensityInfo=describeIntensity(intensityBadgeIds.has(id)?w:undefined),intensity=intensityInfo.level;
           const context={experiment_id:experiment.id,work_id:id,selection_group:g.id,card_position:i+1};
           return {id,title,groupTitle:g.title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model:(w.models||[]).join(' & '),loading:'lazy',fetchPriority:'auto',
             intensityShow:intensity!==null?'flex':'none',intensityText:intensityInfo.value,

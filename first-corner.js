@@ -109,9 +109,11 @@
     if (validRecord(stored) && now - stored.lastActivity >= 0 && now - stored.lastActivity <= TTL) { cached = stored; if (!finiteInt(cached.themeSlot) || cached.themeSlot < 0) cached.themeSlot = slotOf(now); lastSavedAt = stored.lastActivity; touch(); writeJSON(session, SESSION_KEY, cached); lastSavedAt = now; }
     else {
       var seed = seedNow();
-      cached = { v: 1, kind: readable(session, SESSION_KEY) ? nextKind(seed) : 'ranking', seed: seed, themeSlot: slotOf(now), lastActivity: now };
+      cached = { v: 1, kind: 'discovery', seed: seed, themeSlot: slotOf(now), lastActivity: now };
       writeJSON(session, SESSION_KEY, cached); lastSavedAt = now;
     }
+    // Recommendations must be visible on ordinary first entry too. Migrate old ranking-first visits.
+    if(cached.kind!=='discovery'){cached.kind='discovery';writeJSON(session,SESSION_KEY,cached);}
     if(isReload())return refresh();
     return recordView();
   }
@@ -382,7 +384,7 @@
       if (themed) return themed;
       var seen = new Set(),avoid=new Set(record&&Array.isArray(record.avoidIds)?record.avoidIds:[]);
       ids = shuffle(idsOf(options.recommendationIds).map(String).filter(function (id) { if (seen.has(id) || avoid.has(id) || !liveSet.has(id)) return false; seen.add(id); return true; }), seed ^ 0x7f4a7c15).slice(0, 3);
-      if(ids.length<3&&record&&record.refreshDraw){var usedModels=new Set();ids.forEach(function(id){usedModels.add(normalizeModel(idsOf(works[id].models)[0]));});shuffle(live,seed).forEach(function(id){if(ids.length>=3||avoid.has(id)||ids.indexOf(id)>=0)return;var model=normalizeModel(idsOf(works[id].models)[0]);if(model&&usedModels.has(model))return;ids.push(id);if(model)usedModels.add(model);});}
+      if(ids.length<3){var usedModels=new Set();ids.forEach(function(id){usedModels.add(normalizeModel(idsOf(works[id].models)[0]));});shuffle(live,seed).forEach(function(id){if(ids.length>=3||avoid.has(id)||ids.indexOf(id)>=0)return;var model=normalizeModel(idsOf(works[id].models)[0]);if(model&&usedModels.has(model))return;ids.push(id);if(model)usedModels.add(model);});}
     } else if (kind === 'new') {
       ids = byNewest(works, live).slice(0, 3);
     } else {

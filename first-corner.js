@@ -87,9 +87,24 @@
     writeJSON(store, BAG_KEY, state);
     return kind || 'ranking';
   }
+
+  function recordView() {
+    var result={kind:cached.kind,seed:cached.seed,themeSlot:cached.themeSlot};
+    if(finiteInt(cached.refreshDraw)&&cached.refreshDraw>0){result.refreshDraw=cached.refreshDraw;result.avoidIds=Array.isArray(cached.avoidIds)?cached.avoidIds.slice():[];}
+    return result;
+  }
+  function isReload(){try{var entry=root.performance&&root.performance.getEntriesByType&&root.performance.getEntriesByType('navigation')[0];return entry?entry.type==='reload':!!(root.performance&&root.performance.navigation&&root.performance.navigation.type===1);}catch(_){return false;}}
+  function refresh(){
+    if(!cached)resolve();
+    var now=Date.now(),draw=finiteInt(cached.refreshDraw)?cached.refreshDraw+1:1;
+    cached=Object.assign({},cached,{kind:'discovery',seed:seedNow()^draw,themeSlot:slotOf(now),refreshDraw:draw,avoidIds:Array.isArray(cached.shownIds)?cached.shownIds.map(String).slice(0,3):[],lastActivity:now});
+    pendingNewVisit=false;writeJSON(safeStore('sessionStorage'),SESSION_KEY,cached);lastSavedAt=now;return recordView();
+  }
+  function remember(plan){if(!cached||!plan||!Array.isArray(plan.ids)||plan.ids.length!==3)return;cached.shownIds=plan.ids.map(String);writeJSON(safeStore('sessionStorage'),SESSION_KEY,cached);}
+
   function resolve() {
     bindActivity();
-    if (cached) return { kind: cached.kind, seed: cached.seed, themeSlot: cached.themeSlot };
+    if (cached) return recordView();
     var now = Date.now(), session = safeStore('sessionStorage'), stored = readable(session, SESSION_KEY) ? readJSON(session, SESSION_KEY) : null;
     if (validRecord(stored) && now - stored.lastActivity >= 0 && now - stored.lastActivity <= TTL) { cached = stored; if (!finiteInt(cached.themeSlot) || cached.themeSlot < 0) cached.themeSlot = slotOf(now); lastSavedAt = stored.lastActivity; touch(); writeJSON(session, SESSION_KEY, cached); lastSavedAt = now; }
     else {
@@ -97,7 +112,8 @@
       cached = { v: 1, kind: readable(session, SESSION_KEY) ? nextKind(seed) : 'ranking', seed: seed, themeSlot: slotOf(now), lastActivity: now };
       writeJSON(session, SESSION_KEY, cached); lastSavedAt = now;
     }
-    return { kind: cached.kind, seed: cached.seed, themeSlot: cached.themeSlot };
+    if(isReload())return refresh();
+    return recordView();
   }
 
   // Verified public concepts and official product facts only. No inferred exposure scores.
@@ -304,7 +320,9 @@
     // Shift the order each complete cycle, so one theme is not stuck in one time of day.
     var offset = ((slot % THEMES.length) + (Math.floor(slot / THEMES.length) % THEMES.length)) % THEMES.length;
     for (var step = 0; step < THEMES.length; step++) {
-      var theme = THEMES[(offset + step) % THEMES.length];
+      var draw=record&&finiteInt(record.refreshDraw)?record.refreshDraw:0;
+      var theme = THEMES[(offset + draw + step) % THEMES.length];
+      if(record&&Array.isArray(record.avoidIds)&&theme.items.some(function(item){return record.avoidIds.indexOf(item.id)>=0;}))continue;
       if (!theme.items.every(function (item) { return liveSet.has(item.id) && themeAccepts(theme, works[item.id], facts[item.id]); })) continue;
       var reasons = Object.create(null);
       theme.items.forEach(function (item) { reasons[item.id] = themeReason(theme, item, works[item.id], facts[item.id]); });
@@ -362,8 +380,9 @@
     if (kind === 'discovery') {
       var themed = thematicPlan(works, liveSet, record, options);
       if (themed) return themed;
-      var seen = new Set();
-      ids = shuffle(idsOf(options.recommendationIds).map(String).filter(function (id) { if (seen.has(id) || !liveSet.has(id)) return false; seen.add(id); return true; }), seed ^ 0x7f4a7c15).slice(0, 3);
+      var seen = new Set(),avoid=new Set(record&&Array.isArray(record.avoidIds)?record.avoidIds:[]);
+      ids = shuffle(idsOf(options.recommendationIds).map(String).filter(function (id) { if (seen.has(id) || avoid.has(id) || !liveSet.has(id)) return false; seen.add(id); return true; }), seed ^ 0x7f4a7c15).slice(0, 3);
+      if(ids.length<3&&record&&record.refreshDraw){var usedModels=new Set();ids.forEach(function(id){usedModels.add(normalizeModel(idsOf(works[id].models)[0]));});shuffle(live,seed).forEach(function(id){if(ids.length>=3||avoid.has(id)||ids.indexOf(id)>=0)return;var model=normalizeModel(idsOf(works[id].models)[0]);if(model&&usedModels.has(model))return;ids.push(id);if(model)usedModels.add(model);});}
     } else if (kind === 'new') {
       ids = byNewest(works, live).slice(0, 3);
     } else {
@@ -380,5 +399,5 @@
     return { kind: kind, title: meta[kind][0], subtitle: meta[kind][1], ids: ids };
   }
 
-  return Object.freeze({ resolve: resolve, plan: plan, slotOf: slotOf, themes: THEMES });
+  return Object.freeze({ resolve: resolve, refresh: refresh, remember: remember, plan: plan, slotOf: slotOf, themes: THEMES });
 }));

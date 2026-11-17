@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><script src="./champion-photos.js?v=20261116-final-week2-face-1"></script><script src="./paid-pick-rotation.js"></script><script src="./work-facts.js?v=20261114-shopping-1"></script><script src="./work-shopping.js?v=20261114-shopping-1"></script><script src="./first-corner.js?v=20261114-themes-1"></script>
+<head><script src="./champion-photos.js?v=20261116-final-week2-face-1"></script><script src="./paid-pick-rotation.js"></script><script src="./work-facts.js?v=20261114-shopping-1"></script><script src="./work-shopping.js?v=20261114-shopping-1"></script><script src="./first-corner.js?v=20261117-refresh-1"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>맥심 비컷(B컷) 주간 랭킹 | 이번 주 1위 화보</title>
@@ -875,6 +875,7 @@ OneSignalDeferred.push(async function(OneSignal){
 <style>#sub a.subscription-benefit{color:var(--txt);text-decoration:none}#sub a.subscription-benefit:focus-visible{outline:2px solid var(--acc);outline-offset:4px}@media(hover:hover) and (pointer:fine){#sub a.subscription-benefit:hover{border-color:var(--acc)}}</style>
 <link rel="stylesheet" href="./subscription-ab.css">
 <style id="first-corner-style">
+.first-corner-entry{flex-wrap:wrap}.first-corner-refresh{min-height:44px;flex:0 0 auto;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg1);color:var(--txt);font:inherit;font-weight:800;cursor:pointer}.first-corner-refresh:hover{border-color:var(--acc);color:var(--acc)}.first-corner-refresh:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
 .first-corner-entry{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px;padding:10px 4px;font-size:12px;color:var(--mut)}.first-corner-entry strong{font-weight:800;color:var(--t2)}.first-corner-entry a{font-weight:900;color:var(--acc);text-decoration:none;white-space:nowrap}.first-corner{border:1px solid var(--line);border-radius:16px;background:var(--bg1);padding:20px;margin-bottom:22px}.first-corner-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:15px}.first-corner h2{font-size:21px;font-weight:900;letter-spacing:-.7px;margin:0}.first-corner-intro{font-size:12px;line-height:1.6;color:var(--mut);margin:7px 0 0}.first-corner-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.first-corner-card{display:flex;gap:13px;align-items:center;min-width:0;width:100%;padding:0;background:var(--bg2);border:1px solid var(--line);border-radius:11px;overflow:hidden;color:var(--txt);font:inherit;text-align:left;cursor:pointer}.first-corner-card:focus-visible{outline:3px solid var(--acc);outline-offset:3px}.first-corner-cover{display:block;flex:0 0 100px;width:100px;aspect-ratio:2/3;overflow:hidden;background:var(--bg2)}.first-corner-cover img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}.first-corner-copy{display:flex;flex-direction:column;gap:7px;min-width:0;padding:12px 12px 12px 0}.first-corner-model{font-size:12px;font-weight:800;color:var(--t2)}.first-corner-title{font-size:14px;font-weight:900;line-height:1.4;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.first-corner-format{font-size:10.5px;color:var(--mut)}.first-corner-price{font-size:11px;font-weight:800;color:var(--acc);line-height:1.4}.first-corner-reason{font-size:11px;line-height:1.5;color:var(--t2)}.first-corner-note{font-size:10.5px;color:var(--mut);margin:13px 0 0;line-height:1.5}
 @media(max-width:640px){.first-corner-entry{font-size:10.5px;gap:8px;margin-bottom:10px}.first-corner{padding:15px 12px;margin-bottom:18px}.first-corner h2{font-size:18px}.first-corner-intro{font-size:11px}.first-corner-grid{gap:8px}.first-corner-card{display:block}.first-corner-cover{width:100%;aspect-ratio:2/3}.first-corner-copy{padding:9px 8px;gap:5px}.first-corner-model{font-size:10.5px}.first-corner-title{font-size:11px}.first-corner-format{font-size:9px}.first-corner-reason{font-size:10px;line-height:1.5}.first-corner-price{font-size:10px}}
 </style>
@@ -1623,7 +1624,7 @@ select,input,button{font-family:inherit}
     </div>
 
     <sc-if value="{{ sectionVisible.firstCornerBarShow }}" hint-placeholder-val="{{ false }}">
-      <div id="first-corner-entry" class="first-corner-entry" style="display:{{ firstCornerBarShow }}"><span>이번에는 <strong>{{ firstCornerLabel }}</strong>부터</span><a href="#ranking" onClick="{{ firstCornerGoRanking }}">주간 랭킹 바로 보기 ↓</a></div>
+      <div id="first-corner-entry" class="first-corner-entry" style="display:{{ firstCornerBarShow }}"><span>이번에는 <strong>{{ firstCornerLabel }}</strong>부터</span><a href="#ranking" onClick="{{ firstCornerGoRanking }}">주간 랭킹 바로 보기 ↓</a><button type="button" class="first-corner-refresh" onClick="{{ firstCornerRefresh }}" aria-label="추천 화보 새로 고르기" aria-controls="first-corner">다른 화보 보기</button></div>
     </sc-if>
     <sc-if value="{{ sectionVisible.firstCornerShow }}" hint-placeholder-val="{{ false }}">
       <section id="first-corner" class="first-corner" aria-labelledby="first-corner-title" data-corner-kind="{{ firstCornerKind }}" style="display:{{ firstCornerShow }}">
@@ -4435,7 +4436,7 @@ class Component extends DCLogic {
 
 
     // Rotate only the first home corner; ranking order and catalogue data stay unchanged.
-    Object.assign(base,{firstCornerBarShow:'none',firstCornerShow:'none',firstCornerKind:'ranking',firstCornerLabel:'주간 랭킹',firstCornerTitle:'',firstCornerSubtitle:'',firstCornerNote:'첫 코너는 방문별로 교대하며, 둘러보는 동안에는 같은 배치를 유지합니다.',firstCornerCards:[],firstCornerGoRanking:event=>{
+    Object.assign(base,{firstCornerBarShow:'none',firstCornerShow:'none',firstCornerKind:'ranking',firstCornerLabel:'주간 랭킹',firstCornerTitle:'',firstCornerSubtitle:'',firstCornerNote:'새로고침이나 다른 화보 보기로 추천을 바꿀 수 있습니다. 상세창을 닫아도 현재 추천은 유지됩니다.',firstCornerCards:[],firstCornerRefresh:()=>{if(!window.BCUTFirstCorner||!window.BCUTFirstCorner.refresh)return;this._firstCornerRecord=window.BCUTFirstCorner.refresh();this._firstCornerPlan=null;this.setState({firstCornerRefreshRevision:(this.state.firstCornerRefreshRevision||0)+1});},firstCornerGoRanking:event=>{
       if(event&&(event.defaultPrevented||event.button>0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey))return;
       if(event)event.preventDefault();const target=document.getElementById('ranking');if(target)target.scrollIntoView({behavior:window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
     }});
@@ -4444,13 +4445,14 @@ class Component extends DCLogic {
       if(!this._firstCornerPlan||this._firstCornerPlan.data!==D){
         const recommendationIds=(base.paidPickGroups||[]).flatMap(group=>(group.items||[]).map(item=>String(item.id)));
         this._firstCornerPlan={data:D,plan:window.BCUTFirstCorner.plan(D,this._firstCornerRecord,{recommendationIds,now:Number(S.now)||Date.now(),facts:window.BCUTWorkFacts})};
+        if(window.BCUTFirstCorner.remember)window.BCUTFirstCorner.remember(this._firstCornerPlan.plan);
       }
       const plan=this._firstCornerPlan.plan;
       base.firstCornerBarShow='flex';base.firstCornerKind=plan.kind;
       base.firstCornerLabel=({ranking:'주간 랭킹',discovery:plan.themeId?'테마 추천':'추천 화보',new:'신작 화보',model:plan.model?plan.model+' 화보':'모델 화보'})[plan.kind]||'주간 랭킹';
       if(plan.kind!=='ranking'&&Array.isArray(plan.ids)&&plan.ids.length===3){
         base.firstCornerShow='block';base.firstCornerTitle=plan.title;base.firstCornerSubtitle=plan.subtitle;
-        if(plan.themeId)base.firstCornerNote='추천 테마는 한국시간 00·08·16시에 편성하며, 현재 방문에서는 같은 테마를 유지합니다.';
+        if(plan.themeId)base.firstCornerNote='기본 테마는 한국시간 00·08·16시 편성 · 새로고침이나 다른 화보 보기로 새 추천을 만날 수 있습니다.';
         base.firstCornerCards=plan.ids.map((id,i)=>{const w=W[id],title=this.splitTitle(w.title||id).name,info=window.BCUTCatalogueUI.purchase(id,D,active.indexOf(id)>=0);return{id,title,model:(w.models||[]).join(' · '),img:w.img||'',blur:this.blurOf(id),format:window.BCUTCatalogueUI.format(w),price:info.price||'가격은 B컷에서 확인',reason:plan.reasons&&plan.reasons[id]||'',reasonShow:plan.reasons&&plan.reasons[id]?'block':'none',priority:i===0?'high':'auto',infoLabel:(w.models||[]).join(' · ')+' '+title+' 작품 정보',open:()=>this.openWork(id)};});
       }
     }catch(_){base.firstCornerBarShow='none';base.firstCornerShow='none';}}

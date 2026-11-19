@@ -71,4 +71,4 @@ a.chip:hover{border-color:var(--accent2);color:var(--ink)}
 .intro .chips{margin-bottom:4px}
 
 /* Keep September public cover templates complete, including logo and age/media badges. */
-.thumb img[src*="assets/covers/sep2026-public-"]{object-fit:contain;object-position:center;transform:none;background:#f5ead3}
+.thumb img[src*="assets/covers/sep2026-public-"],.thumb img[src*="assets/covers/aug2026-public-"]{object-fit:contain;object-position:center;transform:none;background:#f5ead3}

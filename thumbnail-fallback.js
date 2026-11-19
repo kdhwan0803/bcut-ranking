@@ -18,13 +18,21 @@
   }
   function fail(img) {
     if (!candidate(img)) return;
-    states.set(img, { source: source(img) });
+    var old = states.get(img), failedSource = source(img);
+    var backup = img.getAttribute('data-contest-cover-backup') || '';
+    // These public contest cards may retry once with the existing catalogue cover.
+    if (!old && backup && backup !== failedSource) {
+      states.set(img, { source: failedSource, replacement: backup });
+      img.setAttribute('src', backup);
+      return;
+    }
     // Keep dimensions, alt text, badges and the surrounding link unchanged.
+    states.set(img, { source: old && old.replacement === failedSource ? old.source : failedSource, replacement: placeholder });
     img.setAttribute('src', placeholder);
   }
   function inspect(img) {
     var state = states.get(img);
-    if (state && source(img) !== placeholder) states.delete(img);
+    if (state && source(img) !== state.replacement) states.delete(img);
     // An unfinished lazy image must never be mistaken for a failed image.
     if (candidate(img) && img.complete && img.naturalWidth === 0) fail(img);
   }
@@ -34,20 +42,20 @@
   }
   function original(img) {
     var state = states.get(img);
-    return state && source(img) === placeholder ? state.source : source(img);
+    return state && source(img) === state.replacement ? state.source : source(img);
   }
   function matches(element, markup) {
     var template = document.createElement('template'); template.innerHTML = markup;
     var images = Array.from(element.querySelectorAll('img'));
-    if (!images.some(function (img) { return states.has(img) && source(img) === placeholder; })) {
+    if (!images.some(function (img) { return original(img) !== source(img); })) {
       return element.innerHTML.trim() === template.innerHTML.trim();
     }
     // Compare original paths so catalogue refreshes don't recreate failed images
     // or keep retrying the same URL every minute.
     var copy = element.cloneNode(true), copies = copy.querySelectorAll('img');
     images.forEach(function (img, i) {
-      var state = states.get(img);
-      if (state && source(img) === placeholder) copies[i].setAttribute('src', state.source);
+      var initial = original(img);
+      if (initial !== source(img)) copies[i].setAttribute('src', initial);
     });
     return copy.innerHTML.trim() === template.innerHTML.trim();
   }
@@ -64,7 +72,8 @@
   document.addEventListener('error', function (event) { fail(event.target); }, true);
   document.addEventListener('load', function (event) {
     var img = event.target;
-    if (img.tagName === 'IMG' && source(img) !== placeholder) states.delete(img);
+    var state = states.get(img);
+    if (img.tagName === 'IMG' && state && source(img) !== state.replacement) states.delete(img);
   }, true);
   new MutationObserver(function (changes) {
     changes.forEach(function (change) {

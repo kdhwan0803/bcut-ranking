@@ -7,7 +7,7 @@
   // Verified catalogue IDs for each model's winning contest season, in round order.
   var CONTEST_PILOT = {
     '쥬': { year: 2024, season: 15, entries: [['695', '첫 공개 화보'], ['763', 'TOP25'], ['899', '결승'], ['906', '결승']] },
-    '박서이': { year: 2026, season: 17, entries: [['1819', 'TOP23'], ['2147', 'TOP14'], ['2271', 'TOP8', 'assets/covers/contest-original-2271.webp'], ['2414', '결승', 'assets/covers/contest-original-2414.webp']] }
+    '박서이': { year: 2026, season: 17, entries: [['1819', 'TOP23'], ['2147', 'TOP14', 'assets/covers/contest-original-2147.webp'], ['2271', 'TOP8', 'assets/covers/contest-original-2271.webp'], ['2414', '결승', 'assets/covers/contest-original-2414.webp']] }
   };
   function escape(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {

@@ -143,7 +143,7 @@
     var section=document.createElement('section');
     section.id='bcut-paired-version';section.className='bcvp';
     section.setAttribute('aria-label','이 화보의 다른 버전');
-    var image=String(other.work.img||'');
+    var image=recommendationImage(other.work);
     var thumb=/^https:\/\//i.test(image)?
       '<img class="bcvp-img" src="'+esc(image)+'" alt="'+esc(modelOf(other.work)+' '+type+' 버전 표지')+'" width="60" height="82" loading="lazy" decoding="async">':
       '<span class="bcvp-img bcvp-img-empty" aria-hidden="true">'+type+'</span>';

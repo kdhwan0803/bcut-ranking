@@ -4,6 +4,11 @@
 })(typeof window === 'object' ? window : this, function () {
   'use strict';
   var BASE = 'https://bcutrank.com';
+  // Verified catalogue IDs for each model's winning contest season, in round order.
+  var CONTEST_PILOT = {
+    '쥬': { year: 2024, entries: [['695', '첫 공개 화보'], ['763', 'TOP25'], ['899', '결승'], ['906', '결승']] },
+    '박서이': { year: 2026, entries: [['1819', 'TOP23'], ['2147', 'TOP14'], ['2271', 'TOP8'], ['2414', '결승']] }
+  };
   function escape(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -53,14 +58,24 @@
     var latestId = published[0] || '', latest = works[latestId];
     var title = model + ' 화보 ' + published.length + '편 | 맥심 B컷';
     var latestText = latest ? '최신작은 ‘' + clean(latest.title) + '’(' + latest.pub + ' 공개)입니다.' : '현재 공개된 화보가 없습니다.';
-    var description = model + ' 화보는 현재 ' + published.length + '편이 공개되어 있습니다. ' + latestText + ' 맥심 B컷에서 인기 화보와 신작을 확인하세요.';
+    var pilot = Object.prototype.hasOwnProperty.call(CONTEST_PILOT, model) ? CONTEST_PILOT[model] : null;
+    var contestEntries = pilot ? pilot.entries.filter(function (entry) {
+      return published.indexOf(entry[0]) >= 0;
+    }).map(function (entry) {
+      var work = works[entry[0]];
+      return { id: entry[0], round: entry[1], title: clean(work.title), date: work.pub };
+    }) : [];
+    var contest = contestEntries.length ? { year: pilot.year, entries: contestEntries } : null;
+    var description = contest
+      ? contest.year + '년 미스맥심 콘테스트 우승자 ' + model + '의 출연 화보 ' + contest.entries.length + '편을 라운드별로 만나보세요. 맥심 B컷에서 ' + model + '의 신작과 전체 화보도 확인할 수 있습니다.'
+      : model + ' 화보는 현재 ' + published.length + '편이 공개되어 있습니다. ' + latestText + ' 맥심 B컷에서 인기 화보와 신작을 확인하세요.';
     var faq = [
       { question: model + ' 화보는 몇 편인가요?', answer: '현재 ' + published.length + '편이 공개되어 있으며, 새 화보가 나오면 이 페이지에 자동으로 반영됩니다.' },
       { question: model + '의 최신 화보는 무엇인가요?', answer: latest ? '가장 최근 공개된 화보는 ‘' + clean(latest.title) + '’(' + latest.pub + ' 공개)입니다.' : latestText },
       { question: model + ' 화보는 어디에서 볼 수 있나요?', answer: '맥심 B컷에서 감상할 수 있습니다. 작품별 구매 방식과 현재 구독 열람 여부는 B컷에서 확인하세요. 성인 작품은 판매 사이트의 로그인·성인인증 후 이용할 수 있습니다.' }
     ];
     return { model: model, date: date, works: works, published: published, upcoming: upcoming, count: published.length,
-      title: title, description: description, latestId: latestId, latestText: latestText,
+      title: title, description: description, latestId: latestId, latestText: latestText, contest: contest,
       latestUrl: latestId ? workLink(latestId) : BASE + '/?model=' + encodeURIComponent(model),
       image: latest ? image(latest.img, true) : '', faq: faq };
   }
@@ -81,6 +96,12 @@
     var names = [];
     state.published.forEach(function (id) { var name = state.works[id].photo; if (name && names.indexOf(name) < 0) names.push(name); });
     return '<p><b>' + escape(state.model) + '</b> 화보는 현재 <b>' + state.count + '편</b>이 공개되어 있습니다.</p><p>' + escape(state.latestText) + '</p>' +
+      (state.contest ? '<h2 id="contest-season" style="font-size:1.15em;margin-top:1em">우승 시즌 화보 모아보기</h2>' +
+        '<p>' + state.contest.year + '년 미스맥심 콘테스트 우승자 ' + escape(state.model) + '의 출연 화보 ' + state.contest.entries.length + '편입니다.</p>' +
+        '<ol style="padding-inline-start:1.4em">' + state.contest.entries.map(function (entry) {
+          return '<li><a style="text-decoration:underline" href="' + escape(workLink(entry.id)) + '">' + escape(entry.round) + ' · ' +
+            escape(entry.title) + ' (' + escape(entry.date) + ')</a></li>';
+        }).join('') + '</ol>' : '') +
       (names.length ? '<p>참여 작가: ' + names.map(escape).join(' · ') + '</p>' : '') +
       '<p>작품별 구매 방식과 현재 구독 열람 여부는 B컷에서 확인하세요. 성인 작품은 판매 사이트의 로그인·성인인증 후 이용할 수 있습니다.</p>';
   }

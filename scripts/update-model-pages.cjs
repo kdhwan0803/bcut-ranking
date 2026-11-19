@@ -95,7 +95,8 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
     start + JSON.stringify(api.schema(state, canonical, JSON.parse(json))).replace(/</g, '\\u003c') + end);
   html = html.replace(/<script>[\s\S]*?<\/script>/g, script => /var MODEL=/.test(script) ? '' : script);
   html = html.replace(/<script src="\.\.\/model-page(?:-data)?\.js(?:\?[^"]*)?" defer><\/script>\n?/g, '');
-  html = html.replace('</body>', '<script src="../model-page-data.js" defer></script>\n<script src="../model-page.js" defer></script>\n</body>');
+  const modelDataVersion = model === '박서이' ? '?v=contest-original-covers-1' : '';
+  html = html.replace('</body>', '<script src="../model-page-data.js' + modelDataVersion + '" defer></script>\n<script src="../model-page.js" defer></script>\n</body>');
   html = clearThumbs(html);
   html = pilot.decorate(html, state, file.slice(0, -5));
   html = improveInitialRender(html, file.slice(0, -5));

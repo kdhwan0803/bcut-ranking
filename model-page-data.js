@@ -63,7 +63,12 @@
       return published.indexOf(entry[0]) >= 0;
     }).map(function (entry) {
       var work = works[entry[0]];
-      return { id: entry[0], round: entry[1], title: clean(work.title), cover: image(work.img) };
+      var standardCover = image(work.img);
+      // Use the public product cover here, without changing ranking thumbnails or age flags.
+      var publicCover = (work.b19 === 0 || work.b19 === false || work.b19 === '0') && /^https:\/\//i.test(work.officialImg || '')
+        ? image(work.officialImg) : '';
+      return { id: entry[0], round: entry[1], title: clean(work.title), cover: publicCover || standardCover,
+        backupCover: publicCover && publicCover !== standardCover ? standardCover : '' };
     }) : [];
     var contest = contestEntries.length ? { year: pilot.year, season: pilot.season, entries: contestEntries } : null;
     var description = contest
@@ -100,7 +105,7 @@
         '<p>시즌 ' + state.contest.season + ' 출연 화보 ' + state.contest.entries.length + '편을 라운드 순서대로 모았어요.</p>' +
         '<div class="grid contest-season-grid" style="margin:0.8em 0 1em">' + state.contest.entries.map(function (entry) {
           return '<a class="card" href="' + escape(workLink(entry.id)) + '">' +
-            '<div class="thumb">' + (entry.cover ? '<img src="' + escape(entry.cover) + '" alt="" loading="lazy" decoding="async" style="object-fit:contain">' : '') + '</div>' +
+            '<div class="thumb">' + (entry.cover ? '<img src="' + escape(entry.cover) + '"' + (entry.backupCover ? ' data-contest-cover-backup="' + escape(entry.backupCover) + '"' : '') + ' alt="" loading="lazy" decoding="async" style="object-fit:contain">' : '') + '</div>' +
             '<div class="meta"><div class="mp">' + escape(entry.round) + '</div><div class="mt">' + escape(entry.title) + '</div></div></a>';
         }).join('') + '</div>' : '') +
       (names.length ? '<p>참여 작가: ' + names.map(escape).join(' · ') + '</p>' : '') +

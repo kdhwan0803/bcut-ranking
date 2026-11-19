@@ -4,6 +4,8 @@
 })(typeof window === 'object' ? window : this, function () {
   'use strict';
   var BASE = 'https://bcutrank.com';
+  // Small SEO/navigation pilot: existing contest works, never expose unpublished entries.
+  var CONTEST_PILOT = { '쥬': '906', '박서이': '2414' };
   function escape(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -53,14 +55,17 @@
     var latestId = published[0] || '', latest = works[latestId];
     var title = model + ' 화보 ' + published.length + '편 | 맥심 B컷';
     var latestText = latest ? '최신작은 ‘' + clean(latest.title) + '’(' + latest.pub + ' 공개)입니다.' : '현재 공개된 화보가 없습니다.';
-    var description = model + ' 화보는 현재 ' + published.length + '편이 공개되어 있습니다. ' + latestText + ' 맥심 B컷에서 인기 화보와 신작을 확인하세요.';
+    var contestId = CONTEST_PILOT[model];
+    var contest = published.indexOf(contestId) >= 0 ? { id: contestId, title: clean(works[contestId].title) } : null;
+    var ending = contest ? ' 미스맥심 콘테스트 화보 ‘' + contest.title + '’도 맥심 B컷에서 확인하세요.' : ' 맥심 B컷에서 인기 화보와 신작을 확인하세요.';
+    var description = model + ' 화보는 현재 ' + published.length + '편이 공개되어 있습니다. ' + latestText + ending;
     var faq = [
       { question: model + ' 화보는 몇 편인가요?', answer: '현재 ' + published.length + '편이 공개되어 있으며, 새 화보가 나오면 이 페이지에 자동으로 반영됩니다.' },
       { question: model + '의 최신 화보는 무엇인가요?', answer: latest ? '가장 최근 공개된 화보는 ‘' + clean(latest.title) + '’(' + latest.pub + ' 공개)입니다.' : latestText },
       { question: model + ' 화보는 어디에서 볼 수 있나요?', answer: '맥심 B컷에서 감상할 수 있습니다. 작품별 구매 방식과 현재 구독 열람 여부는 B컷에서 확인하세요. 성인 작품은 판매 사이트의 로그인·성인인증 후 이용할 수 있습니다.' }
     ];
     return { model: model, date: date, works: works, published: published, upcoming: upcoming, count: published.length,
-      title: title, description: description, latestId: latestId, latestText: latestText,
+      title: title, description: description, latestId: latestId, latestText: latestText, contest: contest,
       latestUrl: latestId ? workLink(latestId) : BASE + '/?model=' + encodeURIComponent(model),
       image: latest ? image(latest.img, true) : '', faq: faq };
   }
@@ -81,6 +86,7 @@
     var names = [];
     state.published.forEach(function (id) { var name = state.works[id].photo; if (name && names.indexOf(name) < 0) names.push(name); });
     return '<p><b>' + escape(state.model) + '</b> 화보는 현재 <b>' + state.count + '편</b>이 공개되어 있습니다.</p><p>' + escape(state.latestText) + '</p>' +
+      (state.contest ? '<p>미스맥심 콘테스트 화보: <a style="text-decoration:underline" href="' + escape(workLink(state.contest.id)) + '">' + escape(state.contest.title) + ' 보기</a></p>' : '') +
       (names.length ? '<p>참여 작가: ' + names.map(escape).join(' · ') + '</p>' : '') +
       '<p>작품별 구매 방식과 현재 구독 열람 여부는 B컷에서 확인하세요. 성인 작품은 판매 사이트의 로그인·성인인증 후 이용할 수 있습니다.</p>';
   }

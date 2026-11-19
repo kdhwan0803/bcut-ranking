@@ -7,7 +7,7 @@
   // Verified catalogue IDs for each model's winning contest season, in round order.
   var CONTEST_PILOT = {
     '쥬': { year: 2024, season: 15, entries: [['695', '첫 공개 화보'], ['763', 'TOP25'], ['899', '결승'], ['906', '결승']] },
-    '박서이': { year: 2026, season: 17, entries: [['1819', 'TOP23'], ['2147', 'TOP14'], ['2271', 'TOP8'], ['2414', '결승']] }
+    '박서이': { year: 2026, season: 17, entries: [['1819', 'TOP23'], ['2147', 'TOP14'], ['2271', 'TOP8', 'assets/covers/contest-original-2271.webp'], ['2414', '결승', 'assets/covers/contest-original-2414.webp']] }
   };
   function escape(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {
@@ -66,7 +66,7 @@
       var standardCover = image(work.img);
       // Use the public product cover here, without changing ranking thumbnails or age flags.
       var publicCover = (work.b19 === 0 || work.b19 === false || work.b19 === '0') && /^https:\/\//i.test(work.officialImg || '')
-        ? image(work.officialImg) : '';
+        ? image(entry[2] || work.officialImg) : '';
       return { id: entry[0], round: entry[1], title: clean(work.title), cover: publicCover || standardCover,
         backupCover: publicCover && publicCover !== standardCover ? standardCover : '' };
     }) : [];

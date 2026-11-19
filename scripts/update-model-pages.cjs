@@ -47,6 +47,11 @@ for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file
   const model = match[1].startsWith('"') ? JSON.parse(match[1]) : match[1];
   slugs[model] = file.slice(0, -5);
   const state = api.summary(data, model, date);
+  html = html.replace(/\n?<p class="contest-winner-badge" style="[^"]*">[^<]*<\/p>/g, '');
+  if (state.contestWinner) {
+    const badge = '<p class="contest-winner-badge" style="display:inline-block;margin-top:.55em;padding:.25em .7em;border-radius:2em;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:.82rem;font-weight:800">미스맥심 콘테스트 시즌 ' + state.contestWinner + ' 우승자</p>';
+    html = replace(html, /<\/h1>/, '</h1>\n' + badge, file + ':contest-winner');
+  }
   const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)[1];
   if (!html.includes('<section class="intro">')) {
     html = html.replace('<div id="upwrap"', '<section class="intro"></section>\n<div id="upwrap"');

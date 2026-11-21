@@ -19,7 +19,7 @@ const BASE = api.BASE;
 const MIN_WORKS = 3;
 const CAMPAIGN = 'pair_pages_v1';
 
-let cache;
+let cache, candidates;
 function pairList() {
   if (cache) return cache;
   const works = data.works || {};
@@ -40,7 +40,8 @@ function pairList() {
       (work.pub <= date ? pair.published : pair.upcoming).push(id);
     }
   }
-  cache = Object.values(found).filter(pair => pair.published.length >= MIN_WORKS);
+  candidates = Object.values(found);
+  cache = candidates.filter(pair => pair.published.length >= MIN_WORKS);
   for (const pair of cache) {
     pair.published.sort((a, b) => works[b].pub.localeCompare(works[a].pub) || Number(b) - Number(a));
     pair.upcoming.sort((a, b) => works[a].pub.localeCompare(works[b].pub) || Number(a) - Number(b));
@@ -51,6 +52,15 @@ function pairList() {
 }
 const pairsOfCreator = creator => pairList().filter(pair => pair.creator === creator);
 const pairsOfModel = model => pairList().filter(pair => pair.model === model);
+// Every creator with a creator page who shot at least one published work of
+// this model, most works first. Used to link model pages to creator pages,
+// which Google otherwise only finds through the sitemap.
+function creatorsOfModel(model) {
+  pairList();
+  return candidates.filter(pair => pair.model === model && pair.published.length > 0)
+    .sort((a, b) => b.published.length - a.published.length || a.creator.localeCompare(b.creator))
+    .map(pair => ({ creator: pair.creator, creatorSlug: pair.creatorSlug, count: pair.published.length, url: BASE + '/creators/' + pair.creatorSlug + '.html' }));
+}
 
 function pairState(pair) {
   const works = data.works || {};
@@ -180,13 +190,18 @@ function renderDirectory() {
 }
 
 // Links from an existing model or creator page into its pair pages.
-const MODEL_LINK_STYLE = '<style id="pair-links-css">.pairlinks{margin:14px 0 4px}.pairlinks .pl-t{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 9px}.pairlinks .pl-c{display:flex;flex-wrap:wrap;gap:9px}.pairlinks .pl-a{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 15px;font-size:13px;font-weight:600;color:var(--ink2)}.pairlinks .pl-a:hover{border-color:var(--accent2);color:var(--ink)}</style>\n';
+const MODEL_LINK_STYLE = '<style id="pair-links-css">.pairlinks{margin:14px 0 4px}.pairlinks .pl-t{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 9px}.pairlinks .pl-c{display:flex;flex-wrap:wrap;gap:9px}.pairlinks .pl-a{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 15px;font-size:13px;font-weight:600;color:var(--ink2)}.pairlinks .pl-a:hover{border-color:var(--accent2);color:var(--ink)}.pairlinks .pl-c+.pl-t{margin-top:14px}</style>\n';
 function modelLinksHTML(model) {
-  const pairs = pairsOfModel(model);
-  if (!pairs.length) return '';
-  return '<section class="pairlinks"><p class="pl-t">작가별로 모아 보기</p><div class="pl-c">'
-    + pairs.map(pair => '<a class="pl-a" href="' + pair.url + '">' + escape(pair.creator) + ' × ' + escape(pair.model) + ' 화보</a>').join('')
-    + '</div></section>';
+  const pairs = pairsOfModel(model), shooters = creatorsOfModel(model);
+  if (!pairs.length && !shooters.length) return '';
+  return '<section class="pairlinks">'
+    + (pairs.length ? '<p class="pl-t">작가별로 모아 보기</p><div class="pl-c">'
+      + pairs.map(pair => '<a class="pl-a" href="' + pair.url + '">' + escape(pair.creator) + ' × ' + escape(pair.model) + ' 화보</a>').join('')
+      + '</div>' : '')
+    + (shooters.length ? '<p class="pl-t">참여 작가 화보 전체 보기</p><div class="pl-c">'
+      + shooters.map(item => '<a class="pl-a" href="' + item.url + '">' + escape(item.creator) + ' 화보 전체</a>').join('')
+      + '</div>' : '')
+    + '</section>';
 }
 function creatorLinksHTML(creator) {
   const pairs = pairsOfCreator(creator);
@@ -206,6 +221,6 @@ function build() {
 }
 const urls = () => pairList().map(pair => pair.url).concat(BASE + '/pairs/pairs.html');
 
-module.exports = { date, data, MIN_WORKS, MODEL_LINK_STYLE, pairList, pairsOfCreator, pairsOfModel, pairState, pairIntro, render, renderDirectory, modelLinksHTML, creatorLinksHTML, urls, build };
+module.exports = { date, data, MIN_WORKS, MODEL_LINK_STYLE, pairList, pairsOfCreator, pairsOfModel, creatorsOfModel, pairState, pairIntro, render, renderDirectory, modelLinksHTML, creatorLinksHTML, urls, build };
 
 if (require.main === module) console.log(JSON.stringify(build()));

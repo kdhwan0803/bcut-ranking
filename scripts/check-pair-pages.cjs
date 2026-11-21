@@ -73,13 +73,22 @@ const expected = new Set(pairs.map(pair => pair.slug + '.html').concat('pairs.ht
 for (const file of fs.readdirSync(dir).filter(name => name.endsWith('.html'))) assert(expected.has(file), 'stale pair page: pairs/' + file);
 assert.equal(fs.readFileSync(path.join(dir, 'pairs.html'), 'utf8'), gen.renderDirectory(), 'pairs/pairs.html out of date');
 
-// Model pages without a qualifying pair must not carry the link block.
+// Model pages carry the link block exactly when they have a pair page or a
+// creator with a creator page, and every creator link points at a real page.
+let creatorLinks = 0;
 for (const [model, slug] of Object.entries(modelSlugs)) {
-  const has = fs.readFileSync(path.join(root, 'models', slug + '.html'), 'utf8').includes('<section class="pairlinks">');
-  assert.equal(has, gen.pairsOfModel(model).length > 0, 'models/' + slug + '.html: pair link block');
+  const html = fs.readFileSync(path.join(root, 'models', slug + '.html'), 'utf8');
+  const shooters = gen.creatorsOfModel(model);
+  assert.equal(html.includes('<section class="pairlinks">'), gen.pairsOfModel(model).length > 0 || shooters.length > 0, 'models/' + slug + '.html: link block');
+  for (const item of shooters) {
+    assert.equal(creators.CREATOR_SLUGS[item.creator], item.creatorSlug, 'models/' + slug + '.html: creator slug ' + item.creator);
+    assert(fs.existsSync(path.join(root, 'creators', item.creatorSlug + '.html')), 'models/' + slug + '.html: creator page exists ' + item.creatorSlug);
+    assert(html.includes('<a class="pl-a" href="' + item.url + '">'), 'models/' + slug + '.html: link to creator ' + item.creator);
+    creatorLinks++;
+  }
 }
 
 // Pair URLs are added to the sitemap by build-site.cjs, never by hand.
 assert(!/\/pairs\//.test(fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8')), 'sitemap.xml must not list pairs/ pages');
 
-console.log(JSON.stringify({ result: 'PASS', date: gen.date, checkedPairPages: pairs.length, minWorks: gen.MIN_WORKS, sitemapUrlsAddedAtBuild: gen.urls().length }));
+console.log(JSON.stringify({ result: 'PASS', date: gen.date, checkedPairPages: pairs.length, minWorks: gen.MIN_WORKS, sitemapUrlsAddedAtBuild: gen.urls().length, modelToCreatorLinks: creatorLinks }));

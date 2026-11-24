@@ -1509,14 +1509,13 @@ html[data-theme="light"] .work-dialog .work-intensity-pilot{--intensity-1:#64748
 }
 </style>
 <style id="first-buy-style">
-/* First-purchase corner: same card language as #paid-picks, fixed order, rank label only (no counts). */
+/* First-purchase corner: same card language as #paid-picks, fixed order, shown as recommendations (no ranks or counts). */
 .first-buy{margin-top:20px;padding:24px;border:1px solid var(--rankBandLine);border-radius:20px;background:var(--bg1);scroll-margin-top:120px}
 .first-buy-head{margin-bottom:20px}
 .first-buy h2{font-size:24px;line-height:1.3;letter-spacing:-.7px}
 .first-buy-intro{font-size:13px;line-height:1.7;color:var(--mut);margin-top:8px;word-break:keep-all;overflow-wrap:anywhere}
 .first-buy-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
 .first-buy-card{min-width:0;display:flex;flex-direction:column}
-.first-buy-rank{align-self:flex-start;max-width:100%;margin-bottom:8px;padding:4px 9px;border-radius:999px;background:var(--acc);color:#fff;font-size:12px;font-weight:900;line-height:1.4;letter-spacing:-.2px;white-space:nowrap}
 .first-buy-poster{border:0;padding:0;cursor:pointer;background:var(--bg2);width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;position:relative}
 .first-buy-poster img{width:100%;height:100%;object-fit:cover;display:block}
 .first-buy-model{font-size:12px;font-weight:800;margin:10px 0 5px;color:var(--t2);height:18px;line-height:18px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
@@ -1532,7 +1531,6 @@ html[data-theme="light"] .work-dialog .work-intensity-pilot{--intensity-1:#64748
   .first-buy-head{margin-bottom:16px}
   .first-buy-intro{font-size:11px;line-height:1.65}
   .first-buy-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}
-  .first-buy-rank{margin-bottom:6px;font-size:11px}
   .first-buy-poster{aspect-ratio:auto;height:clamp(160px,45vw,184px);border-radius:7px}
   .first-buy-poster img{object-fit:contain}
   .first-buy-model{font-size:14px;font-weight:900;height:20px;line-height:20px;margin:8px 0 0;color:var(--txt)}
@@ -1857,7 +1855,6 @@ html[data-theme="light"] .work-dialog .work-intensity-pilot{--intensity-1:#64748
       <div class="first-buy-grid">
         <sc-for list="{{ firstBuyItems }}" as="p" hint-placeholder-count="0">
           <article class="first-buy-card" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
-            <div class="first-buy-rank">{{ p.rankLabel }}</div>
             <button type="button" class="first-buy-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
               <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
             </button>
@@ -4496,20 +4493,20 @@ class Component extends DCLogic {
       }
     }
 
-    // First-purchase corner: fixed public order only. Buyer counts and sales figures stay outside data.json.
+    // First-purchase corner: fixed public order, presented as recommendations. No ranks on screen; buyer counts and sales figures stay outside data.json.
     base.firstBuyShow='none';base.firstBuyItems=[];
     const firstBuy=D.firstBuy;
     if(firstBuy && firstBuy.enabled === true && V==='home' && Array.isArray(firstBuy.items)){
       const firstBuySeen=new Set();
-      const firstBuyItems=firstBuy.items.slice(0,6).map((p,i)=>({id:String(p&&p.id),rank:i+1,source:p})).filter(p=>{
+      const firstBuyItems=firstBuy.items.slice(0,6).map((p,i)=>({id:String(p&&p.id),position:i+1,source:p})).filter(p=>{
         const w=W[p.id];if(!w||firstBuySeen.has(p.id)||(w.pub&&w.pub>today))return false;
         firstBuySeen.add(p.id);return true;
       }).map(p=>{
         const id=p.id,w=W[id],title=this.splitTitle(w.title||id).name,model=(w.models||[]).join(' & ');
-        const context={module:'first_buy',shelf_id:'first-buy-v1',shelf_group:'first_buy',work_id:id,card_position:p.rank};
-        return {id,title,rank:p.rank,rankLabel:'첫 구매 '+p.rank+'위',measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model,
+        const context={module:'first_buy',shelf_id:'first-buy-v1',shelf_group:'first_buy',work_id:id,card_position:p.position};
+        return {id,title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model,
           format:window.BCUTCatalogueUI.format(w,p.source),url:'https://bcut.maximkorea.net/work/'+id,
-          infoLabel:'첫 구매 '+p.rank+'위 '+title+' 작품 정보',linkLabel:title+' 작품 보러 가기 (새 창)',
+          infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보러 가기 (새 창)',
           open:()=>{this.trackFirstBuy('bcut_firstbuy_card_open',context,'poster');this.openWork(id,context);},
           outbound:()=>this.trackFirstBuy('bcut_firstbuy_outbound',context,'card')};
       });

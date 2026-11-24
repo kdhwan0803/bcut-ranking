@@ -1509,11 +1509,13 @@ html[data-theme="light"] .work-dialog .work-intensity-pilot{--intensity-1:#64748
 }
 </style>
 <style id="first-buy-style">
-/* First-purchase corner: same card language as #paid-picks, fixed order, shown as recommendations (no ranks or counts). */
+/* First-purchase corner: same card language as #paid-picks; six recommendations drawn from a candidate pool (no ranks or counts). */
 .first-buy{margin-top:20px;padding:24px;border:1px solid var(--rankBandLine);border-radius:20px;background:var(--bg1);scroll-margin-top:120px}
 .first-buy-head{margin-bottom:20px}
 .first-buy h2{font-size:24px;line-height:1.3;letter-spacing:-.7px}
 .first-buy-intro{font-size:13px;line-height:1.7;color:var(--mut);margin-top:8px;word-break:keep-all;overflow-wrap:anywhere}
+.first-buy-refresh{margin-top:12px;padding:9px 15px;border:1px solid var(--line);border-radius:999px;background:var(--bg1);color:var(--txt);font:700 12px Pretendard,sans-serif;cursor:pointer}
+.first-buy-refresh:hover{border-color:var(--acc);color:var(--acc)}
 .first-buy-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
 .first-buy-card{min-width:0;display:flex;flex-direction:column}
 .first-buy-poster{border:0;padding:0;cursor:pointer;background:var(--bg2);width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;position:relative}
@@ -1850,13 +1852,13 @@ html[data-theme="light"] .work-dialog .work-intensity-pilot{--intensity-1:#64748
 <section id="first-buy" class="first-buy" aria-labelledby="first-buy-title" style="display:{{ firstBuyShow }}">
       <div class="first-buy-head">
         <h2 id="first-buy-title">{{ firstBuyTitle }}</h2>
-        <p class="first-buy-intro">{{ firstBuyIntro }}</p>
+        <p class="first-buy-intro">{{ firstBuyIntro }}</p><button type="button" class="first-buy-refresh" style="display:{{ firstBuyRefreshShow }}" onClick="{{ firstBuyRefresh }}" aria-controls="first-buy-grid">다른 화보 보기 ↻</button>
       </div>
-      <div class="first-buy-grid">
+      <div id="first-buy-grid" class="first-buy-grid">
         <sc-for list="{{ firstBuyItems }}" as="p" hint-placeholder-count="0">
           <article class="first-buy-card" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
             <button type="button" class="first-buy-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
-              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
+              <img loading="{{ p.loading }}" fetchpriority="{{ p.fetchPriority }}" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
             </button>
             <div class="first-buy-model">{{ p.model }}</div>
             <h4 class="first-buy-title" title="{{ p.title }}">{{ p.title }}</h4>
@@ -3200,6 +3202,38 @@ class Component extends DCLogic {
   trackFirstBuy(event,context,origin){
     try{if(context&&window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);}catch(e){}
   }
+  trackFirstBuyRefresh(count){
+    try{track('bcut_firstbuy_refresh',{module_id:'first_buy',list_id:'first-buy-v1',refresh_count:count,measurement_version:'1'});}catch(e){}
+  }
+  /* First-purchase shelf: draw without replacement until every candidate has been shown (a "bag", like the first-corner bag).
+     The bag lives in localStorage; where storage is blocked it lasts for this page only, so each load is simply a random draw. */
+  firstBuyBagDraw(pool,count){
+    const KEY='bcut_first_buy_bag_v1',sig=pool.slice().sort().join(','),allowed=new Set(pool);
+    const shuffle=list=>{const out=list.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)),x=out[i];out[i]=out[j];out[j]=x;}return out;};
+    const clean=list=>Array.isArray(list)?list.map(String).filter((id,i,all)=>allowed.has(id)&&all.indexOf(id)===i):[];
+    let state=null,store=null;
+    try{store=typeof localStorage!=='undefined'?localStorage:null;const raw=store&&store.getItem(KEY);if(raw)state=JSON.parse(raw);}catch(e){store=null;state=null;}
+    if(!state)state=this._firstBuyBag||null;
+    // A changed candidate list (monthly update, newly public work) starts a fresh bag.
+    if(!state||state.v!==1||state.sig!==sig)state={v:1,sig,bag:[],last:[]};
+    let bag=clean(state.bag);
+    const last=clean(state.last),picked=bag.splice(0,count);
+    if(picked.length<count){
+      // New round: the works shown most recently go to the back, so a reshuffle never repeats them straight away.
+      const recent=new Set(picked.concat(last)),taken=new Set(picked);
+      bag=shuffle(pool.filter(id=>!recent.has(id))).concat(shuffle(pool.filter(id=>recent.has(id))));
+      for(let i=0;i<bag.length&&picked.length<count;){if(taken.has(bag[i])){i++;continue;}taken.add(bag[i]);picked.push(bag[i]);bag.splice(i,1);}
+    }
+    state={v:1,sig,bag,last:picked.slice()};this._firstBuyBag=state;
+    try{if(store)store.setItem(KEY,JSON.stringify(state));}catch(e){}
+    return picked;
+  }
+  /* The current picks stay put across re-renders (work detail, theme, data reload); only a new page or the refresh button draws again. */
+  firstBuyCurrent(pool,count,redraw){
+    const sig=pool.slice().sort().join(',')+'|'+count,now=this._firstBuyPick;
+    if(redraw||!now||now.sig!==sig)this._firstBuyPick={sig,ids:pool.length<=count?pool.slice():this.firstBuyBagDraw(pool,count)};
+    return this._firstBuyPick.ids;
+  }
   trackPaidPick(event, context, origin){
     try{
       if(context && window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);
@@ -4493,25 +4527,38 @@ class Component extends DCLogic {
       }
     }
 
-    // First-purchase corner: fixed public order, presented as recommendations. No ranks on screen; buyer counts and sales figures stay outside data.json.
-    base.firstBuyShow='none';base.firstBuyItems=[];
+    // First-purchase corner: six recommendations drawn from the candidate pool. No ranks on screen; buyer counts and sales figures stay outside data.json.
+    base.firstBuyShow='none';base.firstBuyItems=[];base.firstBuyRefreshShow='none';base.firstBuyRefresh=()=>{};
     const firstBuy=D.firstBuy;
     if(firstBuy && firstBuy.enabled === true && V==='home' && Array.isArray(firstBuy.items)){
-      const firstBuySeen=new Set();
-      const firstBuyItems=firstBuy.items.slice(0,6).map((p,i)=>({id:String(p&&p.id),position:i+1,source:p})).filter(p=>{
-        const w=W[p.id];if(!w||firstBuySeen.has(p.id)||(w.pub&&w.pub>today))return false;
-        firstBuySeen.add(p.id);return true;
-      }).map(p=>{
-        const id=p.id,w=W[id],title=this.splitTitle(w.title||id).name,model=(w.models||[]).join(' & ');
-        const context={module:'first_buy',shelf_id:'first-buy-v1',shelf_group:'first_buy',work_id:id,card_position:p.position};
-        return {id,title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model,
-          format:window.BCUTCatalogueUI.format(w,p.source),url:'https://bcut.maximkorea.net/work/'+id,
-          infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보러 가기 (새 창)',
-          open:()=>{this.trackFirstBuy('bcut_firstbuy_card_open',context,'poster');this.openWork(id,context);},
-          outbound:()=>this.trackFirstBuy('bcut_firstbuy_outbound',context,'card')};
-      });
-      if(firstBuyItems.length>=4){base.firstBuyShow='block';base.firstBuyItems=firstBuyItems;
-        base.firstBuyTitle=firstBuy.title||'처음이라면 이 화보부터';base.firstBuyIntro=firstBuy.intro||'';}
+      const firstBuySource=new Map();
+      for(const p of firstBuy.items){
+        const id=String(p&&p.id),w=W[id];
+        if(!w||firstBuySource.has(id)||(w.pub&&w.pub>today))continue;
+        firstBuySource.set(id,p);
+      }
+      const firstBuyPool=[...firstBuySource.keys()];
+      const firstBuyCount=Number.isInteger(firstBuy.show)&&firstBuy.show>0?firstBuy.show:6;
+      if(firstBuyPool.length>=4){
+        base.firstBuyItems=this.firstBuyCurrent(firstBuyPool,firstBuyCount).map((id,i)=>{
+          const w=W[id],title=this.splitTitle(w.title||id).name,model=(w.models||[]).join(' & ');
+          const context={module:'first_buy',shelf_id:'first-buy-v1',shelf_group:'first_buy',work_id:id,card_position:i+1};
+          return {id,title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model,
+            loading:i<2?'eager':'lazy',fetchPriority:i<2?'high':'auto',
+            format:window.BCUTCatalogueUI.format(w,firstBuySource.get(id)),url:'https://bcut.maximkorea.net/work/'+id,
+            infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보러 가기 (새 창)',
+            open:()=>{this.trackFirstBuy('bcut_firstbuy_card_open',context,'poster');this.openWork(id,context);},
+            outbound:()=>this.trackFirstBuy('bcut_firstbuy_outbound',context,'card')};
+        });
+        base.firstBuyShow='block';
+        base.firstBuyTitle=firstBuy.title||'처음이라면 이 화보부터';base.firstBuyIntro=firstBuy.intro||'';
+        if(firstBuyPool.length>firstBuyCount){
+          base.firstBuyRefreshShow='inline-block';
+          base.firstBuyRefresh=()=>{this.firstBuyCurrent(firstBuyPool,firstBuyCount,true);
+            this._firstBuyTurn=(this._firstBuyTurn||0)+1;this.trackFirstBuyRefresh(this._firstBuyTurn);
+            this.setState({firstBuyTurn:this._firstBuyTurn});};
+        }
+      }
     }
 
     // New releases and the older catalogue share one shelf; day boundary is Korea time.

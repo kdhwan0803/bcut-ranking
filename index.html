@@ -132,11 +132,12 @@ if(!window.BCUT_ANALYTICS_DISABLED){
   let blocked = true, panel;
   const names = {
     paid_picks: {impression:'bcut_exp_impression',open:'bcut_exp_card_open',outbound:'bcut_exp_outbound'},
-    rediscovery: {impression:'bcut_rediscovery_impression',open:'bcut_rediscovery_open',outbound:'bcut_rediscovery_outbound'}
+    rediscovery: {impression:'bcut_rediscovery_impression',open:'bcut_rediscovery_open',outbound:'bcut_rediscovery_outbound'},
+    first_buy: {impression:'bcut_firstbuy_impression',open:'bcut_firstbuy_card_open',outbound:'bcut_firstbuy_outbound'}
   };
   function context(raw) {
     if (!raw) return null;
-    const module = raw.module === 'rediscovery' ? 'rediscovery' : 'paid_picks';
+    const module = raw.module === 'rediscovery' ? 'rediscovery' : raw.module === 'first_buy' ? 'first_buy' : 'paid_picks';
     const list = raw.experiment_id || raw.shelf_id;
     const group = raw.selection_group || raw.shelf_group;
     if (!/^\d+$/.test(String(raw.work_id)) || !/^[a-z0-9-]{1,80}$/.test(list || '') ||
@@ -213,7 +214,7 @@ if(!window.BCUT_ANALYTICS_DISABLED){
     for (const card of document.querySelectorAll('[data-bcut-context]')) {
       let p;
       try { p = context(JSON.parse(card.getAttribute('data-bcut-context'))); } catch (_) { continue; }
-      const el = card.querySelector('.paid-pick-poster,.rediscovery-poster');
+      const el = card.querySelector('.paid-pick-poster,.rediscovery-poster,.first-buy-poster');
       if (!p || !el) continue;
       const id = key(p); current.add(el);
       let item = observed.get(el);
@@ -747,15 +748,15 @@ OneSignalDeferred.push(async function(OneSignal){
 <style id="shared-hover-feedback">
 /* Keep pointer feedback subtle and preserve uncropped poster images. */
 #next .coming-strip{padding-top:6px}
-:is(.coming-poster,.subscription-poster,.creator-poster,.personal-card,.subscription-upcoming-card,.classics-card,.rediscovery-poster,.paid-pick-poster){transition:transform .18s ease,box-shadow .18s ease}
+:is(.coming-poster,.subscription-poster,.creator-poster,.personal-card,.subscription-upcoming-card,.classics-card,.rediscovery-poster,.paid-pick-poster,.first-buy-poster){transition:transform .18s ease,box-shadow .18s ease}
 :is(.coming-nav,.subscription-nav,.creator-chips,.creator-footer,.creator-picker) button,.coming-wish{transition:box-shadow .18s ease,border-color .18s ease,filter .18s ease}
 @media(hover:hover) and (pointer:fine){
-:is(.coming-open:hover .coming-poster,.subscription-card:hover .subscription-poster,.creator-work-card:hover .creator-poster,.personal-card:hover,.subscription-upcoming-card:hover,.classics-card:hover,.rediscovery-poster:hover,.paid-pick-poster:hover){transform:translateY(-2px);box-shadow:0 0 0 2px var(--acc),0 7px 17px rgba(0,0,0,.18)}
+:is(.coming-open:hover .coming-poster,.subscription-card:hover .subscription-poster,.creator-work-card:hover .creator-poster,.personal-card:hover,.subscription-upcoming-card:hover,.classics-card:hover,.rediscovery-poster:hover,.paid-pick-poster:hover,.first-buy-poster:hover){transform:translateY(-2px);box-shadow:0 0 0 2px var(--acc),0 7px 17px rgba(0,0,0,.18)}
 :is(.coming-open:hover .coming-model,.subscription-card:hover .subscription-model,.creator-work-card:hover .creator-work-model){text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
 :is(.coming-nav,.subscription-nav,.creator-chips,.creator-footer,.creator-picker) button:hover,.coming-wish:hover{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 20%,transparent);filter:brightness(1.08)}
 }
-:is(.coming-open:focus-visible .coming-poster,.subscription-card:focus-visible .subscription-poster,.creator-work-card:focus-visible .creator-poster,.personal-card:focus-visible,.subscription-upcoming-card:focus-visible,.classics-card:focus-visible,.rediscovery-poster:focus-visible,.paid-pick-poster:focus-visible){box-shadow:0 0 0 2px var(--acc),0 7px 17px rgba(0,0,0,.18)}
-@media(prefers-reduced-motion:reduce){:is(.coming-poster,.subscription-poster,.creator-poster,.personal-card,.subscription-upcoming-card,.classics-card,.rediscovery-poster,.paid-pick-poster){transition:none!important;transform:none!important}}
+:is(.coming-open:focus-visible .coming-poster,.subscription-card:focus-visible .subscription-poster,.creator-work-card:focus-visible .creator-poster,.personal-card:focus-visible,.subscription-upcoming-card:focus-visible,.classics-card:focus-visible,.rediscovery-poster:focus-visible,.paid-pick-poster:focus-visible,.first-buy-poster:focus-visible){box-shadow:0 0 0 2px var(--acc),0 7px 17px rgba(0,0,0,.18)}
+@media(prefers-reduced-motion:reduce){:is(.coming-poster,.subscription-poster,.creator-poster,.personal-card,.subscription-upcoming-card,.classics-card,.rediscovery-poster,.paid-pick-poster,.first-buy-poster){transition:none!important;transform:none!important}}
 </style>
 <style id="featured-refresh">
 #featured{padding:26px 24px;border:1px solid var(--line);border-radius:20px;background:var(--bg1)}
@@ -882,7 +883,7 @@ OneSignalDeferred.push(async function(OneSignal){
 </style>
 <style id="november-public-covers">
 /* Public November covers: keep the full template, logo and age/media badges visible. */
-img[src*="assets/covers/nov2026-public-"],img[src*="assets/covers/oct2026-public-"],img[src*="assets/covers/sep2026-public-"],img[src*="assets/covers/aug2026-public-"],img[src*="assets/covers/jul2026-public-"],img[src*="assets/covers/jun2026-public-"],img[src*="assets/covers/may2026-public-"],img[src*="assets/covers/apr2026-public-"]{object-fit:contain!important;object-position:center!important;transform:none!important;background:#f5ead3}
+img[src*="assets/covers/nov2026-public-"],img[src*="assets/covers/oct2026-public-"],img[src*="assets/covers/sep2026-public-"],img[src*="assets/covers/aug2026-public-"],img[src*="assets/covers/jul2026-public-"],img[src*="assets/covers/jun2026-public-"],img[src*="assets/covers/may2026-public-"],img[src*="assets/covers/apr2026-public-"],img[src*="assets/covers/mar2026-public-"],img[src*="assets/covers/feb2025-public-"],img[src*="assets/covers/oct2023-public-"]{object-fit:contain!important;object-position:center!important;transform:none!important;background:#f5ead3}
 </style>
 <script id="work-model-links" type="application/json">{"손예은":"sonyeeun","동그란":"donggeuran","바비앙":"babiang","이연우":"iyeonu","예하":"yeha","최세희":"choesehui","심유이":"simyui","채솔":"chaesol","첼설아":"chelseola","은지":"eunji","모모리나":"momorina","쥬":"jyu","유디":"yudi","박서이":"bakseoi","이규영":"igyuyeong","뮤아":"myua","한지나":"hanjina","여나비":"yeonabi","수지":"suji","애순이":"aesuni","슬이":"seuli","빛베리":"bichberi","고아라":"goara","초연":"choyeon","유나":"yuna","겨우디":"gyeoudi","엘라":"elra","윤영서":"yunyeongseo","김갑주":"gimgapju","박민정":"bakminjeong","박수민":"baksumin","아리":"ari","쭈디":"jjudi","초이":"choi","옐랑":"yelrang","희야":"huiya","섹밍":"sekming","보라":"bora","그린":"geurin","박지연":"bakjiyeon","오은담":"oeundam","하리":"hari","연수":"yeonsu","박근나":"bakgeunna","강선혜":"gangseonhye","E거니":"egeoni","이나":"ina","슈":"syu","주주":"juju","김은지":"gimeunji","혜린":"hyerin","새하":"saeha","장은비":"jangeunbi","김설화":"gimseolhwa","장혜선":"janghyeseon","려니":"ryeoni","토리":"tori","채아":"chaea","히나":"hina","윤지윤":"yunjiyun","지린":"jirin","김연지":"gimyeonji","모모리나official":"momorinaofficial","에일리":"eilri","조아":"joa","핫소망":"hassomang","소은":"soeun","연유네코":"yeonyuneko","김서아":"gimseoa","전지은":"jeonjieun","E다연":"edayeon","조이온":"joion","리리":"riri","꾸뿌":"kkuppu","하윤아":"hayuna","순수":"sunsu","은유화":"eunyuhwa","유진":"yujin","엄상미":"eomsangmi","김지연":"gimjiyeon","신새롬":"sinsaerom","김소희":"gimsohui","벨벳":"belbet","이시현":"isihyeon","예리":"yeri","은수":"eunsu","이예린":"iyerin","박별":"bakbyeol","유주다":"yujuda","초영이":"choyeongi","박보름":"bakboreum","서여진":"seoyeojin","한서아":"hanseoa","타샤":"tasya","차유니":"chayuni","주빈":"jubin","소이":"soi","묘정":"myojeong","이채하":"ichaeha","김진아":"gimjina","지니":"jini","노지혜":"nojihye","이해인":"ihaein","링고lyn":"ringgolyn","안지현":"anjihyeon","이유진":"iyujin","최혜연":"choehyeyeon","이하니":"ihani","이아윤":"iayun","양혜원":"yanghyewon","청아":"cheonga","윤설화":"yunseolhwa","지아":"jia","탑체리":"tapcheri","퓨딩":"pyuding","키라":"kira","예나비":"yenabi","예리수":"yerisu","쏘블리":"ssobeulri","제아":"jea","퓨리":"pyuri","강인경":"gangingyeong","김나정":"gimnajeong","박청아":"bakcheonga","채령":"chaeryeong","도유리":"doyuri","김지예":"gimjiye","김세화":"gimsehwa","이안":"ian","이아영":"iayeong","이소윤":"isoyun","주은":"jueun","죠야끼":"jyoyakki","쥬우":"jyuu","미루":"miru","리아":"ria","서현숙":"seohyeonsuk","서지아":"seojia","시안":"sian"}</script>
 </head>
@@ -1507,6 +1508,39 @@ html[data-theme="light"] .work-dialog .work-intensity-pilot{--intensity-1:#64748
   #wcPromo .wc-promo-start{font-size:11px;padding:12px 10px;gap:6px}
 }
 </style>
+<style id="first-buy-style">
+/* First-purchase corner: same card language as #paid-picks, fixed order, rank label only (no counts). */
+.first-buy{margin-top:20px;padding:24px;border:1px solid var(--rankBandLine);border-radius:20px;background:var(--bg1);scroll-margin-top:120px}
+.first-buy-head{margin-bottom:20px}
+.first-buy h2{font-size:24px;line-height:1.3;letter-spacing:-.7px}
+.first-buy-intro{font-size:13px;line-height:1.7;color:var(--mut);margin-top:8px;word-break:keep-all;overflow-wrap:anywhere}
+.first-buy-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.first-buy-card{min-width:0;display:flex;flex-direction:column}
+.first-buy-rank{align-self:flex-start;max-width:100%;margin-bottom:8px;padding:4px 9px;border-radius:999px;background:var(--acc);color:#fff;font-size:12px;font-weight:900;line-height:1.4;letter-spacing:-.2px;white-space:nowrap}
+.first-buy-poster{border:0;padding:0;cursor:pointer;background:var(--bg2);width:100%;aspect-ratio:2/3;border-radius:9px;overflow:hidden;position:relative}
+.first-buy-poster img{width:100%;height:100%;object-fit:cover;display:block}
+.first-buy-model{font-size:12px;font-weight:800;margin:10px 0 5px;color:var(--t2);height:18px;line-height:18px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.first-buy-title{font-size:13px;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere;font-weight:800;height:3em;min-height:3em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.first-buy-format{font-size:11px;color:var(--mut);margin-top:8px;line-height:1.5;height:16.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.first-buy-link{display:flex;justify-content:center;align-items:center;min-height:42px;margin-top:12px;padding:9px 7px;border:1px solid var(--line);border-radius:7px;background:var(--bg0);color:var(--txt);font-size:12px;font-weight:800;text-align:center;line-height:1.4}
+.first-buy-link:hover{border-color:var(--acc);color:var(--acc2)}
+.first-buy :focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+@media(max-width:1000px){.first-buy{padding:20px}.first-buy-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 12px}}
+@media(max-width:600px){
+  .first-buy{padding:16px 12px}
+  .first-buy h2{font-size:21px}
+  .first-buy-head{margin-bottom:16px}
+  .first-buy-intro{font-size:11px;line-height:1.65}
+  .first-buy-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}
+  .first-buy-rank{margin-bottom:6px;font-size:11px}
+  .first-buy-poster{aspect-ratio:auto;height:clamp(160px,45vw,184px);border-radius:7px}
+  .first-buy-poster img{object-fit:contain}
+  .first-buy-model{font-size:14px;font-weight:900;height:20px;line-height:20px;margin:8px 0 0;color:var(--txt)}
+  .first-buy-title{font-size:12px;margin-top:3px;word-break:normal}
+  .first-buy-format{margin-top:3px;height:17px;line-height:17px}
+  .first-buy-link{margin-top:7px;min-height:40px;padding:8px 4px;font-size:11px}
+}
+</style>
 
 </helmet>
 
@@ -1811,6 +1845,29 @@ html[data-theme="light"] .work-dialog .work-intensity-pilot{--intensity-1:#64748
         <span style="flex:0 0 auto;font-size:12px;font-weight:800;color:var(--acc);white-space:nowrap">보러가기 →</span>
       </a>
      </div>
+    </section>
+</sc-if>
+
+    <sc-if value="{{ sectionVisible.firstBuyShow }}" hint-placeholder-val="{{ false }}">
+<section id="first-buy" class="first-buy" aria-labelledby="first-buy-title" style="display:{{ firstBuyShow }}">
+      <div class="first-buy-head">
+        <h2 id="first-buy-title">{{ firstBuyTitle }}</h2>
+        <p class="first-buy-intro">{{ firstBuyIntro }}</p>
+      </div>
+      <div class="first-buy-grid">
+        <sc-for list="{{ firstBuyItems }}" as="p" hint-placeholder-count="0">
+          <article class="first-buy-card" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
+            <div class="first-buy-rank">{{ p.rankLabel }}</div>
+            <button type="button" class="first-buy-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
+              <img loading="lazy" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
+            </button>
+            <div class="first-buy-model">{{ p.model }}</div>
+            <h4 class="first-buy-title" title="{{ p.title }}">{{ p.title }}</h4>
+            <div class="first-buy-format">{{ p.format }}</div>
+            <a class="first-buy-link" href="{{ p.url }}" target="_blank" rel="noopener" aria-label="{{ p.linkLabel }}" onClick="{{ p.outbound }}">작품 보러 가기</a>
+          </article>
+        </sc-for>
+      </div>
     </section>
 </sc-if>
 
@@ -2779,6 +2836,7 @@ function visibleCatalogueSections(values){
   values.sectionVisible.heroShow=typeof values.heroShow==='string'&&values.heroShow!=='none';
   values.sectionVisible.ev_show=typeof values.ev.show==='string'&&values.ev.show!=='none';
   values.sectionVisible.paidPickShow=typeof values.paidPickShow==='string'&&values.paidPickShow!=='none';
+  values.sectionVisible.firstBuyShow=typeof values.firstBuyShow==='string'&&values.firstBuyShow!=='none';
   values.sectionVisible.wishShow=typeof values.wishShow==='string'&&values.wishShow!=='none';
   values.sectionVisible.recentShow=typeof values.recentShow==='string'&&values.recentShow!=='none';
   values.sectionVisible.rankingShow=typeof values.rankingShow==='string'&&values.rankingShow!=='none';
@@ -3136,11 +3194,15 @@ class Component extends DCLogic {
   }
   trackWorkOutbound(context,browse,id){
     if(context&&context.module==='rediscovery')this.trackRediscovery('bcut_rediscovery_outbound',context,'modal');
+    else if(context&&context.module==='first_buy')this.trackFirstBuy('bcut_firstbuy_outbound',context,'modal');
     else this.trackPaidPick('bcut_exp_outbound',context,'modal');
     if(browse&&browse.work_id===String(id))try{track('go_bcut',Object.assign({},browse,{module_id:'model_cta_pilot_v1',list_id:'model_cta_pilot_v1',
       link_origin:'work_detail',browse_origin:'work_list',link_url:'https://bcut.maximkorea.net/work/'+id,transport_type:'beacon'}));}catch(e){}
   }
 
+  trackFirstBuy(event,context,origin){
+    try{if(context&&window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);}catch(e){}
+  }
   trackPaidPick(event, context, origin){
     try{
       if(context && window.BCUTMeasurement)window.BCUTMeasurement.click(event,context,origin);
@@ -4432,6 +4494,27 @@ class Component extends DCLogic {
           base.paidPickPeriod=experiment.analysisStart+' ~ '+experiment.analysisEnd;
           base.paidPickVerified=experiment.verifiedAt;}
       }
+    }
+
+    // First-purchase corner: fixed public order only. Buyer counts and sales figures stay outside data.json.
+    base.firstBuyShow='none';base.firstBuyItems=[];
+    const firstBuy=D.firstBuy;
+    if(firstBuy && firstBuy.enabled === true && V==='home' && Array.isArray(firstBuy.items)){
+      const firstBuySeen=new Set();
+      const firstBuyItems=firstBuy.items.slice(0,6).map((p,i)=>({id:String(p&&p.id),rank:i+1,source:p})).filter(p=>{
+        const w=W[p.id];if(!w||firstBuySeen.has(p.id)||(w.pub&&w.pub>today))return false;
+        firstBuySeen.add(p.id);return true;
+      }).map(p=>{
+        const id=p.id,w=W[id],title=this.splitTitle(w.title||id).name,model=(w.models||[]).join(' & ');
+        const context={module:'first_buy',shelf_id:'first-buy-v1',shelf_group:'first_buy',work_id:id,card_position:p.rank};
+        return {id,title,rank:p.rank,rankLabel:'첫 구매 '+p.rank+'위',measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model,
+          format:window.BCUTCatalogueUI.format(w,p.source),url:'https://bcut.maximkorea.net/work/'+id,
+          infoLabel:'첫 구매 '+p.rank+'위 '+title+' 작품 정보',linkLabel:title+' 작품 보러 가기 (새 창)',
+          open:()=>{this.trackFirstBuy('bcut_firstbuy_card_open',context,'poster');this.openWork(id,context);},
+          outbound:()=>this.trackFirstBuy('bcut_firstbuy_outbound',context,'card')};
+      });
+      if(firstBuyItems.length>=4){base.firstBuyShow='block';base.firstBuyItems=firstBuyItems;
+        base.firstBuyTitle=firstBuy.title||'처음이라면 이 화보부터';base.firstBuyIntro=firstBuy.intro||'';}
     }
 
     // New releases and the older catalogue share one shelf; day boundary is Korea time.

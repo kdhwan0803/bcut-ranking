@@ -1,0 +1,186 @@
+/* Work page (works/{id}.html). Inlined into every page by scripts/update-work-pages.cjs.
+   Colours, type and component names follow index.html (theme variables, work-preview-*, work-related-*). */
+:root{--acc:#E60012;--acc2:#ff5a63;--bg0:#07070a;--bg1:#101015;--bg2:#17171d;--txt:#f4f4f6;--mut:#87878f;--line:rgba(255,255,255,.09);--w1:rgba(255,255,255,.05);--w2:rgba(255,255,255,.07);--w4:rgba(255,255,255,.15);--w5:rgba(255,255,255,.24);--t1:rgba(255,255,255,.45);--t2:rgba(255,255,255,.68);--hfA:rgba(7,7,10,.88)}
+html[data-theme="light"]{--bg0:#ffffff;--bg1:#f6f6f8;--bg2:#e9e9ee;--txt:#111114;--mut:#6c6c76;--line:rgba(0,0,0,.1);--acc2:#c9000f;--w1:rgba(0,0,0,.035);--w2:rgba(0,0,0,.055);--w4:rgba(0,0,0,.13);--w5:rgba(0,0,0,.22);--t1:rgba(0,0,0,.44);--t2:rgba(0,0,0,.6);--hfA:rgba(255,255,255,.94)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg0);color:var(--txt);font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.5;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+/* header: 홈 로고 표기와 같은 구성 */
+.wp-header{position:sticky;top:0;z-index:20;background:var(--hfA);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.wp-header-in{max-width:1080px;margin:0 auto;height:52px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px}
+.wp-logo{display:flex;align-items:center;gap:8px;min-height:44px}
+.wp-logo-box{position:relative;display:block;padding:4px 9px 4px 10px;border:1px solid var(--w5);background:var(--w1);font-family:Anton,'Pretendard',sans-serif;font-size:20px;line-height:1;letter-spacing:-.4px}
+.wp-logo-box:before,.wp-logo-box:after{content:'';position:absolute;width:8px;height:8px}
+.wp-logo-box:before{top:-1px;left:-1px;border-top:2px solid var(--acc);border-left:2px solid var(--acc)}
+.wp-logo-box:after{bottom:-1px;right:-1px;border-bottom:2px solid var(--acc);border-right:2px solid var(--acc)}
+.wp-logo-dot{width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.wp-logo-tag{font-size:10px;font-weight:800;letter-spacing:3px;color:var(--mut)}
+.wp-logo-tag.rank{color:var(--acc2);padding-left:8px;border-left:1px solid var(--w5)}
+.wp-header-actions{display:flex;align-items:center;gap:8px}
+.wp-theme{min-height:36px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg1);font-size:12px;font-weight:700;cursor:pointer}
+.wp-rank-link{display:inline-flex;align-items:center;min-height:36px;padding:6px 12px;border-radius:999px;background:var(--w2);font-size:12px;font-weight:800}
+@media(max-width:420px){.wp-logo-tag{display:none}}
+/* top: 미리보기 + 구매 정보 (상세창 work-preview-* 를 그대로 가져와 페이지용으로 조정) */
+.wp-top{max-width:1080px;margin:0 auto}
+.wp-gallery{min-width:0}
+.wp-stage{position:relative}
+.wp-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--bg2);height:clamp(250px,44vh,400px)}
+.wp-carousel::-webkit-scrollbar{display:none}
+.wp-slide{position:relative;overflow:hidden;flex:0 0 100%;scroll-snap-align:center;height:100%;margin:0}
+.wp-slide img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+/* 공개 표지는 자르지 않고 전체를 보여 줍니다(상세창 표지 영역과 같은 방식: 흐린 배경 + 전체 표지). */
+.wp-slide img.wp-slide-bg{position:absolute;left:-12%;top:-12%;width:124%;height:124%;object-fit:cover!important;object-position:50% 50%!important;filter:blur(26px) brightness(.72) saturate(1.1)}
+.wp-slide.cover img.wp-slide-main{position:relative;object-fit:contain;object-position:50% 50%;padding:12px 0;filter:drop-shadow(0 10px 22px rgba(0,0,0,.35))}
+.wp-single .wp-count,.wp-single .wp-dots,.wp-single .work-preview-arrow,.wp-single .work-preview-thumbs,.wp-single .work-preview-caption{display:none!important}
+.wp-badge19{position:absolute;top:12px;left:12px;background:var(--acc);color:#fff;font-size:11px;font-weight:900;line-height:1;padding:5px 7px;border-radius:5px}
+.wp-count{position:absolute;right:12px;bottom:12px;background:rgba(0,0,0,.62);color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
+.wp-dots{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:6px;pointer-events:none}
+.wp-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);box-shadow:0 0 0 1px rgba(0,0,0,.18)}
+.wp-dots i.on{background:#fff;width:16px;border-radius:3px}
+.work-preview-arrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:44px;background:var(--bg1);color:var(--txt);border:1px solid var(--line);border-radius:4px;font-size:24px;cursor:pointer;display:none}
+.work-preview-arrow[aria-disabled="true"]{opacity:.3;cursor:default}
+.work-preview-arrow.prev{left:8px}.work-preview-arrow.next{right:8px}
+.work-preview-caption{display:none;justify-content:space-between;gap:10px;font-size:11px;color:var(--mut);margin:9px 0 12px}
+.work-preview-thumbs{display:none;gap:10px}
+.work-preview-thumb{width:64px;height:76px;border:1px solid var(--line);background:var(--bg2);padding:3px;border-radius:5px;cursor:pointer}
+.work-preview-thumb[aria-pressed="true"]{border:2px solid var(--acc);padding:2px}
+.work-preview-thumb img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.work-preview-thumb.cover img{object-fit:contain;object-position:50% 50%}
+.wp-info{padding:14px 16px 0;min-width:0}
+.work-preview-model{font-size:14px;font-weight:700;color:var(--acc2);margin:0 0 2px}
+.work-preview-model a{display:inline-block;padding:2px 0}
+.work-preview-title{font-size:25px;line-height:1.3;letter-spacing:-.8px;word-break:keep-all;margin:0 0 4px;font-weight:800}
+.work-preview-credit{font-size:11.5px;color:var(--mut);line-height:1.6;margin:0}
+.wp-rank{font-size:11.5px;font-weight:700;color:var(--acc2);line-height:1.6;margin:2px 0 0}
+.work-edition-links{display:flex;gap:8px;margin-top:12px}
+.work-edition-links a{flex:1;display:flex;align-items:center;justify-content:center;min-height:42px;padding:9px 8px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-weight:800;color:var(--t2);background:var(--bg0)}
+.work-edition-links a[aria-current="true"]{border-color:var(--acc);color:var(--acc);background:var(--w1)}
+.work-purchase-info{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 12px;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.work-purchase-format{flex:1 1 0;min-width:0;font-size:14px;font-weight:800;color:var(--txt);word-break:keep-all}
+.work-purchase-format small{display:block;font-size:12px;font-weight:600;line-height:1.5;color:var(--t2);margin-top:2px}
+.work-purchase-price{flex:0 0 auto;max-width:56%;text-align:right;min-width:0}
+.work-purchase-price strong{display:block;font-size:22px;line-height:1.25;font-weight:900;letter-spacing:-.5px}
+.work-purchase-price small{display:block;font-size:10.5px;line-height:1.5;color:var(--mut);margin-top:2px;word-break:keep-all;text-wrap:balance}
+.work-purchase-price small span{white-space:nowrap}
+.work-purchase-price .wp-price-unknown{font-size:12.5px;font-weight:700;color:var(--t2);margin:0}
+.work-preview-cta{display:flex;justify-content:center;align-items:center;min-height:54px;padding:14px 12px;background:var(--acc);color:#fff;font-size:16px;font-weight:800;border-radius:9px;text-decoration:none;box-shadow:0 10px 24px rgba(230,0,18,.3)}
+.work-preview-cta:hover{filter:brightness(1.06)}
+.work-preview-help{text-align:center;color:var(--mut);font-size:11.5px;line-height:1.6;margin:8px 0 0;word-break:keep-all}
+.wp-section{margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+.wp-section h2{font-size:16px;font-weight:800;line-height:1.5;margin:0 0 4px}
+.wp-section-note{font-size:12px;line-height:1.6;color:var(--mut);margin:0 0 12px;word-break:keep-all}
+.wp-shots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.wp-shot{display:block;border:0;padding:0;background:var(--bg2);border-radius:8px;overflow:hidden;aspect-ratio:4/5;cursor:zoom-in}
+.wp-shot img{display:block;width:100%;height:100%;object-fit:cover}
+.wp-shots.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.work-preview-separate-note{margin:0 0 2px;font-size:13px;font-weight:700;line-height:1.6}
+.work-preview-composition dl{margin:6px 0 0}
+.work-preview-composition dl>div{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:9px 0;font-size:14px}
+.work-preview-composition dt{color:var(--mut)}
+.work-preview-composition dd{margin:0;text-align:right;font-weight:700}
+.work-preview-composition dd small{display:block;font-size:11px;font-weight:400;color:var(--mut);margin-top:2px}
+.work-preview-product{border-top:1px solid var(--line);margin-top:16px;padding-top:14px}
+.work-preview-option-heading{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
+.work-preview-option-heading h3{font-size:16px;line-height:1.4;margin:0;font-weight:700}
+.wp-current{font-size:11px;font-weight:700;color:var(--acc2);margin-left:6px}
+.work-preview-option-price{margin:0;font-size:25px;font-weight:700;line-height:1.4;white-space:nowrap;letter-spacing:-.7px}
+.work-preview-option-price span{font-size:13px;font-weight:400;letter-spacing:0;margin-left:4px}
+.work-preview-option-composition{font-size:14px;font-weight:600;margin:6px 0 0;line-height:1.65}
+.work-preview-option-note{margin:4px 0 0;color:var(--mut);font-size:12px;line-height:1.65;word-break:keep-all}
+.work-preview-product .work-preview-cta{margin-top:13px;padding:10px 13px;min-height:46px;font-size:14px;box-shadow:none}
+.work-preview-product .work-preview-cta.secondary{color:var(--acc);background:var(--bg1);border:1px solid var(--acc)}
+.work-preview-check{margin-top:18px;border-top:1px solid var(--line);padding-top:13px}
+.work-preview-check h3{font-size:13px;margin:0 0 6px;font-weight:700}
+.work-preview-check p{font-size:12px;color:var(--mut);line-height:1.65;margin:0;word-break:keep-all}
+.work-preview-check small{display:block;font-size:10.5px;color:var(--mut);margin-top:6px}
+.work-original-title{margin:14px 0 0;color:var(--mut);font-size:12px;line-height:1.6}
+.work-original-title summary{cursor:pointer;width:fit-content;padding:5px 0}
+.work-original-title p{margin-top:4px;overflow-wrap:anywhere;color:var(--t2)}
+/* 아래쪽: 함께 볼 만한 화보 (상세창 work-related-* 재사용) */
+.wp-more{max-width:1080px;margin:0 auto;padding:0 16px}
+.work-related-models{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+.work-related-models a{display:inline-flex;align-items:center;min-height:44px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-weight:800;color:var(--acc2);max-width:100%;overflow-wrap:anywhere}
+.work-related-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px}
+.work-related-card{display:block;min-width:0;color:var(--txt)}
+.work-related-cover{position:relative;display:block;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--bg2)}
+.work-related-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.work-related-cover img[src*="-public-"]{object-fit:contain;background:#f5ead3}
+.work-related-kind{position:absolute;top:7px;left:7px;background:rgba(0,0,0,.78);color:#fff;font-size:11px;font-weight:800;line-height:1.4;padding:4px 7px;border-radius:5px}
+.work-related-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:13px;font-weight:800;line-height:1.5;margin:7px 0 3px;overflow-wrap:anywhere}
+.work-related-card time{font-size:11px;line-height:1.5;color:var(--mut)}
+.wp-end{margin:28px 0 0;text-align:center;background:var(--bg1);border:1px solid var(--line);border-radius:14px;padding:22px 16px}
+.wp-end strong{display:block;font-size:17px;font-weight:800;letter-spacing:-.3px}
+.wp-end p{font-size:11.5px;color:var(--mut);margin:8px 0 0;line-height:1.6}
+.wp-end .work-preview-cta{margin-top:14px}
+.wp-footer{border-top:1px solid var(--line);margin-top:32px;padding:20px 16px;text-align:center;color:var(--mut);font-size:12px;line-height:1.9}
+.wp-footer a{color:var(--t2)}
+/* 고정 구매 바: 첫 화면의 버튼이 화면 밖으로 나갔을 때만 보입니다 (상세창 footer 구성) */
+.wp-sticky{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bg1);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));transform:translateY(110%);transition:transform .2s ease;visibility:hidden}
+.wp-sticky.on{transform:none;visibility:visible}
+.wp-sticky-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.wp-sticky-price{flex:0 0 auto;font-size:17px;font-weight:900;white-space:nowrap}
+.wp-sticky-price small{display:block;font-size:10.5px;font-weight:600;color:var(--mut)}
+.wp-sticky .work-preview-cta{flex:1;min-height:48px;font-size:15px;box-shadow:none}
+@media(prefers-reduced-motion:reduce){.wp-sticky{transition:none}.wp-carousel{scroll-behavior:auto}}
+/* 크게 보기 */
+.wp-zoom{border:0;padding:0;background:transparent;max-width:100vw;max-height:100vh;margin:auto}
+.wp-zoom::backdrop{background:rgba(4,4,6,.9)}
+.wp-zoom img{display:block;max-width:100vw;max-height:calc(100vh - 20px);width:auto;height:auto;object-fit:contain}
+.wp-zoom-close{position:fixed;top:14px;right:14px;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:0;font-size:16px;cursor:pointer}
+@media(min-width:600px){.wp-shots{grid-template-columns:repeat(4,minmax(0,1fr))}.work-related-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:900px){
+  body{padding-bottom:0}
+  .wp-header-in{height:60px;padding:0 24px}.wp-logo-box{font-size:23px}
+  .wp-top{display:grid;grid-template-columns:minmax(0,520px) minmax(320px,1fr);gap:40px;padding:28px 24px 0;align-items:start}
+  .wp-gallery{position:sticky;top:84px}
+  .wp-carousel{height:auto;aspect-ratio:4/5;border-radius:8px}
+  .wp-slide img{object-fit:contain;object-position:50% 50%}
+  .wp-slide.cover img.wp-slide-main{padding:0}
+  .wp-dots{display:none}
+  .work-preview-arrow{display:block}
+  .work-preview-caption{display:flex}
+  .work-preview-thumbs{display:flex}
+  .wp-info{padding:4px 0 0}
+  .work-preview-model{font-size:15px;margin-bottom:6px}
+  .work-preview-title{font-size:32px;margin-bottom:8px}
+  .work-preview-credit{font-size:12px}
+  .work-edition-links{margin-top:18px}
+  .work-purchase-info{margin:18px 0;padding:15px 0}
+  .work-purchase-price strong{font-size:28px}
+  .work-purchase-price small{font-size:11.5px;max-width:none}
+  .wp-preview-mobile{display:none}
+  .wp-more{padding:0 24px}
+  .work-related-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .wp-sticky-in{justify-content:flex-end}.wp-sticky .work-preview-cta{flex:0 0 280px}
+}
+/* 수위 안내: 상세창(work-intensity-pilot) 규칙을 그대로 가져옴. 등록값이 있는 작품에만 나옵니다. */
+.work-intensity-pilot{--intensity-1:#94a3b8;--intensity-2:#e8b18b;--intensity-3:#f5a445;--intensity-4:#fb7956;--intensity-5:#ff555d;--intensity-color:var(--intensity-1);margin:18px 0;padding:12px 14px;border:1px solid var(--line);border-radius:10px;color:var(--t2);font-size:12px;line-height:1.65}
+html[data-theme="light"] .work-intensity-pilot{--intensity-1:#64748b;--intensity-2:#915526;--intensity-3:#a85c08;--intensity-4:#c2410c;--intensity-5:#c62828}
+.work-intensity-pilot[data-level="2"]{--intensity-color:var(--intensity-2)}
+.work-intensity-pilot[data-level="3"]{--intensity-color:var(--intensity-3)}
+.work-intensity-pilot[data-level="4"]{--intensity-color:var(--intensity-4)}
+.work-intensity-pilot[data-level="5"]{--intensity-color:var(--intensity-5)}
+.work-intensity-pilot h3{margin:0;font-size:13px;color:var(--txt)}
+.work-intensity-pilot p{margin:5px 0;overflow-wrap:anywhere}
+.work-intensity-pilot .work-intensity-display{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 12px;min-width:0}
+.work-intensity-pilot .work-intensity-badge{display:inline-flex;align-items:center;gap:10px;padding:7px 12px;max-width:100%;box-sizing:border-box;border:1px solid var(--intensity-color);border-color:color-mix(in srgb,var(--intensity-color) 40%,transparent);border-radius:9px;background:var(--w1);background:color-mix(in srgb,var(--intensity-color) 9%,transparent);color:var(--intensity-color);font-size:11px;font-weight:700;white-space:nowrap}
+.work-intensity-pilot .work-intensity-score{font-size:26px;line-height:1.2;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.work-intensity-pilot .work-intensity-unit{font-size:12px;font-weight:500;margin-left:2px}
+.work-intensity-pilot .work-intensity-meter{display:flex;gap:4px;width:104px;flex:0 0 104px}
+.work-intensity-pilot .work-intensity-meter i{display:block;flex:1;height:8px;border-radius:3px;background:var(--line)}
+.work-intensity-pilot[data-level="1"] .work-intensity-meter i:nth-child(-n+1),
+.work-intensity-pilot[data-level="2"] .work-intensity-meter i:nth-child(-n+2),
+.work-intensity-pilot[data-level="3"] .work-intensity-meter i:nth-child(-n+3),
+.work-intensity-pilot[data-level="4"] .work-intensity-meter i:nth-child(-n+4),
+.work-intensity-pilot[data-level="5"] .work-intensity-meter i:nth-child(-n+5){background:var(--intensity-color)}
+.work-intensity-pilot .work-intensity-status{color:var(--mut);font-size:11px;font-weight:500;border:1px solid var(--line);border-radius:20px;padding:3px 8px;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+.work-intensity-pilot .work-intensity-note{color:var(--mut);font-size:11px}
+.work-intensity-pilot[data-level="0"] .work-intensity-score{font-size:15px;letter-spacing:0}
+.work-intensity-pilot details{margin-top:7px}
+.work-intensity-pilot summary{cursor:pointer;color:var(--t2);width:fit-content}
+.work-intensity-pilot summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:2px}
+.work-intensity-pilot ol{padding-left:22px;margin:6px 0}

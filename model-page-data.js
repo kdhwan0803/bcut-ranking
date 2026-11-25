@@ -44,7 +44,25 @@
     path = path.replace(/^(?:\.\/|\/)/, '');
     return (absolute ? BASE + '/' : '../') + path;
   }
-  function workLink(id) { return BASE + '/?w=' + encodeURIComponent(id); }
+  // Works that have their own static page (works/{id}.html). The list comes from
+  // data.json (workPages.ids, or every listed work when workPages.all is true) and
+  // is limited to published works with a public-safe cover, so the generator
+  // (scripts/update-work-pages.cjs) and the cards below always agree.
+  function workPages(data, date) {
+    date = date || today();
+    var config = data && data.workPages, works = (data && data.works) || {}, pages = {};
+    if (!config || config.enabled !== true) return pages;
+    var ids = config.all === true ? Object.keys(works) : Array.isArray(config.ids) ? config.ids : [];
+    ids.forEach(function (id) {
+      id = String(id);
+      var work = works[id];
+      if (/^\d+$/.test(id) && work && listed(work) && work.pub <= date && work.safe === true && work.img) pages[id] = true;
+    });
+    return pages;
+  }
+  function workLink(id, pages) {
+    return pages && pages[id] === true ? BASE + '/works/' + encodeURIComponent(id) + '.html' : BASE + '/?w=' + encodeURIComponent(id);
+  }
   function summary(data, model, date) {
     date = date || today();
     var works = data.works || {};
@@ -79,7 +97,7 @@
       { question: model + '의 최신 화보는 무엇인가요?', answer: latest ? '가장 최근 공개된 화보는 ‘' + clean(latest.title) + '’(' + latest.pub + ' 공개)입니다.' : latestText },
       { question: model + ' 화보는 어디에서 볼 수 있나요?', answer: '맥심 B컷에서 감상할 수 있습니다. 작품별 구매 방식과 현재 구독 열람 여부는 B컷에서 확인하세요. 성인 작품은 판매 사이트의 로그인·성인인증 후 이용할 수 있습니다.' }
     ];
-    return { model: model, date: date, works: works, published: published, upcoming: upcoming, count: published.length,
+    return { model: model, date: date, works: works, workPages: workPages(data, date), published: published, upcoming: upcoming, count: published.length,
       title: title, description: description, latestId: latestId, latestText: latestText, contest: contest, contestWinner: pilot ? pilot.season : null,
       latestUrl: latestId ? workLink(latestId) : BASE + '/?model=' + encodeURIComponent(model),
       image: latest ? image(latest.img, true) : '', faq: faq };
@@ -92,7 +110,9 @@
       var video = work.vid === true || String(work.vid) === '1';
       var badge = (upcoming ? '<span class="bd up">🗓 예정</span>' : '') + (adult ? '<span class="bd b19">19</span>' : '') + (video ? '<span class="bd vid">▶ 영상</span>' : '');
       var tag = upcoming ? 'div' : 'a';
-      var attrs = upcoming ? '' : ' href="' + escape(workLink(id)) + '" rel="nofollow"';
+      // Browse-pilot cards (identify) keep the catalogue dialog link so their measured flow is unchanged.
+      var page = !upcoming && !identify && state.workPages && state.workPages[id] === true;
+      var attrs = upcoming ? '' : ' href="' + escape(workLink(id, page ? state.workPages : null)) + '"' + (page ? '' : ' rel="nofollow"');
       if (identify && !upcoming) attrs += ' data-work-id="' + escape(id) + '"';
       return '<' + tag + ' class="card' + (upcoming ? ' up' : '') + (adult ? ' b19' : '') + '"' + attrs + '><div class="thumb"><img loading="lazy" src="' + escape(image(work.img)) + '" alt="' + escape(name) + '"><div class="badges">' + badge + '</div></div><div class="meta"><div class="mt">' + escape(name) + '</div><div class="mp">' + escape(work.pub) + (upcoming ? ' 공개 예정' : '') + '</div></div></' + tag + '>';
     }).join('\n');
@@ -121,7 +141,7 @@
     list = list.filter(function (entry) { return entry['@type'] !== 'CollectionPage' && entry['@type'] !== 'FAQPage'; });
     list.unshift({ '@context': 'https://schema.org', '@type': 'CollectionPage', name: state.title, description: state.description, url: url,
       mainEntity: { '@type': 'ItemList', numberOfItems: state.count, itemListElement: state.published.map(function (id, i) {
-        return { '@type': 'ListItem', position: i + 1, url: workLink(id), name: clean(state.works[id].title) };
+        return { '@type': 'ListItem', position: i + 1, url: workLink(id, state.workPages), name: clean(state.works[id].title) };
       }) } });
     list.push({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: state.faq.map(function (entry) {
       return { '@type': 'Question', name: entry.question, acceptedAnswer: { '@type': 'Answer', text: entry.answer } };
@@ -149,5 +169,5 @@
     }).join('\n');
   }
   return { BASE: BASE, escape: escape, models: models, today: today, validDate: validDate, listed: listed, clean: clean, image: image,
-    summary: summary, cards: cards, intro: intro, faqHTML: faqHTML, schema: schema, directory: directory, directoryHTML: directoryHTML };
+    workPages: workPages, workLink: workLink, summary: summary, cards: cards, intro: intro, faqHTML: faqHTML, schema: schema, directory: directory, directoryHTML: directoryHTML };
 });

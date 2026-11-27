@@ -1,6 +1,6 @@
 /* MAXIM B컷 · 함께 산 화보 / 함께 보면 좋은 화보 임베드 (외부 로더용) · ROT-FINAL-8: recs.json(동시구매) 있으면 '함께 산 화보'로 표시 · ROT-FINAL-9: data.json에 없는 화보(공개 전)에서도 최근작으로 채움 · ROT-FINAL-10: MORE 섹션이 없는 화보에서 블록이 상단으로 튀던 문제 수정(로더 스니펫 위치에 삽입) */
 (function(){
-  window.__bcutVer='ROT-FINAL-12-PAIR-COMING-1-IMGURL-1-COMPACT-1';
+  window.__bcutVer='ROT-FINAL-12-PAIR-COMING-1-IMGURL-1-COMPACT-1-SET-1';
   if(document.getElementById('bcut-recs')) return;
   var COUNT=4, BASE='https://bcutrank.com', SITE='https://bcut.maximkorea.net/work/';
   function imageUrl(src){
@@ -52,7 +52,26 @@
     +'.bcvp-foot{font-size:10px;color:#a1a1ac;padding-left:78px;margin-top:9px;line-height:1.5}'
     +'@media(max-width:640px){.bcvp{padding:15px 0 18px}.bcvp-row{grid-template-columns:48px minmax(0,1fr);gap:12px 14px}.bcvp-img{width:48px;height:66px;grid-row:1 / span 2}.bcvp-img-empty{line-height:66px}.bcvp-text{grid-column:2}.bcvp-title{font-size:16px}.bcvp-desc{font-size:11px}.bcvp-meta{font-size:10px}.bcvp-link{grid-column:2;justify-self:start;padding:5px 0 7px;margin-top:-1px}.bcvp-foot{padding-left:62px;font-size:9px}}';
 
-  var st=document.createElement('style'); st.textContent=css+pairedCss; document.head.appendChild(st);
+
+  var setCss='.bcst{max-width:1000px;margin:26px auto 0;padding:20px 20px 18px;background:#fbf7f5;border:1px solid #efe4df;border-radius:14px;color:#2a2228;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-sizing:border-box}'
+    +'.bcst *{box-sizing:border-box}.bcst-h{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}'
+    +'.bcst-eye{display:block;font-size:10.5px;font-weight:900;letter-spacing:2.4px;color:#9b5468;margin-bottom:6px}'
+    +'.bcst-ti{display:block;font-size:19px;font-weight:850;letter-spacing:-.6px;line-height:1.3;color:#2a2228}.bcst-ti b{color:#9b5468}'
+    +'.bcst-su{font-size:12px;color:#8a7f85;line-height:1.5}'
+    +'.bcst-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}'
+    +'.bcst-c{position:relative;display:grid;grid-template-columns:84px minmax(0,1fr);align-items:stretch;text-decoration:none!important;color:#2a2228;background:#fff;border:1px solid #eadfe3;border-radius:12px;overflow:hidden;transition:transform .15s,box-shadow .2s,border-color .2s}'
+    +'a.bcst-c:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(80,40,60,.14);border-color:#d7b9c4}'
+    +'.bcst-img{display:block;width:84px;height:112px;object-fit:cover;object-position:center 18%;background:#f1e9ec}'
+    +'.bcst-n{position:absolute;top:6px;left:6px;font-size:9px;font-weight:900;letter-spacing:.5px;color:#fff;background:rgba(42,34,40,.72);border-radius:999px;padding:3px 6px}'
+    +'.bcst-b{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:10px 12px;min-width:0}'
+    +'.bcst-k{display:block;font-size:15px;font-weight:850;letter-spacing:-.3px;line-height:1.2}'
+    +'.bcst-s{display:block;font-size:11px;font-weight:700;color:#8a7f85;margin-top:4px}'
+    +'.bcst-go{flex:0 0 auto;font-size:12px;font-weight:850;color:#b23b55;white-space:nowrap}'
+    +'.bcst-c.is-now{background:#f4ecef;border-style:dashed;cursor:default}.bcst-c.is-now .bcst-img{opacity:.55;filter:grayscale(.35)}'
+    +'.bcst-c.is-now .bcst-go{color:#8a7f85}'
+    +'.bcst-foot{font-size:10.5px;color:#a0969b;margin-top:11px;line-height:1.5}'
+    +'@media(max-width:760px){.bcst{padding:16px 14px 14px;border-radius:12px}.bcst-ti{font-size:16px}.bcst-g{grid-template-columns:1fr;gap:8px}.bcst-c{grid-template-columns:64px minmax(0,1fr)}.bcst-img{width:64px;height:84px}.bcst-b{flex-direction:row;align-items:center;justify-content:space-between}.bcst-k{font-size:14px}}';
+  var st=document.createElement('style'); st.textContent=css+pairedCss+setCss; document.head.appendChild(st);
   var box=document.createElement('div'); box.id='bcut-recs';
   // '모델의 다른 화보'(MORE MODEL) 섹션 바로 위에 삽입
   var anchor=null, ts=document.querySelectorAll('.section-title');
@@ -159,6 +178,63 @@
     target.parentNode.insertBefore(section,target);
   }
 
+  // SET-1: one shoot released as a set (e.g. [Touch S4] model Costume / Lingerie / Bikini).
+  // Same leading [series] tag, same model list, same creator and same release date; 2~4 works.
+  function setMeta(w){
+    if(!w||!Array.isArray(w.models)||!w.models.length||!w.photo) return null;
+    var mm=/^\s*\[([^\]]+)\]\s*(.+)$/.exec(String(w.title||''));
+    if(!mm) return null;
+    var tag=pairNorm(mm[1]).replace(/\s+/g,' ').trim(), rest=mm[2].trim();
+    var models=w.models.map(function(v){return pairNorm(v).replace(/\s+/g,'');}).sort();
+    if(!tag||!/^\d{4}-\d{2}-\d{2}$/.test(String(w.pub||''))) return null;
+    var label=rest;
+    w.models.forEach(function(m){label=label.split(m).join(' ');});
+    label=label.replace(/\s{2,}/g,' ').trim()||rest;
+    return {tag:mm[1].trim(),label:label,key:JSON.stringify([tag,models,pairNorm(w.photo).replace(/\s+/g,''),String(w.pub)])};
+  }
+  function setWorks(works,currentId){
+    var meta=setMeta(works&&works[currentId]);
+    if(!meta) return null;
+    var group=[];
+    Object.keys(works).forEach(function(k){var p=setMeta(works[k]); if(p&&p.key===meta.key) group.push({id:String(k),work:works[k],label:p.label});});
+    if(group.length<3||group.length>4) return null;
+    var order={costume:1,lingerie:2,bikini:3};
+    group.sort(function(a,b){return (order[pairNorm(a.label)]||9)-(order[pairNorm(b.label)]||9)||Number(a.id)-Number(b.id);});
+    return {tag:meta.tag,items:group};
+  }
+  function addSeriesSet(works){
+    if(document.getElementById('bcut-series-set')) return;
+    var set=setWorks(works,id);
+    if(!set) return;
+    var target=document.getElementById('bcut-paired-version')||document.getElementById('bcut-rankbanner')||box;
+    if(!target||!target.parentNode) return;
+    var model=modelOf(works[id]);
+    var upcoming=String(works[id].pub)>TODAY;
+    var cards=set.items.map(function(it,i){
+      var now=it.id===String(id), img=recommendationImage(it.work), w=it.work;
+      var sub=w.buy==='구독'?'구독으로도 감상 가능':'코인 화보';
+      var inner=(/^https:\/\//i.test(img)?'<img class="bcst-img" src="'+esc(img)+'" alt="'+esc(model+' '+it.label+' 표지')+'" loading="lazy" decoding="async">':'<span class="bcst-img"></span>')+
+        '<span class="bcst-n">'+(i+1)+' / '+set.items.length+'</span>'+
+        '<span class="bcst-b"><span><span class="bcst-k">'+esc(it.label)+'</span><span class="bcst-s">'+esc(sub)+'</span></span>'+
+        '<span class="bcst-go">'+(now?'지금 보는 화보':'보러 가기 ›')+'</span></span>';
+      return now?'<div class="bcst-c is-now" aria-current="page">'+inner+'</div>':
+        '<a class="bcst-c" href="'+SITE+it.id+'" data-to="'+it.id+'" aria-label="'+esc(w.title+' 상세페이지로 이동')+'">'+inner+'</a>';
+    }).join('');
+    var section=document.createElement('section');
+    section.id='bcut-series-set';section.className='bcst';
+    section.setAttribute('aria-label',model+' '+set.tag+' 세트');
+    section.innerHTML='<div class="bcst-h"><div><span class="bcst-eye">'+esc(set.tag.toUpperCase())+' · '+set.items.length+' CONCEPTS</span>'+
+      '<strong class="bcst-ti"><b>'+esc(model)+'</b>, 콘셉트 '+set.items.length+'가지</strong></div>'+
+      '<span class="bcst-su">'+(upcoming?'같은 날 함께 공개될 ':'같은 날 함께 공개된 ')+esc(model)+'의 다른 콘셉트도 만나보세요.</span></div>'+
+      '<div class="bcst-g">'+cards+'</div>'+
+      '<div class="bcst-foot">콘셉트별로 각각 별도 작품입니다. 구매 방식은 작품마다 다를 수 있어요.</div>';
+    section.addEventListener('click',function(e){
+      var link=e.target.closest&&e.target.closest('a.bcst-c');if(!link)return;
+      try{gtag('event','series_set_click',{from_id:String(id),to_id:link.getAttribute('data-to'),series:set.tag});}catch(x){}
+    });
+    target.parentNode.insertBefore(section,target.id==='bcut-paired-version'?target.nextSibling:target);
+  }
+
   // Native shelves are identified only by their exact title plus adjacent slider structure.
   // Their duplicate cards remain hidden even when a shelf is expanded.
   function compactNativeShelves(recIds,defaultOpen){
@@ -248,6 +324,7 @@
     }catch(x){}
     // Independent from recommendation results; no pair means no additional UI.
     try{addPairedVersion(W);}catch(x){}
+    try{addSeriesSet(W);}catch(x){}
     // 이번 주 랭킹 순위 뱃지 — 화보명 아래 (순위권 TOP10 화보만, 자동)
     try{
       if(!document.getElementById('bcut-rankbadge')){

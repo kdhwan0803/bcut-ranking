@@ -84,7 +84,7 @@ assert.match(shopping.summary('2392',data),/내지 사진 128장/,'known officia
 for (const work of Object.values(data.works)) assert.equal(ui.released(work,date),api.listed(work)&&work.pub<=date);
 for (const [name,slug] of Object.entries(mapping)) {
   assert(/^[a-z0-9_-]+$/.test(slug)); assert(fs.existsSync(path.join(root,'models',slug+'.html')));
-  const link=ui.modelLinks([name])[0]; assert.equal(link.href,'models/'+slug+'.html?preview=1'+(['donggeuran','seuli','bakseoi'].includes(slug)?'#model-browse':'#grid'));
+  const link=ui.modelLinks([name])[0]; assert.equal(link.href,'models/'+slug+'.html?preview=1'+(['donggeuran','seuli','bakseoi','jyu'].includes(slug)?'#model-browse':'#grid'));
 }
 assert(ui.modelLinks(['없는 모델'])[0].href.includes('model='));
 assert.equal(ui.previewLink('?w=2393'),'?w=2393&preview=1');

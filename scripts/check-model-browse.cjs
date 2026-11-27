@@ -47,7 +47,7 @@ assert.equal(destination.searchParams.get('preview'),'1');
 assert.equal(browse.workURL('https://example.com/?w=2274','seuli','video','popular',new URLSearchParams()),'https://example.com/?w=2274');
 assert.equal(browse.workURL('https://bcutrank.com/?w=2274','other','video','popular',new URLSearchParams()),'https://bcutrank.com/?w=2274');
 const data = JSON.parse(fs.readFileSync(path.join(root, 'data.json'), 'utf8'));
-const pilots = { donggeuran: '동그란', seuli: '슬이', bakseoi: '박서이' };
+const pilots = { donggeuran: '동그란', seuli: '슬이', bakseoi: '박서이', jyu: '쥬' };
 const counts = {};
 for (const file of fs.readdirSync(path.join(root, 'models')).filter(file => file.endsWith('.html'))) {
   const html = fs.readFileSync(path.join(root, 'models', file), 'utf8');

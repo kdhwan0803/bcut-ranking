@@ -322,7 +322,7 @@ if(!window.BCUT_ANALYTICS_DISABLED){
     return modelNames(names).map(name => {
       const slug = slugs[name], known = typeof slug === 'string' && /^[a-z0-9_-]+$/.test(slug);
       return { name, label: name + (known ? ' 화보 전체 보기' : ' 화보 찾아보기'),
-        href: previewLink(known ? 'models/' + slug + '.html' + (['donggeuran','seuli','bakseoi'].includes(slug) ? '#model-browse' : '#grid') : '?model=' + encodeURIComponent(name) + '#/search') };
+        href: previewLink(known ? 'models/' + slug + '.html' + (['donggeuran','seuli','bakseoi','jyu'].includes(slug) ? '#model-browse' : '#grid') : '?model=' + encodeURIComponent(name) + '#/search') };
     });
   }
   function previewLink(href) {
@@ -333,7 +333,7 @@ if(!window.BCUT_ANALYTICS_DISABLED){
   }
   function browseEntry(search) {
     const query = new URLSearchParams(search), slug = query.get('mb_model'), id = query.get('w') || query.get('work');
-    if (!['donggeuran','seuli','bakseoi'].includes(slug) || !/^\d+$/.test(id || '') ||
+    if (!['donggeuran','seuli','bakseoi','jyu'].includes(slug) || !/^\d+$/.test(id || '') ||
         !['all','photo','video'].includes(query.get('mb_format')) || !['latest','popular'].includes(query.get('mb_sort'))) return null;
     let mapping = {};
     try { mapping = JSON.parse(document.getElementById('work-model-links').textContent); } catch (_) {}

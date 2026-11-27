@@ -3,7 +3,7 @@
   else { root.BCUTModelBrowse = factory(root.BCUTModelData); root.BCUTModelBrowse.init(); }
 })(typeof window === 'object' ? window : this, function (api) {
   'use strict';
-  var slugs = ['donggeuran', 'seuli', 'bakseoi'], view;
+  var slugs = ['donggeuran', 'seuli', 'bakseoi', 'jyu'], view;
   function video(work) { return work.vid === true || String(work.vid) === '1'; }
   function ranks(data, date) {
     var best = Object.create(null), works = data.works || {};

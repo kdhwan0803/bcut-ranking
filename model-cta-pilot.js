@@ -3,7 +3,7 @@
   else { root.BCUTModelPilot = factory(root.BCUTModelData); root.BCUTModelPilot.init(); }
 })(typeof window === 'object' ? window : this, function (api) {
   'use strict';
-  var slugs = ['donggeuran', 'seuli', 'bakseoi'], version = 'model_cta_pilot_v1';
+  var slugs = ['donggeuran', 'seuli', 'bakseoi', 'jyu'], version = 'model_cta_pilot_v1';
   function selected(slug) { return slugs.indexOf(slug) >= 0; }
   function saleURL(id, slug) {
     return 'https://bcut.maximkorea.net/work/' + encodeURIComponent(id) + '?utm_source=bcutrank&utm_medium=model_latest&utm_campaign=' + version + '&utm_content=' + encodeURIComponent(slug + '_latest_card');

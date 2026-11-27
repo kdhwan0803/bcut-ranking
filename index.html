@@ -1848,28 +1848,6 @@ html[data-theme="light"] .work-dialog .work-intensity-pilot{--intensity-1:#64748
     </section>
 </sc-if>
 
-    <sc-if value="{{ sectionVisible.firstBuyShow }}" hint-placeholder-val="{{ false }}">
-<section id="first-buy" class="first-buy" aria-labelledby="first-buy-title" style="display:{{ firstBuyShow }}">
-      <div class="first-buy-head">
-        <h2 id="first-buy-title">{{ firstBuyTitle }}</h2>
-        <p class="first-buy-intro">{{ firstBuyIntro }}</p><button type="button" class="first-buy-refresh" style="display:{{ firstBuyRefreshShow }}" onClick="{{ firstBuyRefresh }}" aria-controls="first-buy-grid">다른 화보 보기 ↻</button>
-      </div>
-      <div id="first-buy-grid" class="first-buy-grid">
-        <sc-for list="{{ firstBuyItems }}" as="p" hint-placeholder-count="0">
-          <article class="first-buy-card" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
-            <button type="button" class="first-buy-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
-              <img loading="{{ p.loading }}" fetchpriority="{{ p.fetchPriority }}" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
-            </button>
-            <div class="first-buy-model">{{ p.model }}</div>
-            <h4 class="first-buy-title" title="{{ p.title }}">{{ p.title }}</h4>
-            <div class="first-buy-format">{{ p.format }}</div>
-            <a class="first-buy-link" href="{{ p.url }}" target="_blank" rel="noopener" aria-label="{{ p.linkLabel }}" onClick="{{ p.outbound }}">작품 보러 가기</a>
-          </article>
-        </sc-for>
-      </div>
-    </section>
-</sc-if>
-
     <sc-if value="{{ sectionVisible.paidPickShow }}" hint-placeholder-val="{{ false }}">
 <section id="paid-picks" class="paid-picks" aria-labelledby="paid-picks-title" style="display:{{ paidPickShow }}">
       <div class="paid-picks-head"><div>
@@ -1900,6 +1878,28 @@ html[data-theme="light"] .work-dialog .work-intensity-pilot{--intensity-1:#64748
               </sc-for>
             </div>
           </div>
+        </sc-for>
+      </div>
+    </section>
+</sc-if>
+
+    <sc-if value="{{ sectionVisible.firstBuyShow }}" hint-placeholder-val="{{ false }}">
+<section id="first-buy" class="first-buy" aria-labelledby="first-buy-title" style="display:{{ firstBuyShow }}">
+      <div class="first-buy-head">
+        <h2 id="first-buy-title">{{ firstBuyTitle }}</h2>
+        <p class="first-buy-intro">{{ firstBuyIntro }}</p><button type="button" class="first-buy-refresh" style="display:{{ firstBuyRefreshShow }}" onClick="{{ firstBuyRefresh }}" aria-controls="first-buy-grid">다른 화보 보기 ↻</button>
+      </div>
+      <div id="first-buy-grid" class="first-buy-grid">
+        <sc-for list="{{ firstBuyItems }}" as="p" hint-placeholder-count="0">
+          <article class="first-buy-card" data-work-id="{{ p.id }}" data-bcut-context="{{ p.measureContext }}">
+            <button type="button" class="first-buy-poster" onClick="{{ p.open }}" aria-label="{{ p.infoLabel }}">
+              <img loading="{{ p.loading }}" fetchpriority="{{ p.fetchPriority }}" decoding="async" src="{{ p.img }}" alt="" style="filter:{{ p.blur }}">
+            </button>
+            <div class="first-buy-model">{{ p.model }}</div>
+            <h4 class="first-buy-title" title="{{ p.title }}">{{ p.title }}</h4>
+            <div class="first-buy-format">{{ p.format }}</div>
+            <a class="first-buy-link" href="{{ p.url }}" target="_blank" rel="noopener" aria-label="{{ p.linkLabel }}" onClick="{{ p.outbound }}">작품 보러 가기</a>
+          </article>
         </sc-for>
       </div>
     </section>
@@ -4528,6 +4528,7 @@ class Component extends DCLogic {
     }
 
     // First-purchase corner: six recommendations drawn from the candidate pool. No ranks on screen; buyer counts and sales figures stay outside data.json.
+    // It sits below #paid-picks, so its posters load lazily; the eager/high posters belong to #paid-picks above it.
     base.firstBuyShow='none';base.firstBuyItems=[];base.firstBuyRefreshShow='none';base.firstBuyRefresh=()=>{};
     const firstBuy=D.firstBuy;
     if(firstBuy && firstBuy.enabled === true && V==='home' && Array.isArray(firstBuy.items)){
@@ -4544,7 +4545,7 @@ class Component extends DCLogic {
           const w=W[id],title=this.splitTitle(w.title||id).name,model=(w.models||[]).join(' & ');
           const context={module:'first_buy',shelf_id:'first-buy-v1',shelf_group:'first_buy',work_id:id,card_position:i+1};
           return {id,title,measureContext:JSON.stringify(context),img:w.img||'',blur:this.blurOf(id),model,
-            loading:i<2?'eager':'lazy',fetchPriority:i<2?'high':'auto',
+            loading:'lazy',fetchPriority:'auto',
             format:window.BCUTCatalogueUI.format(w,firstBuySource.get(id)),url:'https://bcut.maximkorea.net/work/'+id,
             infoLabel:title+' 작품 정보',linkLabel:title+' 작품 보러 가기 (새 창)',
             open:()=>{this.trackFirstBuy('bcut_firstbuy_card_open',context,'poster');this.openWork(id,context);},
